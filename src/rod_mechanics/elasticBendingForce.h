@@ -1,7 +1,7 @@
 #ifndef ELASTICBENDINGFORCE_H
 #define ELASTICBENDINGFORCE_H
 
-#include "eigenIncludes.h"
+#include "../eigenIncludes.h"
 #include "elasticRod.h"
 #include "timeStepper.h"
 

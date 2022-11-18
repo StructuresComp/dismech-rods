@@ -26,18 +26,18 @@ link_directories(${MKL_LIBRARY_DIR})
 add_executable(simDER
         src/main.cpp
         src/world.cpp
-        src/elasticRod.cpp
-        src/elasticStretchingForce.cpp
-        src/elasticBendingForce.cpp
-        src/elasticTwistingForce.cpp
-        src/externalGravityForce.cpp
-        src/dampingForce.cpp
-        src/inertialForce.cpp
-        src/timeStepper.cpp
-        src/symbolicEquations.cpp
-        src/collisionDetector.cpp
-        src/contactPotentialIMC.cpp
         src/initialization/setInput.cpp
+        src/rod_mechanics/elasticRod.cpp
+        src/rod_mechanics/elasticStretchingForce.cpp
+        src/rod_mechanics/elasticBendingForce.cpp
+        src/rod_mechanics/elasticTwistingForce.cpp
+        src/rod_mechanics/externalGravityForce.cpp
+        src/rod_mechanics/dampingForce.cpp
+        src/rod_mechanics/inertialForce.cpp
+        src/rod_mechanics/timeStepper.cpp
+        src/rod_mechanics/symbolicEquations.cpp
+        src/rod_mechanics/collisionDetector.cpp
+        src/rod_mechanics/contactPotentialIMC.cpp
         )
 
 target_link_libraries(simDER

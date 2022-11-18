@@ -1,5 +1,8 @@
+#ifndef SYMBOLICEQUATIONS_H
+#define SYMBOLICEQUATIONS_H
+
 #include <symengine/llvm_double.h>
-#include "eigenIncludes.h"
+#include "../eigenIncludes.h"
 
 using namespace SymEngine;
 
@@ -83,3 +86,5 @@ private:
     RCP<const Basic> dt;
     RCP<const Basic> K2;
 };
+
+#endif

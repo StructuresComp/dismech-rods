@@ -1,7 +1,7 @@
 #ifndef ELASTICROD_H
 #define ELASTICROD_H
 
-#include "eigenIncludes.h"
+#include "../eigenIncludes.h"
 
 extern double* node_coordinates;
 extern double* velocities;

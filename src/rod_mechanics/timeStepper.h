@@ -2,7 +2,7 @@
 #define TIMESTEPPER_H
 
 #include "elasticRod.h"
-#include "eigenIncludes.h"
+#include "../eigenIncludes.h"
 #include "mkl_pardiso.h"
 #include "mkl_types.h"
 #include "mkl_spblas.h"

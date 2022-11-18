@@ -1,7 +1,7 @@
 #ifndef COLLISIONDETECTOR_H
 #define COLLISIONDETECTOR_H
 
-#include "eigenIncludes.h"
+#include "../eigenIncludes.h"
 #include "elasticRod.h"
 #include "contactEnums.h"
 

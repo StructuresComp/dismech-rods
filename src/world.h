@@ -4,21 +4,21 @@
 #include "eigenIncludes.h"
 
 // include elastic rod class
-#include "elasticRod.h"
+#include "rod_mechanics/elasticRod.h"
 
 // include force classes
-#include "elasticStretchingForce.h"
-#include "elasticBendingForce.h"
-#include "elasticTwistingForce.h"
-#include "externalGravityForce.h"
-#include "inertialForce.h"
+#include "rod_mechanics/elasticStretchingForce.h"
+#include "rod_mechanics/elasticBendingForce.h"
+#include "rod_mechanics/elasticTwistingForce.h"
+#include "rod_mechanics/inertialForce.h"
 
 // include external force
-#include "dampingForce.h"
-#include "contactPotentialIMC.h"
+#include "rod_mechanics/dampingForce.h"
+#include "rod_mechanics/externalGravityForce.h"
+#include "rod_mechanics/contactPotentialIMC.h"
 
 // include time stepper
-#include "timeStepper.h"
+#include "rod_mechanics/timeStepper.h"
 
 // include input file and option
 #include "initialization/setInput.h"

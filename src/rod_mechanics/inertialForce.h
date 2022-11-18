@@ -1,7 +1,7 @@
 #ifndef INERTIALFORCE_H
 #define INERTIALFORCE_H
 
-#include "eigenIncludes.h"
+#include "../eigenIncludes.h"
 #include "elasticRod.h"
 #include "timeStepper.h"
 
