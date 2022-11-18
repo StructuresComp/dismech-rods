@@ -9,7 +9,7 @@
 #include <map>
 
 #include "Option.h"
-#include "eigenIncludes.h"
+#include "../eigenIncludes.h"
 
 class setInput
 {

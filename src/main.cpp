@@ -18,7 +18,7 @@
 
 // Rod and stepper are included in the world
 #include "world.h"
-#include "setInput.h"
+#include "initialization/setInput.h"
 
 world myWorld;
 int NPTS;

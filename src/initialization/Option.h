@@ -1,7 +1,7 @@
 #ifndef OPTION_H
 #define OPTION_H
 
-#include "eigenIncludes.h"
+#include "../eigenIncludes.h"
 #include <string>
 
 class Option

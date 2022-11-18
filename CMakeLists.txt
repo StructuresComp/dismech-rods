@@ -34,10 +34,11 @@ add_executable(simDER
         src/dampingForce.cpp
         src/inertialForce.cpp
         src/timeStepper.cpp
-        src/setInput.cpp
         src/symbolicEquations.cpp
         src/collisionDetector.cpp
-        src/contactPotentialIMC.cpp)
+        src/contactPotentialIMC.cpp
+        src/initialization/setInput.cpp
+        )
 
 target_link_libraries(simDER
         ${SYMENGINE_LIBRARIES}

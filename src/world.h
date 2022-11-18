@@ -21,7 +21,7 @@
 #include "timeStepper.h"
 
 // include input file and option
-#include "setInput.h"
+#include "initialization/setInput.h"
 
 extern double* meta_data;
 
