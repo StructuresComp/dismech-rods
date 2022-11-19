@@ -1,8 +1,8 @@
 #include "timeStepper.h"
 
-timeStepper::timeStepper(elasticRod &m_rod)
+timeStepper::timeStepper(shared_ptr<elasticRod> m_rod)
 {
-    rod = &m_rod;
+    rod = m_rod;
     kl = 10; // lower diagonals
     ku = 10; // upper diagonals
     freeDOF = rod->uncons;

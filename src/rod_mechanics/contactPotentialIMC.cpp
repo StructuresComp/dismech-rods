@@ -1,11 +1,12 @@
 #include "contactPotentialIMC.h"
 
 
-contactPotentialIMC::contactPotentialIMC(elasticRod &m_rod, timeStepper &m_stepper, collisionDetector &m_col_detector,
+contactPotentialIMC::contactPotentialIMC(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper,
+                                         shared_ptr<collisionDetector> m_col_detector,
                                          double m_delta, double m_k_scaler, double m_mu, double m_nu) {
-    rod = &m_rod;
-    stepper = &m_stepper;
-    col_detector = &m_col_detector;
+    rod = m_rod;
+    stepper = m_stepper;
+    col_detector = m_col_detector;
 
     delta = m_delta;
     k_scaler = m_k_scaler;
@@ -35,7 +36,7 @@ contactPotentialIMC::contactPotentialIMC(elasticRod &m_rod, timeStepper &m_stepp
 
     friction_zero_matrix.setZero();
 
-    sym_eqs = new symbolicEquations();
+    sym_eqs = make_unique<symbolicEquations>();
     sym_eqs->generateContactPotentialPiecewiseFunctions();
     if (friction) {
         sym_eqs->generateFrictionJacobianPiecewiseFunctions();

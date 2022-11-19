@@ -89,26 +89,26 @@ private:
     VectorXd theta;
 
     // Rod
-    elasticRod *rod;
+    shared_ptr<elasticRod> rod = nullptr;
 
     // set up the time stepper
-    timeStepper *stepper;
+    shared_ptr<timeStepper> stepper = nullptr;
     double *totalForce;
     double *dx;
-    double *ls_nodes;
+
     double currentTime;
     int timeStep;
     double totalTime;
 
     // declare the forces
-    elasticStretchingForce *m_stretchForce;
-    elasticBendingForce *m_bendingForce;
-    elasticTwistingForce *m_twistingForce;
-    inertialForce *m_inertialForce;
-    externalGravityForce *m_gravityForce;
-    dampingForce *m_dampingForce;
-    collisionDetector *m_collisionDetector;
-    contactPotentialIMC *m_contactPotentialIMC;
+    unique_ptr<elasticStretchingForce> m_stretchForce = nullptr;
+    unique_ptr<elasticBendingForce> m_bendingForce = nullptr;
+    unique_ptr<elasticTwistingForce> m_twistingForce = nullptr;
+    unique_ptr<inertialForce> m_inertialForce = nullptr;
+    unique_ptr<externalGravityForce> m_gravityForce = nullptr;
+    unique_ptr<dampingForce> m_dampingForce = nullptr;
+    shared_ptr<collisionDetector> m_collisionDetector = nullptr;
+    unique_ptr<contactPotentialIMC> m_contactPotentialIMC = nullptr;
 
     int iter;
     int total_iters;

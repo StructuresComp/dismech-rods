@@ -1,9 +1,9 @@
 #include "elasticBendingForce.h"
 
-elasticBendingForce::elasticBendingForce(elasticRod &m_rod, timeStepper &m_stepper)
+elasticBendingForce::elasticBendingForce(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper)
 {
-    rod = &m_rod;
-    stepper = &m_stepper;
+    rod = m_rod;
+    stepper = m_stepper;
 
     Id3 << 1, 0, 0,
            0, 1, 0,

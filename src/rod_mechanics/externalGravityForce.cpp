@@ -1,9 +1,9 @@
 #include "externalGravityForce.h"
 
-externalGravityForce::externalGravityForce(elasticRod &m_rod, timeStepper &m_stepper, Vector3d m_gVector)
+externalGravityForce::externalGravityForce(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper, Vector3d m_gVector)
 {
-    rod = &m_rod;
-    stepper = &m_stepper;
+    rod = m_rod;
+    stepper = m_stepper;
     gVector = m_gVector;
     setGravity();
 }

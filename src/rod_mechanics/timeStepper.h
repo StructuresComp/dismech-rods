@@ -18,7 +18,7 @@
 class timeStepper
 {
 public:
-    timeStepper(elasticRod &m_rod);
+    timeStepper(shared_ptr<elasticRod> m_rod);
     ~timeStepper();
     double* getForce();
     double* getJacobian();
@@ -38,7 +38,7 @@ public:
     double *dx;
 
 private:
-    elasticRod *rod;
+    shared_ptr<elasticRod> rod = nullptr;
     int kl, ku, freeDOF;
 
     double *totalForce;

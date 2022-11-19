@@ -20,7 +20,7 @@
 #include "world.h"
 #include "initialization/setInput.h"
 
-world myWorld;
+shared_ptr<world> myWorld;
 int NPTS;
 ofstream pull_data;
 ofstream node_data;
@@ -57,28 +57,28 @@ void initGL()
 
 void simulate() {
     start = std::clock();
-    myWorld.updateTimeStep(); // update time step
+    myWorld->updateTimeStep(); // update time step
     finish = std::clock();
 
-    if (myWorld.pulling())
+    if (myWorld->pulling())
     {
         if (record_data) {
             // Record contact data
-            if (myWorld.CoutDataC(pull_data)) {
+            if (myWorld->CoutDataC(pull_data)) {
                 // Record time taken to complete one time step
                 time_taken = double(finish - start) / double(CLOCKS_PER_SEC);
                 pull_data << time_taken << endl;
             }
         }
 
-        if (record_nodes) myWorld.outputNodeCoordinates(node_data);
+        if (record_nodes) myWorld->outputNodeCoordinates(node_data);
     }
 }
 
 void display(void)
 {
     double currentTime  = 0;
-    while ( myWorld.simulationRunning() > 0)
+    while ( myWorld->simulationRunning() > 0)
     {
         //  Clear screen and Z-buffer
         glClear(GL_COLOR_BUFFER_BIT);
@@ -110,8 +110,8 @@ void display(void)
         glBegin(GL_LINES);
         for (int i=0; i < NPTS-1; i++)
         {
-            glVertex3f( myWorld.getScaledCoordinate(4*i), myWorld.getScaledCoordinate(4*i+1), myWorld.getScaledCoordinate(4*i+2));
-            glVertex3f( myWorld.getScaledCoordinate(4*(i+1)), myWorld.getScaledCoordinate(4*(i+1)+1), myWorld.getScaledCoordinate(4*(i+1)+2));
+            glVertex3f( myWorld->getScaledCoordinate(4*i), myWorld->getScaledCoordinate(4*i+1), myWorld->getScaledCoordinate(4*i+2));
+            glVertex3f( myWorld->getScaledCoordinate(4*(i+1)), myWorld->getScaledCoordinate(4*(i+1)+1), myWorld->getScaledCoordinate(4*(i+1)+2));
         }
         glEnd();
 
@@ -119,7 +119,7 @@ void display(void)
 
         simulate();
     }
-    myWorld.CloseFile(pull_data);
+    myWorld->CloseFile(pull_data);
     exit(0);
 }
 
@@ -131,18 +131,18 @@ int main(int argc,char *argv[])
     inputData.LoadOptions(argc,argv);
 
     //read input parameters from txt file and cmd
-    myWorld = world(inputData);
-    myWorld.setRodStepper();
+    myWorld = make_shared<world>(inputData);
+    myWorld->setRodStepper();
 
     record_data = inputData.GetBoolOpt("saveData");
     record_nodes = inputData.GetBoolOpt("recordNodes");
 
-    if (record_data) myWorld.OpenFile(pull_data, "pull_data");
-    if (record_nodes) myWorld.OpenFile(node_data, "node_data");
+    if (record_data) myWorld->OpenFile(pull_data, "pull_data");
+    if (record_nodes) myWorld->OpenFile(node_data, "node_data");
 
-    if (myWorld.isRender()) // if OpenGL visualization is on
+    if (myWorld->isRender()) // if OpenGL visualization is on
     {
-        NPTS = myWorld.numPoints();
+        NPTS = myWorld->numPoints();
 
         glutInit(&argc,argv);
         glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
@@ -156,15 +156,15 @@ int main(int argc,char *argv[])
     }
     else
     {
-        while ( myWorld.simulationRunning() > 0)
+        while ( myWorld->simulationRunning() > 0)
         {
             simulate();
         }
     }
 
     // Close (if necessary) the data file
-    if (record_data) myWorld.CloseFile(pull_data);
-    if (record_nodes) myWorld.CloseFile(node_data);
+    if (record_data) myWorld->CloseFile(pull_data);
+    if (record_nodes) myWorld->CloseFile(node_data);
     exit(0);
 }
 

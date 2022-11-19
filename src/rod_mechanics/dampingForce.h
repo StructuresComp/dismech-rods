@@ -8,14 +8,14 @@
 class dampingForce
 {
 public:
-    dampingForce(elasticRod &m_rod, timeStepper &m_stepper, double m_viscosity);
+    dampingForce(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper, double m_viscosity);
     ~dampingForce();
     void computeFd();
     void computeJd();
 
 private:
-    elasticRod *rod;
-    timeStepper *stepper;
+    shared_ptr<elasticRod> rod;
+    shared_ptr<timeStepper> stepper;
     double viscosity;
 
     Vector3d force;

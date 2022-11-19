@@ -1,9 +1,9 @@
 #include "elasticTwistingForce.h"
 
-elasticTwistingForce::elasticTwistingForce(elasticRod &m_rod, timeStepper &m_stepper)
+elasticTwistingForce::elasticTwistingForce(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper)
 {
-    rod = &m_rod;
-    stepper = &m_stepper;
+    rod = m_rod;
+    stepper = m_stepper;
 
     gradTwist = MatrixXd::Zero(rod->nv,11);
     deltam = VectorXd::Zero(rod->ne);

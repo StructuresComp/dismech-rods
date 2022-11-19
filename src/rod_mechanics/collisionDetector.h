@@ -9,7 +9,7 @@
 class collisionDetector
 {
 public:
-    collisionDetector(elasticRod &m_rod, double m_delta, double m_col_limit);
+    collisionDetector(shared_ptr<elasticRod> m_rod, double m_delta, double m_col_limit);
 
     bool constructCandidateSet(bool ignore_escape);
     void detectCollisions();
@@ -21,7 +21,7 @@ public:
     double min_dist;
 
 private:
-    elasticRod* rod;
+    shared_ptr<elasticRod> rod = nullptr;
     double delta;
     double col_limit;
     int num_edge_combos;

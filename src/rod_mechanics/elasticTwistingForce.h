@@ -8,15 +8,15 @@
 class elasticTwistingForce
 {
 public:
-    elasticTwistingForce(elasticRod &m_rod, timeStepper &m_stepper);
+    elasticTwistingForce(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper);
     ~elasticTwistingForce();
     void computeFt();
     void computeJt();
 
 private:
 
-    elasticRod *rod;
-    timeStepper *stepper;
+    shared_ptr<elasticRod> rod;
+    shared_ptr<timeStepper> stepper;
 
     int ci, ind, ind1, ind2;
     double norm_e,norm_f;

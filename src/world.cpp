@@ -116,8 +116,8 @@ void world::setRodStepper() {
     rodGeometry();
 
     // Create the rod
-    rod = new elasticRod(vertices, vertices, density, rodRadius, deltaTime,
-                         youngM, shearM, RodLength, theta);
+    rod = make_shared<elasticRod>(vertices, vertices, density, rodRadius, deltaTime,
+                                  youngM, shearM, RodLength, theta);
 
     // Find out the tolerance, e.g. how small is enough?
     characteristicForce = M_PI * pow(rodRadius, 4) / 4.0 * youngM / pow(RodLength, 2);
@@ -131,20 +131,19 @@ void world::setRodStepper() {
     // End of rod setup
 
     // set up the time stepper
-    stepper = new timeStepper(*rod);
+    stepper = make_shared<timeStepper>(rod);
     totalForce = stepper->getForce();
-    ls_nodes = new double[rod->ndof];
     dx = stepper->dx;
 
     // declare the forces
-    m_stretchForce = new elasticStretchingForce(*rod, *stepper);
-    m_bendingForce = new elasticBendingForce(*rod, *stepper);
-    m_twistingForce = new elasticTwistingForce(*rod, *stepper);
-    m_inertialForce = new inertialForce(*rod, *stepper);
-    m_gravityForce = new externalGravityForce(*rod, *stepper, gVector);
-    m_dampingForce = new dampingForce(*rod, *stepper, viscosity);
-    m_collisionDetector = new collisionDetector(*rod, delta, col_limit);
-    m_contactPotentialIMC = new contactPotentialIMC(*rod, *stepper, *m_collisionDetector, delta, k_scaler, mu, nu);
+    m_stretchForce = make_unique<elasticStretchingForce>(rod, stepper);
+    m_bendingForce = make_unique<elasticBendingForce>(rod, stepper);
+    m_twistingForce = make_unique<elasticTwistingForce>(rod, stepper);
+    m_inertialForce = make_unique<inertialForce>(rod, stepper);
+    m_gravityForce = make_unique<externalGravityForce>(rod, stepper, gVector);
+    m_dampingForce = make_unique<dampingForce>(rod, stepper, viscosity);
+    m_collisionDetector = make_shared<collisionDetector>(rod, delta, col_limit);
+    m_contactPotentialIMC = make_unique<contactPotentialIMC>(rod, stepper, m_collisionDetector, delta, k_scaler, mu, nu);
 
     // Allocate every thing to prepare for the first iteration
     rod->updateTimeStep();

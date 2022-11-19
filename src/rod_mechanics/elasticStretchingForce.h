@@ -8,14 +8,14 @@
 class elasticStretchingForce
 {
 public:
-    elasticStretchingForce(elasticRod &m_rod, timeStepper &m_stepper);
+    elasticStretchingForce(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper);
     ~elasticStretchingForce();
     void computeFs();
     void computeJs();
 
 private:
-    elasticRod *rod;
-    timeStepper *stepper;
+    shared_ptr<elasticRod> rod;
+    shared_ptr<timeStepper> stepper;
 
     double len, refLength;
     double epsX;

@@ -4,6 +4,7 @@
 #include <Eigen/Geometry>
 #include <Eigen/Sparse>
 
+#include <memory>
 #include <unistd.h>
 #include "math.h"
 #include <stdlib.h>

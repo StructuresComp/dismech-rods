@@ -1,10 +1,10 @@
 #include "elasticStretchingForce.h"
 #include <iostream>
 
-elasticStretchingForce::elasticStretchingForce(elasticRod &m_rod, timeStepper &m_stepper)
+elasticStretchingForce::elasticStretchingForce(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper)
 {
-    rod = &m_rod;
-    stepper = &m_stepper;
+    rod = m_rod;
+    stepper = m_stepper;
 
     f.setZero(3);
     Jss.setZero(7,7);

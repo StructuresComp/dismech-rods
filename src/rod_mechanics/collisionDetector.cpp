@@ -1,8 +1,8 @@
 #include "collisionDetector.h"
 
 
-collisionDetector::collisionDetector(elasticRod &m_rod, double m_delta, double m_col_limit) {
-    rod = &m_rod;
+collisionDetector::collisionDetector(shared_ptr<elasticRod> m_rod, double m_delta, double m_col_limit) {
+    rod = m_rod;
     delta = m_delta;
     col_limit = m_col_limit;
     scale = 1 / rod->rodRadius;

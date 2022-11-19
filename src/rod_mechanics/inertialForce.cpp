@@ -1,9 +1,9 @@
 #include "inertialForce.h"
 
-inertialForce::inertialForce(elasticRod &m_rod, timeStepper &m_stepper)
+inertialForce::inertialForce(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper)
 {
-    rod = &m_rod;
-    stepper = &m_stepper;
+    rod = m_rod;
+    stepper = m_stepper;
 }
 
 inertialForce::~inertialForce()

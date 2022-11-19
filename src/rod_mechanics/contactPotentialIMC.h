@@ -12,7 +12,8 @@
 class contactPotentialIMC
 {
 public:
-    contactPotentialIMC(elasticRod &m_rod, timeStepper &m_stepper, collisionDetector &m_col_detector,
+    contactPotentialIMC(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper,
+                        shared_ptr<collisionDetector> m_col_detector,
                         double m_delta, double m_k_scaler, double m_mu, double m_nu);
 
     void updateContactStiffness();
@@ -21,10 +22,10 @@ public:
     double contact_stiffness;
 
 private:
-    elasticRod* rod;
-    timeStepper* stepper;
-    collisionDetector* col_detector;
-    symbolicEquations* sym_eqs;
+    shared_ptr<elasticRod> rod = nullptr;
+    shared_ptr<timeStepper> stepper = nullptr;
+    shared_ptr<collisionDetector> col_detector = nullptr;
+    unique_ptr<symbolicEquations> sym_eqs = nullptr;
     double K1;
     double K2;
     double h2;

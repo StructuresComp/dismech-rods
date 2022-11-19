@@ -1,10 +1,10 @@
 #include "dampingForce.h"
 #include <iostream>
 
-dampingForce::dampingForce(elasticRod &m_rod, timeStepper &m_stepper, double m_viscosity)
+dampingForce::dampingForce(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper, double m_viscosity)
 {
-    rod = &m_rod;
-    stepper = &m_stepper;
+    rod = m_rod;
+    stepper = m_stepper;
     viscosity = m_viscosity;
 }
 
