@@ -39,7 +39,9 @@ add_executable(simDER
         src/rod_mechanics/collisionDetector.cpp
         src/rod_mechanics/contactPotentialIMC.cpp
         src/logging/worldLogger.cpp
-        src/global_const.h
+        src/simulation_environments/derSimulationEnvironment.cpp
+        src/simulation_environments/headlessDERSimulationEnvironment.cpp
+        src/simulation_environments/openglDERSimulationEnvironment.cpp
         )
 
 target_link_libraries(simDER

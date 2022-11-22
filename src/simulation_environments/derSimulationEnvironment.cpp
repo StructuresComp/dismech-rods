@@ -30,27 +30,30 @@ derSimulationEnvironment::~derSimulationEnvironment()
 // the static one does the heavy lifting
 void derSimulationEnvironment::cmdlineOutputHelper(shared_ptr<world> s_world_p, int s_cmdline_per)
 {
-    // If the current simulation time for the world is an interval of our period,
-    // output a little check-in message.
-    // verbosity should overrride here.
-    if(verbosity >= 1){
-        // note that cmdline_per is implicity in msec here.
-        if(s_world_p->getTimeStep() % s_cmdline_per == 0) {
-            // Like in the logger_p, output the current simulation time, plus the states.
-            std::cout << "Simulation time: " << s_world_p->getCurrentTime() << ", State: [";
-            // X, Y
-            Vector2d com = s_world_p->getRodP()->getCOM();
-            std::cout << com[0] << ", " << com[1] << ", ";
-            // Theta, see elasticRod for more info
-            std::cout << s_world_p->getRodP()->getRBRotation() << ", ";
-            // dot X, dot Y (velocities)
-            Vector2d com_vel = s_world_p->getRodP()->getVelocityCOM();
-            std::cout << com_vel[0] << ", " << com_vel[1] << ", ";
-            // and angular velocity too.
-            std::cout << s_world_p->getRodP()->getVelocityAngular();
-            std::cout << "]" << std::endl;
-        }
-    }
+
+    // TODO: comment this out for nwo until we know what we're actually logging
+
+//    // If the current simulation time for the world is an interval of our period,
+//    // output a little check-in message.
+//    // verbosity should overrride here.
+//    if(verbosity >= 1){
+//        // note that cmdline_per is implicity in msec here.
+//        if(s_world_p->getTimeStep() % s_cmdline_per == 0) {
+//            // Like in the logger_p, output the current simulation time, plus the states.
+//            std::cout << "Simulation time: " << s_world_p->getCurrentTime() << ", State: [";
+//            // X, Y
+//            Vector2d com = s_world_p->getRodP()->getCOM();
+//            std::cout << com[0] << ", " << com[1] << ", ";
+//            // Theta, see elasticRod for more info
+//            std::cout << s_world_p->getRodP()->getRBRotation() << ", ";
+//            // dot X, dot Y (velocities)
+//            Vector2d com_vel = s_world_p->getRodP()->getVelocityCOM();
+//            std::cout << com_vel[0] << ", " << com_vel[1] << ", ";
+//            // and angular velocity too.
+//            std::cout << s_world_p->getRodP()->getVelocityAngular();
+//            std::cout << "]" << std::endl;
+//        }
+//    }
 }
 
 void derSimulationEnvironment::cmdlineOutputHelper()

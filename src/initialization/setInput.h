@@ -69,6 +69,8 @@ private:
     string knot_config;
     int line_search;
     int verbosity;
+    int cmdline_per;
+    bool enable_logging;
 };
 
 #include "setInput.tcc"

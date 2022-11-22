@@ -19,16 +19,17 @@
 // Rod and stepper are included in the world
 #include "world.h"
 #include "logging/worldLogger.h"
+#include "simulation_environments/derSimulationEnvironment.h"
+#include "simulation_environments/headlessDERSimulationEnvironment.h"
+#include "simulation_environments/openglDERSimulationEnvironment.h"
 #include "initialization/setInput.h"
 #include "global_const.h"
 
-shared_ptr<world> myWorld;
-int NPTS;
+
+shared_ptr<world> my_world;
 ofstream pull_data;
 ofstream node_data;
 
-clock_t start;
-clock_t finish;
 double time_taken;
 
 bool record_data;
@@ -36,96 +37,6 @@ bool record_nodes;
 
 int verbosity;
 
-
-static void Key(unsigned char key, int x, int y)
-{
-    switch (key) // ESCAPE to quit
-    {
-        case 27:
-            exit(0);
-    }
-}
-
-
-/* Initialize OpenGL Graphics */
-void initGL() 
-{
-    glClearColor(0.7f, 0.7f, 0.7f, 0.0f);  // Set background color to black and opaque
-    glClearDepth(10.0f);                   // Set background depth to farthest
-    glShadeModel(GL_SMOOTH);               // Enable smooth shading
-
-    glLoadIdentity();
-    gluLookAt(0.05, 0.05, 0.1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
-    glPushMatrix();
-}
-
-void simulate() {
-    start = std::clock();
-    myWorld->updateTimeStep(); // update time step
-    finish = std::clock();
-
-    if (myWorld->pulling())
-    {
-        if (record_data) {
-            // Record contact data
-            if (myWorld->CoutDataC(pull_data)) {
-                // Record time taken to complete one time step
-                time_taken = double(finish - start) / double(CLOCKS_PER_SEC);
-                pull_data << time_taken << endl;
-            }
-        }
-
-        if (record_nodes) myWorld->outputNodeCoordinates(node_data);
-    }
-}
-
-void display(void)
-{
-    double currentTime  = 0;
-    while ( myWorld->simulationRunning() > 0)
-    {
-        //  Clear screen and Z-buffer
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // draw axis
-        double axisLen = 1;
-        glLineWidth(0.5);
-
-        glBegin(GL_LINES);
-
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex3f(0.0, 0.0, 0.0);
-        glVertex3f(axisLen, 0.0, 0.0);
-
-        glColor3f(0.0, 1.0, 0.0);
-        glVertex3f(0.0, 0.0, 0.0);
-        glVertex3f(0.0, axisLen, 0.0);
-
-        glColor3f(0.0, 0.0, 1.0);
-        glVertex3f(0.0, 0.0, 0.0);
-        glVertex3f(0.0, 0.0, axisLen);
-
-        glEnd();
-
-        //draw a line
-        glColor3f(0.1, 0.1, 0.1);
-        glLineWidth(4.0);
-
-        glBegin(GL_LINES);
-        for (int i=0; i < NPTS-1; i++)
-        {
-            glVertex3f( myWorld->getScaledCoordinate(4*i), myWorld->getScaledCoordinate(4*i+1), myWorld->getScaledCoordinate(4*i+2));
-            glVertex3f( myWorld->getScaledCoordinate(4*(i+1)), myWorld->getScaledCoordinate(4*(i+1)+1), myWorld->getScaledCoordinate(4*(i+1)+2));
-        }
-        glEnd();
-
-        glFlush();
-
-        simulate();
-    }
-    myWorld->CloseFile(pull_data);
-    exit(0);
-}
 
 int main(int argc,char *argv[])
 {
@@ -140,44 +51,40 @@ int main(int argc,char *argv[])
     inputData.LoadOptions(argv[1]);
     inputData.LoadOptions(argc,argv);
 
-    myWorld = make_shared<world>(inputData);
-    myWorld->setRodStepper();
+    my_world = make_shared<world>(inputData);
+    my_world->setRodStepper();
 
-    verbosity = inputData.GetIntOpt("debug-verbosity");
+    // Obtain parameters relevant to simulation loop
+    verbosity = inputData.GetIntOpt("debugVerbosity");
+    int cmdline_per = inputData.GetIntOpt("cmdlinePer");
+    bool enable_logging = inputData.GetBoolOpt("enableLogging");
 
     shared_ptr<worldLogger> logger = nullptr;
 
     record_data = inputData.GetBoolOpt("saveData");
     record_nodes = inputData.GetBoolOpt("recordNodes");
 
-    if (record_data) myWorld->OpenFile(pull_data, "pull_data");
-    if (record_nodes) myWorld->OpenFile(node_data, "node_data");
+    if (record_data) my_world->OpenFile(pull_data, "pull_data");
+    if (record_nodes) my_world->OpenFile(node_data, "node_data");
 
-    if (myWorld->isRender()) // if OpenGL visualization is on
-    {
-        NPTS = myWorld->numPoints();
 
-        glutInit(&argc,argv);
-        glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
-        glutInitWindowSize (1000, 1000);
-        glutInitWindowPosition (100, 100);
-        glutCreateWindow ("simDER");
-        initGL();
-        glutKeyboardFunc(Key);
-        glutDisplayFunc(display);
-        glutMainLoop();
+
+    unique_ptr<derSimulationEnvironment> env = nullptr;
+
+    // TODO: will have to add logging versions as well later
+    if (my_world->isRender()) {
+        env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, argc, argv);
     }
-    else
-    {
-        while ( myWorld->simulationRunning() > 0)
-        {
-            simulate();
-        }
+    else {
+        env = make_unique<headlessDERSimulationEnvironment>(my_world, cmdline_per);
     }
 
+    env->runSimulation();
+
+    // TODO: remove this type of logging
     // Close (if necessary) the data file
-    if (record_data) myWorld->CloseFile(pull_data);
-    if (record_nodes) myWorld->CloseFile(node_data);
+    if (record_data) my_world->CloseFile(pull_data);
+    if (record_nodes) my_world->CloseFile(node_data);
     exit(0);
 }
 
