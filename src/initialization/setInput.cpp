@@ -34,6 +34,7 @@ setInput::setInput()
     AddOption("recordNodes", "Option for whether or not to record nodes", record_nodes);
     AddOption("dataResolution", "Frequency of data recording", data_resolution);
     AddOption("lineSearch", "Flag for enabling line search", line_search);
+    AddOption("debug-verbosity", "Flag for enabling line search", verbosity);
 }
 
 setInput::~setInput()

@@ -49,6 +49,8 @@ public:
 
     void updateTimeStep_data();
 
+    int getTimeStep();
+
 
 private:
 

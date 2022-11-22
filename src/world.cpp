@@ -222,6 +222,11 @@ void world::updateCons() {
 }
 
 
+int world::getTimeStep() {
+    return timeStep;
+}
+
+
 void world::updateTimeStep() {
     bool solved = false;
 

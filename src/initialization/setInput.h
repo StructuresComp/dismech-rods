@@ -68,6 +68,7 @@ private:
     double nu;
     string knot_config;
     int line_search;
+    int verbosity;
 };
 
 #include "setInput.tcc"

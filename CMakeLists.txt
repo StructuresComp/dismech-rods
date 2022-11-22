@@ -38,6 +38,8 @@ add_executable(simDER
         src/rod_mechanics/symbolicEquations.cpp
         src/rod_mechanics/collisionDetector.cpp
         src/rod_mechanics/contactPotentialIMC.cpp
+        src/logging/worldLogger.cpp
+        src/global_const.h
         )
 
 target_link_libraries(simDER
@@ -50,4 +52,6 @@ target_link_libraries(simDER
         gfortran
         pthread
         rt
-        m)
+        m
+        stdc++fs
+)

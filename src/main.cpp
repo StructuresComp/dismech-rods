@@ -18,7 +18,9 @@
 
 // Rod and stepper are included in the world
 #include "world.h"
+#include "logging/worldLogger.h"
 #include "initialization/setInput.h"
+#include "global_const.h"
 
 shared_ptr<world> myWorld;
 int NPTS;
@@ -31,6 +33,8 @@ double time_taken;
 
 bool record_data;
 bool record_nodes;
+
+int verbosity;
 
 
 static void Key(unsigned char key, int x, int y)
@@ -125,14 +129,23 @@ void display(void)
 
 int main(int argc,char *argv[])
 {
+    // Load from the options file.
     setInput inputData;
     inputData = setInput();
+
+    if (argc < 2) {
+        throw runtime_error("Not enough arguments. Must pass an options file.");
+    }
+
     inputData.LoadOptions(argv[1]);
     inputData.LoadOptions(argc,argv);
 
-    //read input parameters from txt file and cmd
     myWorld = make_shared<world>(inputData);
     myWorld->setRodStepper();
+
+    verbosity = inputData.GetIntOpt("debug-verbosity");
+
+    shared_ptr<worldLogger> logger = nullptr;
 
     record_data = inputData.GetBoolOpt("saveData");
     record_nodes = inputData.GetBoolOpt("recordNodes");
