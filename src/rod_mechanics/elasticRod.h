@@ -26,11 +26,18 @@ class elasticRod
     void updateNewtonX(double *dx, double alpha=1.0);
     void updateGuess(double weight);
 
-    void addRod(Vector3d start, Vector3d end, int num_nodes);
-    void addRod(int limb_num, Vector3d end, int num_nodes);
+    void addInitRod(Vector3d start, Vector3d end, int num_nodes);
+    void addRod(int limb_num, int connection_node, Vector3d end, int num_nodes);
     void addJoint(int node1, int limb1, int node2, int limb2);
 
+    struct Limb {
+        int start;
+        int end;
+        int num_nodes;
+        double limb_length;
+    };
 
+    vector<Limb> limbs;
 
     // utility functions
     Vector3d getVertex(int k);
@@ -90,7 +97,10 @@ class elasticRod
     int num_bending;
     int num_twisting;
 
-    map<int, vector<int>> node_neighbors;
+    map<int, vector<int>> node_node_neighbors;
+    map<int, vector<int>> node_edge_neighbors;
+    map<int, array<int, 2>> edge_node_map;
+    map<int, int> edge_limb_map;
 
     // dof vector before time step
     VectorXd x0;

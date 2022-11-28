@@ -119,7 +119,9 @@ void world::setRodStepper() {
 //    rod = make_shared<elasticRod>(vertices, vertices, density, rodRadius, deltaTime,
 //                                  youngM, shearM, RodLength, theta);
     rod = make_shared<elasticRod>(density, rodRadius, deltaTime, youngM, shearM);
-    rod->addRod(Vector3d(0, 0, 0), Vector3d(0, 0.25, 0), 100);
+    rod->addInitRod(Vector3d(0, 0, 0), Vector3d(0, 0.25, 0), 100);
+
+    cout << "works until here" << endl;
 
     // Find out the tolerance, e.g. how small is enough?
     characteristicForce = M_PI * pow(rodRadius, 4) / 4.0 * youngM / pow(RodLength, 2);
