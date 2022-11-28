@@ -1,15 +1,15 @@
 #ifndef ELASTICROD_H
 #define ELASTICROD_H
 
+#include <map>
+#include <array>
 #include "../eigenIncludes.h"
-
-extern double* node_coordinates;
-extern double* velocities;
-extern double* velocity_derivatives;
 
 class elasticRod
 {
     public:
+    elasticRod(double m_rho, double m_rodRadius, double m_dt,
+    double m_youngM, double m_shearM);
     elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
     double m_rho, double m_rodRadius, double m_dt,
     double m_youngM, double m_shearM, double m_rodLength, VectorXd m_theta);
@@ -24,6 +24,12 @@ class elasticRod
     void prepareForIteration();
     void updateNewtonX(double *dx, double alpha=1.0);
     void updateGuess(double weight);
+
+    void addRod(Vector3d start, Vector3d end, int num_nodes);
+    void addRod(int limb_num, Vector3d end, int num_nodes);
+    void addJoint(int node1, int limb1, int node2, int limb2);
+
+
 
     // utility functions
     Vector3d getVertex(int k);
@@ -73,6 +79,11 @@ class elasticRod
     VectorXd refLen;
     // Voronoi lengths
     VectorXd voronoiLen;
+
+    vector<Vector3d> all_nodes;
+    vector<array<int,2>> stretching_nodes;
+    vector<array<int,3>> bending_nodes;
+    vector<array<int,2>> twisting_nodes;
 
     // dof vector before time step
     VectorXd x0;
@@ -126,7 +137,8 @@ class elasticRod
     VectorXd xold;
 
     private:
-    // no private variable is likely a bad idea. But let's roll with it for now
+
+//    map<
 };
 
 #endif

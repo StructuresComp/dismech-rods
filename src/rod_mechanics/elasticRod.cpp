@@ -1,5 +1,18 @@
 #include "elasticRod.h"
 
+elasticRod::elasticRod(double m_rho, double m_rodRadius, double m_dt, double m_youngM, double m_shearM)
+{
+    ndof = 0;
+    nv = 0;
+    ne = 0;
+    dt = m_dt;
+    youngM = m_youngM;
+    shearM = m_shearM;
+    rho = m_rho;
+    rodRadius = m_rodRadius;
+    rodLength = 0.25;
+}
+
 elasticRod::elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
     double m_rho, double m_rodRadius, double m_dt,
     double m_youngM, double m_shearM, double m_rodLength, VectorXd m_theta)
@@ -17,38 +30,32 @@ elasticRod::elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
     rodRadius = m_rodRadius;
     theta = m_theta;
 
-    isConstrained = new int[ndof];
-    for (int i=0; i < ndof; i++)
-        isConstrained[i] = 0;
+}
 
+
+void elasticRod::setup()
+{
     x = VectorXd::Zero(ndof);
     for (int i=0; i < nv; i++)
     {
-        x(4*i) = nodes(i, 0);
-        x(4*i + 1) = nodes(i, 1);
-        x(4*i + 2) = nodes(i, 2);
+        x(4*i) = all_nodes[i](0);
+        x(4*i + 1) = all_nodes[i](1);
+        x(4*i + 2) = all_nodes[i](2);
         if (i < nv - 1)
         {
-            x(4*i + 3) = theta(i);
+            x(4*i + 3) = 0;
         }
     }
     x0 = x;
 
     u = VectorXd::Zero(ndof);
-}
 
-void elasticRod::setup()
-{	
-    // compute the number of constrained and unconstrained dof
+    // We will start off with an unconstrained system
     ncons = 0;
+    uncons = ndof;
+    isConstrained = new int [ndof];
     for (int i=0; i < ndof; i++)
-    {
-        if (isConstrained[i] > 0)
-        {
-            ncons ++;
-        }
-    }
-    uncons = ndof - ncons;
+        isConstrained[i] = 0;
 
     // Setup the map from free dofs to all dof
     unconstrainedMap = new int[uncons]; // maps xUncons to x
@@ -98,10 +105,18 @@ void elasticRod::setup()
     d2_old = d2;
     tangent_old = tangent;
     refTwist_old = refTwist;
-
-    return;
 }
 
+void elasticRod::addRod(Vector3d start, Vector3d end, int num_nodes) {
+    ndof += num_nodes * 4 - 1;
+    nv += num_nodes;
+    ne += num_nodes - 1;
+    Vector3d dir = (end - start) / (num_nodes - 1);
+    Vector3d curr = start;
+    for (int i = 0; i < num_nodes; i++) {
+        all_nodes.push_back(start + i * dir);
+    }
+}
 
 void elasticRod::updateMap()
 {

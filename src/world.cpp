@@ -97,7 +97,7 @@ bool world::CoutDataC(ofstream &outfile) {
     f = temp.norm();
     f1 = temp1.norm();
 
-    double end_to_end_length = (rod->getVertex(0) - rod->getVertex(numVertices - 1)).norm();
+    double end_to_end_length = (rod->getVertex(0) - rod->getVertex(rod->nv-1)).norm();
 
     // 2piR method. WARNING: not the most accurate method for getting knot loop radius
     double loop_circumference = RodLength - end_to_end_length;
@@ -116,15 +116,14 @@ void world::setRodStepper() {
     rodGeometry();
 
     // Create the rod
-    rod = make_shared<elasticRod>(vertices, vertices, density, rodRadius, deltaTime,
-                                  youngM, shearM, RodLength, theta);
+//    rod = make_shared<elasticRod>(vertices, vertices, density, rodRadius, deltaTime,
+//                                  youngM, shearM, RodLength, theta);
+    rod = make_shared<elasticRod>(density, rodRadius, deltaTime, youngM, shearM);
+    rod->addRod(Vector3d(0, 0, 0), Vector3d(0, 0.25, 0), 100);
 
     // Find out the tolerance, e.g. how small is enough?
     characteristicForce = M_PI * pow(rodRadius, 4) / 4.0 * youngM / pow(RodLength, 2);
     forceTol = tol * characteristicForce;
-
-    // Set up boundary condition
-    rodBoundaryCondition();
 
     // setup the rod so that all the relevant variables are populated
     rod->setup();
@@ -134,6 +133,11 @@ void world::setRodStepper() {
     stepper = make_shared<timeStepper>(rod);
     totalForce = stepper->getForce();
     dx = stepper->dx;
+
+    // Set up boundary condition
+    rodBoundaryCondition();
+    updateCons();
+
 
     // declare the forces
     m_stretchForce = make_unique<elasticStretchingForce>(rod, stepper);
@@ -189,9 +193,6 @@ void world::rodBoundaryCondition() {
     rod->setVertexBoundaryCondition(rod->getVertex(0), 0);
     rod->setVertexBoundaryCondition(rod->getVertex(1), 1);
     rod->setThetaBoundaryCondition(0.0, 0);
-    rod->setVertexBoundaryCondition(rod->getVertex(numVertices - 1), numVertices - 1);
-    rod->setVertexBoundaryCondition(rod->getVertex(numVertices - 2), numVertices - 2);
-    rod->setThetaBoundaryCondition(0.0, numVertices - 2);
 }
 
 
@@ -219,6 +220,7 @@ void world::updateCons() {
     rod->updateMap();
     stepper->update();
     totalForce = stepper->getForce();
+    dx = stepper->dx;
 }
 
 
@@ -230,7 +232,7 @@ int world::getTimeStep() {
 void world::updateTimeStep() {
     bool solved = false;
 
-    updateBoundary();
+//    updateBoundary();
 
     newtonMethod(solved);
 

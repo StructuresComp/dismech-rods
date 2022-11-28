@@ -71,7 +71,23 @@ void timeStepper::setZero()
 
 void timeStepper::update()
 {
-    ;
+    freeDOF = rod->uncons;
+    ldb = freeDOF;
+    delete [] totalForce;
+    delete [] jacobian;
+    delete [] dx;
+    delete [] ipiv;
+
+    totalForce = new double[freeDOF];
+    jacobianLen = (2 * kl + ku + 1) * freeDOF;
+    jacobian = new double [jacobianLen];
+    dx = new double[freeDOF];
+    ipiv = new int[freeDOF];
+    DX = VectorXd::Zero(freeDOF);
+    Force = VectorXd::Zero(freeDOF);
+    Jacobian = MatrixXd::Zero(freeDOF,freeDOF);
+    force = VectorXd::Zero(rod->ndof);
+    setZero();
 }
 
 void timeStepper::pardisoSolver()
