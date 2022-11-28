@@ -3,6 +3,7 @@
 
 #include <map>
 #include <array>
+#include <cassert>
 #include "../eigenIncludes.h"
 
 class elasticRod
@@ -84,6 +85,12 @@ class elasticRod
     vector<array<int,2>> stretching_nodes;
     vector<array<int,3>> bending_nodes;
     vector<array<int,2>> twisting_nodes;
+
+    int num_stretching;
+    int num_bending;
+    int num_twisting;
+
+    map<int, vector<int>> node_neighbors;
 
     // dof vector before time step
     VectorXd x0;

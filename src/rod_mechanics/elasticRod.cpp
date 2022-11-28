@@ -35,6 +35,10 @@ elasticRod::elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
 
 void elasticRod::setup()
 {
+    num_stretching = stretching_nodes.size();
+    num_bending = bending_nodes.size();
+    num_twisting = twisting_nodes.size();
+
     x = VectorXd::Zero(ndof);
     for (int i=0; i < nv; i++)
     {
@@ -108,14 +112,33 @@ void elasticRod::setup()
 }
 
 void elasticRod::addRod(Vector3d start, Vector3d end, int num_nodes) {
+    assert((ndof == 0, "Initial rod was added when number of DOFs was not 0."));
     ndof += num_nodes * 4 - 1;
     nv += num_nodes;
     ne += num_nodes - 1;
     Vector3d dir = (end - start) / (num_nodes - 1);
     Vector3d curr = start;
     for (int i = 0; i < num_nodes; i++) {
-        all_nodes.push_back(start + i * dir);
+        all_nodes.emplace_back(start + i * dir);
     }
+
+    node_neighbors[0].push_back(1);
+    node_neighbors[num_nodes-1].push_back(num_nodes-2);
+    for (int i = 1; i < num_nodes-1; i++) {
+        node_neighbors[i].push_back(i-1);
+        node_neighbors[i].push_back(i+1);
+    }
+
+    for (int i = 0; i < num_nodes-1; i++) {
+        array<int, 2> node_pair = {i, i+1};
+        stretching_nodes.push_back(node_pair);
+        twisting_nodes.push_back(node_pair);
+    }
+    for (int i = 1; i < num_nodes-1; i++) {
+        array<int, 3> node_triplet = {i-1, i, i+1};
+        bending_nodes.push_back(node_triplet);
+    }
+
 }
 
 void elasticRod::updateMap()
@@ -210,14 +233,16 @@ void elasticRod::setReferenceLength()
 {
     refLen = VectorXd(ne);
     Vector3d dx;
-    for (int i=0;i<ne;i++)
+    for (int i = 0; i < ne; i++)
     {
+        // TODO: add rodLengths for each limb?
         refLen(i) = rodLength / ne;
     }
 
     voronoiLen = VectorXd(nv);
-    for (int i=0;i<nv;i++)
+    for (int i =0 ; i < nv; i++)
     {
+        // TODO: WILL NEED UPDATE, ASSUMES ONE ROD
         if (i==0)
             voronoiLen(i)=0.5*refLen(i);
         else if (i==nv-1)
@@ -273,6 +298,7 @@ void elasticRod::computeTangent(const VectorXd &xLocal, MatrixXd &tangentLocal)
 {
     for (int i=0; i<ne; i++)
     {
+        // TODO: need to use stretching_nodes here later
         tangentLocal.row(i) = xLocal.segment(4*(i+1),3) - xLocal.segment(4*i,3);
         tangentLocal.row(i) = tangentLocal.row(i)/(tangentLocal.row(i)).norm();
     }
