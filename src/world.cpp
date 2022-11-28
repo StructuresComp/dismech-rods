@@ -196,26 +196,6 @@ void world::rodBoundaryCondition() {
 }
 
 
-void world::updateBoundary() {
-    Vector3d u;
-    u(0) = 0;
-    u(1) = pull_speed;
-    u(2) = 0;
-
-    if (currentTime > wait_time && currentTime <= wait_time + pull_time) {   // Pulling
-        rod->setVertexBoundaryCondition(rod->getVertex(0) - u * deltaTime, 0);
-        rod->setVertexBoundaryCondition(rod->getVertex(1) - u * deltaTime, 1);
-        rod->setVertexBoundaryCondition(rod->getVertex(numVertices - 1) + u * deltaTime, numVertices - 1);
-        rod->setVertexBoundaryCondition(rod->getVertex(numVertices - 2) + u * deltaTime, numVertices - 2);
-    } else if (currentTime > wait_time + pull_time &&
-               currentTime <= wait_time + pull_time + release_time) {   // Loosening
-        rod->setVertexBoundaryCondition(rod->getVertex(0) + u * deltaTime, 0);
-        rod->setVertexBoundaryCondition(rod->getVertex(1) + u * deltaTime, 1);
-        rod->setVertexBoundaryCondition(rod->getVertex(numVertices - 1) - u * deltaTime, numVertices - 1);
-        rod->setVertexBoundaryCondition(rod->getVertex(numVertices - 2) - u * deltaTime, numVertices - 2);
-    }
-}
-
 void world::updateCons() {
     rod->updateMap();
     stepper->update();
@@ -231,8 +211,6 @@ int world::getTimeStep() {
 
 void world::updateTimeStep() {
     bool solved = false;
-
-//    updateBoundary();
 
     newtonMethod(solved);
 
