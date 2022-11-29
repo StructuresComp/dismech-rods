@@ -118,41 +118,41 @@ void world::setRodStepper() {
     // Create the rod
 //    rod = make_shared<elasticRod>(vertices, vertices, density, rodRadius, deltaTime,
 //                                  youngM, shearM, RodLength, theta);
-    rod = make_shared<elasticRod>(density, rodRadius, deltaTime, youngM, shearM);
-    rod->addInitRod(Vector3d(0, 0, 0), Vector3d(0, 0.25, 0), 100);
 
-    cout << "works until here" << endl;
+//    rod = make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.25, 0), 100, density, rodRadius, deltaTime, youngM, shearM);
+    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.15, 0), 50,
+                                            density, rodRadius, deltaTime, youngM, shearM));
+    limbs.push_back(make_shared<elasticRod>(Vector3d(0.04, 0, 0), Vector3d(0.04, 0.15, 0), 50,
+                                            density, rodRadius, deltaTime, youngM, shearM));
+//    rod->addInitRod(Vector3d(0, 0, 0), Vector3d(0, 0.25, 0), 100);
 
     // Find out the tolerance, e.g. how small is enough?
     characteristicForce = M_PI * pow(rodRadius, 4) / 4.0 * youngM / pow(RodLength, 2);
     forceTol = tol * characteristicForce;
 
-    // setup the rod so that all the relevant variables are populated
-    rod->setup();
-    // End of rod setup
-
     // set up the time stepper
-    stepper = make_shared<timeStepper>(rod);
+    stepper = make_shared<timeStepper>(limbs);
     totalForce = stepper->getForce();
     dx = stepper->dx;
 
     // Set up boundary condition
-    rodBoundaryCondition();
+    lockEdge(0, 0);
+    lockEdge(0, 1);
     updateCons();
 
-
     // declare the forces
-    m_stretchForce = make_unique<elasticStretchingForce>(rod, stepper);
-    m_bendingForce = make_unique<elasticBendingForce>(rod, stepper);
-    m_twistingForce = make_unique<elasticTwistingForce>(rod, stepper);
-    m_inertialForce = make_unique<inertialForce>(rod, stepper);
-    m_gravityForce = make_unique<externalGravityForce>(rod, stepper, gVector);
-    m_dampingForce = make_unique<dampingForce>(rod, stepper, viscosity);
-    m_collisionDetector = make_shared<collisionDetector>(rod, delta, col_limit);
-    m_contactPotentialIMC = make_unique<contactPotentialIMC>(rod, stepper, m_collisionDetector, delta, k_scaler, mu, nu);
+    m_stretchForce = make_unique<elasticStretchingForce>(limbs, stepper);
+    m_bendingForce = make_unique<elasticBendingForce>(limbs, stepper);
+    m_twistingForce = make_unique<elasticTwistingForce>(limbs, stepper);
+    m_inertialForce = make_unique<inertialForce>(limbs, stepper);
+    m_gravityForce = make_unique<externalGravityForce>(limbs, stepper, gVector);
+    m_dampingForce = make_unique<dampingForce>(limbs, stepper, viscosity);
+//    m_collisionDetector = make_shared<collisionDetector>(rod, delta, col_limit);
+//    m_contactPotentialIMC = make_unique<contactPotentialIMC>(rod, stepper, m_collisionDetector, delta, k_scaler, mu, nu);
 
     // Allocate every thing to prepare for the first iteration
-    rod->updateTimeStep();
+    for (const auto& limb : limbs) limb->updateTimeStep();
+//    rod->updateTimeStep();
 
     currentTime = 0.0;
     timeStep = 0;
@@ -191,15 +191,21 @@ void world::rodGeometry() {
 
 
 void world::rodBoundaryCondition() {
-    // Knot tie boundary conditions
-    rod->setVertexBoundaryCondition(rod->getVertex(0), 0);
-    rod->setVertexBoundaryCondition(rod->getVertex(1), 1);
-    rod->setThetaBoundaryCondition(0.0, 0);
+    limbs[0]->setVertexBoundaryCondition(limbs[0]->getVertex(0), 0);
+    limbs[0]->setVertexBoundaryCondition(limbs[0]->getVertex(1), 1);
+    limbs[0]->setThetaBoundaryCondition(0.0, 0);
+}
+
+
+void world::lockEdge(int edge_num, int limb_idx) {
+    limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(0), 0);
+    limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(1), 1);
+    limbs[limb_idx]->setThetaBoundaryCondition(0.0, 0);
 }
 
 
 void world::updateCons() {
-    rod->updateMap();
+    for (const auto& limb : limbs) limb->updateMap();
     stepper->update();
     totalForce = stepper->getForce();
     dx = stepper->dx;
@@ -217,9 +223,10 @@ void world::updateTimeStep() {
     newtonMethod(solved);
 
     // calculate pull forces;
-    calculateForce();
+//    calculateForce();
 
-    rod->updateTimeStep();
+    for (const auto& limb : limbs) limb->updateTimeStep();
+//    rod->updateTimeStep();
 
     printSimData();
 
@@ -264,10 +271,10 @@ void world::newtonDamper() {
 
 void world::printSimData() {
     printf("time: %.4f | iters: %i | con: %i | min_dist: %.6f | k: %.3e | fric: %.1f\n",
-           currentTime, iter,
-           m_collisionDetector->num_collisions,
-           m_collisionDetector->min_dist,
-           m_contactPotentialIMC->contact_stiffness,
+           currentTime, iter, 0, 0.0, 0.0,
+//           m_collisionDetector->num_collisions,
+//           m_collisionDetector->min_dist,
+//           m_contactPotentialIMC->contact_stiffness,
            mu);
 }
 
@@ -280,14 +287,17 @@ void world::newtonMethod(bool &solved) {
     double curr_weight = 1.0;
     int counter = 0;
     while (true) {
-        rod->updateGuess(curr_weight);
-        if (m_collisionDetector->constructCandidateSet(counter > 10)) break;
+        for (const auto& limb : limbs) limb->updateGuess(curr_weight);
+//        rod->updateGuess(curr_weight);
+//        if (m_collisionDetector->constructCandidateSet(counter > 10)) break;
+        break;
         curr_weight /= 2;
         counter++;
     }
 
     while (solved == false) {
-        rod->prepareForIteration();
+        for (const auto& limb : limbs) limb->prepareForIteration();
+//        rod->prepareForIteration();
 
         stepper->setZero();
 
@@ -310,16 +320,16 @@ void world::newtonMethod(bool &solved) {
         m_dampingForce->computeFd();
         m_dampingForce->computeJd();
 
-        m_collisionDetector->detectCollisions();
-        if (iter == 0) {
-            m_contactPotentialIMC->updateContactStiffness();
-        }
+//        m_collisionDetector->detectCollisions();
+//        if (iter == 0) {
+//            m_contactPotentialIMC->updateContactStiffness();
+//        }
 
-        m_contactPotentialIMC->computeFcJc();
+//        m_contactPotentialIMC->computeFcJc();
 
         // Compute norm of the force equations.
         normf = 0;
-        for (int i = 0; i < rod->uncons; i++) {
+        for (int i = 0; i < stepper->freeDOF; i++) {
             normf += totalForce[i] * totalForce[i];
         }
         normf = sqrt(normf);
@@ -338,12 +348,18 @@ void world::newtonMethod(bool &solved) {
 
         if (solved == false) {
             stepper->integrator(); // Solve equations of motion
-            if (line_search) {
-                lineSearch();
-            } else {
-                newtonDamper();
+//            if (line_search) {
+//                lineSearch();
+//            } else {
+//                newtonDamper();
+//            }
+
+            int limb_idx = 0;
+            for (const auto& limb : limbs) {
+                limb->updateNewtonX(dx, stepper->offsets[limb_idx], alpha);
+                limb_idx++;
             }
-            rod->updateNewtonX(dx, alpha); // new q = old q + Delta q
+//            rod->updateNewtonX(dx, alpha); // new q = old q + Delta q
             iter++;
             if (pulling())
                 total_iters++;
@@ -366,12 +382,14 @@ int world::simulationRunning() {
     }
 }
 
-int world::numPoints() {
-    return rod->nv;
-}
+//int world::numPoints() {
+//    return rod->nv;
+//}
 
-double world::getScaledCoordinate(int i) {
-    return rod->x[i] / (0.20 * RodLength);
+double world::getScaledCoordinate(int i, int limb_idx) {
+    return limbs[limb_idx]->x[i] / 0.2;
+//    return limbs[limb_idx]->x[i] / (0.20 * RodLength);
+//    return rod->x[i] / (0.20 * RodLength);
 }
 
 double world::getCurrentTime() {
@@ -380,7 +398,10 @@ double world::getCurrentTime() {
 
 void world::lineSearch() {
     // store current x
-    rod->xold = rod->x;
+    for (auto& limb : limbs) {
+        limb->xold = limb->x;
+    }
+//    rod->xold = rod->x;
     // Initialize an interval for optimal learning rate alpha
     double amax = 2;
     double amin = 1e-3;
@@ -398,10 +419,17 @@ void world::lineSearch() {
     double m1 = 0.1;
     int iter_l = 0;
     while (!success) {
-        rod->x = rod->xold;
-        rod->updateNewtonX(dx, a);
+        int limb_idx = 0;
+        for (auto& limb : limbs) {
+            limb->x = limb->xold;
+            limb->updateNewtonX(dx, stepper->offsets[limb_idx], alpha);
+            limb_idx++;
+        }
+//        rod->x = rod->xold;
+//        rod->updateNewtonX(dx, a);
 
-        rod->prepareForIteration();
+        for (const auto& limb : limbs) limb->prepareForIteration();
+//        rod->prepareForIteration();
 
         stepper->setZero();
 
@@ -412,8 +440,8 @@ void world::lineSearch() {
         m_twistingForce->computeFt();
         m_gravityForce->computeFg();
         m_dampingForce->computeFd();
-        m_collisionDetector->detectCollisions();
-        m_contactPotentialIMC->computeFc();
+//        m_collisionDetector->detectCollisions();
+//        m_contactPotentialIMC->computeFc();
 
         double q = 0.5 * pow(stepper->Force.norm(), 2);
 
@@ -445,7 +473,10 @@ void world::lineSearch() {
         }
         iter_l++;
     }
-    rod->x = rod->xold;
+    for (auto& limb : limbs) {
+        limb->x = limb->xold;
+    }
+//    rod->x = rod->xold;
 
     alpha = a;
 }

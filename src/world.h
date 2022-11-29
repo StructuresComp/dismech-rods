@@ -15,15 +15,13 @@
 // include external force
 #include "rod_mechanics/dampingForce.h"
 #include "rod_mechanics/externalGravityForce.h"
-#include "rod_mechanics/contactPotentialIMC.h"
+//#include "rod_mechanics/contactPotentialIMC.h"
 
 // include time stepper
 #include "rod_mechanics/timeStepper.h"
 
 // include input file and option
 #include "initialization/setInput.h"
-
-extern double* meta_data;
 
 class world
 {
@@ -35,7 +33,7 @@ public:
     void updateTimeStep();
     int simulationRunning();
     int numPoints();
-    double getScaledCoordinate(int i);
+    double getScaledCoordinate(int i, int limb_idx);
     double getCurrentTime();
 
     bool pulling();
@@ -50,6 +48,8 @@ public:
     void updateTimeStep_data();
 
     int getTimeStep();
+
+    vector<shared_ptr<elasticRod>> limbs;
 
 
 private:
@@ -109,14 +109,15 @@ private:
     unique_ptr<inertialForce> m_inertialForce = nullptr;
     unique_ptr<externalGravityForce> m_gravityForce = nullptr;
     unique_ptr<dampingForce> m_dampingForce = nullptr;
-    shared_ptr<collisionDetector> m_collisionDetector = nullptr;
-    unique_ptr<contactPotentialIMC> m_contactPotentialIMC = nullptr;
+//    shared_ptr<collisionDetector> m_collisionDetector = nullptr;
+//    unique_ptr<contactPotentialIMC> m_contactPotentialIMC = nullptr;
 
     int iter;
     int total_iters;
 
     void rodGeometry();
     void rodBoundaryCondition();
+    void lockEdge(int edge_num, int limb_idx);
 
     void updateBoundary();
 

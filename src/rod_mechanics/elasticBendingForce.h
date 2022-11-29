@@ -8,13 +8,14 @@
 class elasticBendingForce
 {
 public:
-    elasticBendingForce(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper);
+    elasticBendingForce(vector<shared_ptr<elasticRod>> m_limbs, shared_ptr<timeStepper> m_stepper);
     ~elasticBendingForce();
     void computeFb();
     void computeJb();
 
 private:
 
+    vector<shared_ptr<elasticRod>> limbs;
     shared_ptr<elasticRod> rod;
     shared_ptr<timeStepper> stepper;
 
@@ -42,14 +43,17 @@ private:
     VectorXd kappa22;
     VectorXd f;
 
-    MatrixXd gradKappa1;
-    MatrixXd gradKappa2;
+    vector<shared_ptr<MatrixXd>> gradKappa1s;
+    vector<shared_ptr<MatrixXd>> gradKappa2s;
+
+    shared_ptr<MatrixXd> gradKappa1;
+    shared_ptr<MatrixXd> gradKappa2;
     MatrixXd relevantPart;
     MatrixXd kappa;
     MatrixXd DDkappa1, DDkappa2;
     MatrixXd Jbb;
 
-    Matrix2d EIMat;
+    vector<Matrix2d> EIMatrices;
     Matrix3d Id3;
     Matrix3d tt_o_tt;
     Matrix3d tilde_d1_3d, tilde_d2_3d;

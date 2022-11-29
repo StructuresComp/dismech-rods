@@ -8,12 +8,13 @@
 class inertialForce
 {
 public:
-    inertialForce(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper);
+    inertialForce(vector<shared_ptr<elasticRod>> m_limbs, shared_ptr<timeStepper> m_stepper);
     ~inertialForce();
     void computeFi();
     void computeJi();
 
 private:
+    vector<shared_ptr<elasticRod>> limbs;
     shared_ptr<elasticRod> rod;
     shared_ptr<timeStepper> stepper;
 

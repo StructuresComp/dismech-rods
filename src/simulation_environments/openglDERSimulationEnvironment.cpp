@@ -113,10 +113,18 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void)
 
 		// Draw the rod
 		glBegin(GL_LINES);
-        for (int i=0; i < openglWorld_p->numPoints()-1; i++)
-        {
-            glVertex3f( openglWorld_p->getScaledCoordinate(4*i), openglWorld_p->getScaledCoordinate(4*i+1), openglWorld_p->getScaledCoordinate(4*i+2));
-            glVertex3f( openglWorld_p->getScaledCoordinate(4*(i+1)), openglWorld_p->getScaledCoordinate(4*(i+1)+1), openglWorld_p->getScaledCoordinate(4*(i+1)+2));
+        int limb_idx = 0;
+        for (const auto& limb : openglWorld_p->limbs) {
+            for (int i=0; i < limb->ne; i++)
+            {
+                glVertex3f( openglWorld_p->getScaledCoordinate(4*i, limb_idx),
+                            openglWorld_p->getScaledCoordinate(4*i+1, limb_idx),
+                            openglWorld_p->getScaledCoordinate(4*i+2, limb_idx));
+                glVertex3f( openglWorld_p->getScaledCoordinate(4*(i+1), limb_idx),
+                            openglWorld_p->getScaledCoordinate(4*(i+1)+1, limb_idx),
+                            openglWorld_p->getScaledCoordinate(4*(i+1)+2, limb_idx));
+            }
+            limb_idx++;
         }
 
 //		double wallAngle = 6.0 * 3.141592654 / 180.0;

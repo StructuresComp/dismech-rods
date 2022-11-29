@@ -1,8 +1,8 @@
 #include "externalGravityForce.h"
 
-externalGravityForce::externalGravityForce(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper, Vector3d m_gVector)
+externalGravityForce::externalGravityForce(vector<shared_ptr<elasticRod>> m_limbs, shared_ptr<timeStepper> m_stepper, Vector3d m_gVector)
 {
-    rod = m_rod;
+    limbs = m_limbs;
     stepper = m_stepper;
     gVector = m_gVector;
     setGravity();
@@ -15,9 +15,14 @@ externalGravityForce::~externalGravityForce()
 
 void externalGravityForce::computeFg()
 {
-    for (int i=0; i < rod->ndof; i++)
-    {
-        stepper->addForce(i, -massGravity[i]); // subtracting gravity force
+    int limb_idx = 0;
+    for (const auto& limb : limbs) {
+        massGravity = massGravities[limb_idx];
+        for (int i = 0; i < limb->ndof; i++)
+        {
+            stepper->addForce(i, -massGravity[i], limb_idx); // subtracting gravity force
+        }
+        limb_idx++;
     }
 }
 
@@ -28,13 +33,16 @@ void externalGravityForce::computeJg()
 
 void externalGravityForce::setGravity()
 {
-    massGravity = VectorXd::Zero(rod->ndof);
-    for (int i=0; i < rod->nv; i++)
-    {
-        for (int k=0; k < 3; k++)
+    for (const auto& limb : limbs) {
+        massGravity = VectorXd::Zero(limb->ndof);
+        for (int i = 0; i < limb->nv; i++)
         {
-            int ind = 4*i + k;
-            massGravity[ind] = gVector[k] * rod->massArray[ind];
+            for (int k = 0; k < 3; k++)
+            {
+                int ind = 4*i + k;
+                massGravity[ind] = gVector[k] * limb->massArray[ind];
+            }
         }
+        massGravities.push_back(massGravity);
     }
 }

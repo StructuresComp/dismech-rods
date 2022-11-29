@@ -9,8 +9,9 @@
 class elasticRod
 {
     public:
-    elasticRod(double m_rho, double m_rodRadius, double m_dt,
-    double m_youngM, double m_shearM);
+    elasticRod(Vector3d start, Vector3d end, int num_nodes,
+               double m_rho, double m_rodRadius, double m_dt,
+                double m_youngM, double m_shearM);
     elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
     double m_rho, double m_rodRadius, double m_dt,
     double m_youngM, double m_shearM, double m_rodLength, VectorXd m_theta);
@@ -23,7 +24,7 @@ class elasticRod
     void updateTimeStep();
     void computeElasticStiffness();
     void prepareForIteration();
-    void updateNewtonX(double *dx, double alpha=1.0);
+    void updateNewtonX(double *dx, int offset, double alpha=1.0);
     void updateGuess(double weight);
 
     void addInitRod(Vector3d start, Vector3d end, int num_nodes);

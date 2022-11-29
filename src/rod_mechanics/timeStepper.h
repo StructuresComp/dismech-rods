@@ -18,13 +18,14 @@
 class timeStepper
 {
 public:
-    timeStepper(shared_ptr<elasticRod> m_rod);
+    timeStepper(vector<shared_ptr<elasticRod>> m_limbs);
     ~timeStepper();
     double* getForce();
     double* getJacobian();
     void setZero();
-    void addForce(int ind, double p);
-    void addJacobian(int ind1, int ind2, double p);
+    void addForce(int ind, double p, int limb_idx);
+    void addJacobian(int ind1, int ind2, double p, int limb_idx);
+    void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2);
     void integrator();
 
     void pardisoSolver();
@@ -37,9 +38,13 @@ public:
     VectorXd DX;
     double *dx;
 
+    int freeDOF;
+    vector<int> offsets;
+
 private:
+    vector<shared_ptr<elasticRod>> limbs;
     shared_ptr<elasticRod> rod = nullptr;
-    int kl, ku, freeDOF;
+    int kl, ku;
 
     double *totalForce;
     double *jacobian;

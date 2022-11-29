@@ -1,11 +1,17 @@
 #include "timeStepper.h"
 
-timeStepper::timeStepper(shared_ptr<elasticRod> m_rod)
+timeStepper::timeStepper(vector<shared_ptr<elasticRod>> m_limbs)
 {
-    rod = m_rod;
+//    rod = m_rod;
+    limbs = m_limbs;
     kl = 10; // lower diagonals
     ku = 10; // upper diagonals
-    freeDOF = rod->uncons;
+
+    freeDOF = 0;
+    for (const auto& limb : limbs) {
+        offsets.push_back(freeDOF);
+        freeDOF += limb->uncons;
+    }
     ldb = freeDOF;
     NUMROWS = 2 * kl + ku + 1;
     totalForce = new double[freeDOF];
@@ -33,28 +39,36 @@ double* timeStepper::getJacobian()
     return jacobian;
 }
 
-void timeStepper::addForce(int ind, double p)
+void timeStepper::addForce(int ind, double p, int limb_idx)
 {
-    if (rod->getIfConstrained(ind) == 0) // free dof
+    shared_ptr<elasticRod> limb = limbs[limb_idx];
+
+    offset = offsets[limb_idx];
+
+    if (limb->getIfConstrained(ind) == 0) // free dof
     {
-        mappedInd = rod->fullToUnconsMap[ind];
-        totalForce[mappedInd] = totalForce[mappedInd] + p; // subtracting elastic force
-        Force[mappedInd] = Force[mappedInd] + p;
+        mappedInd = limb->fullToUnconsMap[ind];
+        totalForce[mappedInd + offset] += p; // subtracting elastic force
+        Force[mappedInd + offset] += p;
     }
-    force(ind) = force(ind) + p;
+    // NOTE: REMOVING THIS AND TESTING IF IT AFFECTS ANYTHING
+//    force(ind) = force(ind) + p;
 }
 
-void timeStepper::addJacobian(int ind1, int ind2, double p)
+// NOTE ADD AN VERSION WITH 2 limb_idxs LATER
+void timeStepper::addJacobian(int ind1, int ind2, double p, int limb_idx)
 {
-    mappedInd1 = rod->fullToUnconsMap[ind1];
-    mappedInd2 = rod->fullToUnconsMap[ind2];
-    if (rod->getIfConstrained(ind1) == 0 && rod->getIfConstrained(ind2) == 0) // both are free
+    shared_ptr<elasticRod> limb = limbs[limb_idx];
+    mappedInd1 = limb->fullToUnconsMap[ind1];
+    mappedInd2 = limb->fullToUnconsMap[ind2];
+    offset = offsets[limb_idx];
+    if (limb->getIfConstrained(ind1) == 0 && limb->getIfConstrained(ind2) == 0) // both are free
     {
-        row = kl + ku + mappedInd2 - mappedInd1;
-        col = mappedInd1;
-        offset = row + col * NUMROWS;
-        jacobian[offset] = jacobian[offset] + p;
-        Jacobian(mappedInd2, mappedInd1) = Jacobian(mappedInd2, mappedInd1) + p;
+//        row = kl + ku + mappedInd2 - mappedInd1;
+//        col = mappedInd1;
+//        offset = row + col * NUMROWS;
+//        jacobian[offset] = jacobian[offset] + p;
+        Jacobian(mappedInd2+offset, mappedInd1+offset) += p;
     }
 }
 
@@ -66,12 +80,17 @@ void timeStepper::setZero()
         jacobian[i] = 0;
     Force = VectorXd::Zero(freeDOF);
     Jacobian = MatrixXd::Zero(freeDOF,freeDOF);
-    force = VectorXd::Zero(rod->ndof);
+//    force = VectorXd::Zero(rod->ndof);
 }
 
 void timeStepper::update()
 {
-    freeDOF = rod->uncons;
+    freeDOF = 0;
+    offsets.clear();
+    for (const auto& limb : limbs) {
+        offsets.push_back(freeDOF);
+        freeDOF += limb->uncons;
+    }
     ldb = freeDOF;
     delete [] totalForce;
     delete [] jacobian;
@@ -86,7 +105,7 @@ void timeStepper::update()
     DX = VectorXd::Zero(freeDOF);
     Force = VectorXd::Zero(freeDOF);
     Jacobian = MatrixXd::Zero(freeDOF,freeDOF);
-    force = VectorXd::Zero(rod->ndof);
+//    force = VectorXd::Zero(rod->ndof);
     setZero();
 }
 

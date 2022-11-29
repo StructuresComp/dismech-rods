@@ -1,16 +1,36 @@
 #include "elasticRod.h"
 
-elasticRod::elasticRod(double m_rho, double m_rodRadius, double m_dt, double m_youngM, double m_shearM)
+elasticRod::elasticRod(Vector3d start, Vector3d end, int num_nodes, double m_rho, double m_rodRadius, double m_dt, double m_youngM, double m_shearM)
 {
-    ndof = 0;
-    nv = 0;
-    ne = 0;
+    ndof = num_nodes * 4 - 1;
+    nv = num_nodes;
+    ne = num_nodes - 1;
+
+    Vector3d dir = (end - start) / (num_nodes - 1);
+    for (int i = 0; i < num_nodes; i++) {
+        all_nodes.emplace_back(start + i * dir);
+    }
+
+    for (int i = 0; i < nv-1; i++) {
+        array<int, 2> node_pair = {i, i+1};
+        stretching_nodes.push_back(node_pair);
+        twisting_nodes.push_back(node_pair);
+        edge_limb_map[i] = 0;
+    }
+    for (int i = 1; i < nv-1; i++) {
+        array<int, 3> node_triplet = {i-1, i, i+1};
+        bending_nodes.push_back(node_triplet);
+    }
+
+    rodLength = (end - start).norm();
+
     dt = m_dt;
     youngM = m_youngM;
     shearM = m_shearM;
     rho = m_rho;
     rodRadius = m_rodRadius;
-    rodLength = 0.25;
+
+    setup();
 }
 
 elasticRod::elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
@@ -298,23 +318,22 @@ void elasticRod::setReferenceLength()
     // TODO: make sure this works for multi-connections
 
     // This function is only run once at sim initilization
-    refLen = VectorXd(num_stretching);
+    refLen = VectorXd(ne);
     Vector3d dx;
-    for (int i = 0; i < num_stretching; i++)
+    for (int i = 0; i < ne; i++)
     {
-        Limb curr_limb = limbs[edge_limb_map[i]];
-        refLen(i) = curr_limb.limb_length / (curr_limb.num_nodes-1);
+        refLen(i) = rodLength / ne;
     }
 
-    cout << num_stretching + 1 << endl;
-    cout << node_edge_neighbors.size() << endl;
-    voronoiLen = VectorXd(num_stretching+1);
-    for (int i = 0 ; i < num_stretching+1; i++)
+    voronoiLen = VectorXd(nv);
+    for (int i = 0 ; i < nv; i++)
     {
-        voronoiLen(i) = 0;
-        for (int j : node_edge_neighbors[i]) {
-            voronoiLen(i) += 0.5 * refLen(j);
-        }
+		if (i==0)
+			voronoiLen(i)=0.5*refLen(i);
+		else if (i==nv-1)
+			voronoiLen(i)=0.5*refLen(i-1);
+		else
+			voronoiLen(i)=0.5*(refLen(i-1)+refLen(i));
     }
 }
 
@@ -556,11 +575,11 @@ void elasticRod::prepareForIteration()
     computeKappa();
 }
 
-void elasticRod::updateNewtonX(double *dx, double alpha)
+void elasticRod::updateNewtonX(double *dx, int offset, double alpha)
 {
     for (int c=0; c < uncons; c++)
     {
-        x[unconstrainedMap[c]] -= alpha * dx[c];
+        x[unconstrainedMap[c]] -= alpha * dx[offset+c];
     }
 }
 
