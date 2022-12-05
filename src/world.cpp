@@ -11,7 +11,7 @@ world::world(setInput &m_inputData) {
     gVector = m_inputData.GetVecOpt("gVector");                            // m/s^2
     maxIter = m_inputData.GetIntOpt("maxIter");                      // maximum number of iterations
     helixpitch = m_inputData.GetScalarOpt("helixpitch");             // meter
-    rodRadius = m_inputData.GetScalarOpt("rodRadius");               // meter
+    rodRadius = m_inputData.GetScalarOpt("rodRadius");               // mete
     numVertices = m_inputData.GetIntOpt("numVertices");              // int_num
     youngM = m_inputData.GetScalarOpt("youngM");                     // Pa
     Poisson = m_inputData.GetScalarOpt("Poisson");                   // dimensionless
@@ -124,6 +124,8 @@ void world::setRodStepper() {
                                             density, rodRadius, deltaTime, youngM, shearM));
     limbs.push_back(make_shared<elasticRod>(Vector3d(0.04, 0, 0), Vector3d(0.04, 0.15, 0), 50,
                                             density, rodRadius, deltaTime, youngM, shearM));
+
+
 //    rod->addInitRod(Vector3d(0, 0, 0), Vector3d(0, 0.25, 0), 100);
 
     // Find out the tolerance, e.g. how small is enough?
@@ -157,6 +159,21 @@ void world::setRodStepper() {
     currentTime = 0.0;
     timeStep = 0;
 }
+
+
+//void world::makeJoint(int node, int limb_idx) {
+//    shared_ptr<Joint> joint;
+//    joint->x = Map<Vector3d>(limbs[limb_idx]->x[4*node])
+////    joints.push_back(make_shared<Joint>());
+//}
+//
+//void world::addToJoint(int joint_num, int node, int limb_idx) {
+//    shared_ptr<Joint> joint = joints[joint_num];
+//    shared_ptr<elasticRod> limb = limbs[limb_idx];
+//
+//
+//}
+
 
 // Setup geometry
 void world::rodGeometry() {

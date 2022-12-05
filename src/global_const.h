@@ -19,4 +19,5 @@
 // We'll store verbosity from the input options file. Global!
 extern int verbosity;
 
+
 #endif // GLOBAL_CONST_H

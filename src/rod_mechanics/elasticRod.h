@@ -5,6 +5,7 @@
 #include <array>
 #include <cassert>
 #include "../eigenIncludes.h"
+#include "Joint.h"
 
 class elasticRod
 {
@@ -27,18 +28,23 @@ class elasticRod
     void updateNewtonX(double *dx, int offset, double alpha=1.0);
     void updateGuess(double weight);
 
-    void addInitRod(Vector3d start, Vector3d end, int num_nodes);
-    void addRod(int limb_num, int connection_node, Vector3d end, int num_nodes);
-    void addJoint(int node1, int limb1, int node2, int limb2);
+//    void addInitRod(Vector3d start, Vector3d end, int num_nodes);
+//    void addRod(int limb_num, int connection_node, Vector3d end, int num_nodes);
+//    void addJoint(int node1, int limb1, int node2, int limb2);
+//
+//    struct Limb {
+//        int start;
+//        int end;
+//        int num_nodes;
+//        double limb_length;
+//    };
+//    vector<Limb> limbs;
 
-    struct Limb {
-        int start;
-        int end;
-        int num_nodes;
-        double limb_length;
-    };
+    void addJoint(Joint* joint);
+    bool isJoint(int node_num);
+    vector<Joint*> joints;
+    vector<int> joint_nodes;
 
-    vector<Limb> limbs;
 
     // utility functions
     Vector3d getVertex(int k);

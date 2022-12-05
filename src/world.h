@@ -50,6 +50,11 @@ public:
     int getTimeStep();
 
     vector<shared_ptr<elasticRod>> limbs;
+    vector<shared_ptr<Joint>> joints;
+
+    void makeJoint(int node, int limb_idx);
+
+    void addToJoint(int joint_num, int node, int limb_idx);
 
 
 private:

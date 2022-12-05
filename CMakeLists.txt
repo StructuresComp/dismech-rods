@@ -37,6 +37,7 @@ add_executable(simDER
         src/rod_mechanics/inertialForce.cpp
         src/rod_mechanics/timeStepper.cpp
         src/rod_mechanics/symbolicEquations.cpp
+        src/rod_mechanics/Joint.cpp
 #        src/rod_mechanics/collisionDetector.cpp
 #        src/rod_mechanics/contactPotentialIMC.cpp
         src/logging/worldLogger.cpp

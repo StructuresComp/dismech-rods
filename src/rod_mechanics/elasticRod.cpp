@@ -53,6 +53,11 @@ elasticRod::elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
 }
 
 
+bool elasticRod::isJoint(int node_num) {
+    return find(joint_nodes.begin(), joint_nodes.end(), node_num) != joint_nodes.end();
+}
+
+
 void elasticRod::setup()
 {
     num_stretching = stretching_nodes.size();
@@ -131,99 +136,105 @@ void elasticRod::setup()
     refTwist_old = refTwist;
 }
 
-void elasticRod::addInitRod(Vector3d start, Vector3d end, int num_nodes) {
-    assert((ndof == 0, "Initial rod was added when number of DOFs was not 0."));
+//void elasticRod::addInitRod(Vector3d start, Vector3d end, int num_nodes) {
+//    assert((ndof == 0, "Initial rod was added when number of DOFs was not 0."));
+//
+//    int s_dof = ndof;
+//    int s_nv = nv;
+//
+//    ndof += num_nodes * 4 - 1;
+//    nv += num_nodes;
+//    ne += num_nodes - 1;
+//
+//    int e_dof = ndof;
+//    int e_nv = nv;
+//
+//
+//    Vector3d dir = (end - start) / (num_nodes - 1);
+//    for (int i = 0; i < num_nodes; i++) {
+//        all_nodes.emplace_back(start + i * dir);
+//    }
+//
+//    node_node_neighbors[s_nv].push_back(s_nv+1);
+//    node_node_neighbors[e_nv-1].push_back(e_nv-2);
+//    for (int i = s_nv+1; i < e_nv-1; i++) {
+//        node_node_neighbors[i].push_back(i-1);
+//        node_node_neighbors[i].push_back(i+1);
+//    }
+//
+//    node_edge_neighbors[s_nv].push_back(s_nv);
+//    node_edge_neighbors[e_nv-1].push_back(e_nv-2);
+//    for (int i = s_nv+1; i < e_nv-1; i++) {
+//        node_edge_neighbors[i].push_back(i-1);
+//        node_edge_neighbors[i].push_back(i);
+//    }
+//
+//    for (int i = s_nv; i < e_nv-1; i++) {
+//        array<int, 2> node_pair = {i, i+1};
+//        stretching_nodes.push_back(node_pair);
+//        twisting_nodes.push_back(node_pair);
+//        edge_limb_map[i] = 0;
+//    }
+//    for (int i = s_nv+1; i < e_nv-1; i++) {
+//        array<int, 3> node_triplet = {i-1, i, i+1};
+//        bending_nodes.push_back(node_triplet);
+//    }
+//
+//    double limb_length = (end - start).norm();
+//    Limb curr_limb = {s_nv, e_nv, num_nodes, limb_length};
+//    limbs.push_back(curr_limb);
+//}
+//
 
-    int s_dof = ndof;
-    int s_nv = nv;
-
-    ndof += num_nodes * 4 - 1;
-    nv += num_nodes;
-    ne += num_nodes - 1;
-
-    int e_dof = ndof;
-    int e_nv = nv;
-
-
-    Vector3d dir = (end - start) / (num_nodes - 1);
-    for (int i = 0; i < num_nodes; i++) {
-        all_nodes.emplace_back(start + i * dir);
-    }
-
-    node_node_neighbors[s_nv].push_back(s_nv+1);
-    node_node_neighbors[e_nv-1].push_back(e_nv-2);
-    for (int i = s_nv+1; i < e_nv-1; i++) {
-        node_node_neighbors[i].push_back(i-1);
-        node_node_neighbors[i].push_back(i+1);
-    }
-
-    node_edge_neighbors[s_nv].push_back(s_nv);
-    node_edge_neighbors[e_nv-1].push_back(e_nv-2);
-    for (int i = s_nv+1; i < e_nv-1; i++) {
-        node_edge_neighbors[i].push_back(i-1);
-        node_edge_neighbors[i].push_back(i);
-    }
-
-    for (int i = s_nv; i < e_nv-1; i++) {
-        array<int, 2> node_pair = {i, i+1};
-        stretching_nodes.push_back(node_pair);
-        twisting_nodes.push_back(node_pair);
-        edge_limb_map[i] = 0;
-    }
-    for (int i = s_nv+1; i < e_nv-1; i++) {
-        array<int, 3> node_triplet = {i-1, i, i+1};
-        bending_nodes.push_back(node_triplet);
-    }
-
-    double limb_length = (end - start).norm();
-    Limb curr_limb = {s_nv, e_nv, num_nodes, limb_length};
-    limbs.push_back(curr_limb);
+void elasticRod::addJoint(Joint *m_joint) {
+    joints.push_back(m_joint);
 }
 
-void elasticRod::addRod(int limb_num, int connection_node, Eigen::Vector3d end, int num_nodes) {
-//    num_nodes -= 1;  // num_nodes arg is inclusive of the node we are attaching to, i.e. already exists
-    Limb curr_limb = limbs[limb_num];
 
-    int s_dof = ndof;
-    int s_nv = nv;
-
-    ndof += num_nodes * 4;  // no minus 1 here because we add a twist at the joint
-    nv += num_nodes;
-    ne += num_nodes;  // no minus 1 for same reason as above
-
-    int e_dof = ndof;
-    int e_nv = nv;
-
-    assert((curr_limb.start + connection_node < curr_limb.num_nodes, "The connection node is not within a valid range"));
-    Vector3d start = getVertex(curr_limb.start + connection_node);
-    Vector3d dir = (end - start) / (num_nodes - 1);
-
-    for (int i = 1; i < num_nodes; i++) {  // we start at 1 here because the first node already exists
-        all_nodes.emplace_back(start + i * dir);
-    }
-
-    array<int, 2> joint_pair = {curr_limb.start + connection_node, s_nv};
-    stretching_nodes.push_back(joint_pair);
-    twisting_nodes.push_back(joint_pair);
-    for (int i = s_nv; i < s_nv + num_nodes-1; i++) {
-        array<int, 2> node_pair = {i, i+1};
-        stretching_nodes.push_back(node_pair);
-        twisting_nodes.push_back(node_pair);
-    }
-    array<int, 3> joint_triplet = {curr_limb.start + connection_node, s_nv, s_nv+1};
-    bending_nodes.push_back(joint_triplet);
-    for (auto i : node_node_neighbors[curr_limb.start + connection_node]) {
-        array<int, 3> node_triplet1 = {i, curr_limb.start + connection_node, s_nv};
-        bending_nodes.push_back(joint_triplet);
-    }
-    for (int i = s_nv+1; i < s_nv+num_nodes-1; i++) {
-        array<int, 3> node_triplet = {i-1, i, i+1};
-        bending_nodes.push_back(node_triplet);
-    }
-    double limb_length = (end - start).norm();
-    Limb new_limb = {s_nv, e_nv, num_nodes, limb_length};
-    limbs.push_back(new_limb);
-}
+//void elasticRod::addRod(int limb_num, int connection_node, Eigen::Vector3d end, int num_nodes) {
+////    num_nodes -= 1;  // num_nodes arg is inclusive of the node we are attaching to, i.e. already exists
+//    Limb curr_limb = limbs[limb_num];
+//
+//    int s_dof = ndof;
+//    int s_nv = nv;
+//
+//    ndof += num_nodes * 4;  // no minus 1 here because we add a twist at the joint
+//    nv += num_nodes;
+//    ne += num_nodes;  // no minus 1 for same reason as above
+//
+//    int e_dof = ndof;
+//    int e_nv = nv;
+//
+//    assert((curr_limb.start + connection_node < curr_limb.num_nodes, "The connection node is not within a valid range"));
+//    Vector3d start = getVertex(curr_limb.start + connection_node);
+//    Vector3d dir = (end - start) / (num_nodes - 1);
+//
+//    for (int i = 1; i < num_nodes; i++) {  // we start at 1 here because the first node already exists
+//        all_nodes.emplace_back(start + i * dir);
+//    }
+//
+//    array<int, 2> joint_pair = {curr_limb.start + connection_node, s_nv};
+//    stretching_nodes.push_back(joint_pair);
+//    twisting_nodes.push_back(joint_pair);
+//    for (int i = s_nv; i < s_nv + num_nodes-1; i++) {
+//        array<int, 2> node_pair = {i, i+1};
+//        stretching_nodes.push_back(node_pair);
+//        twisting_nodes.push_back(node_pair);
+//    }
+//    array<int, 3> joint_triplet = {curr_limb.start + connection_node, s_nv, s_nv+1};
+//    bending_nodes.push_back(joint_triplet);
+//    for (auto i : node_node_neighbors[curr_limb.start + connection_node]) {
+//        array<int, 3> node_triplet1 = {i, curr_limb.start + connection_node, s_nv};
+//        bending_nodes.push_back(joint_triplet);
+//    }
+//    for (int i = s_nv+1; i < s_nv+num_nodes-1; i++) {
+//        array<int, 3> node_triplet = {i-1, i, i+1};
+//        bending_nodes.push_back(node_triplet);
+//    }
+//    double limb_length = (end - start).norm();
+//    Limb new_limb = {s_nv, e_nv, num_nodes, limb_length};
+//    limbs.push_back(new_limb);
+//}
 
 void elasticRod::updateMap()
 {
@@ -315,8 +326,6 @@ void elasticRod::setMass()
  
 void elasticRod::setReferenceLength()
 {
-    // TODO: make sure this works for multi-connections
-
     // This function is only run once at sim initilization
     refLen = VectorXd(ne);
     Vector3d dx;
@@ -325,6 +334,7 @@ void elasticRod::setReferenceLength()
         refLen(i) = rodLength / ne;
     }
 
+    // TODO: make sure this works for multi-connections
     voronoiLen = VectorXd(nv);
     for (int i = 0 ; i < nv; i++)
     {
