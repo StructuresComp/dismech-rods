@@ -53,11 +53,6 @@ elasticRod::elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
 }
 
 
-bool elasticRod::isJoint(int node_num) {
-    return find(joint_nodes.begin(), joint_nodes.end(), node_num) != joint_nodes.end();
-}
-
-
 void elasticRod::setup()
 {
     num_stretching = stretching_nodes.size();
@@ -82,9 +77,13 @@ void elasticRod::setup()
     // We will start off with an unconstrained system
     ncons = 0;
     uncons = ndof;
+    unique_dof = ndof;
     isConstrained = new int [ndof];
-    for (int i=0; i < ndof; i++)
+    isJoint = new int [ndof];
+    for (int i=0; i < ndof; i++) {
         isConstrained[i] = 0;
+        isJoint[i] = 0;
+    }
 
     // Setup the map from free dofs to all dof
     unconstrainedMap = new int[uncons]; // maps xUncons to x
@@ -186,8 +185,11 @@ void elasticRod::setup()
 //}
 //
 
-void elasticRod::addJoint(Joint *m_joint) {
-    joints.push_back(m_joint);
+void elasticRod::addJoint(int node_num, bool remove_dof) {
+    if (remove_dof) unique_dof -= 3;
+    isJoint[4*node_num] = 1;
+    isJoint[4*node_num+1] = 1;
+    isJoint[4*node_num+2] = 1;
 }
 
 

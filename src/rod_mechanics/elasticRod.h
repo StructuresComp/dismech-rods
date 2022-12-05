@@ -5,7 +5,6 @@
 #include <array>
 #include <cassert>
 #include "../eigenIncludes.h"
-#include "Joint.h"
 
 class elasticRod
 {
@@ -39,12 +38,6 @@ class elasticRod
 //        double limb_length;
 //    };
 //    vector<Limb> limbs;
-
-    void addJoint(Joint* joint);
-    bool isJoint(int node_num);
-    vector<Joint*> joints;
-    vector<int> joint_nodes;
-
 
     // utility functions
     Vector3d getVertex(int k);
@@ -159,6 +152,10 @@ class elasticRod
     void freeVertexBoundaryCondition(int k);
 
     VectorXd xold;
+
+    void addJoint(int node_num, bool remove_dof);
+    int unique_dof;
+    int* isJoint;
 
     private:
 

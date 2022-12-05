@@ -5,6 +5,7 @@
 
 // include elastic rod class
 #include "rod_mechanics/elasticRod.h"
+#include "rod_mechanics/Joint.h"
 
 // include force classes
 #include "rod_mechanics/elasticStretchingForce.h"
