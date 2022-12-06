@@ -129,17 +129,21 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void)
             limb_idx++;
         }
 
-//        glColor3f(1.0, 0.0, 0.0);
-//        for (const auto& joint : openglWorld_p->joints) {
-//            for (int i = 0; i < joint->ne; i++) {
-//                glVertex3f( openglWorld_p->getScaledCoordinate(4*i, limb_idx),
-//                            openglWorld_p->getScaledCoordinate(4*i+1, limb_idx),
-//                            openglWorld_p->getScaledCoordinate(4*i+2, limb_idx));
-//                glVertex3f( openglWorld_p->getScaledCoordinate(4*i, limb_idx),
-//                            openglWorld_p->getScaledCoordinate(4*i+1, limb_idx),
-//                            openglWorld_p->getScaledCoordinate(4*i+2, limb_idx));
-//            }
-//        }
+        glColor3f(1.0, 0.0, 0.0);
+        double scale = 0.2;  // hard coding this for now cuz I'm lazy, will fix later
+        int n, l;
+        for (const auto& joint : openglWorld_p->joints) {
+            for (int i = 0; i < joint->ne; i++) {
+                n = joint->connected_nodes[i].first;
+                l = joint->connected_nodes[i].second;
+                glVertex3f( openglWorld_p->getScaledCoordinate(4*n, l),
+                            openglWorld_p->getScaledCoordinate(4*n+1, l),
+                            openglWorld_p->getScaledCoordinate(4*n+2, l));
+                glVertex3f( joint->x(0) / scale,
+                            joint->x(1) / scale,
+                            joint->x(2) / scale);
+            }
+        }
 
 //		double wallAngle = 6.0 * 3.141592654 / 180.0;
 //

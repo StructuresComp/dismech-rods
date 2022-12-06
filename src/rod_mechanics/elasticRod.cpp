@@ -214,8 +214,8 @@ void elasticRod::addJoint(int node_num, bool remove_dof) {
         isEdgeJoint[ne-2] = 1;
     }
     else {
+        isEdgeJoint[node_num-1] = 1;
         isEdgeJoint[node_num] = 1;
-        isEdgeJoint[node_num+1] = 1;
     }
 }
 

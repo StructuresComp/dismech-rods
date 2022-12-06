@@ -126,9 +126,11 @@ void world::setRodStepper() {
 //                                            density, rodRadius, deltaTime, youngM, shearM));
 //    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.05, 0), Vector3d(0.00, 0.10, 0), 15,
 //                                            density, rodRadius, deltaTime, youngM, shearM));
+    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.025, 0), Vector3d(0.05, 0.025, 0), 15,
+                                            density, rodRadius, deltaTime, youngM, shearM));
 
-//    joints.push_back(make_shared<Joint>(14, 0, limbs));
-//    joints[0]->addToJoint(0, 1);
+    joints.push_back(make_shared<Joint>(7, 0, limbs));
+    joints[0]->addToJoint(0, 1);
 
     // Find out the tolerance, e.g. how small is enough?
     characteristicForce = M_PI * pow(rodRadius, 4) / 4.0 * youngM / pow(RodLength, 2);
