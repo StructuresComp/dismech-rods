@@ -79,10 +79,16 @@ void elasticRod::setup()
     uncons = ndof;
     unique_dof = ndof;
     isConstrained = new int [ndof];
-    isJoint = new int [ndof];
+    isDOFJoint = new int [ndof];
+    isEdgeJoint = new int [ne];
+    DOFoffsets = new int [ndof];
     for (int i=0; i < ndof; i++) {
         isConstrained[i] = 0;
-        isJoint[i] = 0;
+        isDOFJoint[i] = 0;
+        DOFoffsets[i] = 0;
+    }
+    for (int i = 0; i < ne; i++) {
+        isEdgeJoint[i] = 0;
     }
 
     // Setup the map from free dofs to all dof
@@ -186,10 +192,31 @@ void elasticRod::setup()
 //
 
 void elasticRod::addJoint(int node_num, bool remove_dof) {
-    if (remove_dof) unique_dof -= 3;
-    isJoint[4*node_num] = 1;
-    isJoint[4*node_num+1] = 1;
-    isJoint[4*node_num+2] = 1;
+    if (remove_dof) {
+        unique_dof -= 3;
+//        uncons -= 3;
+        for (int i = 4*node_num+3; i < ndof; i++) {
+            DOFoffsets[i] -= 3;
+        }
+        isDOFJoint[4*node_num] = 1;
+        isDOFJoint[4*node_num+1] = 1;
+        isDOFJoint[4*node_num+2] = 1;
+    }
+    else {
+        isDOFJoint[4*node_num] = 2;
+        isDOFJoint[4*node_num+1] = 2;
+        isDOFJoint[4*node_num+2] = 2;
+    }
+    if (node_num == 0) {
+        isEdgeJoint[0] = 1;
+    }
+    else if (node_num == ne-1) {
+        isEdgeJoint[ne-2] = 1;
+    }
+    else {
+        isEdgeJoint[node_num] = 1;
+        isEdgeJoint[node_num+1] = 1;
+    }
 }
 
 
@@ -243,7 +270,7 @@ void elasticRod::updateMap()
     ncons = 0;
     for (int i=0; i < ndof; i++)
     {
-        if (isConstrained[i] > 0)
+        if (isConstrained[i] > 0 || isDOFJoint[i] == 1)
         {
             ncons ++;
         }
@@ -553,7 +580,7 @@ void elasticRod::setupMap()
     int c = 0;
     for (int i=0; i < ndof; i++)
     {
-        if (isConstrained[i] == 0)
+        if (isConstrained[i] == 0 && isDOFJoint[i] != 1)
         {
             unconstrainedMap[c] = i;
             fullToUnconsMap[i] = c;
@@ -589,9 +616,11 @@ void elasticRod::prepareForIteration()
 
 void elasticRod::updateNewtonX(double *dx, int offset, double alpha)
 {
+    int ind;
     for (int c=0; c < uncons; c++)
     {
-        x[unconstrainedMap[c]] -= alpha * dx[offset+c];
+        ind = unconstrainedMap[c];
+        x[ind] -= alpha * dx[offset+c];
     }
 }
 
@@ -616,9 +645,11 @@ void elasticRod::updateTimeStep()
 
 void elasticRod::updateGuess(double weight)
 {
+    int ind;
     for (int c=0; c < uncons; c++)
     {
-        x[unconstrainedMap[c]] = x0[unconstrainedMap[c]] + weight * u[unconstrainedMap[c]] * dt;
+        ind = unconstrainedMap[c];
+        x[ind] = x0[ind] + weight * u[ind] * dt;
     }
 }
 

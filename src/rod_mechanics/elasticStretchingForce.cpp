@@ -1,9 +1,12 @@
 #include "elasticStretchingForce.h"
 #include <iostream>
 
-elasticStretchingForce::elasticStretchingForce(vector<shared_ptr<elasticRod>> m_limbs, shared_ptr<timeStepper> m_stepper)
+elasticStretchingForce::elasticStretchingForce(vector<shared_ptr<elasticRod>> m_limbs,
+                                               vector<shared_ptr<Joint>> m_joints,
+                                               shared_ptr<timeStepper> m_stepper)
 {
     limbs = m_limbs;
+    joints = m_joints;
     stepper = m_stepper;
 
     f.setZero(3);
@@ -26,6 +29,7 @@ void elasticStretchingForce::computeFs()
 
         for (int i = 0; i < limb->ne; i++)
         {
+            if (limb->isEdgeJoint[i]) continue;
             epsX = limb->edgeLen(i) / limb->refLen(i) - 1.0;
             f = limb->EA * (limb->tangent).row(i) * epsX;
             for (int k = 0; k < 3; k++)
@@ -39,6 +43,27 @@ void elasticStretchingForce::computeFs()
         }
         limb_idx++;
     }
+
+    shared_ptr<elasticRod> curr_limb;
+    int n1;
+    for (const auto& joint : joints) {
+        for (int i = 0; i < joint->ne; i++) {
+            n1 = joint->connected_nodes[i].first;
+            limb_idx = joint->connected_nodes[i].second;
+            curr_limb = limbs[limb_idx];
+            epsX = joint->edge_len(i) / joint->ref_len(i) - 1.0;
+            f = curr_limb->EA * joint->tangents.row(i) * epsX;
+            for (int k = 0; k < 3; k++) {
+                ind = 4*n1 + k;
+
+                stepper->addForce(ind, -f[k], limb_idx);
+
+                ind = 4*joint->joint_node + k;
+
+                stepper->addForce(ind, f[k], joint->joint_limb);
+            }
+        }
+    }
 }
 
 void elasticStretchingForce::computeJs()
@@ -47,6 +72,7 @@ void elasticStretchingForce::computeJs()
     for (const auto& limb : limbs) {
         for (int i = 0; i < limb->ne; i++)
         {
+            if (limb->isEdgeJoint[i]) continue;
             len = limb->edgeLen[i];
             refLength = limb->refLen[i];
 
@@ -74,5 +100,51 @@ void elasticStretchingForce::computeJs()
             }
         }
         limb_idx++;
+    }
+
+    int n1;
+    shared_ptr<elasticRod> curr_limb;
+    for (const auto& joint : joints) {
+        for (int i = 0; i < joint->ne; i++) {
+            n1 = joint->connected_nodes[i].first;
+            limb_idx = joint->connected_nodes[i].second;
+            curr_limb = limbs[limb_idx];
+
+            len = joint->edge_len(i);
+            refLength = joint->ref_len(i);
+
+            dxx(0) = joint->x(0) - curr_limb->x(4*n1);
+            dxx(1) = joint->x(1) - curr_limb->x(4*n1+1);
+            dxx(2) = joint->x(2) - curr_limb->x(4*n1+2);
+
+            u = dxx;
+            v = u.transpose();
+            M0 = curr_limb->EA * ((1/refLength - 1/len) * Id3 + (1/len) * (u*v) / (u.norm() * u.norm()));
+
+            Jss.block(0,0,3,3) =  - M0;
+            Jss.block(4,4,3,3) =  - M0;
+            Jss.block(4,0,3,3) =    M0;
+            Jss.block(0,4,3,3) =    M0;
+
+            // TODO: fix the n1 only reference, i think this is wrong
+            int l1 = limb_idx;
+            int l2 = joint->joint_limb;
+            int n2 = joint->joint_node;
+            for (int j = 0; j < 3; j++) {
+                for (int k = 0; k < 3; k++) {
+//                    ind1 = 4 * n1 + j;
+//                    ind2 = 4 * n1 + k;
+//                    stepper->addJacobian(ind1, ind2, -Jss(k, j), limb_idx, limb_idx);
+//                    stepper->addJacobian(ind1+4, ind2, -Jss(k+4, j), joint->joint_limb, limb_idx);
+//                    stepper->addJacobian(ind1, ind2+4, -Jss(k, j+4), limb_idx, joint->joint_limb);
+//                    stepper->addJacobian(ind1+4, ind2+4, -Jss(k+4, j+4), joint->joint_limb, joint->joint_limb);
+
+                    stepper->addJacobian(4*n1+j, 4*n1+k, -Jss(k, j), l1);
+                    stepper->addJacobian(4*n1+j, 4*n2+k, -Jss(k+4, j), l1, l2);
+                    stepper->addJacobian(4*n2+j, 4*n1+k, -Jss(k, j+4), l2, l1);
+                    stepper->addJacobian(4*n2+j, 4*n2+k, -Jss(k+4, j+4), l2);
+                }
+            }
+        }
     }
 }

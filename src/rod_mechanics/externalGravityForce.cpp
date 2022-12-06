@@ -1,8 +1,11 @@
 #include "externalGravityForce.h"
 
-externalGravityForce::externalGravityForce(vector<shared_ptr<elasticRod>> m_limbs, shared_ptr<timeStepper> m_stepper, Vector3d m_gVector)
+externalGravityForce::externalGravityForce(vector<shared_ptr<elasticRod>> m_limbs,
+                                           vector<shared_ptr<Joint>> m_joints,
+                                           shared_ptr<timeStepper> m_stepper, Vector3d m_gVector)
 {
     limbs = m_limbs;
+    joints = m_joints;
     stepper = m_stepper;
     gVector = m_gVector;
     setGravity();
@@ -20,9 +23,19 @@ void externalGravityForce::computeFg()
         massGravity = massGravities[limb_idx];
         for (int i = 0; i < limb->ndof; i++)
         {
+            if (limb->isDOFJoint[i]) continue;
             stepper->addForce(i, -massGravity[i], limb_idx); // subtracting gravity force
         }
         limb_idx++;
+    }
+
+    // TODO: store these values like above
+    double force;
+    for (const auto & joint : joints) {
+        for (int i = 0; i < 3; i++) {
+            force = gVector[i] * joint->mass;
+            stepper->addForce(4*joint->joint_node+i, -force, joint->joint_limb);
+        }
     }
 }
 

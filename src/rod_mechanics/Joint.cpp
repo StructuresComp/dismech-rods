@@ -5,6 +5,7 @@ Joint::Joint(int node, int limb_idx, vector<shared_ptr<elasticRod>> &m_limbs)
 {
     ne = 0;
     limbs[limb_idx]->addJoint(joint_node, false);
+    dt = limbs[limb_idx]->dt;
     updateConnectedNodes(joint_node, joint_limb);
 
 }
@@ -12,19 +13,19 @@ Joint::Joint(int node, int limb_idx, vector<shared_ptr<elasticRod>> &m_limbs)
 void Joint::updateConnectedNodes(int node_num, int limb_idx) {
     int nv = limbs[limb_idx]->nv;
     if (node_num == 0) {
-        pair<int, int> node_and_limb(1, joint_limb);
+        pair<int, int> node_and_limb(1, limb_idx);
         connected_nodes.push_back(node_and_limb);
         ne += 1;
     }
     else if (node_num == nv-1) {
-        pair<int, int> node_and_limb(nv-2, joint_limb);
+        pair<int, int> node_and_limb(nv-2, limb_idx);
         connected_nodes.push_back(node_and_limb);
         ne += 1;
     }
     else {
-        pair<int, int> node_and_limb1(node_num-1, joint_limb);
+        pair<int, int> node_and_limb1(node_num-1, limb_idx);
         connected_nodes.push_back(node_and_limb1);
-        pair<int, int> node_and_limb2(node_num+1, joint_limb);
+        pair<int, int> node_and_limb2(node_num+1, limb_idx);
         connected_nodes.push_back(node_and_limb2);
         ne += 2;
     }
@@ -74,7 +75,7 @@ void Joint::computeTangent() {
         limb_idx = connected_nodes[i].second;
         curr_limb = limbs[limb_idx];
 
-        tangents.row(i) = x - curr_limb->x.segment(4*i, 3);
+        tangents.row(i) = x - curr_limb->x.segment(4*num_node, 3);
         tangents.row(i) /= tangents.row(i).norm();
     }
 }
@@ -254,11 +255,13 @@ void Joint::setup() {
     d2_old = MatrixXd::Zero(ne, 3);
     m1 = MatrixXd::Zero(ne, 3);
     m2 = MatrixXd::Zero(ne, 3);
-    ref_twist = VectorXd::Zero(ne);
+    ref_twist = VectorXd::Zero(num_bending_combos);
+    ref_twist_old = VectorXd::Zero(num_bending_combos);
 
     kb = MatrixXd::Zero(num_bending_combos, 3);
     kappa = MatrixXd::Zero(num_bending_combos, 2);
     kappaBar = MatrixXd::Zero(num_bending_combos, 2);
+    edge_len = VectorXd::Zero(ne);
 
     setMass();
 
@@ -288,23 +291,8 @@ void Joint::computeTimeParallel()
 {
     // Use old versions of (d1, d2, tangent) to get new d1, d2
     Vector3d t0,t1, d1_vector;
-    int curr_iter = 0;
 
     for (int i = 0; i < ne; i++) {
-        for (int j = i; j < ne; j++) {
-            t0 = tangents_old.row(curr_iter);
-            t1 = tangents.row(curr_iter);
-            parallelTransport(d1_old.row(curr_iter), t0, t1, d1_vector);
-
-            d1.row(curr_iter) = d1_vector;
-            d2.row(curr_iter) = t1.cross(d1_vector);
-
-            curr_iter++;
-        }
-    }
-
-    for (int i=0;i<ne;i++)
-    {
         t0 = tangents_old.row(i);
         t1 = tangents.row(i);
         parallelTransport(d1_old.row(i), t0, t1, d1_vector);
@@ -316,6 +304,7 @@ void Joint::computeTimeParallel()
 
 
 void Joint::prepareForIteration() {
+    updateJoint();
     computeTangent();
     computeTimeParallel();
     getRefTwist();
@@ -337,4 +326,23 @@ void Joint::setMass() {
         curr_mass = (curr_limb->rodLength * curr_limb->crossSectionalArea * curr_limb->rho / curr_limb->ne) / 2.0;
         mass += curr_mass;
     }
+}
+
+void Joint::updateTimeStep()
+{
+    prepareForIteration();
+
+    // compute velocity
+    u = (x - x0) / dt;
+
+    // update x
+    x0 = x;
+
+    // update reference directors
+    d1_old = d1;
+    d2_old = d2;
+
+    // We do not need to update m1, m2. They can be determined from theta.
+    tangents_old = tangents;
+    ref_twist_old = ref_twist;
 }

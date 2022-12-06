@@ -1,8 +1,10 @@
 #include "elasticTwistingForce.h"
 
-elasticTwistingForce::elasticTwistingForce(vector<shared_ptr<elasticRod>> m_limbs, shared_ptr<timeStepper> m_stepper)
+elasticTwistingForce::elasticTwistingForce(vector<shared_ptr<elasticRod>> m_limbs,
+                                           vector<shared_ptr<Joint>> m_joints, shared_ptr<timeStepper> m_stepper)
 {
     limbs = m_limbs;
+    joints = m_joints;
     stepper = m_stepper;
 
     for (const auto& limb : m_limbs) {
@@ -38,6 +40,7 @@ void elasticTwistingForce::computeFt()
         deltam = deltams[limb_idx];
         theta_f = theta_fs[limb_idx];
         theta_e = theta_es[limb_idx];
+
         for (int i = 0; i < limb->ne; i++)
         {
             theta_f->coeffRef(i) = limb->x(4*i+3);

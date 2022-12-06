@@ -155,7 +155,10 @@ class elasticRod
 
     void addJoint(int node_num, bool remove_dof);
     int unique_dof;
-    int* isJoint;
+    int* isDOFJoint;
+    int* isEdgeJoint;
+    int* DOFoffsets;
+    int* unconsToDOFMap;
 
     private:
 

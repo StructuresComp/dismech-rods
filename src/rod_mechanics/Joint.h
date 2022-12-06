@@ -12,6 +12,7 @@ public:
     int joint_limb;
 
     int ne;
+    double dt;
 
     void updateJoint();
     void addToJoint(int node_num, int limb_idx);
@@ -68,6 +69,8 @@ public:
 
     void prepareForIteration();
     void computeTimeParallel();
+
+    void updateTimeStep();
 
 private:
 };

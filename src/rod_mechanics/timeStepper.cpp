@@ -48,6 +48,8 @@ void timeStepper::addForce(int ind, double p, int limb_idx)
     if (limb->getIfConstrained(ind) == 0) // free dof
     {
         mappedInd = limb->fullToUnconsMap[ind];
+//        totalForce[mappedInd + offset + limb->DOFoffsets[ind]] += p; // subtracting elastic force
+//        Force[mappedInd + offset + limb->DOFoffsets[ind]] += p;
         totalForce[mappedInd + offset] += p; // subtracting elastic force
         Force[mappedInd + offset] += p;
     }
@@ -61,6 +63,7 @@ void timeStepper::addJacobian(int ind1, int ind2, double p, int limb_idx)
     shared_ptr<elasticRod> limb = limbs[limb_idx];
     mappedInd1 = limb->fullToUnconsMap[ind1];
     mappedInd2 = limb->fullToUnconsMap[ind2];
+//    offset = offsets[limb_idx] + limb->DOFoffsets[ind1];
     offset = offsets[limb_idx];
     if (limb->getIfConstrained(ind1) == 0 && limb->getIfConstrained(ind2) == 0) // both are free
     {
@@ -69,6 +72,20 @@ void timeStepper::addJacobian(int ind1, int ind2, double p, int limb_idx)
 //        offset = row + col * NUMROWS;
 //        jacobian[offset] = jacobian[offset] + p;
         Jacobian(mappedInd2+offset, mappedInd1+offset) += p;
+    }
+}
+
+void timeStepper::addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2) {
+    shared_ptr<elasticRod> limb1 = limbs[limb_idx1];
+    shared_ptr<elasticRod> limb2 = limbs[limb_idx2];
+    mappedInd1 = limb1->fullToUnconsMap[ind1];
+    mappedInd2 = limb2->fullToUnconsMap[ind2];
+//    int offset1 = offsets[limb_idx1] + limb1->DOFoffsets[ind1];
+//    int offset2 = offsets[limb_idx2] + limb2->DOFoffsets[ind2];
+    int offset1 = offsets[limb_idx1];
+    int offset2 = offsets[limb_idx2];
+    if (limb1->getIfConstrained(ind1) == 0 && limb2->getIfConstrained(ind2) == 0) {
+        Jacobian(mappedInd2 + offset2, mappedInd1 + offset1) += p;
     }
 }
 

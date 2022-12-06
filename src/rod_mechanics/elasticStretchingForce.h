@@ -3,18 +3,21 @@
 
 #include "../eigenIncludes.h"
 #include "elasticRod.h"
+#include "Joint.h"
 #include "timeStepper.h"
 
 class elasticStretchingForce
 {
 public:
-    elasticStretchingForce(vector<shared_ptr<elasticRod>> m_limbs, shared_ptr<timeStepper> m_stepper);
+    elasticStretchingForce(vector<shared_ptr<elasticRod>> m_limbs, vector<shared_ptr<Joint>> m_joints,
+                           shared_ptr<timeStepper> m_stepper);
     ~elasticStretchingForce();
     void computeFs();
     void computeJs();
 
 private:
     vector<shared_ptr<elasticRod>> limbs;
+    vector<shared_ptr<Joint>> joints;
     shared_ptr<elasticRod> rod;
     shared_ptr<timeStepper> stepper;
 
