@@ -61,7 +61,7 @@ void elasticBendingForce::computeFb()
         gradKappa2 = gradKappa2s[limb_idx];
         for (int i = 1; i < limb->ne; i++)
         {
-            if (limb->isEdgeJoint[i]) continue;
+            if (limb->isEdgeJoint[i] || limb->isEdgeJoint[i-1]) continue;
             norm_e = limb->edgeLen(i-1);
             norm_f = limb->edgeLen(i);
             te = limb->tangent.row(i-1);
@@ -100,9 +100,10 @@ void elasticBendingForce::computeFb()
             gradKappa2->coeffRef(i,7)=-0.5*kbLocal.dot(d2f);
         }
 
+        // TODO: merge this into the for loop above
         for (int i = 1; i < limb->ne; i++)
         {
-            if (limb->isEdgeJoint[i]) continue;
+            if (limb->isEdgeJoint[i] || limb->isEdgeJoint[i-1]) continue;
             ci = 4*i-4;
             relevantPart.col(0) = gradKappa1->row(i);
             relevantPart.col(1) = gradKappa2->row(i);
@@ -118,88 +119,84 @@ void elasticBendingForce::computeFb()
         limb_idx++;
     }
 
-    // TODO: need to add bending energies between joint edges and limb edges!!!
-    int joint_idx = 0;
-    for (const auto& joint : joints) {
-        int curr_iter = 0;
-        gradKappa1 = gradKappa1s[limbs.size() + joint_idx];
-        gradKappa2 = gradKappa2s[limbs.size() + joint_idx];
-        for (int i = 0; i < joint->ne; i++) {
-            for (int j = i; j < joint->ne; j++) {
-                norm_e = joint->edge_len(i);
-                norm_f = joint->edge_len(j);
-                te = joint->tangents.row(i);
-                tf = joint->tangents.row(j);
-                d1e = joint->m1.row(i);
-                d2e = joint->m2.row(i);
-                d1f = joint->m1.row(j);
-                d2f = joint->m2.row(j);
-
-                chi = 1.0 + te.dot(tf);
-                tilde_t = (te+tf)/chi;
-                tilde_d1 = (d1e+d1f)/chi;
-                tilde_d2 = (d2e+d2f)/chi;
-
-                kappa1 = joint->kappa(curr_iter, 0);
-                kappa2 = joint->kappa(curr_iter, 1);
-
-                Dkappa1De = (1.0/norm_e)*(-kappa1*tilde_t + tf.cross(tilde_d2));
-                Dkappa1Df = (1.0/norm_f)*(-kappa1*tilde_t - te.cross(tilde_d2));
-                Dkappa2De = (1.0/norm_e)*(-kappa2*tilde_t - tf.cross(tilde_d1));
-                Dkappa2Df = (1.0/norm_f)*(-kappa2*tilde_t + te.cross(tilde_d1));
-
-                gradKappa1->row(curr_iter).segment(0,3)=-Dkappa1De;
-                gradKappa1->row(curr_iter).segment(4,3)= Dkappa1De - Dkappa1Df;
-                gradKappa1->row(curr_iter).segment(8,3)= Dkappa1Df;
-
-                gradKappa2->row(curr_iter).segment(0,3)=-Dkappa2De;
-                gradKappa2->row(curr_iter).segment(4,3)= Dkappa2De - Dkappa2Df;
-                gradKappa2->row(curr_iter).segment(8,3)= Dkappa2Df;
-
-                kbLocal = (joint->kb).row(curr_iter);
-
-                gradKappa1->coeffRef(curr_iter,3)=-0.5*kbLocal.dot(d1e);
-                gradKappa1->coeffRef(curr_iter,7)=-0.5*kbLocal.dot(d1f);
-                gradKappa2->coeffRef(curr_iter,3)=-0.5*kbLocal.dot(d2e);
-                gradKappa2->coeffRef(curr_iter,7)=-0.5*kbLocal.dot(d2f);
-
-                curr_iter++;
-            }
-        }
-        curr_iter = 0;
-        int n1, l1;
-        int n2, l2;
-        int n3, l3;
-
-        n2 = joint->joint_node;
-        l2 = joint->joint_limb;
-        for (int i = 0; i < joint->ne; i++) {
-            n1 = joint->connected_nodes[i].first;
-            l1 = joint->connected_nodes[i].second;
-            for (int j = i; j < joint->ne; j++) {
-                n3 = joint->connected_nodes[j].first;
-                l3 = joint->connected_nodes[j].second;
-                relevantPart.col(0) = gradKappa1->row(curr_iter);
-                relevantPart.col(1) = gradKappa2->row(curr_iter);
-                kappaL = joint->kappa.row(curr_iter) - joint->kappaBar.row(curr_iter);
-                // TODO: NEED TO CONSTRUCT UNIQUE EI MATRICES WITH EACH RODS EI
-                f = -relevantPart * EIMatrices[0] * kappaL / joint->voronoi_len(curr_iter);
-
-                for (int k = 0; k < 3; k++) {
-                    stepper->addForce(4*n1+k, -f[k], l1);
-                }
-                for (int k = 0; k < 3; k++) {
-                    stepper->addForce(4*n2+k, -f[k+4], l2);
-                }
-                for (int k = 0; k < 3; k++) {
-                    stepper->addForce(4*n3+k, -f[k+8], l3);
-                }
-
-                curr_iter++;
-            }
-        }
-        joint_idx++;
-    }
+//    // TODO: need to add bending energies between joint edges and limb edges!!!
+//    int joint_idx = 0;
+//    for (const auto& joint : joints) {
+//        int curr_iter = 0;
+//        gradKappa1 = gradKappa1s[limbs.size() + joint_idx];
+//        gradKappa2 = gradKappa2s[limbs.size() + joint_idx];
+//        for (int i = 0; i < joint->ne; i++) {
+//            for (int j = i+1; j < joint->ne; j++) {
+//                norm_e = joint->edge_len(i);
+//                norm_f = joint->edge_len(j);
+//                te = joint->tangents.row(i);
+//                tf = -joint->tangents.row(j);
+//                d1e = joint->m1.row(i);
+//                d2e = joint->m2.row(i);
+//                d1f = joint->m1.row(j);
+//                d2f = joint->m2.row(j);
+//
+//                chi = 1.0 + te.dot(tf);
+//                tilde_t = (te+tf)/chi;
+//                tilde_d1 = (d1e+d1f)/chi;
+//                tilde_d2 = (d2e+d2f)/chi;
+//
+//                kappa1 = joint->kappa(curr_iter, 0);
+//                kappa2 = joint->kappa(curr_iter, 1);
+//
+//                Dkappa1De = (1.0/norm_e)*(-kappa1*tilde_t + tf.cross(tilde_d2));
+//                Dkappa1Df = (1.0/norm_f)*(-kappa1*tilde_t - te.cross(tilde_d2));
+//                Dkappa2De = (1.0/norm_e)*(-kappa2*tilde_t - tf.cross(tilde_d1));
+//                Dkappa2Df = (1.0/norm_f)*(-kappa2*tilde_t + te.cross(tilde_d1));
+//
+//                gradKappa1->row(curr_iter).segment(0,3)=-Dkappa1De;
+//                gradKappa1->row(curr_iter).segment(4,3)= Dkappa1De - Dkappa1Df;
+//                gradKappa1->row(curr_iter).segment(8,3)= Dkappa1Df;
+//
+//                gradKappa2->row(curr_iter).segment(0,3)=-Dkappa2De;
+//                gradKappa2->row(curr_iter).segment(4,3)= Dkappa2De - Dkappa2Df;
+//                gradKappa2->row(curr_iter).segment(8,3)= Dkappa2Df;
+//
+//                kbLocal = (joint->kb).row(curr_iter);
+//
+//                gradKappa1->coeffRef(curr_iter,3)=-0.5*kbLocal.dot(d1e);
+//                gradKappa1->coeffRef(curr_iter,7)=-0.5*kbLocal.dot(d1f);
+//                gradKappa2->coeffRef(curr_iter,3)=-0.5*kbLocal.dot(d2e);
+//                gradKappa2->coeffRef(curr_iter,7)=-0.5*kbLocal.dot(d2f);
+//
+//                curr_iter++;
+//            }
+//        }
+//        curr_iter = 0;
+//        int n1, l1;
+//        int n2, l2;
+//        int n3, l3;
+//
+//        n2 = joint->joint_node;
+//        l2 = joint->joint_limb;
+//        for (int i = 0; i < joint->ne; i++) {
+//            n1 = joint->connected_nodes[i].first;
+//            l1 = joint->connected_nodes[i].second;
+//            for (int j = i + 1; j < joint->ne; j++) {
+//                n3 = joint->connected_nodes[j].first;
+//                l3 = joint->connected_nodes[j].second;
+//                relevantPart.col(0) = gradKappa1->row(curr_iter);
+//                relevantPart.col(1) = gradKappa2->row(curr_iter);
+//                kappaL = joint->kappa.row(curr_iter) - joint->kappaBar.row(curr_iter);
+//                // TODO: NEED TO CONSTRUCT UNIQUE EI MATRICES WITH EACH RODS EI
+//                f = -relevantPart * EIMatrices[0] * kappaL / joint->voronoi_len(curr_iter);
+//
+//                for (int k = 0; k < 3; k++) {
+//                    stepper->addForce(4*n1+k, -f[k], l1);
+//                    stepper->addForce(4*n2+k, -f[k+4], l2);
+//                    stepper->addForce(4*n3+k, -f[k+8], l3);
+//                }
+//
+//                curr_iter++;
+//            }
+//        }
+//        joint_idx++;
+//    }
 }
 
 void elasticBendingForce::computeJb()
@@ -209,6 +206,7 @@ void elasticBendingForce::computeJb()
         gradKappa1 = gradKappa1s[limb_idx];
         gradKappa2 = gradKappa2s[limb_idx];
         for (int i = 1; i < limb->ne; i++) {
+            if (limb->isEdgeJoint[i] || limb->isEdgeJoint[i-1]) continue;
             norm_e = limb->edgeLen(i - 1);
             norm_f = limb->edgeLen(i);
             te = limb->tangent.row(i - 1);
@@ -256,82 +254,82 @@ void elasticBendingForce::computeJb()
         limb_idx++;
     }
 
-    int joint_idx = 0;
-    for (const auto& joint : joints) {
-        int curr_iter = 0;
-        gradKappa1 = gradKappa1s[limbs.size() + joint_idx];
-        gradKappa2 = gradKappa2s[limbs.size() + joint_idx];
-        for (int i = 0; i < joint->ne; i++) {
-            for (int j = i; j < joint->ne; j++) {
-                norm_e = joint->edge_len(i);
-                norm_f = joint->edge_len(j);
-                te = joint->tangents.row(i);
-                tf = joint->tangents.row(j);
-                d1e = joint->m1.row(i);
-                d2e = joint->m2.row(i);
-                d1f = joint->m1.row(j);
-                d2f = joint->m2.row(j);
-
-                norm2_e = norm_e * norm_e;
-                norm2_f = norm_f * norm_f;
-
-                chi = 1.0 + te.dot(tf);
-                tilde_t = (te + tf) / chi;
-                tilde_d1 = (d1e + d1f) / chi;
-                tilde_d2 = (d2e + d2f) / chi;
-
-                kappa1 = joint->kappa(curr_iter, 0);
-                kappa2 = joint->kappa(curr_iter, 1);
-
-                kbLocal = (joint->kb).row(curr_iter);
-
-                JacobianComputation();
-
-                len = joint->voronoi_len(curr_iter);
-                relevantPart.col(0) = gradKappa1->row(curr_iter);
-                relevantPart.col(1) = gradKappa2->row(curr_iter);
-
-                // TODO: ADD CORRECT EI MATRICES FOR JOINTS
-                Jbb = -1.0 / len * relevantPart * EIMatrices[0] * relevantPart.transpose();
-
-                kappaL = (joint->kappa).row(curr_iter) - (joint->kappaBar).row(curr_iter);
-
-                temp = -1.0 / len * kappaL.transpose() * EIMatrices[0];
-
-                Jbb = Jbb + temp(0) * DDkappa1 + temp(1) * DDkappa2;
-
-                int n1, l1;
-                int n2, l2;
-                int n3, l3;
-                n1 = joint->connected_nodes[i].first;
-                l1 = joint->connected_nodes[i].second;
-                n2 = joint->joint_node;
-                l2 = joint->joint_limb;
-                n3 = joint->connected_nodes[j].first;
-                l3 = joint->connected_nodes[j].second;
-
-                for (int j = 0; j < 3; j++) {
-                    for (int k = 0; k < 3; k++) {
-                        stepper->addJacobian(4*n1+j, 4*n1+k, -Jbb(k, j), l1);
-                        stepper->addJacobian(4*n1+j, 4*n2+k, -Jbb(k+4, j), l1, l2);
-                        stepper->addJacobian(4*n1+j, 4*n3+k, -Jbb(k+8, j), l1, l3);
-
-                        stepper->addJacobian(4*n2+j, 4*n1+k, -Jbb(k, j+4), l2, l1);
-                        stepper->addJacobian(4*n2+j, 4*n2+k, -Jbb(k+4, j+4), l2);
-                        stepper->addJacobian(4*n2+j, 4*n3+k, -Jbb(k+8, j+4), l2, l3);
-
-                        stepper->addJacobian(4*n3+j, 4*n1+k, -Jbb(k, j+8), l3, l1);
-                        stepper->addJacobian(4*n3+j, 4*n2+k, -Jbb(k+4, j+8), l3, l2);
-                        stepper->addJacobian(4*n3+j, 4*n3+k, -Jbb(k+8, j+8), l3);
-                    }
-                }
-
-                curr_iter++;
-            }
-        }
-
-        joint_idx++;
-    }
+//    int joint_idx = 0;
+//    for (const auto& joint : joints) {
+//        int curr_iter = 0;
+//        gradKappa1 = gradKappa1s[limbs.size() + joint_idx];
+//        gradKappa2 = gradKappa2s[limbs.size() + joint_idx];
+//        for (int i = 0; i < joint->ne; i++) {
+//            for (int j = i+1; j < joint->ne; j++) {
+//                norm_e = joint->edge_len(i);
+//                norm_f = joint->edge_len(j);
+//                te = joint->tangents.row(i);
+//                tf = -joint->tangents.row(j);
+//                d1e = joint->m1.row(i);
+//                d2e = joint->m2.row(i);
+//                d1f = joint->m1.row(j);
+//                d2f = joint->m2.row(j);
+//
+//                norm2_e = norm_e * norm_e;
+//                norm2_f = norm_f * norm_f;
+//
+//                chi = 1.0 + te.dot(tf);
+//                tilde_t = (te + tf) / chi;
+//                tilde_d1 = (d1e + d1f) / chi;
+//                tilde_d2 = (d2e + d2f) / chi;
+//
+//                kappa1 = joint->kappa(curr_iter, 0);
+//                kappa2 = joint->kappa(curr_iter, 1);
+//
+//                kbLocal = (joint->kb).row(curr_iter);
+//
+//                JacobianComputation();
+//
+//                len = joint->voronoi_len(curr_iter);
+//                relevantPart.col(0) = gradKappa1->row(curr_iter);
+//                relevantPart.col(1) = gradKappa2->row(curr_iter);
+//
+//                // TODO: ADD CORRECT EI MATRICES FOR JOINTS
+//                Jbb = -1.0 / len * relevantPart * EIMatrices[0] * relevantPart.transpose();
+//
+//                kappaL = (joint->kappa).row(curr_iter) - (joint->kappaBar).row(curr_iter);
+//
+//                temp = -1.0 / len * kappaL.transpose() * EIMatrices[0];
+//
+//                Jbb = Jbb + temp(0) * DDkappa1 + temp(1) * DDkappa2;
+//
+//                int n1, l1;
+//                int n2, l2;
+//                int n3, l3;
+//                n1 = joint->connected_nodes[i].first;
+//                l1 = joint->connected_nodes[i].second;
+//                n2 = joint->joint_node;
+//                l2 = joint->joint_limb;
+//                n3 = joint->connected_nodes[j].first;
+//                l3 = joint->connected_nodes[j].second;
+//
+//                for (int t = 0; t < 3; t++) {
+//                    for (int k = 0; k < 3; k++) {
+//                        stepper->addJacobian(4*n1+t, 4*n1+k, -Jbb(k, t), l1);
+//                        stepper->addJacobian(4*n1+t, 4*n2+k, -Jbb(k+4, t), l1, l2);
+//                        stepper->addJacobian(4*n1+t, 4*n3+k, -Jbb(k+8, t), l1, l3);
+//
+//                        stepper->addJacobian(4*n2+t, 4*n1+k, -Jbb(k, t+4), l2, l1);
+//                        stepper->addJacobian(4*n2+t, 4*n2+k, -Jbb(k+4, t+4), l2);
+//                        stepper->addJacobian(4*n2+t, 4*n3+k, -Jbb(k+8, t+4), l2, l3);
+//
+//                        stepper->addJacobian(4*n3+t, 4*n1+k, -Jbb(k, t+8), l3, l1);
+//                        stepper->addJacobian(4*n3+t, 4*n2+k, -Jbb(k+4, t+8), l3, l2);
+//                        stepper->addJacobian(4*n3+t, 4*n3+k, -Jbb(k+8, t+8), l3);
+//                    }
+//                }
+//
+//                curr_iter++;
+//            }
+//        }
+//
+//        joint_idx++;
+//    }
 
 }
 

@@ -113,24 +113,34 @@ bool world::CoutDataC(ofstream &outfile) {
 
 void world::setRodStepper() {
     // Set up geometry
-    rodGeometry();
+//    rodGeometry();
 
-    // Create the rod
-//    rod = make_shared<elasticRod>(vertices, vertices, density, rodRadius, deltaTime,
-//                                  youngM, shearM, RodLength, theta);
-
-//    rod = make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.25, 0), 100, density, rodRadius, deltaTime, youngM, shearM);
     limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.05, 0), 15,
                                             density, rodRadius, deltaTime, youngM, shearM));
-//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.05, 0), Vector3d(0.05, 0.05, 0), 15,
-//                                            density, rodRadius, deltaTime, youngM, shearM));
-//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.05, 0), Vector3d(0.00, 0.10, 0), 15,
-//                                            density, rodRadius, deltaTime, youngM, shearM));
     limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.025, 0), Vector3d(0.05, 0.025, 0), 15,
+                                            density, rodRadius, deltaTime, youngM, shearM));
+    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.025, 0), Vector3d(-0.05, 0.025, 0), 15,
+                                            density, rodRadius, deltaTime, youngM, shearM));
+    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.05, 0), Vector3d(0.05, 0.05, 0), 15,
                                             density, rodRadius, deltaTime, youngM, shearM));
 
     joints.push_back(make_shared<Joint>(7, 0, limbs));
     joints[0]->addToJoint(0, 1);
+    joints[0]->addToJoint(0, 2);
+    joints.push_back(make_shared<Joint>(14, 0, limbs));
+    joints[1]->addToJoint(0, 3);
+
+//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.025, 0), 5,
+//                                            density, rodRadius, deltaTime, youngM, shearM));
+//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.025, 0), Vector3d(0.0, 0.05, 0), 5,
+//                                            density, rodRadius, deltaTime, youngM, shearM));
+//
+//    joints.push_back(make_shared<Joint>(4, 0, limbs));
+//    joints[0]->addToJoint(0, 1);
+
+    // This has to be called after joints are all set.
+    for (const auto& joint : joints) joint->setup();
+
 
     // Find out the tolerance, e.g. how small is enough?
     characteristicForce = M_PI * pow(rodRadius, 4) / 4.0 * youngM / pow(RodLength, 2);
@@ -148,16 +158,13 @@ void world::setRodStepper() {
 
     // declare the forces
     m_stretchForce = make_unique<elasticStretchingForce>(limbs, joints, stepper);
-//    m_bendingForce = make_unique<elasticBendingForce>(limbs, joints, stepper);
+    m_bendingForce = make_unique<elasticBendingForce>(limbs, joints, stepper);
 //    m_twistingForce = make_unique<elasticTwistingForce>(limbs, joints, stepper);
     m_inertialForce = make_unique<inertialForce>(limbs, joints, stepper);
     m_gravityForce = make_unique<externalGravityForce>(limbs, joints, stepper, gVector);
     m_dampingForce = make_unique<dampingForce>(limbs, joints, stepper, viscosity);
 //    m_collisionDetector = make_shared<collisionDetector>(rod, delta, col_limit);
 //    m_contactPotentialIMC = make_unique<contactPotentialIMC>(rod, stepper, m_collisionDetector, delta, k_scaler, mu, nu);
-
-    // This has to be called after joints are all set.
-    for (const auto& joint : joints) joint->setup();
 
     // Allocate every thing to prepare for the first iteration
     for (const auto& limb : limbs) limb->updateTimeStep();
@@ -265,7 +272,7 @@ void world::calculateForce() {
 
     m_inertialForce->computeFi();
     m_stretchForce->computeFs();
-//    m_bendingForce->computeFb();
+    m_bendingForce->computeFb();
 //    m_twistingForce->computeFt();
     m_gravityForce->computeFg();
     m_dampingForce->computeFd();
@@ -329,50 +336,56 @@ void world::newtonMethod(bool &solved) {
         stepper->setZero();
 
         // Compute the forces and the jacobians
-        normf = 0;
-        for (int i = 0; i < stepper->freeDOF; i++) {
-            normf += totalForce[i] * totalForce[i];
-        }
-        normf = sqrt(normf);
-
         m_inertialForce->computeFi();
         m_inertialForce->computeJi();
 
-        cout << "inertial " << normf << endl;
         normf = 0;
         for (int i = 0; i < stepper->freeDOF; i++) {
             normf += totalForce[i] * totalForce[i];
         }
         normf = sqrt(normf);
+        cout << "inertial " << normf << endl;
 
         m_stretchForce->computeFs();
         m_stretchForce->computeJs();
 
+        normf = 0;
+        for (int i = 0; i < stepper->freeDOF; i++) {
+            normf += totalForce[i] * totalForce[i];
+        }
+        normf = sqrt(normf);
         cout << "stretching " << normf << endl;
 
-//        m_bendingForce->computeFb();
-//        m_bendingForce->computeJb();
+        m_bendingForce->computeFb();
+        m_bendingForce->computeJb();
+
+        normf = 0;
+        for (int i = 0; i < stepper->freeDOF; i++) {
+            normf += totalForce[i] * totalForce[i];
+        }
+        normf = sqrt(normf);
+        cout << "bending " << normf << endl;
 
 //        m_twistingForce->computeFt();
 //        m_twistingForce->computeJt();
-        normf = 0;
-        for (int i = 0; i < stepper->freeDOF; i++) {
-            normf += totalForce[i] * totalForce[i];
-        }
-        normf = sqrt(normf);
-
         m_gravityForce->computeFg();
         m_gravityForce->computeJg();
-        cout << "gravity " << normf << endl;
 
         normf = 0;
         for (int i = 0; i < stepper->freeDOF; i++) {
             normf += totalForce[i] * totalForce[i];
         }
         normf = sqrt(normf);
+        cout << "gravity " << normf << endl;
+
         m_dampingForce->computeFd();
         m_dampingForce->computeJd();
 
+        normf = 0;
+        for (int i = 0; i < stepper->freeDOF; i++) {
+            normf += totalForce[i] * totalForce[i];
+        }
+        normf = sqrt(normf);
         cout << "damping " << normf << endl;
 
 //        m_collisionDetector->detectCollisions();
@@ -492,7 +505,7 @@ void world::lineSearch() {
         // Compute the forces and the jacobians
         m_inertialForce->computeFi();
         m_stretchForce->computeFs();
-//        m_bendingForce->computeFb();
+        m_bendingForce->computeFb();
 //        m_twistingForce->computeFt();
         m_gravityForce->computeFg();
         m_dampingForce->computeFd();

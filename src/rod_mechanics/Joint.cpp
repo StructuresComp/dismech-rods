@@ -57,7 +57,7 @@ void Joint::setReferenceLength() {
 
     int curr_index = 0;
     for (int i = 0; i < ne; i++) {
-        for (int j = i; j < ne; j++) {
+        for (int j = i + 1; j < ne; j++) {
             voronoi_len(curr_index) = 0.5 * (ref_len(i) + ref_len(j));
             curr_index++;
         }
@@ -123,7 +123,7 @@ void Joint::computeKappa() {
     int curr_iter = 0;
 
     for (int i = 0; i < ne; i++) {
-        for (int j = i; j < ne; j++) {
+        for (int j = i + 1; j < ne; j++) {
             t0 = tangents.row(i);
             t1 = -tangents.row(j);
             kb.row(curr_iter) = 2.0 * t0.cross(t1) / (1.0 + t0.dot(t1));
@@ -133,7 +133,7 @@ void Joint::computeKappa() {
 
     curr_iter = 0;
     for (int i = 0; i < ne; i++) {
-        for (int j = i; j < ne; j++) {
+        for (int j = i + 1; j < ne; j++) {
             m1e = m1.row(i);
             m2e = m2.row(i);
             m1f = m1.row(j);
@@ -201,7 +201,7 @@ void Joint::getRefTwist() {
     int curr_iter = 0;
 
     for (int i = 0; i < ne; i++) {
-        for (int j = i; j < ne; j++) {
+        for (int j = i+1; j < ne; j++) {
             u0 = d1.row(i);
             u1 = d1.row(j);
             t0 = tangents.row(i);
@@ -233,7 +233,7 @@ void Joint::computeEdgeLen() {
 void Joint::setup() {
     num_bending_combos = 0;
     for (int i = 0; i < ne; i++) {
-        for (int j = i; j < ne; j++) {
+        for (int j = i+1; j < ne; j++) {
             num_bending_combos++;
         }
     }
