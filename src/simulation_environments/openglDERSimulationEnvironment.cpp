@@ -129,7 +129,7 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void)
             limb_idx++;
         }
 
-        glColor3f(1.0, 0.0, 0.0);
+        glColor3f(0.0, 1.0, 0.0);
         double scale = 0.2;  // hard coding this for now cuz I'm lazy, will fix later
         int n, l;
         for (const auto& joint : openglWorld_p->joints) {
@@ -144,6 +144,15 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void)
                             joint->x(2) / scale);
             }
         }
+
+        glColor3f(1.0, 0.0, 0.0);
+        shared_ptr<elasticRod> curr_limb = openglWorld_p->limbs[0];
+        glVertex3f( openglWorld_p->getScaledCoordinate(0, 0),
+                    openglWorld_p->getScaledCoordinate(1, 0),
+                    openglWorld_p->getScaledCoordinate(2, 0));
+        glVertex3f( openglWorld_p->getScaledCoordinate(4, 0),
+                    openglWorld_p->getScaledCoordinate(5, 0),
+                    openglWorld_p->getScaledCoordinate(6, 0));
 
 //		double wallAngle = 6.0 * 3.141592654 / 180.0;
 //

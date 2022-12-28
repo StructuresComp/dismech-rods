@@ -115,20 +115,28 @@ void world::setRodStepper() {
     // Set up geometry
 //    rodGeometry();
 
-    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.05, 0), 15,
+    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.05, 0), 6,
                                             density, rodRadius, deltaTime, youngM, shearM));
-    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.025, 0), Vector3d(0.05, 0.025, 0), 15,
+    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.03, 0), Vector3d(0.10, 0.03, 0), 10,
                                             density, rodRadius, deltaTime, youngM, shearM));
-    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.025, 0), Vector3d(-0.05, 0.025, 0), 15,
-                                            density, rodRadius, deltaTime, youngM, shearM));
-    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.05, 0), Vector3d(0.05, 0.05, 0), 15,
+    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.03, 0), Vector3d(-0.10, 0.03, 0), 10,
                                             density, rodRadius, deltaTime, youngM, shearM));
 
-    joints.push_back(make_shared<Joint>(7, 0, limbs));
+//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.025, 0), Vector3d(-0.05, 0.025, 0), 15,
+//                                            density, rodRadius, deltaTime, youngM, shearM));
+//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.05, 0), Vector3d(0.05, 0.05, 0), 15,
+//                                            density, rodRadius, deltaTime, youngM, shearM));
+
+
+    joints.push_back(make_shared<Joint>(3, 0, limbs));
     joints[0]->addToJoint(0, 1);
     joints[0]->addToJoint(0, 2);
-    joints.push_back(make_shared<Joint>(14, 0, limbs));
-    joints[1]->addToJoint(0, 3);
+
+
+
+//    joints[0]->addToJoint(0, 2);
+//    joints.push_back(make_shared<Joint>(14, 0, limbs));
+//    joints[1]->addToJoint(0, 3);
 
 //    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.025, 0), 5,
 //                                            density, rodRadius, deltaTime, youngM, shearM));
@@ -167,8 +175,8 @@ void world::setRodStepper() {
 //    m_contactPotentialIMC = make_unique<contactPotentialIMC>(rod, stepper, m_collisionDetector, delta, k_scaler, mu, nu);
 
     // Allocate every thing to prepare for the first iteration
-    for (const auto& limb : limbs) limb->updateTimeStep();
     for (const auto& joint : joints) joint->updateTimeStep();
+    for (const auto& limb : limbs) limb->updateTimeStep();
 //    rod->updateTimeStep();
 
     currentTime = 0.0;
@@ -233,6 +241,10 @@ void world::lockEdge(int edge_num, int limb_idx) {
     limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(0), 0);
     limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(1), 1);
     limbs[limb_idx]->setThetaBoundaryCondition(0.0, 0);
+//    limbs[limb_idx]->setThetaBoundaryCondition(0.0, 1);
+
+//    limbs[limb_idx]->setThetaBoundaryCondition(0.0, 1);
+//    limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(2), 2);
 }
 
 
@@ -257,8 +269,8 @@ void world::updateTimeStep() {
     // calculate pull forces;
 //    calculateForce();
 
-    for (const auto& limb : limbs) limb->updateTimeStep();
     for (const auto& joint : joints) joint->updateTimeStep();
+    for (const auto& limb : limbs) limb->updateTimeStep();
 //    rod->updateTimeStep();
 
     printSimData();
@@ -328,9 +340,11 @@ void world::newtonMethod(bool &solved) {
         counter++;
     }
 
+    cout << timeStep << endl;
+
     while (solved == false) {
-        for (const auto& limb : limbs) limb->prepareForIteration();
         for (const auto& joint : joints) joint->prepareForIteration();
+        for (const auto& limb : limbs) limb->prepareForIteration();
 //        rod->prepareForIteration();
 
         stepper->setZero();
@@ -339,54 +353,54 @@ void world::newtonMethod(bool &solved) {
         m_inertialForce->computeFi();
         m_inertialForce->computeJi();
 
-        normf = 0;
-        for (int i = 0; i < stepper->freeDOF; i++) {
-            normf += totalForce[i] * totalForce[i];
-        }
-        normf = sqrt(normf);
-        cout << "inertial " << normf << endl;
+//        normf = 0;
+//        for (int i = 0; i < stepper->freeDOF; i++) {
+//            normf += totalForce[i] * totalForce[i];
+//        }
+//        normf = sqrt(normf);
+//        cout << "inertial " << normf << endl;
 
         m_stretchForce->computeFs();
         m_stretchForce->computeJs();
 
-        normf = 0;
-        for (int i = 0; i < stepper->freeDOF; i++) {
-            normf += totalForce[i] * totalForce[i];
-        }
-        normf = sqrt(normf);
-        cout << "stretching " << normf << endl;
+//        normf = 0;
+//        for (int i = 0; i < stepper->freeDOF; i++) {
+//            normf += totalForce[i] * totalForce[i];
+//        }
+//        normf = sqrt(normf);
+//        cout << "stretching " << normf << endl;
 
         m_bendingForce->computeFb();
         m_bendingForce->computeJb();
 
-        normf = 0;
-        for (int i = 0; i < stepper->freeDOF; i++) {
-            normf += totalForce[i] * totalForce[i];
-        }
-        normf = sqrt(normf);
-        cout << "bending " << normf << endl;
+//        normf = 0;
+//        for (int i = 0; i < stepper->freeDOF; i++) {
+//            normf += totalForce[i] * totalForce[i];
+//        }
+//        normf = sqrt(normf);
+//        cout << "bending " << normf << endl;
 
 //        m_twistingForce->computeFt();
 //        m_twistingForce->computeJt();
         m_gravityForce->computeFg();
         m_gravityForce->computeJg();
 
-        normf = 0;
-        for (int i = 0; i < stepper->freeDOF; i++) {
-            normf += totalForce[i] * totalForce[i];
-        }
-        normf = sqrt(normf);
-        cout << "gravity " << normf << endl;
+//        normf = 0;
+//        for (int i = 0; i < stepper->freeDOF; i++) {
+//            normf += totalForce[i] * totalForce[i];
+//        }
+//        normf = sqrt(normf);
+//        cout << "gravity " << normf << endl;
 
         m_dampingForce->computeFd();
         m_dampingForce->computeJd();
 
-        normf = 0;
-        for (int i = 0; i < stepper->freeDOF; i++) {
-            normf += totalForce[i] * totalForce[i];
-        }
-        normf = sqrt(normf);
-        cout << "damping " << normf << endl;
+//        normf = 0;
+//        for (int i = 0; i < stepper->freeDOF; i++) {
+//            normf += totalForce[i] * totalForce[i];
+//        }
+//        normf = sqrt(normf);
+//        cout << "damping " << normf << endl;
 
 //        m_collisionDetector->detectCollisions();
 //        if (iter == 0) {
@@ -401,6 +415,10 @@ void world::newtonMethod(bool &solved) {
             normf += totalForce[i] * totalForce[i];
         }
         normf = sqrt(normf);
+
+//        cout << stepper->freeDOF << endl;
+//        cout << Map<Matrix<double, 4, 4>>(stepper->Force.data()) << endl;
+//        cout << "============" << endl;
 
 
         if (iter == 0) {
@@ -496,8 +514,8 @@ void world::lineSearch() {
 //        rod->x = rod->xold;
 //        rod->updateNewtonX(dx, a);
 
-        for (const auto& limb : limbs) limb->prepareForIteration();
         for (const auto& joint : joints) joint->prepareForIteration();
+        for (const auto& limb : limbs) limb->prepareForIteration();
 //        rod->prepareForIteration();
 
         stepper->setZero();

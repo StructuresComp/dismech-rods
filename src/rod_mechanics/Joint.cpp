@@ -6,20 +6,28 @@ Joint::Joint(int node, int limb_idx, vector<shared_ptr<elasticRod>> &m_limbs)
     ne = 0;
     limbs[limb_idx]->addJoint(joint_node, false);
     dt = limbs[limb_idx]->dt;
-    updateConnectedNodes(joint_node, joint_limb);
+    updateConnectedNodes(joint_node, joint_limb, false);
 
 }
 
-void Joint::updateConnectedNodes(int node_num, int limb_idx) {
+void Joint::updateConnectedNodes(int node_num, int limb_idx, bool remove_dof) {
     int nv = limbs[limb_idx]->nv;
     if (node_num == 0) {
         pair<int, int> node_and_limb(1, limb_idx);
         connected_nodes.push_back(node_and_limb);
+        if (remove_dof) {
+            pair<int, int> node_and_limb2(0, limb_idx);
+            replaced_nodes.push_back(node_and_limb2);
+        }
         ne += 1;
     }
     else if (node_num == nv-1) {
         pair<int, int> node_and_limb(nv-2, limb_idx);
         connected_nodes.push_back(node_and_limb);
+        if (remove_dof) {
+            pair<int, int> node_and_limb2(nv-1, limb_idx);
+            replaced_nodes.push_back(node_and_limb2);
+        }
         ne += 1;
     }
     else {
@@ -27,6 +35,10 @@ void Joint::updateConnectedNodes(int node_num, int limb_idx) {
         connected_nodes.push_back(node_and_limb1);
         pair<int, int> node_and_limb2(node_num+1, limb_idx);
         connected_nodes.push_back(node_and_limb2);
+        if (remove_dof) {
+            pair<int, int> node_and_limb3(node_num, limb_idx);
+            replaced_nodes.push_back(node_and_limb3);
+        }
         ne += 2;
     }
 }
@@ -39,9 +51,24 @@ void Joint::updateJoint() {
 }
 
 
+void Joint::updateRods() {
+    shared_ptr<elasticRod> curr_limb;
+    int num_node;
+    int limb_idx;
+    for (const auto& node_and_limb : replaced_nodes) {
+        num_node = node_and_limb.first;
+        limb_idx = node_and_limb.second;
+        curr_limb = limbs[limb_idx];
+        curr_limb->x(4* num_node) = limbs[joint_limb]->x(4*joint_node);
+        curr_limb->x(4* num_node+1) = limbs[joint_limb]->x(4*joint_node+1);
+        curr_limb->x(4* num_node+2) = limbs[joint_limb]->x(4*joint_node+2);
+    }
+}
+
+
 void Joint::addToJoint(int node_num, int limb_idx) {
     limbs[limb_idx]->addJoint(node_num, true);
-    updateConnectedNodes(node_num, limb_idx);
+    updateConnectedNodes(node_num, limb_idx, true);
 }
 
 
@@ -239,6 +266,7 @@ void Joint::setup() {
     }
 
     updateJoint();
+    updateRods();
     x0 = x;
     u = VectorXd::Zero(3);
 
@@ -305,6 +333,7 @@ void Joint::computeTimeParallel()
 
 void Joint::prepareForIteration() {
     updateJoint();
+    updateRods();
     computeTangent();
     computeTimeParallel();
     getRefTwist();

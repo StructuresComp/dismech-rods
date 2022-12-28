@@ -15,15 +15,17 @@ public:
     double dt;
 
     void updateJoint();
+    void updateRods();
     void addToJoint(int node_num, int limb_idx);
 
-    void updateConnectedNodes(int node_num, int limb_idx);
+    void updateConnectedNodes(int node_num, int limb_idx, bool remove_dof);
 
     vector<shared_ptr<elasticRod>>& limbs;
     Vector3d x;
     Vector3d x0;
     Vector3d u;
     vector<pair<int, int>> connected_nodes;  // node_number and limb_idx
+    vector<pair<int, int>> replaced_nodes;  // node_number and limb_idx
 
     void setup();
 

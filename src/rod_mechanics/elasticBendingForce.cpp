@@ -61,6 +61,7 @@ void elasticBendingForce::computeFb()
         gradKappa2 = gradKappa2s[limb_idx];
         for (int i = 1; i < limb->ne; i++)
         {
+//            if (limb_idx == 0) continue;
             if (limb->isEdgeJoint[i] || limb->isEdgeJoint[i-1]) continue;
             norm_e = limb->edgeLen(i-1);
             norm_f = limb->edgeLen(i);
@@ -109,6 +110,8 @@ void elasticBendingForce::computeFb()
             relevantPart.col(1) = gradKappa2->row(i);
             kappaL = (limb->kappa).row(i) - (limb->kappaBar).row(i);
             f = - relevantPart * EIMatrices[limb_idx] * kappaL / limb->voronoiLen(i);
+
+//            cout << f.norm() << endl;
 
             for (int k = 0; k < 11; k++)
             {
@@ -206,6 +209,7 @@ void elasticBendingForce::computeJb()
         gradKappa1 = gradKappa1s[limb_idx];
         gradKappa2 = gradKappa2s[limb_idx];
         for (int i = 1; i < limb->ne; i++) {
+//            if (limb_idx == 0) continue;
             if (limb->isEdgeJoint[i] || limb->isEdgeJoint[i-1]) continue;
             norm_e = limb->edgeLen(i - 1);
             norm_f = limb->edgeLen(i);
@@ -242,11 +246,17 @@ void elasticBendingForce::computeJb()
             temp = -1.0 / len * kappaL.transpose() * EIMatrices[limb_idx];
 
             Jbb = Jbb + temp(0) * DDkappa1 + temp(1) * DDkappa2;
+//            cout << "Bending HERE" << endl;
+
+//            if (limb_idx == 0) {
+//                cout << Jbb(7, 7) << " " << Jbb(7, 9) << " " << Jbb(9, 7) << " " << Jbb(9, 9) << endl;
+//            }
 
             for (int j = 0; j < 11; j++) {
                 for (int k = 0; k < 11; k++) {
                     int ind1 = 4 * i - 4 + j;
                     int ind2 = 4 * i - 4 + k;
+
                     stepper->addJacobian(ind1, ind2, -Jbb(k, j), limb_idx);
                 }
             }

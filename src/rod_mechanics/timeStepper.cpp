@@ -67,6 +67,9 @@ void timeStepper::addJacobian(int ind1, int ind2, double p, int limb_idx)
     offset = offsets[limb_idx];
     if (limb->getIfConstrained(ind1) == 0 && limb->getIfConstrained(ind2) == 0) // both are free
     {
+//        if (limb_idx == 0) {
+//            cout << ind1 << " " << ind2 << endl;
+//        }
 //        row = kl + ku + mappedInd2 - mappedInd1;
 //        col = mappedInd1;
 //        offset = row + col * NUMROWS;
