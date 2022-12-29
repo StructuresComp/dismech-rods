@@ -69,7 +69,7 @@ void elasticTwistingForce::computeFt()
 
         for(int i = 1; i < limb->ne; i++)
         {
-            value = GJ / limb->voronoiLen(i) * (deltam->coeff(i) + limb->refTwist (i) - limb->undeformedTwist(i));
+            value = GJ / limb->voronoiLen(i) * (deltam->coeff(i) + limb->refTwist (i) - limb->twistBar(i));
             ci = 4*i-4;
             f = -value * gradTwist->row(i);
             for (int k = 0; k < 11; k++)
@@ -128,7 +128,7 @@ void elasticTwistingForce::computeJt()
             milen = -1 / limb->voronoiLen(i);
 
             // TODO: check that deltam is being properly saved from computeFt
-            Jtt = GJ * milen * ((deltam->coeff(i) + limb->refTwist(i) - limb->undeformedTwist(i))
+            Jtt = GJ * milen * ((deltam->coeff(i) + limb->refTwist(i) - limb->twistBar(i))
                                 * DDtwist + gradTwistLocal * gradTwistLocal.transpose());
 
 

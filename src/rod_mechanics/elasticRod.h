@@ -52,8 +52,11 @@ class elasticRod
     void computeTangent(const VectorXd &x, MatrixXd &tangentLocal);
     void parallelTansport(const Vector3d &d1_1,const Vector3d &t1,const Vector3d &t2,Vector3d &d1_2);
     void computeSpaceParallel();
+    void createReferenceDirectors();
     void computeMaterialDirector();
     void computeKappa();
+    void computeKappaBar();
+    void computeTwistBar();
     void computeEdgeLen();
     void getRefTwist();
     void rotateAxisAngle(Vector3d &v,const Vector3d &z,const double &theta);
@@ -126,7 +129,7 @@ class elasticRod
     VectorXd refTwist;
     VectorXd refTwist_old;
     // Undeformed twist
-    VectorXd undeformedTwist;
+    VectorXd twistBar;
     // lumped mass
     VectorXd massArray;
     // lumped mass at unconstrained dofs

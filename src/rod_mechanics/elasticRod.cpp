@@ -114,7 +114,8 @@ void elasticRod::setup()
     tangent = MatrixXd::Zero(ne, 3);
     computeTangent(x, tangent);
     // set reference directors
-    computeSpaceParallel();
+//    computeSpaceParallel();
+    createReferenceDirectors();
     // set material directors
     computeMaterialDirector();
     // compute natural curvature
@@ -122,11 +123,15 @@ void elasticRod::setup()
     kappa = MatrixXd::Zero(nv, 2);
     computeKappa();
     kappaBar = MatrixXd::Zero(nv, 2);
-    // compute undeformed twist
-    undeformedTwist = VectorXd::Zero(ne);
+    computeKappaBar();
     // Reference twist
     refTwist_old = VectorXd::Zero(ne);
     getRefTwist();
+
+    // Compute undeformed twist
+    twistBar = VectorXd::Zero(ne);
+    computeTwistBar();
+
     // compute edge length
     edgeLen = VectorXd(ne);
     computeEdgeLen();
@@ -483,6 +488,25 @@ void elasticRod::computeSpaceParallel()
     }
 }
 
+
+void elasticRod::createReferenceDirectors()
+{
+    Vector3d t0, t1, d1Tmp;
+    for (int i = 0; i < ne; i++) {
+        t0 = tangent.row(i);
+        t1 << 0, 0, -1;
+        d1Tmp = t0.cross(t1);
+        if (fabs(d1Tmp.norm()) < 1.0e-6)
+        {
+            t1 << 0,1,0;
+            d1Tmp=t0.cross(t1);
+        }
+        d1.row(i) = d1Tmp;
+        d2.row(i) = t0.cross(d1Tmp);
+    }
+}
+
+
 void elasticRod::computeMaterialDirector()
 {
     // TODOder: take out cs, ss out of the function and declare them as privates in elasticRod class
@@ -523,6 +547,30 @@ void elasticRod::computeKappa()
     }
 }
 
+void elasticRod::computeKappaBar()
+{
+    // We know the tangent, m1, m2. Compute kappa using them
+    Vector3d t0, t1;
+    Vector3d m1e,m2e,m1f,m2f;
+
+    for(int i=1; i<ne; i++)
+    {
+        t0 = tangent.row(i-1);
+        t1 = tangent.row(i);
+        kb.row(i) = 2.0 * t0.cross(t1) / (1.0+t0.dot(t1));
+    }
+
+    for(int i=1; i<ne; i++)
+    {
+        m1e=m1.row(i-1);
+        m2e=m2.row(i-1);
+        m1f=m1.row(i);
+        m2f=m2.row(i);
+        kappaBar(i, 0)= 0.5 * (kb.row(i)).dot(m2e+m2f);
+        kappaBar(i, 1)=-0.5 * (kb.row(i)).dot(m1e+m1f);
+    }
+}
+
 void elasticRod::getRefTwist()
 {
     Vector3d u0,u1,t0,t1,ut;
@@ -540,6 +588,16 @@ void elasticRod::getRefTwist()
 
         sgnAngle = signedAngle(ut,u1,t1);
         refTwist(i) = refTwist_old(i) + sgnAngle;
+    }
+}
+
+void elasticRod::computeTwistBar()
+{
+    double theta_i, theta_f;
+    for (int i = 1; i < ne; i++) {
+        theta_i = x(4*(i-1)+3);
+        theta_f = x(4*i+3);
+        twistBar(i) = theta_f - theta_i + refTwist(i);
     }
 }
 
