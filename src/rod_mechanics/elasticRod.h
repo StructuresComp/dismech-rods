@@ -55,7 +55,6 @@ class elasticRod
     void createReferenceDirectors();
     void computeMaterialDirector();
     void computeKappa();
-    void computeKappaBar();
     void computeTwistBar();
     void computeEdgeLen();
     void getRefTwist();

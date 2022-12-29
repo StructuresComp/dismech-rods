@@ -42,8 +42,8 @@ public:
     MatrixXd tangents_old;
     void computeTangent();
 
-    void getRefDirectors();
-    void computeMaterialDirectors();
+    void getRefandMaterialDirectors();
+//    void computeMaterialDirectors();
 
     MatrixXd d1;
     MatrixXd d2;
@@ -57,6 +57,7 @@ public:
     MatrixXd kappa;
     MatrixXd kappaBar;
     void computeKappa();
+    void computeKappaBar();
 
     VectorXd undeformed_twist;
     VectorXd ref_twist_old;
@@ -69,6 +70,7 @@ public:
     VectorXd edge_len;
     void computeEdgeLen();
 
+    void prepLimbs();
     void prepareForIteration();
     void computeTimeParallel();
 

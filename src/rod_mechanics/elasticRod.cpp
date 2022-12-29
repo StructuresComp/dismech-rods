@@ -122,8 +122,7 @@ void elasticRod::setup()
     kb = MatrixXd::Zero(nv, 3);
     kappa = MatrixXd::Zero(nv, 2);
     computeKappa();
-    kappaBar = MatrixXd::Zero(nv, 2);
-    computeKappaBar();
+    kappaBar = kappa;
     // Reference twist
     refTwist_old = VectorXd::Zero(ne);
     getRefTwist();
@@ -544,30 +543,6 @@ void elasticRod::computeKappa()
         m2f=m2.row(i);
         kappa(i, 0)= 0.5 * (kb.row(i)).dot(m2e+m2f);
         kappa(i, 1)=-0.5 * (kb.row(i)).dot(m1e+m1f);
-    }
-}
-
-void elasticRod::computeKappaBar()
-{
-    // We know the tangent, m1, m2. Compute kappa using them
-    Vector3d t0, t1;
-    Vector3d m1e,m2e,m1f,m2f;
-
-    for(int i=1; i<ne; i++)
-    {
-        t0 = tangent.row(i-1);
-        t1 = tangent.row(i);
-        kb.row(i) = 2.0 * t0.cross(t1) / (1.0+t0.dot(t1));
-    }
-
-    for(int i=1; i<ne; i++)
-    {
-        m1e=m1.row(i-1);
-        m2e=m2.row(i-1);
-        m1f=m1.row(i);
-        m2f=m2.row(i);
-        kappaBar(i, 0)= 0.5 * (kb.row(i)).dot(m2e+m2f);
-        kappaBar(i, 1)=-0.5 * (kb.row(i)).dot(m1e+m1f);
     }
 }
 

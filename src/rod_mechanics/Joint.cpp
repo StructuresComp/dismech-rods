@@ -108,7 +108,7 @@ void Joint::computeTangent() {
 }
 
 
-void Joint::getRefDirectors() {
+void Joint::getRefandMaterialDirectors() {
     shared_ptr<elasticRod> curr_limb;
     int num_node;
     int limb_idx;
@@ -119,29 +119,46 @@ void Joint::getRefDirectors() {
         curr_limb = limbs[limb_idx];
         d1.row(i) = curr_limb->d1.row(num_node);
         d2.row(i) = curr_limb->d2.row(num_node);
+        m1.row(i) = curr_limb->m1.row(num_node);
+        m2.row(i) = curr_limb->m2.row(num_node);
     }
 }
 
 
-void Joint::computeMaterialDirectors() {
-    double cs, ss;
-    double angle;
-    shared_ptr<elasticRod> curr_limb;
-    int num_node;
-    int limb_idx;
-
-    for (int i = 0; i < ne; i++) {
-        num_node = connected_nodes[i].first;
-        limb_idx = connected_nodes[i].second;
-        curr_limb = limbs[limb_idx];
-        angle = curr_limb->x[4*num_node+3];
-        cs = cos(angle);
-        ss = sin(angle);
-
-        m1.row(i) = cs * d1.row(i) + ss * d2.row(i);
-        m2.row(i) = -ss * d1.row(i) + cs * d2.row(i);
-    }
-}
+//void Joint::getRefDirectors() {
+//    shared_ptr<elasticRod> curr_limb;
+//    int num_node;
+//    int limb_idx;
+//    // TODO: check that num_node will always work
+//    for (int i = 0; i < ne; i++) {
+//        num_node = connected_nodes[i].first;
+//        limb_idx = connected_nodes[i].second;
+//        curr_limb = limbs[limb_idx];
+//        d1.row(i) = curr_limb->d1.row(num_node);
+//        d2.row(i) = curr_limb->d2.row(num_node);
+//    }
+//}
+//
+//
+//void Joint::computeMaterialDirectors() {
+//    double cs, ss;
+//    double angle;
+//    shared_ptr<elasticRod> curr_limb;
+//    int num_node;
+//    int limb_idx;
+//
+//    for (int i = 0; i < ne; i++) {
+//        num_node = connected_nodes[i].first;
+//        limb_idx = connected_nodes[i].second;
+//        curr_limb = limbs[limb_idx];
+//        angle = curr_limb->x[4*num_node+3];
+//        cs = cos(angle);
+//        ss = sin(angle);
+//
+//        m1.row(i) = cs * d1.row(i) + ss * d2.row(i);
+//        m2.row(i) = -ss * d1.row(i) + cs * d2.row(i);
+//    }
+//}
 
 
 void Joint::computeKappa() {
@@ -297,11 +314,11 @@ void Joint::setup() {
 
     computeTangent();
 
-    getRefDirectors();
-
-    computeMaterialDirectors();
+    getRefandMaterialDirectors();
 
     computeKappa();
+
+    kappaBar = kappa;
 
     getRefTwist();
 
@@ -331,13 +348,17 @@ void Joint::computeTimeParallel()
 }
 
 
-void Joint::prepareForIteration() {
+void Joint::prepLimbs() {
     updateJoint();
     updateRods();
+}
+
+
+void Joint::prepareForIteration() {
     computeTangent();
-    computeTimeParallel();
+    getRefandMaterialDirectors();  // TODO: maybe remove this later, pointless copies
+//    computeTimeParallel();
     getRefTwist();
-    computeMaterialDirectors();
     computeEdgeLen();
     computeKappa();
 }

@@ -175,8 +175,9 @@ void world::setRodStepper() {
 //    m_contactPotentialIMC = make_unique<contactPotentialIMC>(rod, stepper, m_collisionDetector, delta, k_scaler, mu, nu);
 
     // Allocate every thing to prepare for the first iteration
-    for (const auto& joint : joints) joint->updateTimeStep();
+    for (const auto& joint : joints) joint->prepLimbs();
     for (const auto& limb : limbs) limb->updateTimeStep();
+    for (const auto& joint : joints) joint->updateTimeStep();
 //    rod->updateTimeStep();
 
     currentTime = 0.0;
@@ -269,8 +270,9 @@ void world::updateTimeStep() {
     // calculate pull forces;
 //    calculateForce();
 
-    for (const auto& joint : joints) joint->updateTimeStep();
+    for (const auto& joint : joints) joint->prepLimbs();
     for (const auto& limb : limbs) limb->updateTimeStep();
+    for (const auto& joint : joints) joint->updateTimeStep();
 //    rod->updateTimeStep();
 
     printSimData();
@@ -343,8 +345,9 @@ void world::newtonMethod(bool &solved) {
     cout << timeStep << endl;
 
     while (solved == false) {
-        for (const auto& joint : joints) joint->prepareForIteration();
+        for (const auto& joint : joints) joint->prepLimbs();
         for (const auto& limb : limbs) limb->prepareForIteration();
+        for (const auto& joint : joints) joint->prepareForIteration();
 //        rod->prepareForIteration();
 
         stepper->setZero();
@@ -514,8 +517,9 @@ void world::lineSearch() {
 //        rod->x = rod->xold;
 //        rod->updateNewtonX(dx, a);
 
-        for (const auto& joint : joints) joint->prepareForIteration();
+        for (const auto& joint : joints) joint->prepLimbs();
         for (const auto& limb : limbs) limb->prepareForIteration();
+        for (const auto& joint : joints) joint->prepareForIteration();
 //        rod->prepareForIteration();
 
         stepper->setZero();
