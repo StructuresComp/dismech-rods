@@ -15,6 +15,7 @@ void Joint::updateConnectedNodes(int node_num, int limb_idx, bool remove_dof) {
     if (node_num == 0) {
         pair<int, int> node_and_limb(1, limb_idx);
         connected_nodes.push_back(node_and_limb);
+        bending_twist_signs.push_back(-1);
         if (remove_dof) {
             pair<int, int> node_and_limb2(0, limb_idx);
             replaced_nodes.push_back(node_and_limb2);
@@ -24,6 +25,7 @@ void Joint::updateConnectedNodes(int node_num, int limb_idx, bool remove_dof) {
     else if (node_num == nv-1) {
         pair<int, int> node_and_limb(nv-2, limb_idx);
         connected_nodes.push_back(node_and_limb);
+        bending_twist_signs.push_back(1);
         if (remove_dof) {
             pair<int, int> node_and_limb2(nv-1, limb_idx);
             replaced_nodes.push_back(node_and_limb2);
@@ -33,8 +35,10 @@ void Joint::updateConnectedNodes(int node_num, int limb_idx, bool remove_dof) {
     else {
         pair<int, int> node_and_limb1(node_num-1, limb_idx);
         connected_nodes.push_back(node_and_limb1);
+        bending_twist_signs.push_back(1);
         pair<int, int> node_and_limb2(node_num+1, limb_idx);
         connected_nodes.push_back(node_and_limb2);
+        bending_twist_signs.push_back(-1);
         if (remove_dof) {
             pair<int, int> node_and_limb3(node_num, limb_idx);
             replaced_nodes.push_back(node_and_limb3);
@@ -102,8 +106,14 @@ void Joint::computeTangent() {
         limb_idx = connected_nodes[i].second;
         curr_limb = limbs[limb_idx];
 
-        tangents.row(i) = x - curr_limb->x.segment(4*num_node, 3);
-        tangents.row(i) /= tangents.row(i).norm();
+        if (bending_twist_signs[i] == 1) {
+            tangents.row(i) = x - curr_limb->x.segment(4*num_node, 3);
+            tangents.row(i) /= tangents.row(i).norm();
+        }
+        else {
+            tangents.row(i) = curr_limb->x.segment(4*num_node, 3) - x;
+            tangents.row(i) /= tangents.row(i).norm();
+        }
     }
 }
 
@@ -117,6 +127,7 @@ void Joint::getRefandMaterialDirectors() {
         num_node = connected_nodes[i].first;
         limb_idx = connected_nodes[i].second;
         curr_limb = limbs[limb_idx];
+
         d1.row(i) = curr_limb->d1.row(num_node);
         d2.row(i) = curr_limb->d2.row(num_node);
         m1.row(i) = curr_limb->m1.row(num_node);
@@ -166,10 +177,15 @@ void Joint::computeKappa() {
     Vector3d m1e, m2e, m1f, m2f;
     int curr_iter = 0;
 
+    int sgn1;
+    int sgn2;
+
     for (int i = 0; i < ne; i++) {
+        bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
         for (int j = i + 1; j < ne; j++) {
-            t0 = tangents.row(i);
-            t1 = -tangents.row(j);
+            bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
+            t0 = sgn1 * tangents.row(i);
+            t1 = sgn2 * tangents.row(j);
             kb.row(curr_iter) = 2.0 * t0.cross(t1) / (1.0 + t0.dot(t1));
             curr_iter++;
         }
@@ -177,11 +193,13 @@ void Joint::computeKappa() {
 
     curr_iter = 0;
     for (int i = 0; i < ne; i++) {
+        bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
         for (int j = i + 1; j < ne; j++) {
+            bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
             m1e = m1.row(i);
-            m2e = m2.row(i);
+            m2e = sgn1 * m2.row(i);
             m1f = m1.row(j);
-            m2f = m2.row(j);
+            m2f = sgn2 * m2.row(j);
             kappa(curr_iter, 0) = 0.5 * (kb.row(curr_iter)).dot(m2e + m2f);
             kappa(curr_iter, 1) = -0.5 * (kb.row(curr_iter)).dot(m1e + m1f);
             curr_iter++;
@@ -244,17 +262,43 @@ void Joint::getRefTwist() {
     double sgnAngle;
     int curr_iter = 0;
 
+    int sgn1, sgn2;
+
     for (int i = 0; i < ne; i++) {
+        bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
         for (int j = i+1; j < ne; j++) {
+            bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
             u0 = d1.row(i);
             u1 = d1.row(j);
-            t0 = tangents.row(i);
-            t1 = -tangents.row(j);
+            t0 = sgn1 * tangents.row(i);
+            t1 = sgn2 * tangents.row(j);
             parallelTransport(u0, t0, t1, ut);
             rotateAxisAngle(ut, t1, ref_twist_old(curr_iter));
 
             sgnAngle = signedAngle(ut, u1, t1);
             ref_twist(curr_iter) = ref_twist_old(curr_iter) + sgnAngle;
+            curr_iter++;
+        }
+    }
+}
+
+
+void Joint::computeTwistBar()
+{
+    // TODO: add signs later
+    double theta_i, theta_f;
+    int n1, n2;
+    int l1, l2;
+    int curr_iter = 0;
+    for (int i = 0; i < ne; i++) {
+        n1 = connected_nodes[i].first;
+        l1 = connected_nodes[i].second;
+        for (int j = i+1; j < ne; j++) {
+            n2 = connected_nodes[j].first;
+            l2 = connected_nodes[j].second;
+            theta_i = limbs[l1]->x[4*n1+3];
+            theta_f = limbs[l2]->x[4*n2+3];
+            twistBar(i) = theta_f - theta_i + ref_twist(i);
             curr_iter++;
         }
     }
@@ -306,6 +350,7 @@ void Joint::setup() {
     kb = MatrixXd::Zero(num_bending_combos, 3);
     kappa = MatrixXd::Zero(num_bending_combos, 2);
     kappaBar = MatrixXd::Zero(num_bending_combos, 2);
+    twistBar = VectorXd::Zero(num_bending_combos);
     edge_len = VectorXd::Zero(ne);
 
     setMass();
@@ -321,6 +366,8 @@ void Joint::setup() {
     kappaBar = kappa;
 
     getRefTwist();
+
+    computeTwistBar();
 
     computeEdgeLen();
 
@@ -356,6 +403,8 @@ void Joint::prepLimbs() {
 
 void Joint::prepareForIteration() {
     computeTangent();
+
+    // This needs to be called after limbs
     getRefandMaterialDirectors();  // TODO: maybe remove this later, pointless copies
 //    computeTimeParallel();
     getRefTwist();

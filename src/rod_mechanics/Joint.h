@@ -27,6 +27,8 @@ public:
     vector<pair<int, int>> connected_nodes;  // node_number and limb_idx
     vector<pair<int, int>> replaced_nodes;  // node_number and limb_idx
 
+    vector<int> bending_twist_signs;
+
     void setup();
 
     double mass;
@@ -57,15 +59,15 @@ public:
     MatrixXd kappa;
     MatrixXd kappaBar;
     void computeKappa();
-    void computeKappaBar();
 
-    VectorXd undeformed_twist;
+    VectorXd twistBar;
     VectorXd ref_twist_old;
     void rotateAxisAngle(Vector3d &v,const Vector3d &z,const double &theta);
     void parallelTransport(const Vector3d &d1_1,const Vector3d &t1, const Vector3d &t2, Vector3d &d1_2);
     double signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n);
 
     void getRefTwist();
+    void computeTwistBar();
 
     VectorXd edge_len;
     void computeEdgeLen();
