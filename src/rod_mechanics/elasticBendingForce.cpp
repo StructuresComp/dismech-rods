@@ -62,6 +62,7 @@ void elasticBendingForce::computeFb()
         for (int i = 1; i < limb->ne; i++)
         {
             if (limb->isEdgeJoint[i] || limb->isEdgeJoint[i-1]) continue;
+//            if (i == 3) continue;
             norm_e = limb->edgeLen(i-1);
             norm_f = limb->edgeLen(i);
             te = limb->tangent.row(i-1);
@@ -104,6 +105,7 @@ void elasticBendingForce::computeFb()
         for (int i = 1; i < limb->ne; i++)
         {
             if (limb->isEdgeJoint[i] || limb->isEdgeJoint[i-1]) continue;
+//            if (i == 3) continue;
             ci = 4*i-4;
             relevantPart.col(0) = gradKappa1->row(i);
             relevantPart.col(1) = gradKappa2->row(i);
@@ -118,8 +120,6 @@ void elasticBendingForce::computeFb()
         }
         limb_idx++;
     }
-
-    return;
 
     // TODO: need to add bending energies between joint edges and limb edges!!!
     int joint_idx = 0;
@@ -192,6 +192,7 @@ void elasticBendingForce::computeFb()
                 kappaL = joint->kappa.row(curr_iter) - joint->kappaBar.row(curr_iter);
                 // TODO: NEED TO CONSTRUCT UNIQUE EI MATRICES WITH EACH RODS EI
                 f = -relevantPart * EIMatrices[0] * kappaL / joint->voronoi_len(curr_iter);
+//                cout << joint->voronoi_len(curr_iter) << endl;
 
                 // Nodal forces
                 for (int k = 0; k < 3; k++) {
@@ -200,8 +201,9 @@ void elasticBendingForce::computeFb()
                     stepper->addForce(4*n3+k, -f[k+8], l3);
                 }
                 // Theta moments
-//                stepper->addForce(4*n1+3, -f[3] * sgn1, l1);
-//                stepper->addForce(4*n3-1, -f[7] * sgn2, l3);
+//                cout << sgn1 << " " << sgn2 << endl;
+                stepper->addForce(4*n1+3, -f[3] * sgn1, l1);
+                stepper->addForce(4*n3-1, -f[7] * sgn2, l3);
 
 
 //                // First and third nodes with their respective thetas
@@ -230,6 +232,7 @@ void elasticBendingForce::computeJb()
         for (int i = 1; i < limb->ne; i++) {
 //            if (limb_idx == 0) continue;
             if (limb->isEdgeJoint[i] || limb->isEdgeJoint[i-1]) continue;
+//            if (i == 3) continue;
             norm_e = limb->edgeLen(i - 1);
             norm_f = limb->edgeLen(i);
             te = limb->tangent.row(i - 1);
@@ -271,6 +274,8 @@ void elasticBendingForce::computeJb()
 //                cout << Jbb(7, 7) << " " << Jbb(7, 9) << " " << Jbb(9, 7) << " " << Jbb(9, 9) << endl;
 //            }
 
+//            cout << Jbb << endl;
+
             for (int j = 0; j < 11; j++) {
                 for (int k = 0; k < 11; k++) {
                     int ind1 = 4 * i - 4 + j;
@@ -282,8 +287,6 @@ void elasticBendingForce::computeJb()
         }
         limb_idx++;
     }
-
-    return;
 
     int joint_idx = 0;
     int sgn1, sgn2;
@@ -327,6 +330,11 @@ void elasticBendingForce::computeJb()
                 Jbb = -1.0 / len * relevantPart * EIMatrices[0] * relevantPart.transpose();
 
                 kappaL = (joint->kappa).row(curr_iter) - (joint->kappaBar).row(curr_iter);
+//                cout << "===================" << endl;
+//                cout << (joint->kappa).row(curr_iter) << endl;
+//                cout << (joint->kappaBar).row(curr_iter) << endl;
+//                cout << kappaL << endl;
+//                cout << "===================" << endl;
 
                 temp = -1.0 / len * kappaL.transpose() * EIMatrices[0];
 
@@ -342,6 +350,9 @@ void elasticBendingForce::computeJb()
                 n3 = joint->connected_nodes[j].first;
                 l3 = joint->connected_nodes[j].second;
 
+//                cout << n1 << " " << l1 << " " << n2 << " " << l2 << " " << n3 << " " << l3 << endl;
+//                cout << sgn1 << " " << sgn2 << endl;
+
                 if (sgn1 == -1) {
                     Jbb.row(3) = -Jbb.row(3);
                     Jbb.col(3) = -Jbb.col(3);
@@ -350,10 +361,20 @@ void elasticBendingForce::computeJb()
                     Jbb.row(7) = -Jbb.row(7);
                     Jbb.col(7) = -Jbb.col(7);
                 }
+                MatrixXd example = MatrixXd::Zero(11, 11);
 
                 // Nodal forces
                 for (int t = 0; t < 3; t++) {
                     for (int k = 0; k < 3; k++) {
+                        example(k, t) = 1;
+                        example(k+4, t) = 1;
+                        example(k+8, t) = 1;
+                        example(k, t+4) = 1;
+                        example(k+4, t+4) = 1;
+                        example(k+8, t+4) = 1;
+                        example(k, t+8) = 1;
+                        example(k+4, t+8) = 1;
+                        example(k+8, t+8) = 1;
                         stepper->addJacobian(4*n1+t, 4*n1+k, -Jbb(k, t), l1);
                         stepper->addJacobian(4*n1+t, 4*n2+k, -Jbb(k+4, t), l1, l2);
                         stepper->addJacobian(4*n1+t, 4*n3+k, -Jbb(k+8, t), l1, l3);
@@ -368,77 +389,63 @@ void elasticBendingForce::computeJb()
                     }
                 }
 
-//                // NOTE: theta1 is part of limb1 and theta2 is part of limb3
-//                for (int k = 0; k < 3; k++) {
-//                    // dtheta1/dx1 and dx1/dtheta1
-//                    stepper->addJacobian(4*n1+3, 4*n1+k, -Jbb(k, 3) * sgn1, l1);
-////                    stepper->addJacobian(4*n1+k, 4*n1+3, -Jbb(3, k) * sgn1, l1);
-//
-//                    // dtheta1/dx2 and dx2/dtheta1
-//                    stepper->addJacobian(4*n1+3, 4*n2+k, -Jbb(k+4, 3) * sgn1, l1, l2);
-////                    stepper->addJacobian(4*n2+k, 4*n1+3, -Jbb(3, k+4) * sgn1, l2, l1);
-//
-//                    // dtheta1/dx3 and dx3/dtheta1
-//                    stepper->addJacobian(4*n1+3, 4*n3+k, -Jbb(k+8, 3) * sgn1, l1, l3);
-////                    stepper->addJacobian(4*n3+k, 4*n1+3, -Jbb(3, k+8) * sgn1, l3, l1);
-//
-//                    // dtheta2/dx1 and dx1/dtheta2
-//                    stepper->addJacobian(4*n3-1, 4*n1+k, -Jbb(k, 7) * sgn2, l3, l1);
-////                    stepper->addJacobian(4*n1+k, 4*n3-1, -Jbb(7, k) * sgn2, l1, l3);
-//
-//                    // dtheta2/dx2 and dx2/dtheta2
-//                    stepper->addJacobian(4*n3-1, 4*n2+k, -Jbb(k+4, 7) * sgn2, l3, l2);
-////                    stepper->addJacobian(4*n2+k, 4*n3-1, -Jbb(7, k+4) * sgn2, l2, l3);
-//
-//                    // dtheta2/dx3 and dx3/dtheta2
-//                    stepper->addJacobian(4*n3-1, 4*n3+k, -Jbb(k+8, 7) * sgn2, l3);
-////                    stepper->addJacobian(4*n3+k, 4*n3-1, -Jbb(7, k+8) * sgn2, l3);
-//                }
-////                // dtheta1/dtheta1
-////                stepper->addJacobian(4*n1+3, 4*n1+3, -Jbb(3, 3) * sgn1, l1);
-////                // dtheta1/dtheta2
-////                stepper->addJacobian(4*n1+3, 4*n3-1, -Jbb(7, 3) * sgn1 * sgn2, l1, l3);
-////                // dtheta2/dtheta1
-////                stepper->addJacobian(4*n3-1, 4*n1+3, -Jbb(3, 7) * sgn1 * sgn2, l3, l1);
-////                // dtheta2/dtheta2
-////                stepper->addJacobian(4*n3-1, 4*n3-1, -Jbb(7, 7) * sgn2, l3);
+                // NOTE: theta1 is part of limb1 and theta2 is part of limb3
+                for (int k = 0; k < 3; k++) {
+//                    example(k, 3) = 1;
+//                    example(k+4, 3) = 1;
+//                    example(k+8, 3) = 1;
+//                    example(3, k) = 1;
+//                    example(3, k+4) = 1;
+//                    example(3, k+8) = 1;
+//                    example(k, 7) = 1;
+//                    example(k+4, 7) = 1;
+//                    example(k+8, 7) = 1;
+//                    example(7, k) = 1;
+//                    example(7, k+4) = 1;
+//                    example(7, k+8) = 1;
+                    // dtheta1/dx1 and dx1/dtheta1
+                    stepper->addJacobian(4*n1+3, 4*n1+k, -Jbb(k, 3), l1);
+                    stepper->addJacobian(4*n1+k, 4*n1+3, -Jbb(3, k), l1);
 
-//                // NOTE: theta1 is part of limb1 and theta2 is part of limb3
-//                for (int k = 0; k < 3; k++) {
-//                    // dtheta1/dx1 and dx1/dtheta1
-//                    stepper->addJacobian(4*n1+3, 4*n1+k, -Jbb(k, 3), l1);
-//                    stepper->addJacobian(4*n1+k, 4*n1+3, -Jbb(3, k), l1);
-//
-//                    // dtheta1/dx2 and dx2/dtheta1
-//                    stepper->addJacobian(4*n1+3, 4*n2+k, -Jbb(k+4, 3), l1, l2);
-//                    stepper->addJacobian(4*n2+k, 4*n1+3, -Jbb(3, k+4), l2, l1);
-//
-//                    // dtheta1/dx3 and dx3/dtheta1
-//                    stepper->addJacobian(4*n1+3, 4*n3+k, -Jbb(k+8, 3), l1, l3);
-//                    stepper->addJacobian(4*n3+k, 4*n1+3, -Jbb(3, k+8), l3, l1);
-//
-//                    // dtheta2/dx1 and dx1/dtheta2
-//                    stepper->addJacobian(4*n3-1, 4*n1+k, -Jbb(k, 7), l3, l1);
-//                    stepper->addJacobian(4*n1+k, 4*n3-1, -Jbb(7, k), l1, l3);
-//
-//                    // dtheta2/dx2 and dx2/dtheta2
-//                    stepper->addJacobian(4*n3-1, 4*n2+k, -Jbb(k+4, 7), l3, l2);
-//                    stepper->addJacobian(4*n2+k, 4*n3-1, -Jbb(7, k+4), l2, l3);
-//
-//                    // dtheta2/dx3 and dx3/dtheta2
-//                    stepper->addJacobian(4*n3-1, 4*n3+k, -Jbb(k+8, 7), l3);
-//                    stepper->addJacobian(4*n3+k, 4*n3-1, -Jbb(7, k+8), l3);
-//                }
-//                // dtheta1/dtheta1
-//                stepper->addJacobian(4*n1+3, 4*n1+3, -Jbb(3, 3), l1);
-//                // dtheta1/dtheta2
-//                stepper->addJacobian(4*n1+3, 4*n3-1, -Jbb(7, 3), l1, l3);
-//                // dtheta2/dtheta1
-//                stepper->addJacobian(4*n3-1, 4*n1+3, -Jbb(3, 7), l3, l1);
-//                // dtheta2/dtheta2
-//                stepper->addJacobian(4*n3-1, 4*n3-1, -Jbb(7, 7), l3);
+                    // dtheta1/dx2 and dx2/dtheta1
+                    stepper->addJacobian(4*n1+3, 4*n2+k, -Jbb(k+4, 3), l1, l2);
+                    stepper->addJacobian(4*n2+k, 4*n1+3, -Jbb(3, k+4), l2, l1);
+
+                    // dtheta1/dx3 and dx3/dtheta1
+                    stepper->addJacobian(4*n1+3, 4*n3+k, -Jbb(k+8, 3), l1, l3);
+                    stepper->addJacobian(4*n3+k, 4*n1+3, -Jbb(3, k+8), l3, l1);
+
+                    // dtheta2/dx1 and dx1/dtheta2
+                    stepper->addJacobian(4*n3-1, 4*n1+k, -Jbb(k, 7), l3, l1);
+                    stepper->addJacobian(4*n1+k, 4*n3-1, -Jbb(7, k), l1, l3);
+
+                    // dtheta2/dx2 and dx2/dtheta2
+                    stepper->addJacobian(4*n3-1, 4*n2+k, -Jbb(k+4, 7), l3, l2);
+                    stepper->addJacobian(4*n2+k, 4*n3-1, -Jbb(7, k+4), l2, l3);
+
+                    // dtheta2/dx3 and dx3/dtheta2
+                    stepper->addJacobian(4*n3-1, 4*n3+k, -Jbb(k+8, 7), l3);
+                    stepper->addJacobian(4*n3+k, 4*n3-1, -Jbb(7, k+8), l3);
+                }
+//                example(3, 3) = 1;
+//                example(3, 7) = 1;
+//                example(7, 3) = 1;
+//                example(7, 7) = 1;
+                // dtheta1/dtheta1
+                stepper->addJacobian(4*n1+3, 4*n1+3, -Jbb(3, 3), l1);
+                // dtheta1/dtheta2
+                stepper->addJacobian(4*n1+3, 4*n3-1, -Jbb(7, 3), l1, l3);
+                // dtheta2/dtheta1
+                stepper->addJacobian(4*n3-1, 4*n1+3, -Jbb(3, 7), l3, l1);
+                // dtheta2/dtheta2
+                stepper->addJacobian(4*n3-1, 4*n3-1, -Jbb(7, 7), l3);
 
                 curr_iter++;
+
+//                cout << "=================================" << endl;
+//                cout << example << endl;
+//                cout << "=================================" << endl;
+
             }
         }
         joint_idx++;

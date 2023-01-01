@@ -132,7 +132,11 @@ void Joint::getRefandMaterialDirectors() {
         d2.row(i) = curr_limb->d2.row(num_node);
         m1.row(i) = curr_limb->m1.row(num_node);
         m2.row(i) = curr_limb->m2.row(num_node);
+
+        cout << m1.row(i) << endl;
+        cout << m2.row(i) << endl;
     }
+    exit(0);
 }
 
 
@@ -365,9 +369,9 @@ void Joint::setup() {
 
     kappaBar = kappa;
 
-    getRefTwist();
+//    getRefTwist();
 
-    computeTwistBar();
+//    computeTwistBar();
 
     computeEdgeLen();
 

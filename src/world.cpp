@@ -115,36 +115,32 @@ void world::setRodStepper() {
     // Set up geometry
 //    rodGeometry();
 
-    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.05, 0), 6,
-                                            density, rodRadius, deltaTime, youngM, shearM));
-    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.03, 0), Vector3d(0.03, 0.03, 0), 4,
-                                            density, rodRadius, deltaTime, youngM, shearM));
+//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.05, 0), 6,
+//                                            density, rodRadius, deltaTime, youngM, shearM));
+//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.03, 0), Vector3d(0.03, 0.03, 0), 4,
+//                                            density, rodRadius, deltaTime, youngM, shearM));
 //    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.03, 0), Vector3d(-0.10, 0.03, 0), 10,
 //                                            density, rodRadius, deltaTime, youngM, shearM));
 
-//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.025, 0), Vector3d(-0.05, 0.025, 0), 15,
+    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.00, -0.05), 8,
+                                            density, rodRadius, deltaTime, youngM, shearM));
+//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, -0.05), Vector3d(-0.05, 0, -0.05), 8,
 //                                            density, rodRadius, deltaTime, youngM, shearM));
-//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.05, 0), Vector3d(0.05, 0.05, 0), 15,
+
+//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, -0.05), Vector3d(0.08, 0.00, -0.08), 4,
+//                                            density, rodRadius, deltaTime, youngM, shearM));
+//    limbs.push_back(make_shared<elasticRod>(Vector3d(-0.05, 0, -0.05), Vector3d(-0.05, 0, -0.10), 6,
+//                                            density, rodRadius, deltaTime, youngM, shearM));
+//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, -0.05), Vector3d(0, 0, -0.20), 4,
 //                                            density, rodRadius, deltaTime, youngM, shearM));
 
 
-    joints.push_back(make_shared<Joint>(3, 0, limbs));
-    joints[0]->addToJoint(0, 1);
-//    joints[0]->addToJoint(0, 2);
-
-
-
-//    joints[0]->addToJoint(0, 2);
-//    joints.push_back(make_shared<Joint>(14, 0, limbs));
-//    joints[1]->addToJoint(0, 3);
-
-//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.025, 0), 5,
-//                                            density, rodRadius, deltaTime, youngM, shearM));
-//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.025, 0), Vector3d(0.0, 0.05, 0), 5,
-//                                            density, rodRadius, deltaTime, youngM, shearM));
-//
-//    joints.push_back(make_shared<Joint>(4, 0, limbs));
+//    joints.push_back(make_shared<Joint>(7, 0, limbs));
 //    joints[0]->addToJoint(0, 1);
+
+//    joints.push_back(make_shared<Joint>(5, 1, limbs));
+//    joints[1]->addToJoint(0, 2);
+
 
     // This has to be called after joints are all set.
     for (const auto& joint : joints) joint->setup();
@@ -346,8 +342,22 @@ void world::newtonMethod(bool &solved) {
 
     while (solved == false) {
         for (const auto& joint : joints) joint->prepLimbs();
+
+//        cout << "============" << endl;
+//        cout << "last node on first rod" << endl;
+//        cout << limbs[0]->x.segment(20, 3) << endl;
+//        cout << limbs[0]->u.segment(20, 3) << endl;
+//        cout << "first node on second rod" << endl;
+//        cout << limbs[1]->x.segment(0, 3) << endl;
+//        cout << limbs[1]->u.segment(0, 3) << endl;
+//        cout << "joint" << endl;
+//        cout << joints[0]->x.segment(0, 3) << endl;
+//        cout << joints[0]->u.segment(0, 3) << endl;
+//        cout << "============" << endl;
+
         for (const auto& limb : limbs) limb->prepareForIteration();
         for (const auto& joint : joints) joint->prepareForIteration();
+
 //        rod->prepareForIteration();
 
         stepper->setZero();

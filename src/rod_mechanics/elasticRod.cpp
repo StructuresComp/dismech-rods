@@ -1,14 +1,57 @@
 #include "elasticRod.h"
 
+//elasticRod::elasticRod(Vector3d start, Vector3d end, int num_nodes, double m_rho, double m_rodRadius, double m_dt, double m_youngM, double m_shearM)
+//{
+//    ndof = num_nodes * 4 - 1;
+//    nv = num_nodes;
+//    ne = num_nodes - 1;
+//
+//    Vector3d dir = (end - start) / (num_nodes - 1);
+//    for (int i = 0; i < num_nodes; i++) {
+//        all_nodes.emplace_back(start + i * dir);
+//    }
+//
+//    for (int i = 0; i < nv-1; i++) {
+//        array<int, 2> node_pair = {i, i+1};
+//        stretching_nodes.push_back(node_pair);
+//        twisting_nodes.push_back(node_pair);
+//        edge_limb_map[i] = 0;
+//    }
+//    for (int i = 1; i < nv-1; i++) {
+//        array<int, 3> node_triplet = {i-1, i, i+1};
+//        bending_nodes.push_back(node_triplet);
+//    }
+//
+//    rodLength = (end - start).norm();
+//
+//    dt = m_dt;
+//    youngM = m_youngM;
+//    shearM = m_shearM;
+//    rho = m_rho;
+//    rodRadius = m_rodRadius;
+//
+//    setup();
+//}
+
 elasticRod::elasticRod(Vector3d start, Vector3d end, int num_nodes, double m_rho, double m_rodRadius, double m_dt, double m_youngM, double m_shearM)
 {
+    num_nodes += 10;
     ndof = num_nodes * 4 - 1;
     nv = num_nodes;
     ne = num_nodes - 1;
 
-    Vector3d dir = (end - start) / (num_nodes - 1);
-    for (int i = 0; i < num_nodes; i++) {
+    Vector3d dir = (end - start) / (num_nodes - 11);
+    for (int i = 0; i < num_nodes-10; i++) {
         all_nodes.emplace_back(start + i * dir);
+    }
+
+    // NOTE: THIS IS CAUSING AN ERROR!!!!!
+
+//    Vector3d dir2 = Vector3d(-1, 0, 0) / 100;
+//    Vector3d dir2 = Vector3d(0, -1, 0) / 100;
+    Vector3d dir2 = Vector3d(0, 1, 0) / 100;
+    for (int i = 1; i < 11; i++) {
+        all_nodes.emplace_back(end + i * dir2);
     }
 
     for (int i = 0; i < nv-1; i++) {
@@ -22,7 +65,7 @@ elasticRod::elasticRod(Vector3d start, Vector3d end, int num_nodes, double m_rho
         bending_nodes.push_back(node_triplet);
     }
 
-    rodLength = (end - start).norm();
+    rodLength = (end - start).norm() + 0.10;
 
     dt = m_dt;
     youngM = m_youngM;
@@ -497,6 +540,7 @@ void elasticRod::createReferenceDirectors()
         d1Tmp = t0.cross(t1);
         if (fabs(d1Tmp.norm()) < 1.0e-6)
         {
+            cout << "triggered " << i << endl;
             t1 << 0,1,0;
             d1Tmp=t0.cross(t1);
         }
@@ -519,6 +563,11 @@ void elasticRod::computeMaterialDirector()
         ss=sin(angle);
         m1.row(i) = cs*d1.row(i) + ss*d2.row(i);
         m2.row(i) =-ss*d1.row(i) + cs*d2.row(i);
+
+//        if (i == 7 || i == 8) {
+//            cout << m1.row(i) << endl;
+//            cout << m2.row(i) << endl;
+//        }
     }
 }
 
