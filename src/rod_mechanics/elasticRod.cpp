@@ -35,22 +35,23 @@
 
 elasticRod::elasticRod(Vector3d start, Vector3d end, int num_nodes, double m_rho, double m_rodRadius, double m_dt, double m_youngM, double m_shearM)
 {
-    num_nodes += 10;
+    int add_nodes = 1;
+    num_nodes += add_nodes;
     ndof = num_nodes * 4 - 1;
     nv = num_nodes;
     ne = num_nodes - 1;
 
-    Vector3d dir = (end - start) / (num_nodes - 11);
-    for (int i = 0; i < num_nodes-10; i++) {
+    Vector3d dir = (end - start) / (num_nodes - add_nodes -1);
+    for (int i = 0; i < num_nodes-add_nodes; i++) {
         all_nodes.emplace_back(start + i * dir);
     }
 
     // NOTE: THIS IS CAUSING AN ERROR!!!!!
 
-//    Vector3d dir2 = Vector3d(-1, 0, 0) / 100;
-//    Vector3d dir2 = Vector3d(0, -1, 0) / 100;
-    Vector3d dir2 = Vector3d(0, 1, 0) / 100;
-    for (int i = 1; i < 11; i++) {
+//    Vector3d dir2 = Vector3d(-1, 0, 0) * 0.05;
+//    Vector3d dir2 = Vector3d(0, -1, 0) * 0.05;
+    Vector3d dir2 = Vector3d(0, 1, 0) * 0.05;
+    for (int i = 1; i < 1+add_nodes; i++) {
         all_nodes.emplace_back(end + i * dir2);
     }
 
@@ -65,7 +66,7 @@ elasticRod::elasticRod(Vector3d start, Vector3d end, int num_nodes, double m_rho
         bending_nodes.push_back(node_triplet);
     }
 
-    rodLength = (end - start).norm() + 0.10;
+    rodLength = (end - start).norm() + 0.05;
 
     dt = m_dt;
     youngM = m_youngM;
@@ -166,6 +167,8 @@ void elasticRod::setup()
     kappa = MatrixXd::Zero(nv, 2);
     computeKappa();
     kappaBar = kappa;
+    cout << kappaBar << endl;
+//    exit(0);
     // Reference twist
     refTwist_old = VectorXd::Zero(ne);
     getRefTwist();
@@ -537,13 +540,14 @@ void elasticRod::createReferenceDirectors()
     for (int i = 0; i < ne; i++) {
         t0 = tangent.row(i);
         t1 << 0, 0, -1;
+//        t1 << 1, 0, 0;
         d1Tmp = t0.cross(t1);
         if (fabs(d1Tmp.norm()) < 1.0e-6)
         {
-            cout << "triggered " << i << endl;
             t1 << 0,1,0;
             d1Tmp=t0.cross(t1);
         }
+        d1Tmp /= d1Tmp.norm();
         d1.row(i) = d1Tmp;
         d2.row(i) = t0.cross(d1Tmp);
     }

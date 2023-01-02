@@ -122,7 +122,7 @@ void world::setRodStepper() {
 //    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.03, 0), Vector3d(-0.10, 0.03, 0), 10,
 //                                            density, rodRadius, deltaTime, youngM, shearM));
 
-    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.00, -0.05), 8,
+    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.00, -0.05), 2,
                                             density, rodRadius, deltaTime, youngM, shearM));
 //    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, -0.05), Vector3d(-0.05, 0, -0.05), 8,
 //                                            density, rodRadius, deltaTime, youngM, shearM));
