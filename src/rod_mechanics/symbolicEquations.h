@@ -14,6 +14,8 @@ public:
 
     void generateContactPotentialPiecewiseFunctions();
     void generateFrictionJacobianPiecewiseFunctions();
+    void generateFloorContactForce();
+    void generateFloorFrictionJacobianFunctions();
 
     LLVMDoubleVisitor E_p2p_gradient_func;
     LLVMDoubleVisitor E_p2p_hessian_func;
@@ -33,6 +35,11 @@ public:
     LLVMDoubleVisitor friction_partials_dfr_dfc_sticking_func;
     LLVMDoubleVisitor friction_partials_dfr_dx_sliding_func;
     LLVMDoubleVisitor friction_partials_dfr_dfc_sliding_func;
+
+    LLVMDoubleVisitor floor_friction_partials_dfr_dx_func;
+    LLVMDoubleVisitor floor_friction_partials_dfr_dfn_func;
+    LLVMDoubleVisitor floor_friction_partials_gamma1_dfr_dx_func;
+    LLVMDoubleVisitor floor_friction_partials_gamma1_dfr_dfn_func;
 
 private:
     bool symbolic_cse;
@@ -85,6 +92,8 @@ private:
     RCP<const Basic> mu;
     RCP<const Basic> dt;
     RCP<const Basic> K2;
+
+    RCP<const Basic> z;
 };
 
 #endif

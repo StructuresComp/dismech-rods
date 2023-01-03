@@ -48,9 +48,9 @@ elasticRod::elasticRod(Vector3d start, Vector3d end, int num_nodes, double m_rho
 
     // NOTE: THIS IS CAUSING AN ERROR!!!!!
 
-//    Vector3d dir2 = Vector3d(-1, 0, 0) * 0.05;
+    Vector3d dir2 = Vector3d(1, 0, 0) * 0.05;
 //    Vector3d dir2 = Vector3d(0, -1, 0) * 0.05;
-    Vector3d dir2 = Vector3d(0, 1, 0) * 0.05;
+//    Vector3d dir2 = Vector3d(0, 1, 0) * 0.05;
     for (int i = 1; i < 1+add_nodes; i++) {
         all_nodes.emplace_back(end + i * dir2);
     }
@@ -158,8 +158,8 @@ void elasticRod::setup()
     tangent = MatrixXd::Zero(ne, 3);
     computeTangent(x, tangent);
     // set reference directors
-//    computeSpaceParallel();
-    createReferenceDirectors();
+    computeSpaceParallel();
+//    createReferenceDirectors();
     // set material directors
     computeMaterialDirector();
     // compute natural curvature
@@ -534,24 +534,64 @@ void elasticRod::computeSpaceParallel()
 }
 
 
-void elasticRod::createReferenceDirectors()
-{
-    Vector3d t0, t1, d1Tmp;
-    for (int i = 0; i < ne; i++) {
-        t0 = tangent.row(i);
-        t1 << 0, 0, -1;
-//        t1 << 1, 0, 0;
-        d1Tmp = t0.cross(t1);
-        if (fabs(d1Tmp.norm()) < 1.0e-6)
-        {
-            t1 << 0,1,0;
-            d1Tmp=t0.cross(t1);
-        }
-        d1Tmp /= d1Tmp.norm();
-        d1.row(i) = d1Tmp;
-        d2.row(i) = t0.cross(d1Tmp);
-    }
-}
+//void elasticRod::createReferenceDirectors()
+//{
+//    Vector3d t0, t1, d1Tmp;
+//    for (int i = 0; i < ne; i++) {
+//        t0 = tangent.row(i);
+//        t1 << 0, 0, -1;
+////        t1 << 1, 0, 0;
+//        d1Tmp = t0.cross(t1);
+//        if (fabs(d1Tmp.norm()) < 1.0e-6)
+//        {
+//            t1 << 0,1,0;
+//            d1Tmp=t0.cross(t1);
+//        }
+//        d1Tmp /= d1Tmp.norm();
+//        d1.row(i) = d1Tmp;
+//        d2.row(i) = t0.cross(d1Tmp);
+//    }
+//}
+
+//void elasticRod::createReferenceDirectors()
+//{
+//    Vector3d t0, t1, d1Tmp;
+//
+//    t0 = tangent.row(0);
+//    t1 << 0, 0, -1;
+//    d1Tmp = t0.cross(t1);
+//
+//    if (fabs(d1Tmp.norm()) < 1.0e-6)
+//    {
+//        t1 << 0,1,0;
+//        d1Tmp=t0.cross(t1);
+//    }
+//    d1Tmp /= d1Tmp.norm();
+//    d1.row(0)=d1Tmp;
+//    d2.row(0)=t0.cross(d1Tmp);
+//
+//    for (int i = 1; i < ne; i++) {
+//        t0 = tangent.row(i);
+//        d1Tmp = d1.row(i-1);
+//        d1Tmp = t0.cross(d1Tmp);
+//
+//        if (fabs(d1Tmp.norm()) < 1.0e-6)
+//        {
+//            d1Tmp = d2.row(i-1);
+//            d1Tmp = t0.cross(d1Tmp);
+//            d1Tmp /= d1Tmp.norm();
+//            d1.row(i) = d1Tmp;
+//            d2.row(i) = t0.cross(d1Tmp);
+//        }
+//        else
+//        {
+//            d1Tmp /= d1Tmp.norm();
+//            d1.row(i) = d1Tmp;
+//            d2.row(i) = t0.cross(d1Tmp);
+//
+//        }
+//    }
+//}
 
 
 void elasticRod::computeMaterialDirector()
@@ -586,6 +626,9 @@ void elasticRod::computeKappa()
         t0 = tangent.row(i-1);
         t1 = tangent.row(i);
         kb.row(i) = 2.0 * t0.cross(t1) / (1.0+t0.dot(t1));
+
+        cout << "kb" << endl;
+        cout << kb.row(i) << endl;
     }
 
     for(int i=1; i<ne; i++)
@@ -597,6 +640,14 @@ void elasticRod::computeKappa()
         kappa(i, 0)= 0.5 * (kb.row(i)).dot(m2e+m2f);
         kappa(i, 1)=-0.5 * (kb.row(i)).dot(m1e+m1f);
     }
+    cout << "m1" << endl;
+    cout << m1 << endl;
+    cout << "m2" << endl;
+    cout << m2 << endl;
+    cout << "kappa" << endl;
+    cout << kappa << endl;
+
+    exit(0);
 }
 
 void elasticRod::getRefTwist()
@@ -698,6 +749,8 @@ void elasticRod::prepareForIteration()
     computeMaterialDirector();
     computeEdgeLen();
     computeKappa();
+    cout << kappa << endl;
+    cout << "===============" << endl;
 }
 
 void elasticRod::updateNewtonX(double *dx, int offset, double alpha)
