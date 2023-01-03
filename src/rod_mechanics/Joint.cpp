@@ -62,9 +62,9 @@ void Joint::setup() {
 
     kappaBar = kappa;
 
-//    getRefTwist();
+    getRefTwist();
 
-//    computeTwistBar();
+    computeTwistBar();
 
     computeEdgeLen();
 
@@ -403,7 +403,6 @@ void Joint::getRefTwist() {
     }
 }
 
-
 void Joint::computeTwistBar()
 {
     // TODO: add signs later
@@ -411,14 +410,18 @@ void Joint::computeTwistBar()
     int n1, n2;
     int l1, l2;
     int curr_iter = 0;
+    int sgn1, sgn2;
+    int theta1_i, theta2_i;
     for (int i = 0; i < ne; i++) {
         n1 = connected_nodes[i].first;
         l1 = connected_nodes[i].second;
+        bending_twist_signs[i] == 1 ? theta1_i = 4*n1+3 : theta1_i = 4*n1-1;
         for (int j = i+1; j < ne; j++) {
             n2 = connected_nodes[j].first;
             l2 = connected_nodes[j].second;
-            theta_i = limbs[l1]->x[4*n1+3];
-            theta_f = limbs[l2]->x[4*n2+3];
+            bending_twist_signs[j] == 1 ? theta2_i = 4*n2+3 : theta2_i = 4*n2-1;
+            theta_i = limbs[l1]->x[theta1_i];
+            theta_f = limbs[l2]->x[theta2_i];
             twistBar(i) = theta_f - theta_i + ref_twist(i);
             curr_iter++;
         }

@@ -133,13 +133,13 @@ void elasticRod::setup()
         isDOFJoint[i] = 0;
         DOFoffsets[i] = 0;
     }
-    for (int i=0; i < nv; i++)
-    {
-        if (i < nv - 1)
-        {
-            isConstrained[4*i + 3] = 1;
-        }
-    }
+//    for (int i=0; i < nv; i++)
+//    {
+//        if (i < nv - 1)
+//        {
+//            isConstrained[4*i + 3] = 1;
+//        }
+//    }
     for (int i = 0; i < nv; i++) {
         isNodeJoint[i] = 0;
         pair<int, int> non_joint{i, limb_idx};
