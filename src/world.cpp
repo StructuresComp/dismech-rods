@@ -115,36 +115,29 @@ void world::setRodStepper() {
     // Set up geometry
 //    rodGeometry();
 
-//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.05, 0), 6,
-//                                            density, rodRadius, deltaTime, youngM, shearM));
-//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.03, 0), Vector3d(0.03, 0.03, 0), 4,
-//                                            density, rodRadius, deltaTime, youngM, shearM));
-//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0.03, 0), Vector3d(-0.10, 0.03, 0), 10,
-//                                            density, rodRadius, deltaTime, youngM, shearM));
-
-    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, 0), Vector3d(0, 0.00, -0.05), 2,
+    limbs.push_back(make_shared<elasticRod>(0, Vector3d(0, 0, 0), Vector3d(0, 0.00, -0.05), 5,
                                             density, rodRadius, deltaTime, youngM, shearM));
-//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, -0.05), Vector3d(-0.05, 0, -0.05), 8,
+    limbs.push_back(make_shared<elasticRod>(1, Vector3d(0, 0, -0.05), Vector3d(0.05, 0, -0.05), 8,
+                                            density, rodRadius, deltaTime, youngM, shearM));
+    limbs.push_back(make_shared<elasticRod>(2, Vector3d(0, 0, -0.05), Vector3d(0, 0.05, -0.05), 8,
+                                            density, rodRadius, deltaTime, youngM, shearM));
+    limbs.push_back(make_shared<elasticRod>(3, Vector3d(0, 0, -0.05), Vector3d(0, -0.05, -0.05), 8,
+                                            density, rodRadius, deltaTime, youngM, shearM));
+    limbs.push_back(make_shared<elasticRod>(4, Vector3d(0, 0, -0.05), Vector3d(-0.05, 0, -0.05), 8,
+                                            density, rodRadius, deltaTime, youngM, shearM));
+//    limbs.push_back(make_shared<elasticRod>(2, Vector3d(0.05, 0, -0.05), Vector3d(0.05, 0.00, 0.0), 6,
 //                                            density, rodRadius, deltaTime, youngM, shearM));
 
-//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, -0.05), Vector3d(0.08, 0.00, -0.08), 4,
-//                                            density, rodRadius, deltaTime, youngM, shearM));
-//    limbs.push_back(make_shared<elasticRod>(Vector3d(-0.05, 0, -0.05), Vector3d(-0.05, 0, -0.10), 6,
-//                                            density, rodRadius, deltaTime, youngM, shearM));
-//    limbs.push_back(make_shared<elasticRod>(Vector3d(0, 0, -0.05), Vector3d(0, 0, -0.20), 4,
-//                                            density, rodRadius, deltaTime, youngM, shearM));
-
-
-//    joints.push_back(make_shared<Joint>(7, 0, limbs));
-//    joints[0]->addToJoint(0, 1);
-
+    joints.push_back(make_shared<Joint>(4, 0, limbs));
+    joints[0]->addToJoint(0, 1);
+    joints[0]->addToJoint(0, 2);
+    joints[0]->addToJoint(0, 3);
+    joints[0]->addToJoint(0, 4);
 //    joints.push_back(make_shared<Joint>(5, 1, limbs));
 //    joints[1]->addToJoint(0, 2);
 
-
     // This has to be called after joints are all set.
     for (const auto& joint : joints) joint->setup();
-
 
     // Find out the tolerance, e.g. how small is enough?
     characteristicForce = M_PI * pow(rodRadius, 4) / 4.0 * youngM / pow(RodLength, 2);

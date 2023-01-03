@@ -9,7 +9,7 @@
 class elasticRod
 {
     public:
-    elasticRod(Vector3d start, Vector3d end, int num_nodes,
+    elasticRod(int m_limb_idx, Vector3d start, Vector3d end, int num_nodes,
                double m_rho, double m_rodRadius, double m_dt,
                 double m_youngM, double m_shearM);
     elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
@@ -38,6 +38,8 @@ class elasticRod
 //        double limb_length;
 //    };
 //    vector<Limb> limbs;
+
+    int limb_idx;
 
     // utility functions
     Vector3d getVertex(int k);
@@ -155,12 +157,14 @@ class elasticRod
 
     VectorXd xold;
 
-    void addJoint(int node_num, bool remove_dof);
+    void addJoint(int node_num, bool remove_dof, int joint_node, int joint_limb);
     int unique_dof;
     int* isDOFJoint;
+    int* isNodeJoint;
     int* isEdgeJoint;
     int* DOFoffsets;
     int* unconsToDOFMap;
+    vector<pair<int, int>> joint_ids;
 
     private:
 

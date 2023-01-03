@@ -45,14 +45,15 @@ public:
     void computeTangent();
 
     void getRefandMaterialDirectors();
-//    void computeMaterialDirectors();
+    void createReferenceDirectors();
+    void computeMaterialDirectors();
 
-    MatrixXd d1;
-    MatrixXd d2;
-    MatrixXd d1_old;
-    MatrixXd d2_old;
-    MatrixXd m1;
-    MatrixXd m2;
+    vector<Matrix<double, 2, 3>> d1;
+    vector<Matrix<double, 2, 3>> d2;
+    vector<Matrix<double, 2, 3>> d1_old;
+    vector<Matrix<double, 2, 3>> d2_old;
+    vector<Matrix<double, 2, 3>> m1;
+    vector<Matrix<double, 2, 3>> m2;
     VectorXd ref_twist;
 
     MatrixXd kb;
@@ -74,6 +75,8 @@ public:
 
     void prepLimbs();
     void prepareForIteration();
+    void computeSpaceParallel(const Vector3d& t0, const Vector3d& t1,
+                              const Vector3d& d1_0, Vector3d& d1_1, Vector3d& d2_1);
     void computeTimeParallel();
 
     void updateTimeStep();
