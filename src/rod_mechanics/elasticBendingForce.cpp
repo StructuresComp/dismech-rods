@@ -29,9 +29,6 @@ elasticBendingForce::elasticBendingForce(vector<shared_ptr<elasticRod>> m_limbs,
         gradKappa2s.push_back(make_shared<MatrixXd>(MatrixXd::Zero(nb, 11)));
     }
 
-//    int nv = rod->nv;
-//    gradKappa1 = MatrixXd::Zero(nv,11);
-//    gradKappa2 = MatrixXd::Zero(nv,11);
     relevantPart = MatrixXd::Zero(11, 2);;
     DDkappa1 = MatrixXd::Zero(11,11);
     DDkappa2 = MatrixXd::Zero(11,11);
@@ -43,8 +40,6 @@ elasticBendingForce::elasticBendingForce(vector<shared_ptr<elasticRod>> m_limbs,
     D2kappa2De2.setZero(3,3);
     D2kappa2Df2.setZero(3,3);
     D2kappa2DeDf.setZero(3,3);
-//    kappa11 = VectorXd::Zero(nv);
-//    kappa22 = VectorXd::Zero(nv);
     f = VectorXd::Zero(11);
 }
 
@@ -117,7 +112,6 @@ void elasticBendingForce::computeFb()
                 }
             }
             else {
-//                cout << limb->refTwist << endl;
                 int n1, n2, n3, l1, l2, l3;
                 n1 = limb->joint_ids[i-1].first;
                 l1 = limb->joint_ids[i-1].second;
@@ -215,15 +209,6 @@ void elasticBendingForce::computeFb()
                 kappaL = joint->kappa.row(curr_iter) - joint->kappaBar.row(curr_iter);
                 // TODO: NEED TO CONSTRUCT UNIQUE EI MATRICES WITH EACH RODS EI
                 f = -relevantPart * EIMatrices[0] * kappaL / joint->voronoi_len(curr_iter);
-//                cout << joint->voronoi_len(curr_iter) << endl;
-
-//                cout << i << endl;
-//                cout << j << endl;
-//                cout << joint->bending_twist_signs[i] << endl;
-//                cout << joint->bending_twist_signs[j] << endl;
-//                cout << sgn1 << endl;
-//                cout << sgn2 << endl;
-//                cout << "=============" << endl;
 
                 // Nodal forces
                 for (int k = 0; k < 3; k++) {
@@ -232,8 +217,6 @@ void elasticBendingForce::computeFb()
                     stepper->addForce(4*n3+k, -f[k+8], l3);
                 }
                 // Theta moments
-//                stepper->addForce(theta1_i, -f[3] * sgn1, l1);
-//                stepper->addForce(theta2_i, -f[7] * sgn2, l3);
                 stepper->addForce(theta1_i, -f[3], l1);
                 stepper->addForce(theta2_i, -f[7], l3);
 
@@ -350,7 +333,6 @@ void elasticBendingForce::computeJb()
         }
         limb_idx++;
     }
-//    cout << "================" << endl;
 
     int joint_idx = 0;
     int sgn1, sgn2;
@@ -410,15 +392,6 @@ void elasticBendingForce::computeJb()
                 temp = -1.0 / len * kappaL.transpose() * EIMatrices[0];
 
                 Jbb = Jbb + temp(0) * DDkappa1 + temp(1) * DDkappa2;
-
-//                if (sgn1 == -1) {
-//                    Jbb.row(3) = -Jbb.row(3);
-//                    Jbb.col(3) = -Jbb.col(3);
-//                }
-//                if (sgn2 == -1) {
-//                    Jbb.row(7) = -Jbb.row(7);
-//                    Jbb.col(7) = -Jbb.col(7);
-//                }
 
                 // Nodal forces
                 for (int t = 0; t < 3; t++) {

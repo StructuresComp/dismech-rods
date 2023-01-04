@@ -115,6 +115,7 @@ void world::setRodStepper() {
     // Set up geometry
 //    rodGeometry();
 
+    /* Chandelier case */
 //    limbs.push_back(make_shared<elasticRod>(0, Vector3d(0, 0, 0), Vector3d(0, 0.00, -0.05), 5,
 //                                            density, rodRadius, deltaTime, youngM, shearM));
 //    limbs.push_back(make_shared<elasticRod>(1, Vector3d(0, 0, -0.05), Vector3d(0.05, 0, -0.05), 8,
@@ -127,31 +128,6 @@ void world::setRodStepper() {
 //                                            density, rodRadius, deltaTime, youngM, shearM));
 //    limbs.push_back(make_shared<elasticRod>(5, Vector3d(0.05, 0, -0.05), Vector3d(0.05, 0.00, -0.00), 6,
 //                                            density, rodRadius, deltaTime, youngM, shearM));
-
-    limbs.push_back(make_shared<elasticRod>(0, Vector3d(0, 0, 0), Vector3d(0, 0.00, -0.05), 5,
-                                            density, rodRadius, deltaTime, youngM, shearM));
-    limbs.push_back(make_shared<elasticRod>(1, Vector3d(0, 0, -0.05), Vector3d(0.05, 0, -0.05), 5,
-                                            density, rodRadius, deltaTime, youngM, shearM));
-    limbs.push_back(make_shared<elasticRod>(2, Vector3d(0.05, 0, -0.05), Vector3d(0.05, 0.0, 0), 5,
-                                            density, rodRadius, deltaTime, youngM, shearM));
-    limbs.push_back(make_shared<elasticRod>(3, Vector3d(0.05, 0, 0), Vector3d(0.0, 0.0, 0), 5,
-                                            density, rodRadius, deltaTime, youngM, shearM));
-//    limbs.push_back(make_shared<elasticRod>(3, Vector3d(0, 0, -0.05), Vector3d(0, -0.05, -0.05), 8,
-//                                            density, rodRadius, deltaTime, youngM, shearM));
-//    limbs.push_back(make_shared<elasticRod>(4, Vector3d(0, 0, -0.05), Vector3d(-0.05, 0, -0.05), 8,
-//                                            density, rodRadius, deltaTime, youngM, shearM));
-//    limbs.push_back(make_shared<elasticRod>(5, Vector3d(0.05, 0, -0.05), Vector3d(0.05, 0.00, -0.00), 6,
-//                                            density, rodRadius, deltaTime, youngM, shearM));
-
-    joints.push_back(make_shared<Joint>(4, 0, limbs));
-    joints[0]->addToJoint(0, 1);
-    joints.push_back(make_shared<Joint>(4, 1, limbs));
-    joints[1]->addToJoint(0, 2);
-    joints.push_back(make_shared<Joint>(4, 2, limbs));
-    joints[2]->addToJoint(0, 3);
-    joints.push_back(make_shared<Joint>(0, 0, limbs));
-    joints[3]->addToJoint(4, 3);
-
 //    joints.push_back(make_shared<Joint>(4, 0, limbs));
 //    joints[0]->addToJoint(0, 1);
 //    joints[0]->addToJoint(0, 2);
@@ -159,6 +135,40 @@ void world::setRodStepper() {
 //    joints[0]->addToJoint(0, 4);
 //    joints.push_back(make_shared<Joint>(7, 1, limbs));
 //    joints[1]->addToJoint(0, 5);
+
+    /* Closed square case */
+//    limbs.push_back(make_shared<elasticRod>(0, Vector3d(0, 0, 0), Vector3d(0, 0.00, -0.05), 6,
+//                                            density, rodRadius, deltaTime, youngM, shearM));
+//    limbs.push_back(make_shared<elasticRod>(1, Vector3d(0, 0, -0.05), Vector3d(0.05, 0, -0.05), 6,
+//                                            density, rodRadius, deltaTime, youngM, shearM));
+//    limbs.push_back(make_shared<elasticRod>(2, Vector3d(0.05, 0, -0.05), Vector3d(0.05, 0.0, 0), 6,
+//                                            density, rodRadius, deltaTime, youngM, shearM));
+//    limbs.push_back(make_shared<elasticRod>(3, Vector3d(0.05, 0, 0), Vector3d(0.0, 0.0, 0), 6,
+//                                            density, rodRadius, deltaTime, youngM, shearM));
+//    joints.push_back(make_shared<Joint>(5, 0, limbs));
+//    joints[0]->addToJoint(0, 1);
+//    joints.push_back(make_shared<Joint>(5, 1, limbs));
+//    joints[1]->addToJoint(0, 2);
+//    joints.push_back(make_shared<Joint>(5, 2, limbs));
+//    joints[2]->addToJoint(0, 3);
+//    joints.push_back(make_shared<Joint>(0, 0, limbs));
+//    joints[3]->addToJoint(5, 3);
+
+    /* Random grid case */
+    limbs.push_back(make_shared<elasticRod>(0, Vector3d(0, 0, 0), Vector3d(0, 0.00, -0.05), 6,
+                                            density, rodRadius, deltaTime, youngM, shearM));
+    limbs.push_back(make_shared<elasticRod>(1, Vector3d(0, 0, -0.04), Vector3d(0, 0.03, -0.04), 4,
+                                            density, rodRadius, deltaTime, youngM, shearM));
+    limbs.push_back(make_shared<elasticRod>(2, Vector3d(0, 0, -0.05), Vector3d(0.05, 0, -0.05), 6,
+                                            density, rodRadius, deltaTime, youngM, shearM));
+    limbs.push_back(make_shared<elasticRod>(3, Vector3d(0.03, 0, -0.05), Vector3d(0.03, 0.05, -0.05), 6,
+                                            density, rodRadius, deltaTime, youngM, shearM));
+    joints.push_back(make_shared<Joint>(4, 0, limbs));
+    joints[0]->addToJoint(0, 1);
+    joints.push_back(make_shared<Joint>(5, 0, limbs));
+    joints[1]->addToJoint(0, 2);
+    joints.push_back(make_shared<Joint>(3, 2, limbs));
+    joints[2]->addToJoint(0, 3);
 
     // This has to be called after joints are all set.
     for (const auto& joint : joints) joint->setup();

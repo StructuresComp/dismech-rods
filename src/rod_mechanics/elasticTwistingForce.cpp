@@ -26,8 +26,6 @@ elasticTwistingForce::elasticTwistingForce(vector<shared_ptr<elasticRod>> m_limb
     Jtt.setZero(11,11);
     gradTwistLocal.setZero(11);
     f.setZero(11);
-
-//    GJ = rod->GJ;
 }
 
 elasticTwistingForce::~elasticTwistingForce()

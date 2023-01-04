@@ -14,7 +14,6 @@ elasticStretchingForce::elasticStretchingForce(vector<shared_ptr<elasticRod>> m_
     Id3 << 1, 0, 0,
            0, 1, 0,
            0, 0, 1;
-//    EA = rod->EA;
 }
 
 elasticStretchingForce::~elasticStretchingForce()
@@ -134,13 +133,6 @@ void elasticStretchingForce::computeJs()
             int n2 = joint->joint_node;
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-//                    ind1 = 4 * n1 + j;
-//                    ind2 = 4 * n1 + k;
-//                    stepper->addJacobian(ind1, ind2, -Jss(k, j), limb_idx, limb_idx);
-//                    stepper->addJacobian(ind1+4, ind2, -Jss(k+4, j), joint->joint_limb, limb_idx);
-//                    stepper->addJacobian(ind1, ind2+4, -Jss(k, j+4), limb_idx, joint->joint_limb);
-//                    stepper->addJacobian(ind1+4, ind2+4, -Jss(k+4, j+4), joint->joint_limb, joint->joint_limb);
-
                     stepper->addJacobian(4*n1+j, 4*n1+k, -Jss(k, j), l1);
                     stepper->addJacobian(4*n1+j, 4*n2+k, -Jss(k+4, j), l1, l2);
                     stepper->addJacobian(4*n2+j, 4*n1+k, -Jss(k, j+4), l2, l1);
