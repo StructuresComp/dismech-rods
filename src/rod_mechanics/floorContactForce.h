@@ -10,13 +10,13 @@ class floorContactForce
 {
 public:
     floorContactForce(vector<shared_ptr<elasticRod>> m_limbs, shared_ptr<timeStepper> m_stepper,
-                      double m_floor_delta, double m_floor_slipTol, double m_mu);
+                      double m_floor_delta, double m_floor_slipTol, double m_mu, double m_dt);
     ~floorContactForce();
 
     void computeFf(bool fric_off);
     void computeFfJf(bool fric_off);
-    void computeFriction(const int& edge);
-    void prepFrictionJacobianInput(const int& edge);
+    void computeFriction(Vector2d curr_node, Vector2d pre_node, double fn);
+    void prepFrictionJacobianInput(Vector2d curr_node, Vector2d pre_node, double fn);
     void updateContactStiffness();
     void updateMu(double mu);
 
@@ -41,6 +41,7 @@ private:
     double slipTol;
     double K1;
     double K2;
+    double dt;
 
 };
 #endif
