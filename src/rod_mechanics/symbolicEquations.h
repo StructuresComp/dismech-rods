@@ -93,7 +93,9 @@ private:
     RCP<const Basic> dt;
     RCP<const Basic> K2;
 
+    // Floor contact variables
     RCP<const Basic> z;
+    RCP<const Basic> floor_z;
 };
 
 #endif

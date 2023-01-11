@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.11)
 project(dismech-rods)
 
 set(CMAKE_CXX_STANDARD 14)
-#set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
+#set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS "-Wno-deprecated-declarations -fopenmp")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../")
@@ -36,7 +36,8 @@ add_executable(simDER
         src/rod_mechanics/dampingForce.cpp
         src/rod_mechanics/inertialForce.cpp
         src/rod_mechanics/timeStepper.cpp
-#        src/rod_mechanics/symbolicEquations.cpp
+        src/rod_mechanics/symbolicEquations.cpp
+        src/rod_mechanics/floorContactForce.cpp
         src/rod_mechanics/Joint.cpp
 #        src/rod_mechanics/collisionDetector.cpp
 #        src/rod_mechanics/contactPotentialIMC.cpp

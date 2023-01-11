@@ -23,6 +23,7 @@ public:
     vector<shared_ptr<elasticRod>>& limbs;
     Vector3d x;
     Vector3d x0;
+    Vector3d xold;
     Vector3d u;
     vector<pair<int, int>> connected_nodes;  // node_number and limb_idx
     vector<pair<int, int>> replaced_nodes;  // node_number and limb_idx

@@ -33,6 +33,7 @@ private:
     double fn;
     double jfn;
     double z;
+    double floor_z;
     double contact_stiffness;
     double scale;
     double mu;

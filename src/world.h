@@ -16,6 +16,7 @@
 // include external force
 #include "rod_mechanics/dampingForce.h"
 #include "rod_mechanics/externalGravityForce.h"
+#include "rod_mechanics/floorContactForce.h"
 //#include "rod_mechanics/contactPotentialIMC.h"
 
 // include time stepper
@@ -115,6 +116,7 @@ private:
     unique_ptr<inertialForce> m_inertialForce = nullptr;
     unique_ptr<externalGravityForce> m_gravityForce = nullptr;
     unique_ptr<dampingForce> m_dampingForce = nullptr;
+    unique_ptr<floorContactForce> m_floorContactForce = nullptr;
 //    shared_ptr<collisionDetector> m_collisionDetector = nullptr;
 //    unique_ptr<contactPotentialIMC> m_contactPotentialIMC = nullptr;
 
