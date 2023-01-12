@@ -392,20 +392,23 @@ void symbolicEquations::generateFloorFrictionJacobianFunctions() {
 
     DenseMatrix v(2, 1);
     subtract_matrix(node, node_0, v);
+    v.mul_scalar(div(one, dt), v);
 
-    DenseMatrix v_hat(2, 1);
-    convert_to_unit_vector(v, v_hat);
     DenseMatrix v_squared(2, 1);
     v.elementwise_mul_matrix(v, v_squared);
     RCP<const Basic> v_n = sqrt(add(v_squared.as_vec_basic()));
-    RCP<const Basic> v_n_scaled = mul(mul(div(one, dt), K2), v_n);
+
+    DenseMatrix v_hat(2, 1);
+    convert_to_unit_vector(v, v_hat);
+
+    RCP<const Basic> v_n_scaled = mul(K2, v_n);
 
     RCP<const Basic> gamma = sub(div(integer(2), add(one, exp(mul(integer(-1), v_n_scaled)))), one);
-    RCP<const Basic> pos_fn = sqrt(mul(fn, fn));
-    RCP<const Basic> ffr_scalar = mul(mul(gamma, mu), pos_fn);
+    RCP<const Basic> ffr_scalar = mul(mul(gamma, mu), fn);
     DenseMatrix ffr(2, 1);
 
-    v_hat.mul_scalar(ffr_scalar, ffr);
+    v_hat.mul_scalar(mul(integer(-1), ffr_scalar), ffr);
+//    v_hat.mul_scalar(ffr_scalar, ffr);
 
     DenseMatrix fn_vec({fn});
 
@@ -420,9 +423,10 @@ void symbolicEquations::generateFloorFrictionJacobianFunctions() {
     floor_friction_partials_dfr_dfn_func.init(ffr_input, floor_friction_partial_dfr_dfn.as_vec_basic(), symbolic_cse, opt_level);
 
     // here, we assume \gamma = 1
-    ffr_scalar = mul(mu, pos_fn);
+    ffr_scalar = mul(mu, fn);
 
-    v_hat.mul_scalar(ffr_scalar, ffr);
+    v_hat.mul_scalar(mul(integer(-1), ffr_scalar), ffr);
+//    v_hat.mul_scalar(ffr_scalar, ffr);
 
     DenseMatrix floor_friction_g1_partial_dfr_dx(2, 2);
     DenseMatrix floor_friction_g1_partial_dfr_dfn(2, 1);

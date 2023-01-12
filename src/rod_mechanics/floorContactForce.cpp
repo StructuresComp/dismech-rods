@@ -15,8 +15,9 @@ floorContactForce::floorContactForce(vector<shared_ptr<elasticRod>> m_limbs, sha
 
     mu = m_floor_mu;
 
-    floor_z = -0.10;
+    floor_z = -0.05;
 
+//    contact_stiffness = 100;
     contact_stiffness = 100000;
 //    contact_stiffness = 1000000;
 
@@ -104,10 +105,11 @@ void floorContactForce::computeFfJf(bool fric_off) {
             curr_node = limb->getVertex(i)(seq(0, 1));
             pre_node = limb->getPreVertex(i)(seq(0, 1));
             computeFriction(curr_node, pre_node, f);
-            stepper->addForce(4*i, ffr(0), limb_idx);
-            stepper->addForce(4*i+1, ffr(1), limb_idx);
 
             if (fric_jaco_type == 0) continue;
+
+            stepper->addForce(4*i, ffr(0), limb_idx);
+            stepper->addForce(4*i+1, ffr(1), limb_idx);
 
             // Friction jacobian
             prepFrictionJacobianInput(curr_node, pre_node, f);
@@ -121,9 +123,9 @@ void floorContactForce::computeFfJf(bool fric_off) {
                 sym_eqs->floor_friction_partials_dfr_dfn_func.call(friction_partials_dfr_dfn.data(), fric_jacobian_input.data());
             }
 
-            cout << friction_partials_dfr_dx << endl;
-            cout << friction_partials_dfr_dfn * J << endl;
-            cout << "======" << endl;
+//            cout << friction_partials_dfr_dx << endl;
+//            cout << friction_partials_dfr_dfn * J << endl;
+//            cout << "======" << endl;
 
             // dfrx/dx
             stepper->addJacobian(4*i, 4*i, friction_partials_dfr_dx(0, 0), limb_idx);
@@ -132,10 +134,10 @@ void floorContactForce::computeFfJf(bool fric_off) {
             stepper->addJacobian(4*i, 4*i+1, friction_partials_dfr_dx(1, 0), limb_idx);
             stepper->addJacobian(4*i+1, 4*i+1, friction_partials_dfr_dx(1, 1), limb_idx);
 
-            stepper->addJacobian(4*i+2, 4*i, friction_partials_dfr_dfn(0) * J, limb_idx);
-            stepper->addJacobian(4*i+2, 4*i+1, friction_partials_dfr_dfn(1) * J, limb_idx);
-//            stepper->addJacobian(4*i, 4*i+2, friction_partials_dfr_dfn(0) * J, limb_idx);
-//            stepper->addJacobian(4*i+1, 4*i+2, friction_partials_dfr_dfn(1) * J, limb_idx);
+//            stepper->addJacobian(4*i+2, 4*i, friction_partials_dfr_dfn(0) * J, limb_idx);
+//            stepper->addJacobian(4*i+2, 4*i+1, friction_partials_dfr_dfn(1) * J, limb_idx);
+            stepper->addJacobian(4*i, 4*i+2, friction_partials_dfr_dfn(0) * J, limb_idx);
+            stepper->addJacobian(4*i+1, 4*i+2, friction_partials_dfr_dfn(1) * J, limb_idx);
 
         }
         limb_idx++;
@@ -253,7 +255,8 @@ void floorContactForce::computeFriction(Vector2d curr_node, Vector2d pre_node, d
         fric_jaco_type = 2;
         gamma = 2 / (1 + exp(-K2 * v_n)) - 1;
     }
-    ffr = gamma * mu * abs(fn) * v_hat;
+//    cout << gamma << " " << slipTol << " " << v_n << endl;
+    ffr = -gamma * mu * fn * v_hat;
 }
 
 
