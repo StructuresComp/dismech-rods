@@ -1,7 +1,8 @@
 #include "floorContactForce.h"
 
 floorContactForce::floorContactForce(vector<shared_ptr<elasticRod>> m_limbs, shared_ptr<timeStepper> m_stepper,
-                                     double m_floor_delta, double m_floor_slipTol, double m_floor_mu, double m_dt) {
+                                     double m_floor_delta, double m_floor_slipTol, double m_floor_mu, double m_dt,
+                                     double m_floor_z) {
     limbs = m_limbs;
     stepper = m_stepper;
 
@@ -15,7 +16,7 @@ floorContactForce::floorContactForce(vector<shared_ptr<elasticRod>> m_limbs, sha
 
     mu = m_floor_mu;
 
-    floor_z = -0.05;
+    floor_z = m_floor_z;
 
 //    contact_stiffness = 100;
     contact_stiffness = 100000;

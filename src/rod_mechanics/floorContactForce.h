@@ -10,7 +10,7 @@ class floorContactForce
 {
 public:
     floorContactForce(vector<shared_ptr<elasticRod>> m_limbs, shared_ptr<timeStepper> m_stepper,
-                      double m_floor_delta, double m_floor_slipTol, double m_mu, double m_dt);
+                      double m_floor_delta, double m_floor_slipTol, double m_mu, double m_dt, double m_floor_z);
     ~floorContactForce();
 
     void computeFf(bool fric_off);
@@ -19,6 +19,7 @@ public:
     void prepFrictionJacobianInput(Vector2d curr_node, Vector2d pre_node, double fn);
     void updateContactStiffness();
     void updateMu(double mu);
+    double floor_z;
 
 private:
     vector<shared_ptr<elasticRod>> limbs;
@@ -33,7 +34,6 @@ private:
     double fn;
     double jfn;
     double z;
-    double floor_z;
     double contact_stiffness;
     double scale;
     double mu;
