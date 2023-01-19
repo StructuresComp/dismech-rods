@@ -15,9 +15,8 @@ public:
 
     void computeFf();
     void computeFfJf();
-    void computeFriction(Vector2d curr_node, Vector2d pre_node, double fn);
-    void prepFrictionJacobianInput(Vector2d curr_node, Vector2d pre_node, double fn);
-    void updateContactStiffness();
+    void computeFriction(const Vector2d& curr_node, const Vector2d& pre_node, double fn);
+    void prepFrictionJacobianInput(const Vector2d& curr_node, const Vector2d& pre_node, double fn);
     void updateMu(double mu);
 
     double min_dist;

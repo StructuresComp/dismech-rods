@@ -30,8 +30,6 @@ public:
 
     void pardisoSolver();
 
-    VectorXd force;
-
     void update();
     VectorXd Force;
     MatrixXd Jacobian;

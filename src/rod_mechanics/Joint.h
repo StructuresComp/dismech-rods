@@ -45,7 +45,6 @@ public:
     MatrixXd tangents_old;
     void computeTangent();
 
-    void getRefandMaterialDirectors();
     void createReferenceDirectors();
     void computeMaterialDirectors();
 

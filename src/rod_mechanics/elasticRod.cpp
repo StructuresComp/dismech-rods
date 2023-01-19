@@ -1,6 +1,7 @@
 #include "elasticRod.h"
 
-elasticRod::elasticRod(int m_limb_idx, Vector3d start, Vector3d end, int num_nodes, double m_rho, double m_rodRadius, double m_dt, double m_youngM, double m_shearM)
+elasticRod::elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
+                       double m_rho, double m_rodRadius, double m_dt, double m_youngM, double m_shearM)
 {
     ndof = num_nodes * 4 - 1;
     nv = num_nodes;
@@ -10,17 +11,6 @@ elasticRod::elasticRod(int m_limb_idx, Vector3d start, Vector3d end, int num_nod
     Vector3d dir = (end - start) / (num_nodes - 1);
     for (int i = 0; i < num_nodes; i++) {
         all_nodes.emplace_back(start + i * dir);
-    }
-
-    for (int i = 0; i < nv-1; i++) {
-        array<int, 2> node_pair = {i, i+1};
-        stretching_nodes.push_back(node_pair);
-        twisting_nodes.push_back(node_pair);
-        edge_limb_map[i] = 0;
-    }
-    for (int i = 1; i < nv-1; i++) {
-        array<int, 3> node_triplet = {i-1, i, i+1};
-        bending_nodes.push_back(node_triplet);
     }
 
     rodLength = (end - start).norm();
@@ -34,50 +24,8 @@ elasticRod::elasticRod(int m_limb_idx, Vector3d start, Vector3d end, int num_nod
     setup();
 }
 
-//elasticRod::elasticRod(Vector3d start, Vector3d end, int num_nodes, double m_rho, double m_rodRadius, double m_dt, double m_youngM, double m_shearM)
-//{
-//    int add_nodes = 1;
-//    num_nodes += add_nodes;
-//    ndof = num_nodes * 4 - 1;
-//    nv = num_nodes;
-//    ne = num_nodes - 1;
-//
-//    Vector3d dir = (end - start) / (num_nodes - add_nodes -1);
-//    for (int i = 0; i < num_nodes-add_nodes; i++) {
-//        all_nodes.emplace_back(start + i * dir);
-//    }
-//
-//    // NOTE: THIS IS CAUSING AN ERROR!!!!!
-//
-//    Vector3d dir2 = Vector3d(1, 0, 0) * 0.05;
-////    Vector3d dir2 = Vector3d(0, -1, 0) * 0.05;
-////    Vector3d dir2 = Vector3d(0, 1, 0) * 0.05;
-//    for (int i = 1; i < 1+add_nodes; i++) {
-//        all_nodes.emplace_back(end + i * dir2);
-//    }
-//
-//    for (int i = 0; i < nv-1; i++) {
-//        array<int, 2> node_pair = {i, i+1};
-//        stretching_nodes.push_back(node_pair);
-//        twisting_nodes.push_back(node_pair);
-//        edge_limb_map[i] = 0;
-//    }
-//    for (int i = 1; i < nv-1; i++) {
-//        array<int, 3> node_triplet = {i-1, i, i+1};
-//        bending_nodes.push_back(node_triplet);
-//    }
-//
-//    rodLength = (end - start).norm() + 0.05;
-//
-//    dt = m_dt;
-//    youngM = m_youngM;
-//    shearM = m_shearM;
-//    rho = m_rho;
-//    rodRadius = m_rodRadius;
-//
-//    setup();
-//}
 
+// TODO: this is no longer supported, add support later if needed
 elasticRod::elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
     double m_rho, double m_rodRadius, double m_dt,
     double m_youngM, double m_shearM, double m_rodLength, VectorXd m_theta)
@@ -100,10 +48,6 @@ elasticRod::elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
 
 void elasticRod::setup()
 {
-    num_stretching = stretching_nodes.size();
-    num_bending = bending_nodes.size();
-    num_twisting = twisting_nodes.size();
-
     x = VectorXd::Zero(ndof);
     for (int i=0; i < nv; i++)
     {
@@ -133,13 +77,6 @@ void elasticRod::setup()
         isDOFJoint[i] = 0;
         DOFoffsets[i] = 0;
     }
-//    for (int i=0; i < nv; i++)
-//    {
-//        if (i < nv - 1)
-//        {
-//            isConstrained[4*i + 3] = 1;
-//        }
-//    }
     for (int i = 0; i < nv; i++) {
         isNodeJoint[i] = 0;
         pair<int, int> non_joint{i, limb_idx};
@@ -173,7 +110,6 @@ void elasticRod::setup()
     computeTangent(x, tangent);
     // set reference directors
     computeSpaceParallel();
-//    createReferenceDirectors();
     // set material directors
     computeMaterialDirector();
     // compute natural curvature
@@ -203,55 +139,6 @@ void elasticRod::setup()
     refTwist_old = refTwist;
 }
 
-//void elasticRod::addInitRod(Vector3d start, Vector3d end, int num_nodes) {
-//    assert((ndof == 0, "Initial rod was added when number of DOFs was not 0."));
-//
-//    int s_dof = ndof;
-//    int s_nv = nv;
-//
-//    ndof += num_nodes * 4 - 1;
-//    nv += num_nodes;
-//    ne += num_nodes - 1;
-//
-//    int e_dof = ndof;
-//    int e_nv = nv;
-//
-//
-//    Vector3d dir = (end - start) / (num_nodes - 1);
-//    for (int i = 0; i < num_nodes; i++) {
-//        all_nodes.emplace_back(start + i * dir);
-//    }
-//
-//    node_node_neighbors[s_nv].push_back(s_nv+1);
-//    node_node_neighbors[e_nv-1].push_back(e_nv-2);
-//    for (int i = s_nv+1; i < e_nv-1; i++) {
-//        node_node_neighbors[i].push_back(i-1);
-//        node_node_neighbors[i].push_back(i+1);
-//    }
-//
-//    node_edge_neighbors[s_nv].push_back(s_nv);
-//    node_edge_neighbors[e_nv-1].push_back(e_nv-2);
-//    for (int i = s_nv+1; i < e_nv-1; i++) {
-//        node_edge_neighbors[i].push_back(i-1);
-//        node_edge_neighbors[i].push_back(i);
-//    }
-//
-//    for (int i = s_nv; i < e_nv-1; i++) {
-//        array<int, 2> node_pair = {i, i+1};
-//        stretching_nodes.push_back(node_pair);
-//        twisting_nodes.push_back(node_pair);
-//        edge_limb_map[i] = 0;
-//    }
-//    for (int i = s_nv+1; i < e_nv-1; i++) {
-//        array<int, 3> node_triplet = {i-1, i, i+1};
-//        bending_nodes.push_back(node_triplet);
-//    }
-//
-//    double limb_length = (end - start).norm();
-//    Limb curr_limb = {s_nv, e_nv, num_nodes, limb_length};
-//    limbs.push_back(curr_limb);
-//}
-//
 
 void elasticRod::addJoint(int node_num, bool remove_dof, int joint_node, int joint_limb) {
     if (remove_dof) {
@@ -302,52 +189,6 @@ void elasticRod::addJoint(int node_num, bool remove_dof, int joint_node, int joi
     }
 }
 
-
-//void elasticRod::addRod(int limb_num, int connection_node, Eigen::Vector3d end, int num_nodes) {
-////    num_nodes -= 1;  // num_nodes arg is inclusive of the node we are attaching to, i.e. already exists
-//    Limb curr_limb = limbs[limb_num];
-//
-//    int s_dof = ndof;
-//    int s_nv = nv;
-//
-//    ndof += num_nodes * 4;  // no minus 1 here because we add a twist at the joint
-//    nv += num_nodes;
-//    ne += num_nodes;  // no minus 1 for same reason as above
-//
-//    int e_dof = ndof;
-//    int e_nv = nv;
-//
-//    assert((curr_limb.start + connection_node < curr_limb.num_nodes, "The connection node is not within a valid range"));
-//    Vector3d start = getVertex(curr_limb.start + connection_node);
-//    Vector3d dir = (end - start) / (num_nodes - 1);
-//
-//    for (int i = 1; i < num_nodes; i++) {  // we start at 1 here because the first node already exists
-//        all_nodes.emplace_back(start + i * dir);
-//    }
-//
-//    array<int, 2> joint_pair = {curr_limb.start + connection_node, s_nv};
-//    stretching_nodes.push_back(joint_pair);
-//    twisting_nodes.push_back(joint_pair);
-//    for (int i = s_nv; i < s_nv + num_nodes-1; i++) {
-//        array<int, 2> node_pair = {i, i+1};
-//        stretching_nodes.push_back(node_pair);
-//        twisting_nodes.push_back(node_pair);
-//    }
-//    array<int, 3> joint_triplet = {curr_limb.start + connection_node, s_nv, s_nv+1};
-//    bending_nodes.push_back(joint_triplet);
-//    for (auto i : node_node_neighbors[curr_limb.start + connection_node]) {
-//        array<int, 3> node_triplet1 = {i, curr_limb.start + connection_node, s_nv};
-//        bending_nodes.push_back(joint_triplet);
-//    }
-//    for (int i = s_nv+1; i < s_nv+num_nodes-1; i++) {
-//        array<int, 3> node_triplet = {i-1, i, i+1};
-//        bending_nodes.push_back(node_triplet);
-//    }
-//    double limb_length = (end - start).norm();
-//    Limb new_limb = {s_nv, e_nv, num_nodes, limb_length};
-//    limbs.push_back(new_limb);
-//}
-
 void elasticRod::updateMap()
 {
     ncons = 0;
@@ -388,14 +229,6 @@ void elasticRod::setVertexBoundaryCondition(Vector3d position, int k)
     x(4*k + 2) = position(2);
 }
 
-void elasticRod::setVelocity(int k)
-{
-    for (int i = 0; i< 4; i++)
-    {
-        u(4*k+i) = 0;
-    }
-}
-
 
 void elasticRod::setThetaBoundaryCondition(double desiredTheta, int k)
 {
@@ -405,9 +238,13 @@ void elasticRod::setThetaBoundaryCondition(double desiredTheta, int k)
 
 elasticRod::~elasticRod()
 {
-    delete isConstrained;
-    delete unconstrainedMap;
-    delete fullToUnconsMap;
+    delete [] isConstrained;
+    delete [] unconstrainedMap;
+    delete [] fullToUnconsMap;
+    delete [] isDOFJoint;
+    delete [] isNodeJoint;
+    delete [] isEdgeJoint;
+    delete [] DOFoffsets;
 }
 
 int elasticRod::getIfConstrained(int k)
@@ -446,7 +283,6 @@ void elasticRod::setReferenceLength()
         refLen(i) = rodLength / ne;
     }
 
-    // TODO: make sure this works for multi-connections
     voronoiLen = VectorXd(nv);
     for (int i = 0 ; i < nv; i++)
     {
@@ -505,7 +341,6 @@ void elasticRod::computeTangent(const VectorXd &xLocal, MatrixXd &tangentLocal)
 {
     for (int i=0; i<ne; i++)
     {
-        // TODO: need to use stretching_nodes here later
         tangentLocal.row(i) = xLocal.segment(4*(i+1),3) - xLocal.segment(4*i,3);
         tangentLocal.row(i) = tangentLocal.row(i)/(tangentLocal.row(i)).norm();
     }
@@ -567,66 +402,6 @@ void elasticRod::computeSpaceParallel()
 }
 
 
-//void elasticRod::createReferenceDirectors()
-//{
-//    Vector3d t0, t1, d1Tmp;
-//    for (int i = 0; i < ne; i++) {
-//        t0 = tangent.row(i);
-//        t1 << 0, 0, -1;
-////        t1 << 1, 0, 0;
-//        d1Tmp = t0.cross(t1);
-//        if (fabs(d1Tmp.norm()) < 1.0e-6)
-//        {
-//            t1 << 0,1,0;
-//            d1Tmp=t0.cross(t1);
-//        }
-//        d1Tmp /= d1Tmp.norm();
-//        d1.row(i) = d1Tmp;
-//        d2.row(i) = t0.cross(d1Tmp);
-//    }
-//}
-
-//void elasticRod::createReferenceDirectors()
-//{
-//    Vector3d t0, t1, d1Tmp;
-//
-//    t0 = tangent.row(0);
-//    t1 << 0, 0, -1;
-//    d1Tmp = t0.cross(t1);
-//
-//    if (fabs(d1Tmp.norm()) < 1.0e-6)
-//    {
-//        t1 << 0,1,0;
-//        d1Tmp=t0.cross(t1);
-//    }
-//    d1Tmp /= d1Tmp.norm();
-//    d1.row(0)=d1Tmp;
-//    d2.row(0)=t0.cross(d1Tmp);
-//
-//    for (int i = 1; i < ne; i++) {
-//        t0 = tangent.row(i);
-//        d1Tmp = d1.row(i-1);
-//        d1Tmp = t0.cross(d1Tmp);
-//
-//        if (fabs(d1Tmp.norm()) < 1.0e-6)
-//        {
-//            d1Tmp = d2.row(i-1);
-//            d1Tmp = t0.cross(d1Tmp);
-//            d1Tmp /= d1Tmp.norm();
-//            d1.row(i) = d1Tmp;
-//            d2.row(i) = t0.cross(d1Tmp);
-//        }
-//        else
-//        {
-//            d1Tmp /= d1Tmp.norm();
-//            d1.row(i) = d1Tmp;
-//            d2.row(i) = t0.cross(d1Tmp);
-//
-//        }
-//    }
-//}
-
-
 void elasticRod::computeMaterialDirector()
 {
     // TODOder: take out cs, ss out of the function and declare them as privates in elasticRod class
@@ -640,11 +415,6 @@ void elasticRod::computeMaterialDirector()
         ss=sin(angle);
         m1.row(i) = cs*d1.row(i) + ss*d2.row(i);
         m2.row(i) =-ss*d1.row(i) + cs*d2.row(i);
-
-//        if (i == 7 || i == 8) {
-//            cout << m1.row(i) << endl;
-//            cout << m2.row(i) << endl;
-//        }
     }
 }
 
@@ -670,14 +440,6 @@ void elasticRod::computeKappa()
         kappa(i, 0)= 0.5 * (kb.row(i)).dot(m2e+m2f);
         kappa(i, 1)=-0.5 * (kb.row(i)).dot(m1e+m1f);
     }
-//    cout << "m1" << endl;
-//    cout << m1 << endl;
-//    cout << "m2" << endl;
-//    cout << m2 << endl;
-//    cout << "kappa" << endl;
-//    cout << kappa << endl;
-//
-//    exit(0);
 }
 
 void elasticRod::getRefTwist()
@@ -756,13 +518,6 @@ void elasticRod::setupMap()
     }
 }
 
-void elasticRod::printInfo()
-{
-    for (int i=0; i < nv; i++)
-    {
-        std::cout << x(4*i) << "," << x(4*i+1) << "," << x(4*i+2) <<";" <<std::endl;
-    }
-}
 
 void elasticRod::computeElasticStiffness()
 {
@@ -818,24 +573,4 @@ void elasticRod::updateGuess(double weight)
         ind = unconstrainedMap[c];
         x[ind] = x0[ind] + weight * u[ind] * dt;
     }
-
-//    int ind;
-//    double possible_val;
-//    double floor_z = -0.10;
-//    for (int c=0; c < uncons; c++)
-//    {
-//        ind = unconstrainedMap[c];
-//        if ((ind - 2) % 4 == 0) {
-//            possible_val = x0[ind] + weight * u[ind] * dt;
-//            if (possible_val < floor_z)  {
-//                x[ind] = 0;
-//            }
-//            else{
-//                x[ind] = possible_val;
-//            }
-//        }
-//        else {
-//            x[ind] = x0[ind] + weight * u[ind] * dt;
-//        }
-//    }
 }

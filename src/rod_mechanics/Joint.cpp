@@ -53,7 +53,6 @@ void Joint::setup() {
 
     computeTangent();
 
-//    getRefandMaterialDirectors();
     createReferenceDirectors();
 
     computeMaterialDirectors();
@@ -183,28 +182,6 @@ void Joint::computeTangent() {
 }
 
 
-//void Joint::getRefandMaterialDirectors() {
-//    shared_ptr<elasticRod> curr_limb;
-//    int num_node;
-//    int limb_idx;
-//    // TODO: check that num_node will always work
-//    for (int i = 0; i < ne; i++) {
-//        num_node = connected_nodes[i].first;
-//        limb_idx = connected_nodes[i].second;
-//        curr_limb = limbs[limb_idx];
-//
-//        d1.row(i) = curr_limb->d1.row(num_node);
-//        d2.row(i) = curr_limb->d2.row(num_node);
-//        m1.row(i) = curr_limb->m1.row(num_node);
-//        m2.row(i) = curr_limb->m2.row(num_node);
-//
-//        cout << m1.row(i) << endl;
-//        cout << m2.row(i) << endl;
-//    }
-//    exit(0);
-//}
-
-
 void Joint::createReferenceDirectors() {
     Vector3d t0, t1, tmp1, tmp2;
     int curr_iter = 0;
@@ -257,7 +234,6 @@ void Joint::computeMaterialDirectors() {
             l2 = connected_nodes[j].second;
             bending_twist_signs[j] == 1 ? theta2_i = 4*n2+3 : theta2_i = 4*n2-1;
 
-//            cout << i << " " << j << " " << n1 << " " << n2 << " " << theta1_i << " " << theta2_i << endl;
             limb1 = limbs[l1];
             limb2 = limbs[l2];
             angle1 = limb1->x[theta1_i];
@@ -276,25 +252,9 @@ void Joint::computeMaterialDirectors() {
             curr_iter++;
         }
     }
-//    exit(0);
 }
 
 
-//void Joint::getRefDirectors() {
-//    shared_ptr<elasticRod> curr_limb;
-//    int num_node;
-//    int limb_idx;
-//    // TODO: check that num_node will always work
-//    for (int i = 0; i < ne; i++) {
-//        num_node = connected_nodes[i].first;
-//        limb_idx = connected_nodes[i].second;
-//        curr_limb = limbs[limb_idx];
-//        d1.row(i) = curr_limb->d1.row(num_node);
-//        d2.row(i) = curr_limb->d2.row(num_node);
-//    }
-//}
-//
-//
 void Joint::computeKappa() {
     Vector3d t0, t1;
     Vector3d m1e, m2e, m1f, m2f;
@@ -405,12 +365,10 @@ void Joint::getRefTwist() {
 
 void Joint::computeTwistBar()
 {
-    // TODO: add signs later
     double theta_i, theta_f;
     int n1, n2;
     int l1, l2;
     int curr_iter = 0;
-    int sgn1, sgn2;
     int theta1_i, theta2_i;
     for (int i = 0; i < ne; i++) {
         n1 = connected_nodes[i].first;
@@ -440,8 +398,6 @@ void Joint::computeEdgeLen() {
         edge_len[i] = (x - curr_limb->x.segment(4*num_node, 3)).norm();
     }
 }
-
-
 
 
 void Joint::computeTimeParallel()
@@ -482,9 +438,6 @@ void Joint::prepLimbs() {
 void Joint::prepareForIteration() {
     computeTangent();
     computeTimeParallel();
-    // This needs to be called after limbs
-//    getRefandMaterialDirectors();  // TODO: maybe remove this later, pointless copies
-//    computeTimeParallel();
     computeMaterialDirectors();
     getRefTwist();
     computeEdgeLen();
@@ -497,7 +450,6 @@ void Joint::setMass() {
     double curr_mass;
     shared_ptr<elasticRod> curr_limb;
     for (int i = 0; i < ne; i++) {
-        int node_num = connected_nodes[i].first;
         int limb_num = connected_nodes[i].second;
         curr_limb = limbs[limb_num];
 

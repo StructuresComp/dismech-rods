@@ -2,7 +2,6 @@
 
 timeStepper::timeStepper(vector<shared_ptr<elasticRod>> m_limbs)
 {
-//    rod = m_rod;
     limbs = m_limbs;
     kl = 10; // lower diagonals
     ku = 10; // upper diagonals
@@ -53,23 +52,14 @@ void timeStepper::addForce(int ind, double p, int limb_idx)
     }
 }
 
-// NOTE ADD AN VERSION WITH 2 limb_idxs LATER
 void timeStepper::addJacobian(int ind1, int ind2, double p, int limb_idx)
 {
     shared_ptr<elasticRod> limb = limbs[limb_idx];
     mappedInd1 = limb->fullToUnconsMap[ind1];
     mappedInd2 = limb->fullToUnconsMap[ind2];
-//    offset = offsets[limb_idx] + limb->DOFoffsets[ind1];
     offset = offsets[limb_idx];
     if (limb->getIfConstrained(ind1) == 0 && limb->getIfConstrained(ind2) == 0) // both are free
     {
-//        if (limb_idx == 0) {
-//            cout << ind1 << " " << ind2 << endl;
-//        }
-//        row = kl + ku + mappedInd2 - mappedInd1;
-//        col = mappedInd1;
-//        offset = row + col * NUMROWS;
-//        jacobian[offset] = jacobian[offset] + p;
         Jacobian(mappedInd2+offset, mappedInd1+offset) += p;
     }
 }
@@ -79,8 +69,6 @@ void timeStepper::addJacobian(int ind1, int ind2, double p, int limb_idx1, int l
     shared_ptr<elasticRod> limb2 = limbs[limb_idx2];
     mappedInd1 = limb1->fullToUnconsMap[ind1];
     mappedInd2 = limb2->fullToUnconsMap[ind2];
-//    int offset1 = offsets[limb_idx1] + limb1->DOFoffsets[ind1];
-//    int offset2 = offsets[limb_idx2] + limb2->DOFoffsets[ind2];
     int offset1 = offsets[limb_idx1];
     int offset2 = offsets[limb_idx2];
     if (limb1->getIfConstrained(ind1) == 0 && limb2->getIfConstrained(ind2) == 0) {
@@ -96,7 +84,6 @@ void timeStepper::setZero()
         jacobian[i] = 0;
     Force = VectorXd::Zero(freeDOF);
     Jacobian = MatrixXd::Zero(freeDOF,freeDOF);
-//    force = VectorXd::Zero(rod->ndof);
 }
 
 void timeStepper::update()
@@ -121,7 +108,6 @@ void timeStepper::update()
     DX = VectorXd::Zero(freeDOF);
     Force = VectorXd::Zero(freeDOF);
     Jacobian = MatrixXd::Zero(freeDOF,freeDOF);
-//    force = VectorXd::Zero(rod->ndof);
     setZero();
 }
 

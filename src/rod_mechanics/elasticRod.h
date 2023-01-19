@@ -9,9 +9,9 @@
 class elasticRod
 {
     public:
-    elasticRod(int m_limb_idx, Vector3d start, Vector3d end, int num_nodes,
+    elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
                double m_rho, double m_rodRadius, double m_dt,
-                double m_youngM, double m_shearM);
+               double m_youngM, double m_shearM);
     elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
     double m_rho, double m_rodRadius, double m_dt,
     double m_youngM, double m_shearM, double m_rodLength, VectorXd m_theta);
@@ -27,18 +27,6 @@ class elasticRod
     void updateNewtonX(double *dx, int offset, double alpha=1.0);
     void updateGuess(double weight);
 
-//    void addInitRod(Vector3d start, Vector3d end, int num_nodes);
-//    void addRod(int limb_num, int connection_node, Vector3d end, int num_nodes);
-//    void addJoint(int node1, int limb1, int node2, int limb2);
-//
-//    struct Limb {
-//        int start;
-//        int end;
-//        int num_nodes;
-//        double limb_length;
-//    };
-//    vector<Limb> limbs;
-
     int limb_idx;
 
     // utility functions
@@ -47,14 +35,12 @@ class elasticRod
     Vector3d getVelocity(int k);
     Vector3d getTangent(int k);
     double getTheta(int k);
-    void printInfo();
 
     // Should be taken out of this class
     void computeTimeParallel();
     void computeTangent(const VectorXd &x, MatrixXd &tangentLocal);
     void parallelTansport(const Vector3d &d1_1,const Vector3d &t1,const Vector3d &t2,Vector3d &d1_2);
     void computeSpaceParallel();
-    void createReferenceDirectors();
     void computeMaterialDirector();
     void computeKappa();
     void computeTwistBar();
@@ -93,18 +79,6 @@ class elasticRod
     VectorXd voronoiLen;
 
     vector<Vector3d> all_nodes;
-    vector<array<int,2>> stretching_nodes;
-    vector<array<int,3>> bending_nodes;
-    vector<array<int,2>> twisting_nodes;
-
-    int num_stretching;
-    int num_bending;
-    int num_twisting;
-
-    map<int, vector<int>> node_node_neighbors;
-    map<int, vector<int>> node_edge_neighbors;
-    map<int, array<int, 2>> edge_node_map;
-    map<int, int> edge_limb_map;
 
     // dof vector before time step
     VectorXd x0;
@@ -151,8 +125,6 @@ class elasticRod
 
     void updateMap();
 
-    void setVelocity(int k);
-
     void freeVertexBoundaryCondition(int k);
 
     VectorXd xold;
@@ -163,12 +135,9 @@ class elasticRod
     int* isNodeJoint;
     int* isEdgeJoint;
     int* DOFoffsets;
-    int* unconsToDOFMap;
     vector<pair<int, int>> joint_ids;
 
     private:
-
-//    map<
 };
 
 #endif
