@@ -34,20 +34,15 @@ public:
     void setRodStepper();
     void updateTimeStep();
     int simulationRunning();
-    int numPoints();
     double getScaledCoordinate(int i, int limb_idx);
     double getCurrentTime();
 
-    bool pulling();
     bool isRender();
 
     // file output
     void OpenFile(ofstream &outfile, string filename);
     void CloseFile(ofstream &outfile);
     void outputNodeCoordinates(ofstream &outfile);
-    bool CoutDataC(ofstream &outfile);
-
-    void updateTimeStep_data();
 
     int getTimeStep();
 
@@ -58,10 +53,7 @@ public:
 private:
 
     // Physical parameters
-    double RodLength;
-    double helixradius, helixpitch;
     double rodRadius;
-    int numVertices;
     double youngM;
     double Poisson;
     double shearM;
@@ -69,10 +61,6 @@ private:
     double density;
     Vector3d gVector;
     double viscosity;
-    double pull_time;
-    double release_time;
-    double wait_time;
-    double pull_speed;
     double col_limit;
     double delta;
     double k_scaler;
@@ -120,14 +108,10 @@ private:
     int iter;
     int total_iters;
 
-    void rodGeometry();
-    void rodBoundaryCondition();
     void lockEdge(int edge_num, int limb_idx);
 
     void updateRobot();
     void prepRobot();
-
-    void updateBoundary();
 
     void updateCons();
 

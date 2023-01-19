@@ -6,13 +6,9 @@ world::world() {
 
 world::world(setInput &m_inputData) {
     render = m_inputData.GetBoolOpt("render");                       // boolean
-    RodLength = m_inputData.GetScalarOpt("RodLength");               // meter
-    helixradius = m_inputData.GetScalarOpt("helixradius");           // meter
-    gVector = m_inputData.GetVecOpt("gVector");                            // m/s^2
+    gVector = m_inputData.GetVecOpt("gVector");                      // m/s^2
     maxIter = m_inputData.GetIntOpt("maxIter");                      // maximum number of iterations
-    helixpitch = m_inputData.GetScalarOpt("helixpitch");             // meter
-    rodRadius = m_inputData.GetScalarOpt("rodRadius");               // mete
-    numVertices = m_inputData.GetIntOpt("numVertices");              // int_num
+    rodRadius = m_inputData.GetScalarOpt("rodRadius");               // meter
     youngM = m_inputData.GetScalarOpt("youngM");                     // Pa
     Poisson = m_inputData.GetScalarOpt("Poisson");                   // dimensionless
     deltaTime = m_inputData.GetScalarOpt("deltaTime");               // seconds
@@ -21,18 +17,14 @@ world::world(setInput &m_inputData) {
     density = m_inputData.GetScalarOpt("density");                   // kg/m^3
     viscosity = m_inputData.GetScalarOpt("viscosity");               // viscosity in Pa-s
     data_resolution = m_inputData.GetScalarOpt("dataResolution");    // time resolution for recording data
-    pull_time = m_inputData.GetScalarOpt("pullTime");                // get time of pulling
-    release_time = m_inputData.GetScalarOpt("releaseTime");          // get time of loosening
-    wait_time = m_inputData.GetScalarOpt("waitTime");                // get time of waiting
-    pull_speed = m_inputData.GetScalarOpt("pullSpeed");              // get speed of pulling
     col_limit = m_inputData.GetScalarOpt("colLimit");                // distance limit for candidate set
     delta = m_inputData.GetScalarOpt("delta");                       // distance tolerance for contact
     k_scaler = m_inputData.GetScalarOpt("kScaler");                  // constant scaler for contact stiffness
     mu = m_inputData.GetScalarOpt("mu");                             // friction coefficient
     nu = m_inputData.GetScalarOpt("nu");                             // slipping tolerance for friction
     line_search = m_inputData.GetIntOpt("lineSearch");               // flag for enabling line search
-    knot_config = m_inputData.GetStringOpt("knotConfig");            // get initial knot configuration
     floor_z = m_inputData.GetScalarOpt("floorZ");                    // z-coordinate of floor plane
+    totalTime = m_inputData.GetScalarOpt("simTime");                       // simulation duration
 
     shearM = youngM / (2.0 * (1.0 + Poisson));                             // shear modulus
 
@@ -40,7 +32,6 @@ world::world(setInput &m_inputData) {
     alpha = 1.0;                                                           // newton step size
     total_iters = 0;                                                       // total number of newton iterations
 
-    totalTime = wait_time + pull_time + release_time;                      // total sim time
 }
 
 world::~world() {
@@ -70,6 +61,8 @@ void world::OpenFile(ofstream &outfile, string file_type) {
     outfile.precision(10);
 }
 
+
+// TODO: remove this in favor of the logging classes later
 void world::outputNodeCoordinates(ofstream &outfile) {
     if (timeStep % data_rate != 0) return;
     Vector3d curr_node;
@@ -88,29 +81,6 @@ void world::outputNodeCoordinates(ofstream &outfile) {
 void world::CloseFile(ofstream &outfile) {
     outfile.close();
 }
-
-
-bool world::CoutDataC(ofstream &outfile) {
-    if (timeStep % data_rate != 0) return false;
-    double f;
-    double f1;
-
-    f = temp.norm();
-    f1 = temp1.norm();
-
-    double end_to_end_length = (rod->getVertex(0) - rod->getVertex(rod->nv-1)).norm();
-
-    // 2piR method. WARNING: not the most accurate method for getting knot loop radius
-    double loop_circumference = RodLength - end_to_end_length;
-    double radius = loop_circumference / (2. * M_PI);
-
-    // Output pull forces here
-    // Do not need to add endl here as it will be added when time spent is added
-    outfile << currentTime << " " << f << " " << f1 << " " << radius << " " << end_to_end_length
-            << " " << iter << " " << total_iters << " ";
-    return true;
-}
-
 
 void world::setRodStepper() {
     /* Chandelier case */
@@ -214,8 +184,10 @@ void world::setRodStepper() {
     // This has to be called after joints are all set.
     for (const auto& joint : joints) joint->setup();
 
+    // TODO: make characteristicForce a function of total cumulative rod length?
+    double temp_value = 1.0;
     // Find out the tolerance, e.g. how small is enough?
-    characteristicForce = M_PI * pow(rodRadius, 4) / 4.0 * youngM / pow(RodLength, 2);
+    characteristicForce = M_PI * pow(rodRadius, 4) / 4.0 * youngM / pow(temp_value, 2);
     forceTol = tol * characteristicForce;
 
     // set up the time stepper
@@ -259,45 +231,8 @@ void world::prepRobot() {
     for (const auto& joint : joints) joint->prepareForIteration();
 }
 
-// Setup geometry
-void world::rodGeometry() {
-    vertices = MatrixXd(numVertices, 3);
 
-    ifstream myfile(("knot_configurations/" + knot_config).c_str());
-
-    int row1 = numVertices;
-
-    MatrixXd data = MatrixXd(row1, 4);
-    double a;
-    if (myfile.is_open()) {
-        for (int i = 0; i < row1 * 4; i++) {
-            myfile >> a;
-            if (i % 4 == 0)
-                data(i / 4, 0) = a;
-            else if (i % 4 == 1)
-                data(i / 4, 1) = a;
-            else if (i % 4 == 2)
-                data(i / 4, 2) = a;
-            else if (i % 4 == 3)
-                data(i / 4, 3) = a;
-        }
-    }
-    theta = VectorXd::Zero(numVertices - 1);
-    for (int i = 0; i < numVertices; i++) {
-        vertices(i, 0) = data(i, 0);
-        vertices(i, 1) = data(i, 1);
-        vertices(i, 2) = data(i, 2);
-    }
-}
-
-
-void world::rodBoundaryCondition() {
-    limbs[0]->setVertexBoundaryCondition(limbs[0]->getVertex(0), 0);
-    limbs[0]->setVertexBoundaryCondition(limbs[0]->getVertex(1), 1);
-    limbs[0]->setThetaBoundaryCondition(0.0, 0);
-}
-
-
+// TODO: this is hardcoded, fix later when needed
 void world::lockEdge(int edge_num, int limb_idx) {
     limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(0), 0);
     limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(1), 1);
@@ -335,9 +270,6 @@ void world::updateTimeStep() {
     timeStep++;
 }
 
-bool world::pulling() {
-    return currentTime > wait_time;
-}
 
 void world::printSimData() {
     printf("time: %.4f | iters: %i | con: %i | min_dist: %.6f | k: %.3e | fric: %.1f\n",
@@ -405,8 +337,6 @@ void world::newtonMethod(bool &solved) {
         if (normf <= forceTol || (iter > 0 && normf <= normf0 * stol)) {
             solved = true;
             iter++;
-            if (pulling())
-                total_iters++;
         }
 
         if (solved == false) {
@@ -419,8 +349,6 @@ void world::newtonMethod(bool &solved) {
                 limb_idx++;
             }
             iter++;
-            if (pulling())
-                total_iters++;
         }
 
         // Exit if unable to converge
