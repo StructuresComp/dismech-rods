@@ -18,7 +18,7 @@
 class timeStepper
 {
 public:
-    timeStepper(vector<shared_ptr<elasticRod>> m_limbs);
+    timeStepper(const vector<shared_ptr<elasticRod>>& m_limbs);
     ~timeStepper();
     double* getForce();
     double* getJacobian();

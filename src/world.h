@@ -5,7 +5,7 @@
 
 // include elastic rod class
 #include "rod_mechanics/elasticRod.h"
-#include "rod_mechanics/Joint.h"
+#include "rod_mechanics/elasticJoint.h"
 
 // include force classes
 #include "rod_mechanics/elasticStretchingForce.h"
@@ -48,7 +48,7 @@ public:
 
     // TODO: Create more sophisticated classes for these
     vector<shared_ptr<elasticRod>> limbs;
-    vector<shared_ptr<Joint>> joints;
+    vector<shared_ptr<elasticJoint>> joints;
 
 private:
 

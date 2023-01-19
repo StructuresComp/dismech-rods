@@ -1,8 +1,7 @@
 #include "dampingForce.h"
-#include <iostream>
 
-dampingForce::dampingForce(vector<shared_ptr<elasticRod>> m_limbs,
-                           vector<shared_ptr<Joint>> m_joints,
+dampingForce::dampingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
+                           const vector<shared_ptr<elasticJoint>>& m_joints,
                            shared_ptr<timeStepper> m_stepper, double m_viscosity)
 {
     limbs = m_limbs;

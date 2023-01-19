@@ -9,7 +9,7 @@
 class floorContactForce
 {
 public:
-    floorContactForce(vector<shared_ptr<elasticRod>> m_limbs, shared_ptr<timeStepper> m_stepper,
+    floorContactForce(const vector<shared_ptr<elasticRod>>& m_limbs, shared_ptr<timeStepper> m_stepper,
                       double m_floor_delta, double m_floor_slipTol, double m_mu, double m_dt, double m_floor_z);
     ~floorContactForce();
 

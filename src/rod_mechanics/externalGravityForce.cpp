@@ -1,7 +1,7 @@
 #include "externalGravityForce.h"
 
-externalGravityForce::externalGravityForce(vector<shared_ptr<elasticRod>> m_limbs,
-                                           vector<shared_ptr<Joint>> m_joints,
+externalGravityForce::externalGravityForce(const vector<shared_ptr<elasticRod>>& m_limbs,
+                                           const vector<shared_ptr<elasticJoint>>& m_joints,
                                            shared_ptr<timeStepper> m_stepper, Vector3d m_gVector)
 {
     limbs = m_limbs;

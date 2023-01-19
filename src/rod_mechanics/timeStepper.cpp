@@ -1,6 +1,6 @@
 #include "timeStepper.h"
 
-timeStepper::timeStepper(vector<shared_ptr<elasticRod>> m_limbs)
+timeStepper::timeStepper(const vector<shared_ptr<elasticRod>>& m_limbs)
 {
     limbs = m_limbs;
     kl = 10; // lower diagonals

@@ -3,14 +3,14 @@
 
 #include "../eigenIncludes.h"
 #include "elasticRod.h"
-#include "Joint.h"
+#include "elasticJoint.h"
 #include "timeStepper.h"
 
 class dampingForce
 {
 public:
-    dampingForce(vector<shared_ptr<elasticRod>> m_limbs,
-                 vector<shared_ptr<Joint>> m_joints,
+    dampingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
+                 const vector<shared_ptr<elasticJoint>>& m_joints,
                  shared_ptr<timeStepper> m_stepper, double m_viscosity);
     ~dampingForce();
     void computeFd();
@@ -18,8 +18,7 @@ public:
 
 private:
     vector<shared_ptr<elasticRod>> limbs;
-    vector<shared_ptr<Joint>> joints;
-    shared_ptr<elasticRod> rod;
+    vector<shared_ptr<elasticJoint>> joints;
     shared_ptr<timeStepper> stepper;
     double viscosity;
 

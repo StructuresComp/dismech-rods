@@ -1,13 +1,13 @@
-#ifndef JOINT_H
-#define JOINT_H
+#ifndef ELASTICJOINT_H
+#define ELASTICJOINT_H
 
 #include "elasticRod.h"
 #include "../eigenIncludes.h"
 
-class Joint
+class elasticJoint
 {
 public:
-    Joint(int node, int limb_idx, vector<shared_ptr<elasticRod>> &limbs);
+    elasticJoint(int node, int limb_idx, const vector<shared_ptr<elasticRod>> &limbs);
     int joint_node;
     int joint_limb;
 
@@ -20,7 +20,7 @@ public:
 
     void updateConnectedNodes(int node_num, int limb_idx, bool remove_dof);
 
-    vector<shared_ptr<elasticRod>>& limbs;
+    vector<shared_ptr<elasticRod>> limbs;
     Vector3d x;
     Vector3d x0;
     Vector3d xold;

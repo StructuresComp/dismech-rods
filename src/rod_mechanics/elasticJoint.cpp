@@ -1,6 +1,6 @@
-#include "Joint.h"
+#include "elasticJoint.h"
 
-Joint::Joint(int node, int limb_idx, vector<shared_ptr<elasticRod>> &m_limbs)
+elasticJoint::elasticJoint(int node, int limb_idx, const vector<shared_ptr<elasticRod>> &m_limbs)
             : joint_node(node), joint_limb(limb_idx), limbs(m_limbs)
 {
     ne = 0;
@@ -10,7 +10,7 @@ Joint::Joint(int node, int limb_idx, vector<shared_ptr<elasticRod>> &m_limbs)
 
 }
 
-void Joint::setup() {
+void elasticJoint::setup() {
     num_bending_combos = 0;
     for (int i = 0; i < ne; i++) {
         for (int j = i+1; j < ne; j++) {
@@ -74,7 +74,7 @@ void Joint::setup() {
 
 }
 
-void Joint::updateConnectedNodes(int node_num, int limb_idx, bool remove_dof) {
+void elasticJoint::updateConnectedNodes(int node_num, int limb_idx, bool remove_dof) {
     int nv = limbs[limb_idx]->nv;
     if (node_num == 0) {
         pair<int, int> node_and_limb(1, limb_idx);
@@ -112,14 +112,14 @@ void Joint::updateConnectedNodes(int node_num, int limb_idx, bool remove_dof) {
 }
 
 
-void Joint::updateJoint() {
+void elasticJoint::updateJoint() {
     x(0) = limbs[joint_limb]->x(4*joint_node);
     x(1) = limbs[joint_limb]->x(4*joint_node+1);
     x(2) = limbs[joint_limb]->x(4*joint_node+2);
 }
 
 
-void Joint::updateRods() {
+void elasticJoint::updateRods() {
     shared_ptr<elasticRod> curr_limb;
     int num_node;
     int limb_idx;
@@ -134,13 +134,13 @@ void Joint::updateRods() {
 }
 
 
-void Joint::addToJoint(int node_num, int limb_idx) {
+void elasticJoint::addToJoint(int node_num, int limb_idx) {
     limbs[limb_idx]->addJoint(node_num, true, joint_node, joint_limb);
     updateConnectedNodes(node_num, limb_idx, true);
 }
 
 
-void Joint::setReferenceLength() {
+void elasticJoint::setReferenceLength() {
     shared_ptr<elasticRod> curr_limb;
     int num_node;
     int limb_idx;
@@ -160,7 +160,7 @@ void Joint::setReferenceLength() {
 }
 
 
-void Joint::computeTangent() {
+void elasticJoint::computeTangent() {
     // NOTE: all tangents are pointing toward the joint
     shared_ptr<elasticRod> curr_limb;
     int num_node;
@@ -182,7 +182,7 @@ void Joint::computeTangent() {
 }
 
 
-void Joint::createReferenceDirectors() {
+void elasticJoint::createReferenceDirectors() {
     Vector3d t0, t1, tmp1, tmp2;
     int curr_iter = 0;
     int sgn1, sgn2;
@@ -215,7 +215,7 @@ void Joint::createReferenceDirectors() {
     }
 }
 
-void Joint::computeMaterialDirectors() {
+void elasticJoint::computeMaterialDirectors() {
     double cs1, ss1;
     double cs2, ss2;
     int theta1_i, theta2_i;
@@ -255,7 +255,7 @@ void Joint::computeMaterialDirectors() {
 }
 
 
-void Joint::computeKappa() {
+void elasticJoint::computeKappa() {
     Vector3d t0, t1;
     Vector3d m1e, m2e, m1f, m2f;
     int curr_iter = 0;
@@ -288,7 +288,7 @@ void Joint::computeKappa() {
     }
 }
 
-void Joint::parallelTransport(const Vector3d &d1_1,const Vector3d &t1, const Vector3d &t2, Vector3d &d1_2)
+void elasticJoint::parallelTransport(const Vector3d &d1_1,const Vector3d &t1, const Vector3d &t2, Vector3d &d1_2)
 {
     Vector3d b;
     Vector3d n1,n2;
@@ -314,7 +314,7 @@ void Joint::parallelTransport(const Vector3d &d1_1,const Vector3d &t1, const Vec
 }
 
 
-void Joint::rotateAxisAngle(Vector3d &v,const Vector3d &z,const double &theta)
+void elasticJoint::rotateAxisAngle(Vector3d &v,const Vector3d &z,const double &theta)
 {
     //Compute the vector when it rotates along another vector into certain angle
     if (theta!=0) // if theta=0, v = v
@@ -326,7 +326,7 @@ void Joint::rotateAxisAngle(Vector3d &v,const Vector3d &z,const double &theta)
     }
 }
 
-double Joint::signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n)
+double elasticJoint::signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n)
 {
     //Compute the angle between two vectors
     Vector3d w=u.cross(v);
@@ -338,7 +338,7 @@ double Joint::signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &
 }
 
 
-void Joint::getRefTwist() {
+void elasticJoint::getRefTwist() {
     Vector3d u0, u1, t0, t1, ut;
     double sgnAngle;
     int curr_iter = 0;
@@ -363,7 +363,7 @@ void Joint::getRefTwist() {
     }
 }
 
-void Joint::computeTwistBar()
+void elasticJoint::computeTwistBar()
 {
     double theta_i, theta_f;
     int n1, n2;
@@ -387,7 +387,7 @@ void Joint::computeTwistBar()
 }
 
 
-void Joint::computeEdgeLen() {
+void elasticJoint::computeEdgeLen() {
     shared_ptr<elasticRod> curr_limb;
     int num_node;
     int limb_idx;
@@ -400,7 +400,7 @@ void Joint::computeEdgeLen() {
 }
 
 
-void Joint::computeTimeParallel()
+void elasticJoint::computeTimeParallel()
 {
     // Use old versions of (d1, d2, tangent) to get new d1, d2
     Vector3d t0_0, t1_0, t0_1, t1_1, d1_0, d1_1;
@@ -429,13 +429,13 @@ void Joint::computeTimeParallel()
 }
 
 
-void Joint::prepLimbs() {
+void elasticJoint::prepLimbs() {
     updateJoint();
     updateRods();
 }
 
 
-void Joint::prepareForIteration() {
+void elasticJoint::prepareForIteration() {
     computeTangent();
     computeTimeParallel();
     computeMaterialDirectors();
@@ -445,7 +445,7 @@ void Joint::prepareForIteration() {
 }
 
 
-void Joint::setMass() {
+void elasticJoint::setMass() {
     mass = 0;
     double curr_mass;
     shared_ptr<elasticRod> curr_limb;
@@ -458,7 +458,7 @@ void Joint::setMass() {
     }
 }
 
-void Joint::updateTimeStep()
+void elasticJoint::updateTimeStep()
 {
     prepareForIteration();
 

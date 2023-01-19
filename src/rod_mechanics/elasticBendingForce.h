@@ -3,14 +3,15 @@
 
 #include "../eigenIncludes.h"
 #include "elasticRod.h"
-#include "Joint.h"
+#include "elasticJoint.h"
 #include "timeStepper.h"
 
 class elasticBendingForce
 {
 public:
-    elasticBendingForce(vector<shared_ptr<elasticRod>> m_limbs,
-                        vector<shared_ptr<Joint>> m_joints, shared_ptr<timeStepper> m_stepper);
+    elasticBendingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
+                        const vector<shared_ptr<elasticJoint>>& m_joints,
+                        shared_ptr<timeStepper> m_stepper);
     ~elasticBendingForce();
     void computeFb();
     void computeJb();
@@ -18,8 +19,7 @@ public:
 private:
 
     vector<shared_ptr<elasticRod>> limbs;
-    vector<shared_ptr<Joint>> joints;
-    shared_ptr<elasticRod> rod;
+    vector<shared_ptr<elasticJoint>> joints;
     shared_ptr<timeStepper> stepper;
 
     void JacobianComputation();
