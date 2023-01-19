@@ -12,8 +12,6 @@
 #include <GL/glut.h>
 
 #include <iostream>
-#include <fstream>
-#include <ctime>
 #include "eigenIncludes.h"
 
 // Rod and stepper are included in the world
@@ -52,7 +50,7 @@ int main(int argc,char *argv[])
     inputData.LoadOptions(argc,argv);
 
     my_world = make_shared<world>(inputData);
-    my_world->setRodStepper();
+    my_world->setupWorld();
 
     // Obtain parameters relevant to simulation loop
     verbosity = inputData.GetIntOpt("debugVerbosity");

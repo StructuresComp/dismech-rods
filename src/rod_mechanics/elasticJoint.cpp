@@ -7,7 +7,6 @@ elasticJoint::elasticJoint(int node, int limb_idx, const vector<shared_ptr<elast
     limbs[limb_idx]->addJoint(joint_node, false, 0, 0);
     dt = limbs[limb_idx]->dt;
     updateConnectedNodes(joint_node, joint_limb, false);
-
 }
 
 void elasticJoint::setup() {
@@ -142,7 +141,6 @@ void elasticJoint::addToJoint(int node_num, int limb_idx) {
 
 void elasticJoint::setReferenceLength() {
     shared_ptr<elasticRod> curr_limb;
-    int num_node;
     int limb_idx;
     for (int i = 0; i < ne; i++) {
         limb_idx = connected_nodes[i].second;

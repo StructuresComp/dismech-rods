@@ -75,8 +75,6 @@ public:
 
     void prepLimbs();
     void prepareForIteration();
-    void computeSpaceParallel(const Vector3d& t0, const Vector3d& t1,
-                              const Vector3d& d1_0, Vector3d& d1_1, Vector3d& d2_1);
     void computeTimeParallel();
 
     void updateTimeStep();

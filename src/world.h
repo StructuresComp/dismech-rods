@@ -2,6 +2,7 @@
 #define WORLD_H
 
 #include "eigenIncludes.h"
+#include "robotDescription.h"
 
 // include elastic rod class
 #include "rod_mechanics/elasticRod.h"
@@ -31,7 +32,7 @@ public:
     world();
     world(setInput &m_inputData);
     ~world();
-    void setRodStepper();
+    void setupWorld();
     void updateTimeStep();
     int simulationRunning();
     double getScaledCoordinate(int i, int limb_idx);

@@ -27,6 +27,7 @@ link_directories(${MKL_LIBRARY_DIR})
 add_executable(simDER
         src/main.cpp
         src/world.cpp
+        src/robotDescription.cpp
         src/initialization/setInput.cpp
         src/rod_mechanics/elasticRod.cpp
         src/rod_mechanics/elasticStretchingForce.cpp
