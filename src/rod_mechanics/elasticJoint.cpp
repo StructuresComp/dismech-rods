@@ -222,20 +222,23 @@ void elasticJoint::computeMaterialDirectors() {
     shared_ptr<elasticRod> limb1, limb2;
     int n1, n2, l1, l2;
     int curr_iter = 0;
+    int sgn1, sgn2;
 
     for (int i = 0; i < ne; i++) {
         n1 = connected_nodes[i].first;
         l1 = connected_nodes[i].second;
         bending_twist_signs[i] == 1 ? theta1_i = 4*n1+3 : theta1_i = 4*n1-1;
+        bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
         for (int j = i+1; j < ne; j++) {
             n2 = connected_nodes[j].first;
             l2 = connected_nodes[j].second;
             bending_twist_signs[j] == 1 ? theta2_i = 4*n2+3 : theta2_i = 4*n2-1;
+            bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
 
             limb1 = limbs[l1];
             limb2 = limbs[l2];
-            angle1 = limb1->x[theta1_i];
-            angle2 = limb2->x[theta2_i];
+            angle1 = limb1->x[theta1_i] * sgn1;
+            angle2 = limb2->x[theta2_i] * sgn2;
             cs1 = cos(angle1);
             ss1 = sin(angle1);
             cs2 = cos(angle2);
@@ -368,16 +371,19 @@ void elasticJoint::computeTwistBar()
     int l1, l2;
     int curr_iter = 0;
     int theta1_i, theta2_i;
+    int sgn1, sgn2;
     for (int i = 0; i < ne; i++) {
         n1 = connected_nodes[i].first;
         l1 = connected_nodes[i].second;
         bending_twist_signs[i] == 1 ? theta1_i = 4*n1+3 : theta1_i = 4*n1-1;
+        bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
         for (int j = i+1; j < ne; j++) {
             n2 = connected_nodes[j].first;
             l2 = connected_nodes[j].second;
             bending_twist_signs[j] == 1 ? theta2_i = 4*n2+3 : theta2_i = 4*n2-1;
-            theta_i = limbs[l1]->x[theta1_i];
-            theta_f = limbs[l2]->x[theta2_i];
+            bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
+            theta_i = limbs[l1]->x[theta1_i] * sgn1;
+            theta_f = limbs[l2]->x[theta2_i] * sgn2;
             twistBar(i) = theta_f - theta_i + ref_twist(i);
             curr_iter++;
         }

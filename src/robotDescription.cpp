@@ -91,8 +91,6 @@ void get_robot_description(vector<shared_ptr<elasticRod>>& limbs, vector<shared_
     joints[1]->addToJoint(0, 2);
     joints.push_back(make_shared<elasticJoint>(5, 2, limbs));
     joints[2]->addToJoint(0, 3);
-//    joints.push_back(make_shared<elasticJoint>(5, 3, limbs));
-//    joints[3]->addToJoint(0, 0);
     joints.push_back(make_shared<elasticJoint>(0, 0, limbs));
     joints[3]->addToJoint(5, 3);
 }

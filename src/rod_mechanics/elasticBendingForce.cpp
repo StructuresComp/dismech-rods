@@ -218,8 +218,10 @@ void elasticBendingForce::computeFb()
                     stepper->addForce(4*n3+k, -f[k+8], l3);
                 }
                 // Theta moments
-                stepper->addForce(theta1_i, -f[3], l1);
-                stepper->addForce(theta2_i, -f[7], l3);
+                stepper->addForce(theta1_i, -f[3] * sgn1, l1);
+                stepper->addForce(theta2_i, -f[7] * sgn2, l3);
+//                stepper->addForce(theta1_i, -f[3], l1);
+//                stepper->addForce(theta2_i, -f[7], l3);
 
                 curr_iter++;
             }
@@ -390,6 +392,15 @@ void elasticBendingForce::computeJb()
                 temp = -1.0 / len * kappaL.transpose() * EIMatrices[0];
 
                 Jbb = Jbb + temp(0) * DDkappa1 + temp(1) * DDkappa2;
+
+                if (sgn1 == -1) {
+                    Jbb.col(3) = -Jbb.col(3);
+                    Jbb.row(3) = -Jbb.row(3);
+                }
+                if (sgn2 == -1) {
+                    Jbb.col(7) = -Jbb.col(7);
+                    Jbb.row(7) = -Jbb.row(7);
+                }
 
                 // Nodal forces
                 for (int t = 0; t < 3; t++) {

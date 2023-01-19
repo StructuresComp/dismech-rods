@@ -113,6 +113,7 @@ void elasticTwistingForce::computeFt()
     int n2, l2;
     int n3, l3;
     int curr_iter = 0;
+    int sgn1, sgn2;
     for (const auto& joint : joints) {
         GJ = limbs[0]->GJ;  // NOTE: CHANGE THIS LATER
         gradTwist = gradTwists[limbs.size()+joint_idx];
@@ -125,13 +126,15 @@ void elasticTwistingForce::computeFt()
             n1 = joint->connected_nodes[i].first;
             l1 = joint->connected_nodes[i].second;
             joint->bending_twist_signs[i] == 1 ? theta1_i = 4*n1+3 : theta1_i = 4*n1-1;
+            joint->bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
             for (int j = i+1; j < joint->ne; j++) {
                 n3 = joint->connected_nodes[j].first;
                 l3 = joint->connected_nodes[j].second;
                 joint->bending_twist_signs[j] == 1 ? theta2_i = 4*n3+3 : theta2_i = 4*n3-1;
+                joint->bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
 
-                theta_e->coeffRef(curr_iter) = limbs[l1]->x(theta1_i);
-                theta_f->coeffRef(curr_iter) = limbs[l3]->x(theta2_i);
+                theta_e->coeffRef(curr_iter) = limbs[l1]->x(theta1_i) * sgn1;
+                theta_f->coeffRef(curr_iter) = limbs[l3]->x(theta2_i) * sgn2;
 
                 curr_iter++;
             }
@@ -161,10 +164,12 @@ void elasticTwistingForce::computeFt()
             n1 = joint->connected_nodes[i].first;
             l1 = joint->connected_nodes[i].second;
             joint->bending_twist_signs[i] == 1 ? theta1_i = 4*n1+3 : theta1_i = 4*n1-1;
+            joint->bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
             for (int j = i+1; j < joint->ne; j++) {
                 n3 = joint->connected_nodes[j].first;
                 l3 = joint->connected_nodes[j].second;
                 joint->bending_twist_signs[j] == 1 ? theta2_i = 4*n3+3 : theta2_i = 4*n3-1;
+                joint->bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
 
                 value = GJ / joint->voronoi_len(curr_iter) * (deltam->coeff(curr_iter) +
                         joint->ref_twist(curr_iter) - joint->twistBar(curr_iter));
@@ -177,8 +182,8 @@ void elasticTwistingForce::computeFt()
                     stepper->addForce(4*n3+k, -f[k+8], l3);
                 }
                 // Theta moments
-                stepper->addForce(theta1_i, -f[3], l1);
-                stepper->addForce(theta2_i, -f[7], l3);
+                stepper->addForce(theta1_i, -f[3] * sgn1, l1);
+                stepper->addForce(theta2_i, -f[7] * sgn2, l3);
 
                 curr_iter++;
             }
@@ -366,6 +371,15 @@ void elasticTwistingForce::computeJt()
                 Jtt = GJ * milen * ((deltam->coeff(curr_iter) + joint->ref_twist(curr_iter) -
                                      joint->twistBar(curr_iter)) * DDtwist +
                                     gradTwistLocal * gradTwistLocal.transpose());
+
+                if (sgn1 == -1) {
+                    Jtt.col(3) = -Jtt.col(3);
+                    Jtt.row(3) = -Jtt.row(3);
+                }
+                if (sgn2 == -1) {
+                    Jtt.col(7) = -Jtt.col(7);
+                    Jtt.row(7) = -Jtt.row(7);
+                }
 
                 // Nodal forces
                 for (int t = 0; t < 3; t++) {
