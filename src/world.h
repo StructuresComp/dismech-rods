@@ -51,13 +51,9 @@ public:
 
     int getTimeStep();
 
+    // TODO: Create more sophisticated classes for these
     vector<shared_ptr<elasticRod>> limbs;
     vector<shared_ptr<Joint>> joints;
-
-    void makeJoint(int node, int limb_idx);
-
-    void addToJoint(int joint_num, int node, int limb_idx);
-
 
 private:
 
@@ -87,6 +83,7 @@ private:
     int line_search;
     string knot_config;
     double alpha;
+    double floor_z;
 
     double tol, stol;
     int maxIter; // maximum number of iterations
@@ -127,14 +124,15 @@ private:
     void rodBoundaryCondition();
     void lockEdge(int edge_num, int limb_idx);
 
+    void updateRobot();
+    void prepRobot();
+
     void updateBoundary();
 
     void updateCons();
 
     void newtonMethod(bool &solved);
     void printSimData();
-    void newtonDamper();
-    void calculateForce();
     void lineSearch();
 
     bool render; // should the OpenGL rendering be included?
@@ -144,7 +142,6 @@ private:
     Vector3d gravity;
     Vector3d inertial;
     Vector3d dampingF;
-
 };
 
 #endif

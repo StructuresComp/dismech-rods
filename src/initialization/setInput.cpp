@@ -37,6 +37,7 @@ setInput::setInput()
     AddOption("debugVerbosity", "Flag for enabling informative print statements", verbosity);
     AddOption("cmdlinePer", "Period of printing info to command line", cmdline_per);
     AddOption("enableLogging", "Period of printing info to command line", enable_logging);
+    AddOption("floorZ", "Period of printing info to command line", floor_z);
 }
 
 setInput::~setInput()

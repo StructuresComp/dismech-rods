@@ -181,8 +181,6 @@ void elasticRod::setup()
     kappa = MatrixXd::Zero(nv, 2);
     computeKappa();
     kappaBar = kappa;
-    cout << kappaBar << endl;
-//    exit(0);
     // Reference twist
     refTwist_old = VectorXd::Zero(ne);
     getRefTwist();

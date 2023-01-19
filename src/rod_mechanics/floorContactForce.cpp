@@ -18,9 +18,7 @@ floorContactForce::floorContactForce(vector<shared_ptr<elasticRod>> m_limbs, sha
 
     floor_z = m_floor_z;
 
-//    contact_stiffness = 100;
     contact_stiffness = 100000;
-//    contact_stiffness = 1000000;
 
     contact_input[1] = K1;
 
@@ -42,7 +40,7 @@ void floorContactForce::updateMu(double m_mu) {
 }
 
 
-void floorContactForce::computeFf(bool fric_off) {
+void floorContactForce::computeFf() {
     double dist;
     double f;
     int limb_idx = 0;
@@ -54,14 +52,13 @@ void floorContactForce::computeFf(bool fric_off) {
             ind = 4 * i + 2;
             if (limb->isDOFJoint[ind] == 1) continue;
 
-            dist = floor_z - limb->x[ind];
-            if (-dist > delta) continue;
+            dist = limb->x[ind] - floor_z;
+            if (dist > delta) continue;
 
-            v = exp(K1 * dist);
+            v = exp(-K1 * dist);
 
             f = (-2 * v * log(v + 1)) / (K1 * (v + 1));
             f *= contact_stiffness;
-//            cout << dist << " " << f << " " << v << endl;
             stepper->addForce(ind, f, limb_idx);
 
             // Apply friction force
@@ -76,7 +73,7 @@ void floorContactForce::computeFf(bool fric_off) {
 }
 
 
-void floorContactForce::computeFfJf(bool fric_off) {
+void floorContactForce::computeFfJf() {
     double dist;
     double f;
     double J;
@@ -84,15 +81,17 @@ void floorContactForce::computeFfJf(bool fric_off) {
     int ind;
     Vector2d curr_node, pre_node;
     double v;  // exp(K1(floor_z - \Delta))
+    min_dist = 1e7;
     for (const auto& limb : limbs) {
         for (int i = 0; i < limb->nv; i++) {
             ind = 4 * i + 2;
             if (limb->isDOFJoint[ind] == 1) continue;
 
-            dist = floor_z - limb->x[ind];
-            if (-dist > delta) continue;
+            dist = limb->x[ind] - floor_z;
+            if (dist < min_dist) min_dist = dist;
+            if (dist > delta) continue;
 
-            v = exp(K1 * dist);
+            v = exp(-K1 * dist);
 
             f = (-2 * v * log(v + 1)) / (K1 * (v + 1));
             J = (2*v * log(v + 1) + v) / pow(v + 1, 2);
@@ -124,22 +123,16 @@ void floorContactForce::computeFfJf(bool fric_off) {
                 sym_eqs->floor_friction_partials_dfr_dfn_func.call(friction_partials_dfr_dfn.data(), fric_jacobian_input.data());
             }
 
-//            cout << friction_partials_dfr_dx << endl;
-//            cout << friction_partials_dfr_dfn * J << endl;
-//            cout << "======" << endl;
-
             // dfrx/dx
             stepper->addJacobian(4*i, 4*i, friction_partials_dfr_dx(0, 0), limb_idx);
             stepper->addJacobian(4*i+1, 4*i, friction_partials_dfr_dx(0, 1), limb_idx);
             // dfry/dy
             stepper->addJacobian(4*i, 4*i+1, friction_partials_dfr_dx(1, 0), limb_idx);
             stepper->addJacobian(4*i+1, 4*i+1, friction_partials_dfr_dx(1, 1), limb_idx);
-
-//            stepper->addJacobian(4*i+2, 4*i, friction_partials_dfr_dfn(0) * J, limb_idx);
-//            stepper->addJacobian(4*i+2, 4*i+1, friction_partials_dfr_dfn(1) * J, limb_idx);
+            // dfrx/dfn * dfn/dz
             stepper->addJacobian(4*i, 4*i+2, friction_partials_dfr_dfn(0) * J, limb_idx);
+            // dfry/dfn * dfn/dz
             stepper->addJacobian(4*i+1, 4*i+2, friction_partials_dfr_dfn(1) * J, limb_idx);
-
         }
         limb_idx++;
     }

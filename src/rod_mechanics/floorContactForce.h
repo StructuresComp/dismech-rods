@@ -13,14 +13,14 @@ public:
                       double m_floor_delta, double m_floor_slipTol, double m_mu, double m_dt, double m_floor_z);
     ~floorContactForce();
 
-    void computeFf(bool fric_off);
-    void computeFfJf(bool fric_off);
+    void computeFf();
+    void computeFfJf();
     void computeFriction(Vector2d curr_node, Vector2d pre_node, double fn);
     void prepFrictionJacobianInput(Vector2d curr_node, Vector2d pre_node, double fn);
     void updateContactStiffness();
     void updateMu(double mu);
-    double floor_z;
 
+    double min_dist;
 private:
     vector<shared_ptr<elasticRod>> limbs;
     shared_ptr<timeStepper> stepper;
@@ -31,8 +31,6 @@ private:
     Vector<double, 2> friction_partials_dfr_dfn;
     Vector<double, 2> ffr;
     int fric_jaco_type;
-    double fn;
-    double jfn;
     double z;
     double contact_stiffness;
     double scale;
@@ -42,6 +40,7 @@ private:
     double K1;
     double K2;
     double dt;
+    double floor_z;
 
 };
 #endif

@@ -71,6 +71,7 @@ private:
     int verbosity;
     int cmdline_per;
     bool enable_logging;
+    double floor_z;
 };
 
 #include "setInput.tcc"

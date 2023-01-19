@@ -48,13 +48,9 @@ void timeStepper::addForce(int ind, double p, int limb_idx)
     if (limb->getIfConstrained(ind) == 0) // free dof
     {
         mappedInd = limb->fullToUnconsMap[ind];
-//        totalForce[mappedInd + offset + limb->DOFoffsets[ind]] += p; // subtracting elastic force
-//        Force[mappedInd + offset + limb->DOFoffsets[ind]] += p;
         totalForce[mappedInd + offset] += p; // subtracting elastic force
         Force[mappedInd + offset] += p;
     }
-    // NOTE: REMOVING THIS AND TESTING IF IT AFFECTS ANYTHING
-//    force(ind) = force(ind) + p;
 }
 
 // NOTE ADD AN VERSION WITH 2 limb_idxs LATER

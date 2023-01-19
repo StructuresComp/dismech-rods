@@ -288,9 +288,6 @@ void elasticBendingForce::computeJb()
                 n3 = limb->joint_ids[i+1].first;
                 l3 = limb->joint_ids[i+1].second;
 
-//                cout << limb_idx << " " << i << " " << n1 << " " << l1 << " " << n2 <<
-//                     " " << l2 << " " << n3 << " " << l3 << endl;
-
                 for (int t = 0; t < 3; t++) {
                     for (int k = 0; k < 3; k++) {
                         stepper->addJacobian(4*n1+t, 4*n1+k, -Jbb(k, t), l1);
