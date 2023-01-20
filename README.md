@@ -63,11 +63,12 @@ make -j4
 
 ### Setting Parameters
 
-All simulation parameters are set through a parameter file ```option.txt```. A template file ```template_option.txt``` is provided that can be used to construct ```option.txt```.
-
+To prevent personal robot configurations / simulation parameters from constantly being pushed, there are two template files that are stored on the repository. When starting to use the code, the template files must be copied to create local copies that are ignored by git using the script below.
 ```bash
-cp template_option.txt option.txt   # create option.txt
+./init_local_config.sh
 ```
+All simulation parameters are then set through a parameter file ```option.txt``` while the robot config is designed through the API in ```src/robotDescription.cpp```.
+
 Specifiable parameters are as follows (we use SI units):
 - ```rodRadius``` - Cross-sectional radius of the rod.
 - ```density``` - Mass per unit volume.
