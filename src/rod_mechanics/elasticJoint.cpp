@@ -11,8 +11,19 @@ elasticJoint::elasticJoint(int node, int limb_idx, const vector<shared_ptr<elast
 
 void elasticJoint::setup() {
     num_bending_combos = 0;
+    int n1, n2;
+    int sgn1, sgn2;
+    int theta1_i, theta2_i;
     for (int i = 0; i < ne; i++) {
+        n1 = connected_nodes[i].first;
+        bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
+        bending_twist_signs[i] == 1 ? theta1_i = 4*n1+3 : theta1_i = 4*n1-1;
         for (int j = i+1; j < ne; j++) {
+            n2 = connected_nodes[j].first;
+            bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
+            bending_twist_signs[j] == 1 ? theta2_i = 4*n2+3 : theta2_i = 4*n2-1;
+            sgns.emplace_back(Vector2i(sgn1, sgn2));
+            theta_inds.emplace_back(Vector2i(theta1_i, theta2_i));
             num_bending_combos++;
         }
     }
@@ -185,9 +196,9 @@ void elasticJoint::createReferenceDirectors() {
     int curr_iter = 0;
     int sgn1, sgn2;
     for (int i = 0; i < ne; i++) {
-        bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
         for (int j = i+1; j < ne; j++) {
-            bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
+            sgn1 = sgns[curr_iter][0];
+            sgn2 = sgns[curr_iter][1];
             t0 = tangents.row(i) * sgn1;
             t1 = tangents.row(j) * sgn2;
             tmp1 << 0, 0, -1;
@@ -220,20 +231,19 @@ void elasticJoint::computeMaterialDirectors() {
     double angle1;
     double angle2;
     shared_ptr<elasticRod> limb1, limb2;
-    int n1, n2, l1, l2;
-    int curr_iter = 0;
+    int l1, l2;
     int sgn1, sgn2;
+    int curr_iter = 0;
 
     for (int i = 0; i < ne; i++) {
-        n1 = connected_nodes[i].first;
         l1 = connected_nodes[i].second;
-        bending_twist_signs[i] == 1 ? theta1_i = 4*n1+3 : theta1_i = 4*n1-1;
-        bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
         for (int j = i+1; j < ne; j++) {
-            n2 = connected_nodes[j].first;
             l2 = connected_nodes[j].second;
-            bending_twist_signs[j] == 1 ? theta2_i = 4*n2+3 : theta2_i = 4*n2-1;
-            bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
+
+            sgn1 = sgns[curr_iter][0];
+            sgn2 = sgns[curr_iter][1];
+            theta1_i = theta_inds[curr_iter][0];
+            theta2_i = theta_inds[curr_iter][1];
 
             limb1 = limbs[l1];
             limb2 = limbs[l2];
@@ -259,17 +269,15 @@ void elasticJoint::computeMaterialDirectors() {
 void elasticJoint::computeKappa() {
     Vector3d t0, t1;
     Vector3d m1e, m2e, m1f, m2f;
+    int sgn1, sgn2;
     int curr_iter = 0;
 
-    int sgn1;
-    int sgn2;
-
     for (int i = 0; i < ne; i++) {
-        bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
         for (int j = i + 1; j < ne; j++) {
-            bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
-            t0 = sgn1 * tangents.row(i);
-            t1 = sgn2 * tangents.row(j);
+            sgn1 = sgns[curr_iter][0];
+            sgn2 = sgns[curr_iter][1];
+            t0 = tangents.row(i) * sgn1;
+            t1 = tangents.row(j) * sgn2;
             kb.row(curr_iter) = 2.0 * t0.cross(t1) / (1.0 + t0.dot(t1));
             curr_iter++;
         }
@@ -342,18 +350,17 @@ double elasticJoint::signedAngle(const Vector3d &u, const Vector3d &v, const Vec
 void elasticJoint::getRefTwist() {
     Vector3d u0, u1, t0, t1, ut;
     double sgnAngle;
+    int sgn1, sgn2;
     int curr_iter = 0;
 
-    int sgn1, sgn2;
-
     for (int i = 0; i < ne; i++) {
-        bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
         for (int j = i+1; j < ne; j++) {
-            bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
+            sgn1 = sgns[curr_iter][0];
+            sgn2 = sgns[curr_iter][1];
             u0 = d1[curr_iter].row(0);
             u1 = d1[curr_iter].row(1);
-            t0 = sgn1 * tangents.row(i);
-            t1 = sgn2 * tangents.row(j);
+            t0 = tangents.row(i) * sgn1;
+            t1 = tangents.row(j) * sgn2;
             parallelTransport(u0, t0, t1, ut);
             rotateAxisAngle(ut, t1, ref_twist_old(curr_iter));
 
@@ -367,24 +374,24 @@ void elasticJoint::getRefTwist() {
 void elasticJoint::computeTwistBar()
 {
     double theta_i, theta_f;
-    int n1, n2;
     int l1, l2;
-    int curr_iter = 0;
     int theta1_i, theta2_i;
     int sgn1, sgn2;
+    int curr_iter = 0;
+
     for (int i = 0; i < ne; i++) {
-        n1 = connected_nodes[i].first;
         l1 = connected_nodes[i].second;
-        bending_twist_signs[i] == 1 ? theta1_i = 4*n1+3 : theta1_i = 4*n1-1;
-        bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
         for (int j = i+1; j < ne; j++) {
-            n2 = connected_nodes[j].first;
             l2 = connected_nodes[j].second;
-            bending_twist_signs[j] == 1 ? theta2_i = 4*n2+3 : theta2_i = 4*n2-1;
-            bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
+
+            sgn1 = sgns[curr_iter][0];
+            sgn2 = sgns[curr_iter][1];
+            theta1_i = theta_inds[curr_iter][0];
+            theta2_i = theta_inds[curr_iter][1];
+
             theta_i = limbs[l1]->x[theta1_i] * sgn1;
             theta_f = limbs[l2]->x[theta2_i] * sgn2;
-            twistBar(i) = theta_f - theta_i + ref_twist(i);
+            twistBar(curr_iter) = theta_f - theta_i + ref_twist(curr_iter);
             curr_iter++;
         }
     }
@@ -408,12 +415,13 @@ void elasticJoint::computeTimeParallel()
 {
     // Use old versions of (d1, d2, tangent) to get new d1, d2
     Vector3d t0_0, t1_0, t0_1, t1_1, d1_0, d1_1;
-    int curr_iter = 0;
     int sgn1, sgn2;
+    int curr_iter = 0;
+
     for (int i = 0; i < ne; i++) {
-        bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
         for (int j = i + 1; j < ne; j++) {
-            bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
+            sgn1 = sgns[curr_iter][0];
+            sgn2 = sgns[curr_iter][1];
             t0_0 = tangents_old.row(i) * sgn1;
             t1_0 = tangents.row(i) * sgn1;
             t0_1 = tangents_old.row(j) * sgn2;

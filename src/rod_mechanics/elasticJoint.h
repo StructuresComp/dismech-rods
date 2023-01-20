@@ -56,6 +56,9 @@ public:
     vector<Matrix<double, 2, 3>> m2;
     VectorXd ref_twist;
 
+    vector<Vector2i> sgns;
+    vector<Vector2i> theta_inds;
+
     MatrixXd kb;
     MatrixXd kappa;
     MatrixXd kappaBar;

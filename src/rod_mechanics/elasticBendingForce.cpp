@@ -198,13 +198,15 @@ void elasticBendingForce::computeFb()
         for (int i = 0; i < joint->ne; i++) {
             n1 = joint->connected_nodes[i].first;
             l1 = joint->connected_nodes[i].second;
-            joint->bending_twist_signs[i] == 1 ? theta1_i = 4*n1+3 : theta1_i = 4*n1-1;
-            joint->bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
             for (int j = i + 1; j < joint->ne; j++) {
                 n3 = joint->connected_nodes[j].first;
                 l3 = joint->connected_nodes[j].second;
-                joint->bending_twist_signs[j] == 1 ? theta2_i = 4*n3+3 : theta2_i = 4*n3-1;
-                joint->bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
+
+                sgn1 = joint->sgns[curr_iter][0];
+                sgn2 = joint->sgns[curr_iter][1];
+                theta1_i = joint->theta_inds[curr_iter][0];
+                theta2_i = joint->theta_inds[curr_iter][1];
+
                 relevantPart.col(0) = gradKappa1->row(curr_iter);
                 relevantPart.col(1) = gradKappa2->row(curr_iter);
                 kappaL = joint->kappa.row(curr_iter) - joint->kappaBar.row(curr_iter);
@@ -220,8 +222,6 @@ void elasticBendingForce::computeFb()
                 // Theta moments
                 stepper->addForce(theta1_i, -f[3] * sgn1, l1);
                 stepper->addForce(theta2_i, -f[7] * sgn2, l3);
-//                stepper->addForce(theta1_i, -f[3], l1);
-//                stepper->addForce(theta2_i, -f[7], l3);
 
                 curr_iter++;
             }
@@ -349,13 +349,15 @@ void elasticBendingForce::computeJb()
         for (int i = 0; i < joint->ne; i++) {
             n1 = joint->connected_nodes[i].first;
             l1 = joint->connected_nodes[i].second;
-            joint->bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
-            joint->bending_twist_signs[i] == 1 ? theta1_i = 4*n1+3 : theta1_i = 4*n1-1;
             for (int j = i+1; j < joint->ne; j++) {
                 n3 = joint->connected_nodes[j].first;
                 l3 = joint->connected_nodes[j].second;
-                joint->bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
-                joint->bending_twist_signs[j] == 1 ? theta2_i = 4*n3+3 : theta2_i = 4*n3-1;
+
+                sgn1 = joint->sgns[curr_iter][0];
+                sgn2 = joint->sgns[curr_iter][1];
+                theta1_i = joint->theta_inds[curr_iter][0];
+                theta2_i = joint->theta_inds[curr_iter][1];
+
                 norm_e = joint->edge_len(i);
                 norm_f = joint->edge_len(j);
                 te = sgn1 * joint->tangents.row(i);

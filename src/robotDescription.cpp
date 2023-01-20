@@ -70,7 +70,6 @@ void get_robot_description(vector<shared_ptr<elasticRod>>& limbs, vector<shared_
 //                                            density, rodRadius, deltaTime, youngM, shearM));
 //    limbs.push_back(make_shared<elasticRod>(4, Vector3d(0, 0, -0.05), Vector3d(-0.05, 0, -0.05), 8,
 //                                            density, rodRadius, deltaTime, youngM, shearM));
-//    joints.push_back(make_shared<elasticJoint>(4, 0, limbs));
 //    joints[0]->addToJoint(0, 1);
 //    joints[0]->addToJoint(0, 2);
 //    joints[0]->addToJoint(0, 3);
