@@ -1,4 +1,3 @@
-#define EIGEN_USE_MKL_ALL
 #include <iostream>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>

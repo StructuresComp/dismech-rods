@@ -2,14 +2,8 @@
  * simDER
  * simDER stands for "[sim]plified [D]iscrete [E]lastic [R]ods"
  * Dec 2017
- * This code is based on previous iterations. 
+ * This code is based on previous iterations.
  * */
-
-//This line is for mac
-//#include <GLUT/glut.h>
-
-//This is for linux
-#include <GL/glut.h>
 
 #include <iostream>
 #include "eigenIncludes.h"

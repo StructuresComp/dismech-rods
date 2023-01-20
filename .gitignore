@@ -1,8 +1,7 @@
-.idea/
-__pycache__
-datafiles/
+.vscode/
+build/
+
 simDER
-build
-cmake-build-debug
-robotDescription.cpp
+datafiles/
 option.txt
+src/robotDescription.cpp

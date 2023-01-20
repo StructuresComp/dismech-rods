@@ -14,17 +14,6 @@
 // Subclass of simulation environment
 #include "derSimulationEnvironment.h"
 
-// Includes for GLUT.
-
-//This line is for mac
-//#include <GLUT/glut.h>
-
-//This is for linux
-// #include <GL/glut.h>
-// We need the one with "ext" to get glutLeaveMainLoop
-#include <GL/freeglut.h>
-
-
 // // OpenGL calls this function to timestep the simulation and update the window.
 // // GLUT is in C so these need to either be static (nope!) or extern "C" methods.
 // extern "C" void derOpenGLDisplay();

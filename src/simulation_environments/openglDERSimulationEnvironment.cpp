@@ -11,6 +11,10 @@
 // all includes should be in header
 #include "openglDERSimulationEnvironment.h"
 
+// Includes for GLUT.
+// We need the one with "ext" to get glutLeaveMainLoop
+#include <GL/freeglut.h>
+
 // the callbacks for openGL.
 // Note this is a C function now
 extern "C" void keyHandler(unsigned char key, int x, int y)

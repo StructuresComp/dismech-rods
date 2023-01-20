@@ -34,7 +34,7 @@ class derSimulationEnvironment
      */
     derSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per);
     derSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per, shared_ptr<worldLogger> m_logger);
-    ~derSimulationEnvironment();
+    virtual ~derSimulationEnvironment();
 
     /**
      * Setup function, called SEPARATELY, as needed according to specific environment
