@@ -113,8 +113,8 @@ void timeStepper::update()
 
 void timeStepper::pardisoSolver()
 {
-    int n = freeDOF;
-    int ia[n+1];
+    MKL_INT n = freeDOF;
+    MKL_INT ia[n+1];
     ia[0] = 1;
 
     int temp = 0;
@@ -130,7 +130,7 @@ void timeStepper::pardisoSolver()
         ia[i+1] = temp+1;
     }
 
-    int ja[ia[n]];
+    MKL_INT ja[ia[n]];
     double a[ia[n]];
     temp = 0;
 
