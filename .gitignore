@@ -1,6 +1,7 @@
 .vscode/
 build/
-
+cmake-build-debug/
+.idea/
 simDER
 datafiles/
 option.txt
