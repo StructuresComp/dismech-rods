@@ -15,10 +15,10 @@
 #include "../world.h"
 // Some constants used throughout this program
 #include "../global_const.h"
+#include "filesystem_finder.hpp"
 
 // the C++ standard library
 #include <fstream> // for writing to a file
-#include <filesystem> // for creating the directory for the log file
 
 // Abstract class: although we'll do a constructor to set the
 // path prefix variable, children have to define what to log and how.
