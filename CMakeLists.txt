@@ -3,8 +3,8 @@ project(dismech-rods)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE Release)
-
 # set(CMAKE_BUILD_TYPE Debug)
+
 set(CMAKE_CXX_FLAGS "-Wno-deprecated-declarations")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../")
@@ -14,10 +14,6 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 # Per https://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html eigen should be used
 # with MKL LAPACK only with lp64 set. The default may be ILP64, which we don't want.
 set(MKL_INTERFACE_FULL intel_lp64)
-
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
-
-include(CheckIncludeFileCXX)
 
 add_definitions(-DEIGEN_USE_MKL_ALL)
 
@@ -36,12 +32,6 @@ if(${HAVE_SYMENGINE_LLVM})
 else()
     message(WARNING "SymEngine library is missing LLVM and/or SBML support")
     message(WARNING "${SYMENGINE_LLVM_ERROR_LOG}")
-endif()
-
-check_include_file_cxx("filesystem" HAVE_STD_FILESYSTEM)
-
-if(NOT ${HAVE_STD_FILESYSTEM})
-    message(ERROR "Missing std::filesystem.")
 endif()
 
 include_directories(${SYMENGINE_INCLUDE_DIRS}
