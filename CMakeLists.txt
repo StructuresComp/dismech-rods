@@ -75,6 +75,7 @@ target_link_libraries(simDER PRIVATE
     ${BLAS_LIBRARIES}
 
     # gfortran
+    stdc++fs
     Threads::Threads
     m
     ${SYMENGINE_LIBRARIES})
