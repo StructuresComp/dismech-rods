@@ -1,5 +1,7 @@
 .vscode/
 build/
+.idea/
+cmake-build-debug/
 
 simDER
 datafiles/

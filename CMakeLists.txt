@@ -64,10 +64,13 @@ add_executable(simDER
     src/rod_mechanics/externalGravityForce.cpp
     src/rod_mechanics/dampingForce.cpp
     src/rod_mechanics/inertialForce.cpp
-    src/rod_mechanics/timeStepper.cpp
     src/rod_mechanics/symbolicEquations.cpp
     src/rod_mechanics/floorContactForce.cpp
     src/rod_mechanics/elasticJoint.cpp
+
+    src/time_steppers/baseTimeStepper.cpp
+    src/time_steppers/implicitTimeStepper.cpp
+    src/time_steppers/backwardEuler.cpp
 
     # src/rod_mechanics/collisionDetector.cpp
     # src/rod_mechanics/contactPotentialIMC.cpp

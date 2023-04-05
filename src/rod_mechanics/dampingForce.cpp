@@ -2,7 +2,7 @@
 
 dampingForce::dampingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
                            const vector<shared_ptr<elasticJoint>>& m_joints,
-                           shared_ptr<timeStepper> m_stepper, double m_viscosity)
+                           shared_ptr<baseTimeStepper> m_stepper, double m_viscosity)
 {
     limbs = m_limbs;
     joints = m_joints;

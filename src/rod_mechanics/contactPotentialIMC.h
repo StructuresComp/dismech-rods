@@ -2,8 +2,8 @@
 #define CONTACTPOTENTIALIMC_H
 
 #include "../eigenIncludes.h"
+#include "../time_steppers/baseTimeStepper.h"
 #include "elasticRod.h"
-#include "timeStepper.h"
 #include "collisionDetector.h"
 #include "symbolicEquations.h"
 #include "contactEnums.h"
@@ -12,7 +12,7 @@
 class contactPotentialIMC
 {
 public:
-    contactPotentialIMC(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper,
+    contactPotentialIMC(shared_ptr<elasticRod> m_rod, shared_ptr<baseTimeStepper> m_stepper,
                         shared_ptr<collisionDetector> m_col_detector,
                         double m_delta, double m_k_scaler, double m_mu, double m_nu);
 
@@ -23,7 +23,7 @@ public:
 
 private:
     shared_ptr<elasticRod> rod = nullptr;
-    shared_ptr<timeStepper> stepper = nullptr;
+    shared_ptr<baseTimeStepper> stepper = nullptr;
     shared_ptr<collisionDetector> col_detector = nullptr;
     unique_ptr<symbolicEquations> sym_eqs = nullptr;
     double K1;

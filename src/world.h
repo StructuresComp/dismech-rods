@@ -21,7 +21,8 @@
 //#include "rod_mechanics/contactPotentialIMC.h"
 
 // include time stepper
-#include "rod_mechanics/timeStepper.h"
+//#include "time_steppers/timeStepper.h"
+#include "time_steppers/backwardEuler.h"
 
 // include input file and option
 #include "initialization/setInput.h"
@@ -87,7 +88,7 @@ private:
     shared_ptr<elasticRod> rod = nullptr;
 
     // set up the time stepper
-    shared_ptr<timeStepper> stepper = nullptr;
+    shared_ptr<baseTimeStepper> stepper = nullptr;
     double *totalForce;
     double *dx;
 

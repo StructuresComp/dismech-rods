@@ -3,13 +3,13 @@
 
 #include "../eigenIncludes.h"
 #include "elasticRod.h"
-#include "timeStepper.h"
+#include "../time_steppers/baseTimeStepper.h"
 #include "symbolicEquations.h"
 
 class floorContactForce
 {
 public:
-    floorContactForce(const vector<shared_ptr<elasticRod>>& m_limbs, shared_ptr<timeStepper> m_stepper,
+    floorContactForce(const vector<shared_ptr<elasticRod>>& m_limbs, shared_ptr<baseTimeStepper> m_stepper,
                       double m_floor_delta, double m_floor_slipTol, double m_mu, double m_dt, double m_floor_z);
     ~floorContactForce();
 
@@ -22,7 +22,7 @@ public:
     double min_dist;
 private:
     vector<shared_ptr<elasticRod>> limbs;
-    shared_ptr<timeStepper> stepper;
+    shared_ptr<baseTimeStepper> stepper;
     shared_ptr<symbolicEquations> sym_eqs;
     Vector<double, 2> contact_input;
     Vector<double, 8> fric_jacobian_input;

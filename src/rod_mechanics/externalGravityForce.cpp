@@ -2,7 +2,7 @@
 
 externalGravityForce::externalGravityForce(const vector<shared_ptr<elasticRod>>& m_limbs,
                                            const vector<shared_ptr<elasticJoint>>& m_joints,
-                                           shared_ptr<timeStepper> m_stepper, Vector3d m_gVector)
+                                           shared_ptr<baseTimeStepper> m_stepper, Vector3d m_gVector)
 {
     limbs = m_limbs;
     joints = m_joints;

@@ -95,7 +95,8 @@ void world::setupWorld() {
     forceTol = tol * characteristicForce;
 
     // set up the time stepper
-    stepper = make_shared<timeStepper>(limbs);
+//    stepper = make_shared<baseTimeStepper>(limbs);
+    stepper = make_shared<backwardEuler>(limbs);
     totalForce = stepper->getForce();
     dx = stepper->dx;
 

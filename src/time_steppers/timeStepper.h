@@ -1,7 +1,7 @@
 #ifndef TIMESTEPPER_H
 #define TIMESTEPPER_H
 
-#include "elasticRod.h"
+#include "../rod_mechanics/elasticRod.h"
 #include "../eigenIncludes.h"
 #include "mkl_pardiso.h"
 #include "mkl_types.h"

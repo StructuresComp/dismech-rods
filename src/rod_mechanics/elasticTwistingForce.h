@@ -4,13 +4,13 @@
 #include "../eigenIncludes.h"
 #include "elasticRod.h"
 #include "elasticJoint.h"
-#include "timeStepper.h"
+#include "../time_steppers/baseTimeStepper.h"
 
 class elasticTwistingForce
 {
 public:
     elasticTwistingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                         const vector<shared_ptr<elasticJoint>>& m_joints, shared_ptr<timeStepper> m_stepper);
+                         const vector<shared_ptr<elasticJoint>>& m_joints, shared_ptr<baseTimeStepper> m_stepper);
     ~elasticTwistingForce();
     void computeFt();
     void computeJt();
@@ -20,7 +20,7 @@ private:
     vector<shared_ptr<elasticRod>> limbs;
     vector<shared_ptr<elasticJoint>> joints;
     shared_ptr<elasticRod> rod;
-    shared_ptr<timeStepper> stepper;
+    shared_ptr<baseTimeStepper> stepper;
 
     int ci, ind, ind1, ind2;
     double norm_e,norm_f;

@@ -1,9 +1,8 @@
 #include "elasticStretchingForce.h"
-#include <iostream>
 
 elasticStretchingForce::elasticStretchingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
                                                const vector<shared_ptr<elasticJoint>>& m_joints,
-                                               shared_ptr<timeStepper> m_stepper)
+                                               shared_ptr<baseTimeStepper> m_stepper)
 {
     limbs = m_limbs;
     joints = m_joints;

@@ -4,14 +4,14 @@
 #include "../eigenIncludes.h"
 #include "elasticRod.h"
 #include "elasticJoint.h"
-#include "timeStepper.h"
+#include "../time_steppers/baseTimeStepper.h"
 
 class dampingForce
 {
 public:
     dampingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
                  const vector<shared_ptr<elasticJoint>>& m_joints,
-                 shared_ptr<timeStepper> m_stepper, double m_viscosity);
+                 shared_ptr<baseTimeStepper> m_stepper, double m_viscosity);
     ~dampingForce();
     void computeFd();
     void computeJd();
@@ -19,7 +19,7 @@ public:
 private:
     vector<shared_ptr<elasticRod>> limbs;
     vector<shared_ptr<elasticJoint>> joints;
-    shared_ptr<timeStepper> stepper;
+    shared_ptr<baseTimeStepper> stepper;
     double viscosity;
 
     Vector3d force;

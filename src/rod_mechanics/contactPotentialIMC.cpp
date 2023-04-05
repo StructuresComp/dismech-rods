@@ -1,7 +1,7 @@
 #include "contactPotentialIMC.h"
 
 
-contactPotentialIMC::contactPotentialIMC(shared_ptr<elasticRod> m_rod, shared_ptr<timeStepper> m_stepper,
+contactPotentialIMC::contactPotentialIMC(shared_ptr<elasticRod> m_rod, shared_ptr<baseTimeStepper> m_stepper,
                                          shared_ptr<collisionDetector> m_col_detector,
                                          double m_delta, double m_k_scaler, double m_mu, double m_nu) {
     rod = m_rod;

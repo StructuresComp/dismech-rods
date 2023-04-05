@@ -4,14 +4,14 @@
 #include "../eigenIncludes.h"
 #include "elasticRod.h"
 #include "elasticJoint.h"
-#include "timeStepper.h"
+#include "../time_steppers/baseTimeStepper.h"
 
 class externalGravityForce
 {
 public:
     externalGravityForce(const vector<shared_ptr<elasticRod>>& m_limbs,
                          const vector<shared_ptr<elasticJoint>>& m_joints,
-                         shared_ptr<timeStepper> m_stepper, Vector3d m_gVector);
+                         shared_ptr<baseTimeStepper> m_stepper, Vector3d m_gVector);
     Vector3d gVector;
     void setGravity();
     ~externalGravityForce();
@@ -21,7 +21,7 @@ public:
 private:
     vector<shared_ptr<elasticRod>> limbs;
     vector<shared_ptr<elasticJoint>> joints;
-    shared_ptr<timeStepper> stepper;
+    shared_ptr<baseTimeStepper> stepper;
     vector<VectorXd> massGravities;
     VectorXd massGravity;
 };
