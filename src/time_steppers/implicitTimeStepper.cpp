@@ -1,16 +1,21 @@
 #include "implicitTimeStepper.h"
 
 implicitTimeStepper::implicitTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
+                                         const vector<shared_ptr<elasticJoint>>& m_joints,
                                          shared_ptr<elasticStretchingForce> m_stretch_force,
                                          shared_ptr<elasticBendingForce> m_bending_force,
                                          shared_ptr<elasticTwistingForce> m_twisting_force,
                                          shared_ptr<inertialForce> m_inertial_force,
                                          shared_ptr<externalGravityForce> m_gravity_force,
                                          shared_ptr<dampingForce> m_damping_force,
-                                         shared_ptr<floorContactForce> m_floor_contact_force) :
-                                         baseTimeStepper(m_limbs, m_stretch_force, m_bending_force, m_twisting_force,
-                                                         m_inertial_force, m_gravity_force, m_damping_force,
-                                                         m_floor_contact_force){
+                                         shared_ptr<floorContactForce> m_floor_contact_force,
+                                         double m_force_tol, double m_stol, int m_max_iter,
+                                         int m_line_search) :
+                                         baseTimeStepper(m_limbs, m_joints, m_stretch_force, m_bending_force,
+                                                         m_twisting_force, m_inertial_force, m_gravity_force,
+                                                         m_damping_force, m_floor_contact_force),
+                                         force_tol(m_force_tol), stol(m_stol), max_iter(m_max_iter), line_search(m_line_search)
+{
     kl = 10; // lower diagonals
     ku = 10; // upper diagonals
     ldb = freeDOF;

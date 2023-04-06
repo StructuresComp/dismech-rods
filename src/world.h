@@ -84,9 +84,6 @@ private:
     MatrixXd vertices;
     VectorXd theta;
 
-    // Rod
-    shared_ptr<elasticRod> rod = nullptr;
-
     // set up the time stepper
     shared_ptr<baseTimeStepper> stepper = nullptr;
     double *totalForce;
@@ -107,19 +104,11 @@ private:
 //    shared_ptr<collisionDetector> m_collisionDetector = nullptr;
 //    shared_ptr<contactPotentialIMC> m_contactPotentialIMC = nullptr;
 
-    int iter;
-    int total_iters;
-
     void lockEdge(int edge_num, int limb_idx);
-
-    void updateRobot();
-    void prepRobot();
 
     void updateCons();
 
-    void newtonMethod(bool &solved);
     void printSimData();
-    void lineSearch();
 
     bool render; // should the OpenGL rendering be included?
 

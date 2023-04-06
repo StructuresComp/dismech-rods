@@ -21,6 +21,7 @@ class baseTimeStepper : public enable_shared_from_this<baseTimeStepper>
 {
 public:
     baseTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
+                    const vector<shared_ptr<elasticJoint>>& m_joints,
                     shared_ptr<elasticStretchingForce> m_stretchForce,
                     shared_ptr<elasticBendingForce> m_bendingForce,
                     shared_ptr<elasticTwistingForce> m_twistingForce,
@@ -40,6 +41,9 @@ public:
     virtual double* getJacobian() = 0;
     virtual void addJacobian(int ind1, int ind2, double p, int limb_idx) = 0;
     virtual void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2) = 0;
+    void prepSystem();
+    void updateSystem();
+    virtual void stepForwardInTime() = 0;
 
     VectorXd Force;
     MatrixXd Jacobian;
@@ -48,12 +52,16 @@ public:
 
     int freeDOF;
     vector<int> offsets;
+    int iter = 0;
 
 
 protected:
     int mappedInd, mappedInd1, mappedInd2;
     int offset;
+    double alpha = 1.0;
+    double *totalForce;
     vector<shared_ptr<elasticRod>> limbs;
+    vector<shared_ptr<elasticJoint>> joints;
     shared_ptr<elasticStretchingForce> stretching_force;
     shared_ptr<elasticBendingForce> bending_force;
     shared_ptr<elasticTwistingForce> twisting_force;
@@ -61,9 +69,6 @@ protected:
     shared_ptr<externalGravityForce> gravity_force;
     shared_ptr<dampingForce> damping_force;
     shared_ptr<floorContactForce> floor_contact_force;
-
-private:
-    double *totalForce;
 };
 
 #endif

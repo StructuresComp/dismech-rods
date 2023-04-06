@@ -1,6 +1,7 @@
 #include "baseTimeStepper.h"
 
 baseTimeStepper::baseTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
+                                 const vector<shared_ptr<elasticJoint>>& m_joints,
                                  shared_ptr<elasticStretchingForce> m_stretch_force,
                                  shared_ptr<elasticBendingForce> m_bending_force,
                                  shared_ptr<elasticTwistingForce> m_twisting_force,
@@ -8,7 +9,7 @@ baseTimeStepper::baseTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
                                  shared_ptr<externalGravityForce> m_gravity_force,
                                  shared_ptr<dampingForce> m_damping_force,
                                  shared_ptr<floorContactForce> m_floor_contact_force) :
-                                 limbs(m_limbs), stretching_force(m_stretch_force),
+                                 limbs(m_limbs), joints(m_joints), stretching_force(m_stretch_force),
                                  bending_force(m_bending_force), twisting_force(m_twisting_force),
                                  inertial_force(m_inertial_force), gravity_force(m_gravity_force),
                                  damping_force(m_damping_force), floor_contact_force(m_floor_contact_force)
@@ -87,5 +88,17 @@ void baseTimeStepper::update()
     DX = VectorXd::Zero(freeDOF);
     Force = VectorXd::Zero(freeDOF);
     setZero();
+}
+
+void baseTimeStepper::prepSystem() {
+    for (const auto& joint : joints) joint->prepLimbs();
+    for (const auto& limb : limbs) limb->prepareForIteration();
+    for (const auto& joint : joints) joint->prepareForIteration();
+}
+
+void baseTimeStepper::updateSystem() {
+    for (const auto& joint : joints) joint->prepLimbs();
+    for (const auto& limb : limbs) limb->updateTimeStep();
+    for (const auto& joint : joints) joint->updateTimeStep();
 }
 
