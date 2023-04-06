@@ -1,5 +1,5 @@
 #include "contactPotentialIMC.h"
-
+#include "../time_steppers/baseTimeStepper.h"
 
 contactPotentialIMC::contactPotentialIMC(shared_ptr<elasticRod> m_rod, shared_ptr<baseTimeStepper> m_stepper,
                                          shared_ptr<collisionDetector> m_col_detector,

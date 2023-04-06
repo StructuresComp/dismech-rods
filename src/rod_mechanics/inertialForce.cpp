@@ -1,13 +1,10 @@
 #include "inertialForce.h"
+#include "../time_steppers/baseTimeStepper.h"
 
 inertialForce::inertialForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                             const vector<shared_ptr<elasticJoint>>& m_joints,
-                             shared_ptr<baseTimeStepper> m_stepper)
+                             const vector<shared_ptr<elasticJoint>>& m_joints) :
+                             baseForce(m_limbs, m_joints)
 {
-    limbs = m_limbs;
-    joints = m_joints;
-    stepper = m_stepper;
-
     dt = limbs[0]->dt;
 }
 

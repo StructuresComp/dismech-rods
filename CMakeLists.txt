@@ -47,6 +47,7 @@ add_executable(simDER
     src/world.cpp
     src/robotDescription.cpp
     src/initialization/setInput.cpp
+    src/rod_mechanics/baseForce.cpp
     src/rod_mechanics/elasticRod.cpp
     src/rod_mechanics/elasticStretchingForce.cpp
     src/rod_mechanics/elasticBendingForce.cpp

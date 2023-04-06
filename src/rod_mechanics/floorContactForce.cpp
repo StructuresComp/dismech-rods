@@ -1,22 +1,15 @@
 #include "floorContactForce.h"
+#include "../time_steppers/baseTimeStepper.h"
 
-floorContactForce::floorContactForce(const vector<shared_ptr<elasticRod>>& m_limbs, shared_ptr<baseTimeStepper> m_stepper,
+floorContactForce::floorContactForce(const vector<shared_ptr<elasticRod>>& m_limbs,
+                                     const vector<shared_ptr<elasticJoint>>& m_joints,
                                      double m_floor_delta, double m_floor_slipTol, double m_floor_mu, double m_dt,
-                                     double m_floor_z) {
-    limbs = m_limbs;
-    stepper = m_stepper;
-
-    dt = m_dt;
-
-    delta = m_floor_delta;
-    slipTol = m_floor_slipTol;
-
+                                     double m_floor_z) :
+                                     baseForce(m_limbs, m_joints), delta(m_floor_delta), slipTol(m_floor_slipTol),
+                                     mu(m_floor_mu), dt(m_dt), floor_z(m_floor_z)
+{
     K1 = 15 / delta;
     K2 = 15 / slipTol;
-
-    mu = m_floor_mu;
-
-    floor_z = m_floor_z;
 
     contact_stiffness = 100000;
 

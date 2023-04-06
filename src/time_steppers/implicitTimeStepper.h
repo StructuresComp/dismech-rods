@@ -16,15 +16,21 @@
 class implicitTimeStepper : public baseTimeStepper
 {
 public:
-    implicitTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs);
-    ~implicitTimeStepper();
+    implicitTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
+                        shared_ptr<elasticStretchingForce> m_stretchForce,
+                        shared_ptr<elasticBendingForce> m_bendingForce,
+                        shared_ptr<elasticTwistingForce> m_twistingForce,
+                        shared_ptr<inertialForce> m_inertialForce,
+                        shared_ptr<externalGravityForce> m_gravityForce,
+                        shared_ptr<dampingForce> m_dampingForce,
+                        shared_ptr<floorContactForce> m_floorContactForce);
+    virtual ~implicitTimeStepper();
 
-    virtual double* getJacobian();
-    virtual void addJacobian(int ind1, int ind2, double p, int limb_idx);
-    virtual void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2);
+    double* getJacobian() override;
+    void addJacobian(int ind1, int ind2, double p, int limb_idx) override;
+    void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2) override;
     void setZero() override;
     void update() override;
-
 
     void pardisoSolver();
 private:

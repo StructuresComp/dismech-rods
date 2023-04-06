@@ -1,27 +1,20 @@
 #ifndef ELASTICSTRETCHINGFORCE_H
 #define ELASTICSTRETCHINGFORCE_H
 
-#include "../eigenIncludes.h"
-#include "elasticRod.h"
-#include "elasticJoint.h"
-#include "../time_steppers/baseTimeStepper.h"
+#include "baseForce.h"
 
-class elasticStretchingForce
+class baseTimeStepper;
+
+class elasticStretchingForce : public baseForce
 {
 public:
     elasticStretchingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                           const vector<shared_ptr<elasticJoint>>& m_joints,
-                           shared_ptr<baseTimeStepper> m_stepper);
-    ~elasticStretchingForce();
+                           const vector<shared_ptr<elasticJoint>>& m_joints);
+    ~elasticStretchingForce() override;
     void computeFs();
     void computeJs();
 
 private:
-    vector<shared_ptr<elasticRod>> limbs;
-    vector<shared_ptr<elasticJoint>> joints;
-    shared_ptr<elasticRod> rod;
-    shared_ptr<baseTimeStepper> stepper;
-
     double len, refLength;
     double epsX;
     Vector3d u;

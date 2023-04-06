@@ -94,9 +94,22 @@ void world::setupWorld() {
     characteristicForce = M_PI * pow(rodRadius, 4) / 4.0 * youngM / pow(temp_value, 2);
     forceTol = tol * characteristicForce;
 
+    // declare the forces
+    m_stretchForce = make_shared<elasticStretchingForce>(limbs, joints );
+    m_bendingForce = make_shared<elasticBendingForce>(limbs, joints );
+    m_twistingForce = make_shared<elasticTwistingForce>(limbs, joints);
+    m_inertialForce = make_shared<inertialForce>(limbs, joints);
+    m_gravityForce = make_shared<externalGravityForce>(limbs, joints, gVector);
+    m_dampingForce = make_shared<dampingForce>(limbs, joints, viscosity);
+    m_floorContactForce = make_shared<floorContactForce>(limbs, joints, delta, nu, mu, deltaTime, floor_z);
+//    m_collisionDetector = make_shared<collisionDetector>(rod, delta, col_limit);
+//    m_contactPotentialIMC = make_shared<contactPotentialIMC>(rod, stepper, m_collisionDetector, delta, k_scaler, mu, nu);
+
     // set up the time stepper
 //    stepper = make_shared<baseTimeStepper>(limbs);
-    stepper = make_shared<backwardEuler>(limbs);
+    stepper = make_shared<backwardEuler>(limbs, m_stretchForce, m_bendingForce, m_twistingForce,
+                                         m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce);
+    stepper->setupForceStepperAccess();
     totalForce = stepper->getForce();
     dx = stepper->dx;
 
@@ -104,18 +117,6 @@ void world::setupWorld() {
 //    lockEdge(0, 0);
 //    lockEdge(0, 1);
     updateCons();
-
-    // declare the forces
-    m_stretchForce = make_unique<elasticStretchingForce>(limbs, joints, stepper);
-    m_bendingForce = make_unique<elasticBendingForce>(limbs, joints, stepper);
-    m_twistingForce = make_unique<elasticTwistingForce>(limbs, joints, stepper);
-    m_inertialForce = make_unique<inertialForce>(limbs, joints, stepper);
-    m_gravityForce = make_unique<externalGravityForce>(limbs, joints, stepper, gVector);
-    m_dampingForce = make_unique<dampingForce>(limbs, joints, stepper, viscosity);
-    m_floorContactForce = make_unique<floorContactForce>(limbs, stepper, delta, nu, mu, deltaTime, floor_z);
-
-//    m_collisionDetector = make_shared<collisionDetector>(rod, delta, col_limit);
-//    m_contactPotentialIMC = make_unique<contactPotentialIMC>(rod, stepper, m_collisionDetector, delta, k_scaler, mu, nu);
 
     // Allocate every thing to prepare for the first iteration
     updateRobot();

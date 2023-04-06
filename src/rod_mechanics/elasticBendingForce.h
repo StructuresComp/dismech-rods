@@ -1,27 +1,20 @@
 #ifndef ELASTICBENDINGFORCE_H
 #define ELASTICBENDINGFORCE_H
 
-#include "../eigenIncludes.h"
-#include "elasticRod.h"
-#include "elasticJoint.h"
-#include "../time_steppers/baseTimeStepper.h"
+#include "baseForce.h"
 
-class elasticBendingForce
+class baseTimeStepper;
+
+class elasticBendingForce : public baseForce
 {
 public:
     elasticBendingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                        const vector<shared_ptr<elasticJoint>>& m_joints,
-                        shared_ptr<baseTimeStepper> m_stepper);
-    ~elasticBendingForce();
+                        const vector<shared_ptr<elasticJoint>>& m_joints);
+    ~elasticBendingForce() override;
     void computeFb();
     void computeJb();
 
 private:
-
-    vector<shared_ptr<elasticRod>> limbs;
-    vector<shared_ptr<elasticJoint>> joints;
-    shared_ptr<baseTimeStepper> stepper;
-
     void JacobianComputation();
 
     int ci;

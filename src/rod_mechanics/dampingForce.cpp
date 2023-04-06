@@ -1,13 +1,11 @@
 #include "dampingForce.h"
+#include "../time_steppers/baseTimeStepper.h"
 
 dampingForce::dampingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
                            const vector<shared_ptr<elasticJoint>>& m_joints,
-                           shared_ptr<baseTimeStepper> m_stepper, double m_viscosity)
+                           double m_viscosity) :
+                           baseForce(m_limbs, m_joints), viscosity(m_viscosity)
 {
-    limbs = m_limbs;
-    joints = m_joints;
-    stepper = m_stepper;
-    viscosity = m_viscosity;
 }
 
 dampingForce::~dampingForce()

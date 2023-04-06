@@ -1,13 +1,10 @@
 #include "elasticBendingForce.h"
+#include "../time_steppers/baseTimeStepper.h"
 
 elasticBendingForce::elasticBendingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                                         const vector<shared_ptr<elasticJoint>>& m_joints,
-                                         shared_ptr<baseTimeStepper> m_stepper)
+                                         const vector<shared_ptr<elasticJoint>>& m_joints) :
+                                         baseForce(m_limbs, m_joints)
 {
-    limbs = m_limbs;
-    joints = m_joints;
-    stepper = m_stepper;
-
     Id3 << 1, 0, 0,
            0, 1, 0,
            0, 0, 1;

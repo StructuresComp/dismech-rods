@@ -1,13 +1,11 @@
 #include "externalGravityForce.h"
+#include "../time_steppers/baseTimeStepper.h"
 
 externalGravityForce::externalGravityForce(const vector<shared_ptr<elasticRod>>& m_limbs,
                                            const vector<shared_ptr<elasticJoint>>& m_joints,
-                                           shared_ptr<baseTimeStepper> m_stepper, Vector3d m_gVector)
+                                           Vector3d m_gVector) :
+                                           baseForce(m_limbs, m_joints), gVector(m_gVector)
 {
-    limbs = m_limbs;
-    joints = m_joints;
-    stepper = m_stepper;
-    gVector = m_gVector;
     setGravity();
 }
 

@@ -1,13 +1,10 @@
 #include "elasticTwistingForce.h"
+#include "../time_steppers/baseTimeStepper.h"
 
 elasticTwistingForce::elasticTwistingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                                           const vector<shared_ptr<elasticJoint>>& m_joints,
-                                           shared_ptr<baseTimeStepper> m_stepper)
+                                           const vector<shared_ptr<elasticJoint>>& m_joints) :
+                                           baseForce(m_limbs, m_joints)
 {
-    limbs = m_limbs;
-    joints = m_joints;
-    stepper = m_stepper;
-
     for (const auto& limb : m_limbs) {
         gradTwists.push_back(make_shared<MatrixXd>(MatrixXd::Zero(limb->nv,11)));
         deltams.push_back(make_shared<VectorXd>(VectorXd::Zero(limb->ne)));

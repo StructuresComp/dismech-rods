@@ -2,12 +2,15 @@
 #define CONTACTPOTENTIALIMC_H
 
 #include "../eigenIncludes.h"
-#include "../time_steppers/baseTimeStepper.h"
 #include "elasticRod.h"
 #include "collisionDetector.h"
 #include "symbolicEquations.h"
 #include "contactEnums.h"
 
+
+// TODO: SELF-CONTACT IS NOT CURRENTLY IMPLEMENTED!!!
+
+class baseTimeStepper;
 
 class contactPotentialIMC
 {

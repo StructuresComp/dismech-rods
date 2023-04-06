@@ -1,19 +1,39 @@
-#ifndef BASETimeStepper_H
-#define BASETimeStepper_H
+#ifndef BASETIMESTEPPER_H
+#define BASETIMESTEPPER_H
 
 #include "../rod_mechanics/elasticRod.h"
 #include "../eigenIncludes.h"
 
+// include force classes
+#include "../rod_mechanics/elasticStretchingForce.h"
+#include "../rod_mechanics/elasticBendingForce.h"
+#include "../rod_mechanics/elasticTwistingForce.h"
+#include "../rod_mechanics/inertialForce.h"
 
-class baseTimeStepper
+// include external force
+#include "../rod_mechanics/dampingForce.h"
+#include "../rod_mechanics/externalGravityForce.h"
+#include "../rod_mechanics/floorContactForce.h"
+#include "../rod_mechanics/contactPotentialIMC.h"
+
+
+class baseTimeStepper : public enable_shared_from_this<baseTimeStepper>
 {
 public:
-    baseTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs);
-    ~baseTimeStepper();
+    baseTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
+                    shared_ptr<elasticStretchingForce> m_stretchForce,
+                    shared_ptr<elasticBendingForce> m_bendingForce,
+                    shared_ptr<elasticTwistingForce> m_twistingForce,
+                    shared_ptr<inertialForce> m_inertialForce,
+                    shared_ptr<externalGravityForce> m_gravityForce,
+                    shared_ptr<dampingForce> m_dampingForce,
+                    shared_ptr<floorContactForce> m_floorContactForce);
+    virtual ~baseTimeStepper();
 
     double* getForce();
     void addForce(int ind, double p, int limb_idx);
 
+    void setupForceStepperAccess();
     virtual void setZero();
     virtual void update();
     virtual void integrator() = 0;
@@ -29,10 +49,18 @@ public:
     int freeDOF;
     vector<int> offsets;
 
+
 protected:
     int mappedInd, mappedInd1, mappedInd2;
     int offset;
     vector<shared_ptr<elasticRod>> limbs;
+    shared_ptr<elasticStretchingForce> stretching_force;
+    shared_ptr<elasticBendingForce> bending_force;
+    shared_ptr<elasticTwistingForce> twisting_force;
+    shared_ptr<inertialForce> inertial_force;
+    shared_ptr<externalGravityForce> gravity_force;
+    shared_ptr<dampingForce> damping_force;
+    shared_ptr<floorContactForce> floor_contact_force;
 
 private:
     double *totalForce;

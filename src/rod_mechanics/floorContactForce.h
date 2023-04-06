@@ -1,17 +1,17 @@
 #ifndef FLOORCONTACT_H
 #define FLOORCONTACT_H
 
-#include "../eigenIncludes.h"
-#include "elasticRod.h"
-#include "../time_steppers/baseTimeStepper.h"
+#include "baseForce.h"
 #include "symbolicEquations.h"
 
-class floorContactForce
+class baseTimeStepper;
+
+class floorContactForce : public baseForce
 {
 public:
-    floorContactForce(const vector<shared_ptr<elasticRod>>& m_limbs, shared_ptr<baseTimeStepper> m_stepper,
+    floorContactForce(const vector<shared_ptr<elasticRod>>& m_limbs, const vector<shared_ptr<elasticJoint>>& m_joints,
                       double m_floor_delta, double m_floor_slipTol, double m_mu, double m_dt, double m_floor_z);
-    ~floorContactForce();
+    ~floorContactForce() override;
 
     void computeFf();
     void computeFfJf();
@@ -21,8 +21,6 @@ public:
 
     double min_dist;
 private:
-    vector<shared_ptr<elasticRod>> limbs;
-    shared_ptr<baseTimeStepper> stepper;
     shared_ptr<symbolicEquations> sym_eqs;
     Vector<double, 2> contact_input;
     Vector<double, 8> fric_jacobian_input;

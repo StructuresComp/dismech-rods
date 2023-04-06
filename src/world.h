@@ -97,15 +97,15 @@ private:
     double totalTime;
 
     // declare the forces
-    unique_ptr<elasticStretchingForce> m_stretchForce = nullptr;
-    unique_ptr<elasticBendingForce> m_bendingForce = nullptr;
-    unique_ptr<elasticTwistingForce> m_twistingForce = nullptr;
-    unique_ptr<inertialForce> m_inertialForce = nullptr;
-    unique_ptr<externalGravityForce> m_gravityForce = nullptr;
-    unique_ptr<dampingForce> m_dampingForce = nullptr;
-    unique_ptr<floorContactForce> m_floorContactForce = nullptr;
+    shared_ptr<elasticStretchingForce> m_stretchForce = nullptr;
+    shared_ptr<elasticBendingForce> m_bendingForce = nullptr;
+    shared_ptr<elasticTwistingForce> m_twistingForce = nullptr;
+    shared_ptr<inertialForce> m_inertialForce = nullptr;
+    shared_ptr<externalGravityForce> m_gravityForce = nullptr;
+    shared_ptr<dampingForce> m_dampingForce = nullptr;
+    shared_ptr<floorContactForce> m_floorContactForce = nullptr;
 //    shared_ptr<collisionDetector> m_collisionDetector = nullptr;
-//    unique_ptr<contactPotentialIMC> m_contactPotentialIMC = nullptr;
+//    shared_ptr<contactPotentialIMC> m_contactPotentialIMC = nullptr;
 
     int iter;
     int total_iters;

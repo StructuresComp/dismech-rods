@@ -1,6 +1,16 @@
 #include "implicitTimeStepper.h"
 
-implicitTimeStepper::implicitTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs) : baseTimeStepper(m_limbs) {
+implicitTimeStepper::implicitTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
+                                         shared_ptr<elasticStretchingForce> m_stretch_force,
+                                         shared_ptr<elasticBendingForce> m_bending_force,
+                                         shared_ptr<elasticTwistingForce> m_twisting_force,
+                                         shared_ptr<inertialForce> m_inertial_force,
+                                         shared_ptr<externalGravityForce> m_gravity_force,
+                                         shared_ptr<dampingForce> m_damping_force,
+                                         shared_ptr<floorContactForce> m_floor_contact_force) :
+                                         baseTimeStepper(m_limbs, m_stretch_force, m_bending_force, m_twisting_force,
+                                                         m_inertial_force, m_gravity_force, m_damping_force,
+                                                         m_floor_contact_force){
     kl = 10; // lower diagonals
     ku = 10; // upper diagonals
     ldb = freeDOF;
@@ -11,6 +21,7 @@ implicitTimeStepper::implicitTimeStepper(const vector<shared_ptr<elasticRod>>& m
     info = 0;
     jacobian = new double [jacobianLen];
     Jacobian = MatrixXd::Zero(freeDOF, freeDOF);
+
 }
 
 
