@@ -9,11 +9,11 @@ backwardEuler::backwardEuler(const vector<shared_ptr<elasticRod>>& m_limbs,
                              shared_ptr<externalGravityForce> m_gravity_force,
                              shared_ptr<dampingForce> m_damping_force,
                              shared_ptr<floorContactForce> m_floor_contact_force,
-                             double m_force_tol, double m_stol, int m_max_iter,
-                             int m_line_search) :
+                             double m_dt, double m_force_tol, double m_stol,
+                             int m_max_iter, int m_line_search) :
                              implicitTimeStepper(m_limbs, m_joints, m_stretch_force, m_bending_force,
                                                  m_twisting_force, m_inertial_force, m_gravity_force,
-                                                 m_damping_force, m_floor_contact_force,
+                                                 m_damping_force, m_floor_contact_force, m_dt,
                                                  m_force_tol, m_stol, m_max_iter, m_line_search)
 
 {
@@ -25,24 +25,22 @@ backwardEuler::~backwardEuler() = default;
 void backwardEuler::integrator()
 {
     pardisoSolver();
-    // TODO: move the newton's method stuff here
 }
 
 
-void backwardEuler::newtonMethod() {
+void backwardEuler::newtonMethod(double dt) {
     double normf;
     double normf0 = 0;
     bool solved = false;
     iter = 0;
 
-    for (const auto& limb : limbs) limb->updateGuess(0.01);
 
     while (!solved) {
-        prepSystem();
+        prepSystemForIteration();
         setZero();
 
-        inertial_force->computeFi();
-        inertial_force->computeJi();
+        inertial_force->computeFi(dt);
+        inertial_force->computeJi(dt);
 
         stretching_force->computeFs();
         stretching_force->computeJs();
@@ -56,10 +54,10 @@ void backwardEuler::newtonMethod() {
         gravity_force->computeFg();
         gravity_force->computeJg();
 
-        damping_force->computeFd();
-        damping_force->computeJd();
+        damping_force->computeFd(dt);
+        damping_force->computeJd(dt);
 
-        floor_contact_force->computeFfJf();
+        floor_contact_force->computeFfJf(dt);
 
 //        m_collisionDetector->detectCollisions();
 //        if (iter == 0) {
@@ -86,7 +84,7 @@ void backwardEuler::newtonMethod() {
 
         if (!solved) {
             integrator(); // Solve equations of motion
-            if (line_search) lineSearch();
+            if (line_search) lineSearch(dt);
 
             int limb_idx = 0;
             for (const auto& limb : limbs) {
@@ -101,17 +99,18 @@ void backwardEuler::newtonMethod() {
             cout << "No convergence after " << max_iter << " iterations" << endl;
             exit(1);
         }
+
     }
 }
 
 
-void backwardEuler::lineSearch() {
+void backwardEuler::lineSearch(double dt) {
     // store current x
     for (auto& limb : limbs) {
-        limb->xold = limb->x;
+        limb->x_ls = limb->x;
     }
     for (auto& joint : joints) {
-        joint->xold = joint->x;
+        joint->x_ls = joint->x;
     }
     // Initialize an interval for optimal learning rate alpha
     double amax = 2;
@@ -132,25 +131,25 @@ void backwardEuler::lineSearch() {
     while (!success) {
         int limb_idx = 0;
         for (auto& joint : joints) {
-            joint->x = joint->xold;
+            joint->x = joint->x_ls;
         }
         for (auto& limb : limbs) {
-            limb->x = limb->xold;
+            limb->x= limb->x_ls;
             limb->updateNewtonX(dx, offsets[limb_idx], alpha);
             limb_idx++;
         }
 
-        prepSystem();
+        prepSystemForIteration();
         setZero();
 
         // Compute the forces
-        inertial_force->computeFi();
+        inertial_force->computeFi(dt);
         stretching_force->computeFs();
         bending_force->computeFb();
         twisting_force->computeFt();
         gravity_force->computeFg();
-        damping_force->computeFd();
-        floor_contact_force->computeFf();
+        damping_force->computeFd(dt);
+        floor_contact_force->computeFf(dt);
 //        m_collisionDetector->detectCollisions();
 //        m_contactPotentialIMC->computeFc();
 
@@ -185,17 +184,56 @@ void backwardEuler::lineSearch() {
         iter_l++;
     }
     for (auto& limb : limbs) {
-        limb->x = limb->xold;
+        limb->x = limb->x_ls;
     }
     for (auto& joint : joints) {
-        joint->x = joint->xold;
+        joint->x = joint->x_ls;
     }
     alpha = a;
 }
 
 
 void backwardEuler::stepForwardInTime() {
-    newtonMethod();
-    updateSystem();
+    for (const auto& limb : limbs) limb->updateGuess(0.01, dt);
+    newtonMethod(dt);
+    updateSystemForNextTimeStep();
+}
+
+
+void backwardEuler::prepSystemForIteration() {
+    for (const auto& joint : joints) joint->prepLimbs();
+    for (const auto& limb : limbs) limb->prepareForIteration();
+    for (const auto& joint : joints) joint->prepareForIteration();
+}
+
+
+void backwardEuler::updateSystemForNextTimeStep() {
+    prepSystemForIteration();
+
+    for (const auto& limb : limbs) {
+        // Update velocity
+        limb->u = (limb->x - limb->x0) / dt;
+
+        // Update x0
+        limb->x0 = limb->x;
+
+        // Update reference directors
+        limb->d1_old = limb->d1;
+        limb->d2_old = limb->d2;
+
+        // Update necessary info for time parallel
+        limb->tangent_old = limb->tangent;
+        limb->refTwist_old = limb->refTwist;
+    }
+
+    // Do the same updates as above for joints
+    for (const auto& joint : joints) {
+        joint->u = (joint->x - joint->x0) / dt;
+        joint->x0 = joint->x;
+        joint->d1_old = joint->d1;
+        joint->d2_old = joint->d2;
+        joint->tangents_old = joint->tangents;
+        joint->ref_twist_old = joint->ref_twist;
+    }
 }
 

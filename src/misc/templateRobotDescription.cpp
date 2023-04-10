@@ -8,27 +8,27 @@
  */
 
 void get_robot_description(vector<shared_ptr<elasticRod>>& limbs, vector<shared_ptr<elasticJoint>>& joints,
-                           double density, double rodRadius, double deltaTime, double youngM, double shearM) {
+                           double density, double rodRadius, double youngM, double shearM) {
 
     /* Spider case */
     limbs.push_back(make_shared<elasticRod>(0, Vector3d(0, 0, 0.10), Vector3d(0, 0.00, 0.05), 15,
-                                            density, rodRadius, deltaTime, youngM, shearM));
+                                            density, rodRadius, youngM, shearM));
     limbs.push_back(make_shared<elasticRod>(1, Vector3d(0, 0, 0.05), Vector3d(0.05, 0, 0.05), 15,
-                                            density, rodRadius, deltaTime, youngM, shearM));
+                                            density, rodRadius, youngM, shearM));
     limbs.push_back(make_shared<elasticRod>(2, Vector3d(0, 0, 0.05), Vector3d(0, 0.05, 0.05), 15,
-                                            density, rodRadius, deltaTime, youngM, shearM));
+                                            density, rodRadius, youngM, shearM));
     limbs.push_back(make_shared<elasticRod>(3, Vector3d(0, 0, 0.05), Vector3d(0, -0.05, 0.05), 15,
-                                            density, rodRadius, deltaTime, youngM, shearM));
+                                            density, rodRadius, youngM, shearM));
     limbs.push_back(make_shared<elasticRod>(4, Vector3d(0, 0, 0.05), Vector3d(-0.05, 0, 0.05), 15,
-                                            density, rodRadius, deltaTime, youngM, shearM));
+                                            density, rodRadius, youngM, shearM));
     limbs.push_back(make_shared<elasticRod>(5, Vector3d(0.05, 0, 0.05), Vector3d(0.05, 0, 0.00), 10,
-                                            density, rodRadius, deltaTime, youngM, shearM));
+                                            density, rodRadius, youngM, shearM));
     limbs.push_back(make_shared<elasticRod>(6, Vector3d(0.0, 0.05, 0.05), Vector3d(0.0, 0.05, 0.00), 10,
-                                            density, rodRadius, deltaTime, youngM, shearM));
+                                            density, rodRadius, youngM, shearM));
     limbs.push_back(make_shared<elasticRod>(7, Vector3d(0.0, -0.05, 0.05), Vector3d(0.0, -0.05, 0.00), 10,
-                                            density, rodRadius, deltaTime, youngM, shearM));
+                                            density, rodRadius, youngM, shearM));
     limbs.push_back(make_shared<elasticRod>(8, Vector3d(-0.05, 0, 0.05), Vector3d(-0.05, 0, 0.00), 10,
-                                            density, rodRadius, deltaTime, youngM, shearM));
+                                            density, rodRadius, youngM, shearM));
     joints.push_back(make_shared<elasticJoint>(14, 0, limbs));
     joints[0]->addToJoint(0, 1);
     joints[0]->addToJoint(0, 2);

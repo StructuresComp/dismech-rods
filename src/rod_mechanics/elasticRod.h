@@ -10,10 +10,9 @@ class elasticRod
 {
     public:
     elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
-               double m_rho, double m_rodRadius, double m_dt,
-               double m_youngM, double m_shearM);
+               double m_rho, double m_rodRadius, double m_youngM, double m_shearM);
     elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
-    double m_rho, double m_rodRadius, double m_dt,
+    double m_rho, double m_rodRadius,
     double m_youngM, double m_shearM, double m_rodLength, VectorXd m_theta);
     ~elasticRod();
     void setup();
@@ -25,7 +24,7 @@ class elasticRod
     void computeElasticStiffness();
     void prepareForIteration();
     void updateNewtonX(double *dx, int offset, double alpha=1.0);
-    void updateGuess(double weight);
+    void updateGuess(double weight, double dt);
 
     int limb_idx;
 
@@ -38,7 +37,7 @@ class elasticRod
 
     // Should be taken out of this class
     void computeTimeParallel();
-    void computeTangent(const VectorXd &x, MatrixXd &tangentLocal);
+    void computeTangent();
     void parallelTansport(const Vector3d &d1_1,const Vector3d &t1,const Vector3d &t2,Vector3d &d1_2);
     void computeSpaceParallel();
     void computeMaterialDirector();
@@ -64,7 +63,6 @@ class elasticRod
     double rho; // density
     double rodRadius; // cross-sectional radius of the rod
     double crossSectionalArea; // cross-sectional area of the rod
-    double dt; // time step
     double dm; // mass per segment
 
     // Total length
@@ -84,6 +82,8 @@ class elasticRod
     VectorXd x0;
     // dof vector after time step
     VectorXd x;
+    // dof vector for line search
+    VectorXd x_ls;
     // velocity vector
     VectorXd u;
 
@@ -126,8 +126,6 @@ class elasticRod
     void updateMap();
 
     void freeVertexBoundaryCondition(int k);
-
-    VectorXd xold;
 
     void addJoint(int node_num, bool remove_dof, int joint_node, int joint_limb);
     int unique_dof;

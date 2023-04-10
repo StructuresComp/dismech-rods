@@ -28,7 +28,8 @@ public:
                     shared_ptr<inertialForce> m_inertialForce,
                     shared_ptr<externalGravityForce> m_gravityForce,
                     shared_ptr<dampingForce> m_dampingForce,
-                    shared_ptr<floorContactForce> m_floorContactForce);
+                    shared_ptr<floorContactForce> m_floorContactForce,
+                    double m_dt);
     virtual ~baseTimeStepper();
 
     double* getForce();
@@ -41,8 +42,8 @@ public:
     virtual double* getJacobian() = 0;
     virtual void addJacobian(int ind1, int ind2, double p, int limb_idx) = 0;
     virtual void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2) = 0;
-    void prepSystem();
-    void updateSystem();
+    virtual void prepSystemForIteration() = 0;
+    virtual void updateSystemForNextTimeStep() = 0;
     virtual void stepForwardInTime() = 0;
 
     VectorXd Force;
@@ -58,6 +59,7 @@ public:
 protected:
     int mappedInd, mappedInd1, mappedInd2;
     int offset;
+    double dt;
     double alpha = 1.0;
     double *totalForce;
     vector<shared_ptr<elasticRod>> limbs;

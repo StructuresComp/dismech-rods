@@ -15,13 +15,16 @@ public:
                   shared_ptr<externalGravityForce> m_gravityForce,
                   shared_ptr<dampingForce> m_dampingForce,
                   shared_ptr<floorContactForce> m_floorContactForce,
-                  double m_force_tol, double m_stol, int m_max_iter,
-                  int m_line_search);
+                  double m_dt, double m_force_tol, double m_stol,
+                  int m_max_iter, int m_line_search);
     ~backwardEuler() override;
 
+    void prepSystemForIteration() override;
+    void updateSystemForNextTimeStep() override;
+
     void integrator() override;
-    void newtonMethod() override;
-    void lineSearch() override;
+    void newtonMethod(double dt) override;
+    void lineSearch(double dt) override;
     void stepForwardInTime() override;
 
 };

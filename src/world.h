@@ -23,6 +23,7 @@
 // include time stepper
 //#include "time_steppers/timeStepper.h"
 #include "time_steppers/backwardEuler.h"
+#include "time_steppers/implicitMidpoint.h"
 
 // include input file and option
 #include "initialization/setInput.h"

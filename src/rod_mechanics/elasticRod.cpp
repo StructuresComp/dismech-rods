@@ -1,7 +1,7 @@
 #include "elasticRod.h"
 
 elasticRod::elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
-                       double m_rho, double m_rodRadius, double m_dt, double m_youngM, double m_shearM)
+                       double m_rho, double m_rodRadius, double m_youngM, double m_shearM)
 {
     ndof = num_nodes * 4 - 1;
     nv = num_nodes;
@@ -15,7 +15,6 @@ elasticRod::elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& en
 
     rodLength = (end - start).norm();
 
-    dt = m_dt;
     youngM = m_youngM;
     shearM = m_shearM;
     rho = m_rho;
@@ -27,8 +26,8 @@ elasticRod::elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& en
 
 // TODO: this is no longer supported, add support later if needed
 elasticRod::elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
-    double m_rho, double m_rodRadius, double m_dt,
-    double m_youngM, double m_shearM, double m_rodLength, VectorXd m_theta)
+    double m_rho, double m_rodRadius, double m_youngM, double m_shearM,
+    double m_rodLength, VectorXd m_theta)
 {
     rodLength = m_rodLength;
     nodes = initialNodes;
@@ -36,7 +35,6 @@ elasticRod::elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
     nv = nodes.rows();
     ne = nv - 1;
     ndof = 3*nv + ne;
-    dt = m_dt;
     youngM = m_youngM;
     shearM = m_shearM;
     rho = m_rho;
@@ -107,7 +105,7 @@ void elasticRod::setup()
     setMass();
     // set tangent
     tangent = MatrixXd::Zero(ne, 3);
-    computeTangent(x, tangent);
+    computeTangent();
     // set reference directors
     computeSpaceParallel();
     // set material directors
@@ -132,7 +130,6 @@ void elasticRod::setup()
     computeElasticStiffness();
 
     // values at the beginning of time step
-    x0 = x;
     d1_old = d1;
     d2_old = d2;
     tangent_old = tangent;
@@ -337,12 +334,12 @@ void elasticRod::computeTimeParallel()
     }
 }
 
-void elasticRod::computeTangent(const VectorXd &xLocal, MatrixXd &tangentLocal)
+void elasticRod::computeTangent()
 {
     for (int i=0; i<ne; i++)
     {
-        tangentLocal.row(i) = xLocal.segment(4*(i+1),3) - xLocal.segment(4*i,3);
-        tangentLocal.row(i) = tangentLocal.row(i)/(tangentLocal.row(i)).norm();
+        tangent.row(i) = x.segment(4*(i+1),3) - x.segment(4*i,3);
+        tangent.row(i) = tangent.row(i)/(tangent.row(i)).norm();
     }
 }
 
@@ -528,7 +525,7 @@ void elasticRod::computeElasticStiffness()
 
 void elasticRod::prepareForIteration()
 {
-    computeTangent(x, tangent);
+    computeTangent();
     computeTimeParallel();
     getRefTwist();
     computeMaterialDirector();
@@ -546,26 +543,26 @@ void elasticRod::updateNewtonX(double *dx, int offset, double alpha)
     }
 }
 
-void elasticRod::updateTimeStep()
-{
-    prepareForIteration();
+//void elasticRod::updateTimeStep()
+//{
+//    prepareForIteration();
+//
+//    // compute velocity
+//    u = (x - x0) / dt;
+//
+//    // update x
+//    x0 = x;
+//
+//    // update reference directors
+//    d1_old = d1;
+//    d2_old = d2;
+//
+//    // We do not need to update m1, m2. They can be determined from theta.
+//    tangent_old = tangent;
+//    refTwist_old = refTwist;
+//}
 
-    // compute velocity
-    u = (x - x0) / dt;
-
-    // update x
-    x0 = x;
-
-    // update reference directors
-    d1_old = d1;
-    d2_old = d2;
-
-    // We do not need to update m1, m2. They can be determined from theta.
-    tangent_old = tangent;
-    refTwist_old = refTwist;
-}
-
-void elasticRod::updateGuess(double weight)
+void elasticRod::updateGuess(double weight, double dt)
 {
     int ind;
     for (int c=0; c < uncons; c++)

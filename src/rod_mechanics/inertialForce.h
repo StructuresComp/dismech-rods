@@ -12,12 +12,11 @@ public:
                   const vector<shared_ptr<elasticJoint>>& m_joints);
 
     ~inertialForce() override;
-    void computeFi();
-    void computeJi();
+    void computeFi(double dt);
+    void computeJi(double dt);
 
 private:
     double f, jac;
-    double dt;
 };
 
 #endif

@@ -62,6 +62,7 @@ add_executable(simDER
     src/time_steppers/baseTimeStepper.cpp
     src/time_steppers/implicitTimeStepper.cpp
     src/time_steppers/backwardEuler.cpp
+    src/time_steppers/implicitMidpoint.cpp
 
     # src/rod_mechanics/collisionDetector.cpp
     # src/rod_mechanics/contactPotentialIMC.cpp

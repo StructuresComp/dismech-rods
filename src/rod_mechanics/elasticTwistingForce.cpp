@@ -174,9 +174,9 @@ void elasticTwistingForce::computeFt()
 
                 // Nodal forces
                 for (int k = 0; k < 3; k++) {
-                    stepper->addForce(4*n1+k, -f[k], l1);
-                    stepper->addForce(4*n2+k, -f[k+4], l2);
-                    stepper->addForce(4*n3+k, -f[k+8], l3);
+                    stepper->addForce(4*n1+k,-f[k], l1);
+                    stepper->addForce(4*n2+k,-f[k+4], l2);
+                    stepper->addForce(4*n3+k,-f[k+8], l3);
                 }
                 // Theta moments
                 stepper->addForce(theta1_i, -f[3] * sgn1, l1);

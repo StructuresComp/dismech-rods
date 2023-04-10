@@ -9,11 +9,11 @@ implicitTimeStepper::implicitTimeStepper(const vector<shared_ptr<elasticRod>>& m
                                          shared_ptr<externalGravityForce> m_gravity_force,
                                          shared_ptr<dampingForce> m_damping_force,
                                          shared_ptr<floorContactForce> m_floor_contact_force,
-                                         double m_force_tol, double m_stol, int m_max_iter,
-                                         int m_line_search) :
+                                         double m_dt, double m_force_tol, double m_stol,
+                                         int m_max_iter, int m_line_search) :
                                          baseTimeStepper(m_limbs, m_joints, m_stretch_force, m_bending_force,
                                                          m_twisting_force, m_inertial_force, m_gravity_force,
-                                                         m_damping_force, m_floor_contact_force),
+                                                         m_damping_force, m_floor_contact_force, m_dt),
                                          force_tol(m_force_tol), stol(m_stol), max_iter(m_max_iter), line_search(m_line_search)
 {
     kl = 10; // lower diagonals

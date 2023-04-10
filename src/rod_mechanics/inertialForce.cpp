@@ -5,7 +5,6 @@ inertialForce::inertialForce(const vector<shared_ptr<elasticRod>>& m_limbs,
                              const vector<shared_ptr<elasticJoint>>& m_joints) :
                              baseForce(m_limbs, m_joints)
 {
-    dt = limbs[0]->dt;
 }
 
 inertialForce::~inertialForce()
@@ -13,10 +12,8 @@ inertialForce::~inertialForce()
     ;
 }
 
-void inertialForce::computeFi()
+void inertialForce::computeFi(double dt)
 {
-    // TODOder: we should not need to compute this at every iteration.
-    // We should compute and store it in iteration 1 and then reuse it.
     int limb_idx = 0;
     for (const auto& limb : limbs) {
         for (int i=0; i < limb->ndof; i++)
@@ -36,8 +33,10 @@ void inertialForce::computeFi()
     }
 }
 
-void inertialForce::computeJi()
+void inertialForce::computeJi(double dt)
 {
+    // TODO: we should not need to compute this at every iteration.
+    // TODO: We should compute and store it in iteration 1 and then reuse it.
     int limb_idx = 0;
     for (const auto& limb : limbs) {
         for (int i = 0; i < limb->ndof; i++) {

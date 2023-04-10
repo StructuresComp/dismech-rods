@@ -82,7 +82,7 @@ void world::CloseFile(ofstream &outfile) {
 }
 
 void world::setupWorld() {
-    get_robot_description(limbs, joints, density, rodRadius, deltaTime, youngM, shearM);
+    get_robot_description(limbs, joints, density, rodRadius, youngM, shearM);
 
     // This has to be called after joints are all set.
     for (const auto& joint : joints) joint->setup();
@@ -100,15 +100,18 @@ void world::setupWorld() {
     m_inertialForce = make_shared<inertialForce>(limbs, joints);
     m_gravityForce = make_shared<externalGravityForce>(limbs, joints, gVector);
     m_dampingForce = make_shared<dampingForce>(limbs, joints, viscosity);
-    m_floorContactForce = make_shared<floorContactForce>(limbs, joints, delta, nu, mu, deltaTime, floor_z);
+    m_floorContactForce = make_shared<floorContactForce>(limbs, joints, delta, nu, mu, floor_z);
 //    m_collisionDetector = make_shared<collisionDetector>(rod, delta, col_limit);
 //    m_contactPotentialIMC = make_shared<contactPotentialIMC>(rod, stepper, m_collisionDetector, delta, k_scaler, mu, nu);
 
     // set up the time stepper
 //    stepper = make_shared<baseTimeStepper>(limbs);
-    stepper = make_shared<backwardEuler>(limbs, joints, m_stretchForce, m_bendingForce, m_twistingForce,
-                                         m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
-                                         forceTol, stol, maxIter, line_search);
+//    stepper = make_shared<backwardEuler>(limbs, joints, m_stretchForce, m_bendingForce, m_twistingForce,
+//                                         m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
+//                                         deltaTime, forceTol, stol, maxIter, line_search);
+    stepper = make_shared<implicitMidpoint>(limbs, joints, m_stretchForce, m_bendingForce, m_twistingForce,
+                                            m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
+                                         deltaTime, forceTol, stol, maxIter, line_search);
     stepper->setupForceStepperAccess();
     totalForce = stepper->getForce();
     dx = stepper->dx;
@@ -119,7 +122,7 @@ void world::setupWorld() {
     updateCons();
 
     // Allocate every thing to prepare for the first iteration
-    stepper->updateSystem();
+    stepper->updateSystemForNextTimeStep();
 
     currentTime = 0.0;
     timeStep = 0;

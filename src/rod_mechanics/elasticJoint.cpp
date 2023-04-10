@@ -5,7 +5,6 @@ elasticJoint::elasticJoint(int node, int limb_idx, const vector<shared_ptr<elast
 {
     ne = 0;
     limbs[limb_idx]->addJoint(joint_node, false, 0, 0);
-    dt = limbs[limb_idx]->dt;
     updateConnectedNodes(joint_node, joint_limb, false);
 }
 
@@ -137,9 +136,10 @@ void elasticJoint::updateRods() {
         num_node = node_and_limb.first;
         limb_idx = node_and_limb.second;
         curr_limb = limbs[limb_idx];
-        curr_limb->x(4* num_node) = limbs[joint_limb]->x(4*joint_node);
-        curr_limb->x(4* num_node+1) = limbs[joint_limb]->x(4*joint_node+1);
-        curr_limb->x(4* num_node+2) = limbs[joint_limb]->x(4*joint_node+2);
+
+        curr_limb->x(4* num_node) = x(0);
+        curr_limb->x(4* num_node+1) = x(1);
+        curr_limb->x(4* num_node+2) = x(2);
     }
 }
 
@@ -470,21 +470,23 @@ void elasticJoint::setMass() {
     }
 }
 
-void elasticJoint::updateTimeStep()
-{
-    prepareForIteration();
 
-    // compute velocity
-    u = (x - x0) / dt;
-
-    // update x
-    x0 = x;
-
-    // update reference directors
-    d1_old = d1;
-    d2_old = d2;
-
-    // We do not need to update m1, m2. They can be determined from theta.
-    tangents_old = tangents;
-    ref_twist_old = ref_twist;
-}
+// NOTE: don't use this, because this will be different depending on integration scheme
+//void elasticJoint::updateTimeStep()
+//{
+//    prepareForIteration();
+//
+//    // compute velocity
+//    u = (x - x0) / dt;
+//
+//    // update x
+//    x0 = x;
+//
+//    // update reference directors
+//    d1_old = d1;
+//    d2_old = d2;
+//
+//    // We do not need to update m1, m2. They can be determined from theta.
+//    tangents_old = tangents;
+//    ref_twist_old = ref_twist;
+//}
