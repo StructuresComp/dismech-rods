@@ -36,13 +36,13 @@ public:
     void addForce(int ind, double p, int limb_idx);
 
     void setupForceStepperAccess();
+    virtual void prepSystemForIteration();
     virtual void setZero();
     virtual void update();
     virtual void integrator() = 0;
     virtual double* getJacobian() = 0;
     virtual void addJacobian(int ind1, int ind2, double p, int limb_idx) = 0;
     virtual void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2) = 0;
-    virtual void prepSystemForIteration() = 0;
     virtual void updateSystemForNextTimeStep() = 0;
     virtual void stepForwardInTime() = 0;
 

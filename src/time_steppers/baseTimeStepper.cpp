@@ -92,3 +92,10 @@ void baseTimeStepper::update()
     setZero();
 }
 
+
+void baseTimeStepper::prepSystemForIteration()
+{
+    for (const auto& joint : joints) joint->prepLimbs();
+    for (const auto& limb : limbs) limb->prepareForIteration();
+    for (const auto& joint : joints) joint->prepareForIteration();
+}

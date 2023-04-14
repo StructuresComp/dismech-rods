@@ -106,6 +106,9 @@ void world::setupWorld() {
 
     // set up the time stepper
 //    stepper = make_shared<baseTimeStepper>(limbs);
+//    stepper = make_shared<verletPosition>(limbs, joints, m_stretchForce, m_bendingForce, m_twistingForce,
+//                                         m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
+//                                         deltaTime);
 //    stepper = make_shared<backwardEuler>(limbs, joints, m_stretchForce, m_bendingForce, m_twistingForce,
 //                                         m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
 //                                         deltaTime, forceTol, stol, maxIter, line_search);

@@ -73,6 +73,8 @@ void implicitTimeStepper::setZero() {
     Jacobian = MatrixXd::Zero(freeDOF,freeDOF);
 }
 
+
+// There are some needless setZeros called but update is called relatively sparsely, so it's ok
 void implicitTimeStepper::update() {
     baseTimeStepper::update();
     ldb = freeDOF;
@@ -84,6 +86,12 @@ void implicitTimeStepper::update() {
     ipiv = new int[freeDOF];
     Jacobian = MatrixXd::Zero(freeDOF,freeDOF);
     setZero();
+}
+
+
+void implicitTimeStepper::prepSystemForIteration() {
+    baseTimeStepper::prepSystemForIteration();
+    implicitTimeStepper::setZero();
 }
 
 

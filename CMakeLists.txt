@@ -60,6 +60,8 @@ add_executable(simDER
     src/rod_mechanics/elasticJoint.cpp
 
     src/time_steppers/baseTimeStepper.cpp
+    src/time_steppers/explicitTimeStepper.cpp
+    src/time_steppers/verletPosition.cpp
     src/time_steppers/implicitTimeStepper.cpp
     src/time_steppers/backwardEuler.cpp
     src/time_steppers/implicitMidpoint.cpp

@@ -22,6 +22,7 @@
 
 // include time stepper
 //#include "time_steppers/timeStepper.h"
+#include "time_steppers/verletPosition.h"
 #include "time_steppers/backwardEuler.h"
 #include "time_steppers/implicitMidpoint.h"
 

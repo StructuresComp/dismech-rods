@@ -19,7 +19,6 @@ public:
                   int m_max_iter, int m_line_search);
     ~backwardEuler() override;
 
-    void prepSystemForIteration() override;
     void updateSystemForNextTimeStep() override;
 
     void integrator() override;

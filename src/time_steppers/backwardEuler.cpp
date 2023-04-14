@@ -37,7 +37,6 @@ void backwardEuler::newtonMethod(double dt) {
 
     while (!solved) {
         prepSystemForIteration();
-        setZero();
 
         inertial_force->computeFi(dt);
         inertial_force->computeJi(dt);
@@ -114,7 +113,8 @@ void backwardEuler::lineSearch(double dt) {
     }
     // Initialize an interval for optimal learning rate alpha
     double amax = 2;
-    double amin = 1e-3;
+//    double amin = 1e-3;
+    double amin = 1e-5;
     double al = 0;
     double au = 1;
 
@@ -140,7 +140,6 @@ void backwardEuler::lineSearch(double dt) {
         }
 
         prepSystemForIteration();
-        setZero();
 
         // Compute the forces
         inertial_force->computeFi(dt);
@@ -197,13 +196,6 @@ void backwardEuler::stepForwardInTime() {
     for (const auto& limb : limbs) limb->updateGuess(0.01, dt);
     newtonMethod(dt);
     updateSystemForNextTimeStep();
-}
-
-
-void backwardEuler::prepSystemForIteration() {
-    for (const auto& joint : joints) joint->prepLimbs();
-    for (const auto& limb : limbs) limb->prepareForIteration();
-    for (const auto& joint : joints) joint->prepareForIteration();
 }
 
 

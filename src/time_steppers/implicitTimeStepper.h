@@ -27,7 +27,7 @@ public:
                         shared_ptr<floorContactForce> m_floorContactForce,
                         double m_dt, double m_force_tol, double m_stol,
                         int m_max_iter, int m_line_search);
-    virtual ~implicitTimeStepper();
+    ~implicitTimeStepper() override;
 
     double* getJacobian() override;
     void addJacobian(int ind1, int ind2, double p, int limb_idx) override;
@@ -35,6 +35,7 @@ public:
     void setZero() override;
     void update() override;
 
+    void prepSystemForIteration() override;
     virtual void newtonMethod(double dt) = 0;
     virtual void lineSearch(double dt) = 0;
     void pardisoSolver();

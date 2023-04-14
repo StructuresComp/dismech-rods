@@ -125,6 +125,11 @@ void floorContactForce::computeFfJf(double dt) {
             stepper->addJacobian(4*i, 4*i+2, friction_partials_dfr_dfn(0) * J, limb_idx);
             // dfry/dfn * dfn/dz
             stepper->addJacobian(4*i+1, 4*i+2, friction_partials_dfr_dfn(1) * J, limb_idx);
+
+//            cout << friction_partials_dfr_dx << endl;
+//            cout << "-----" << endl;
+//            cout << friction_partials_dfr_dfn * J << endl;
+//            cout << "=============" << endl;
         }
         limb_idx++;
     }
@@ -152,6 +157,7 @@ void floorContactForce::computeFriction(const Vector2d& curr_node, const Vector2
         fric_jaco_type = 2;
         gamma = 2 / (1 + exp(-K2 * v_n)) - 1;
     }
+//    cout << "friction gamma " << gamma << endl;
     ffr = -gamma * mu * fn * v_hat;
 }
 
