@@ -1,0 +1,9 @@
+Tripod Open-Loop Gait Timepoints Trajectory,,,,,,,
+Usage: times and duty cycles,,,,,,,
+There are 2*numLimbs = 6 SMAs.,L1_CW,L1_CCW,S1_CW,S1_CCW,L2_CW,L2_CCW,
+Simulation time (sec),duty_0,duty_1,duty_2,duty_3,duty_4,duty_5,EmptyColForSavingExtraComma
+0,0,0,0,0,0,0,
+0.2,0,0,0.01,0,0,0,
+2,0,0,0,0,0.01,0,
+3,0.01,0,0,0,0,0,
+4,0,0,0,0,0,0,

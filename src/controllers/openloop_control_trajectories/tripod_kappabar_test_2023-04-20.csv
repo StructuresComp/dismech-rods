@@ -1,0 +1,10 @@
+Tripod Open-Loop Pantograph Timepoints Trajectory,,,,,,,,,,,
+Usage: times and duty cycles,,,,,,,,,,,
+There are 2*numLimbs = 10 SMAs.,L1_CW,L1_CCW,S1_CW,S1_CCW,L2_CW,L2_CCW,S2_CW,S2_CCW,L3_CW,L3_CCW,
+Simulation time (sec),kappabar_x_0,kappabar_y_0,kappabar_x_1,kappabar_y_1,kappabar_x_2,kappabar_y_2,kappabar_x_3,kappabar_y_3,kappabar_x_4,kappabar_y_4,EmptyColForSavingExtraComma
+0,0,0,0,0,0,0,0,0,0,0,
+0.2,0.005,0,0,0,0,0.005,0,0,0,0.005,
+1,0.005,0,0,0,0,0.01,0,0.02,0.01,0,
+1.5,0,0,0,0,0,0,0,0.01,0,0.005,
+2,0,0,0,0,0.01,0,0,0,0.005,0,
+2.8,0,0,0,0,0,0,0,0,0,0,

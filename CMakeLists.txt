@@ -65,6 +65,8 @@ add_executable(simDER
     src/simulation_environments/derSimulationEnvironment.cpp
     src/simulation_environments/headlessDERSimulationEnvironment.cpp
     src/simulation_environments/openglDERSimulationEnvironment.cpp
+    src/controllers/rodController.cpp
+    src/controllers/rodOpenLoopFileKappabarSetter.cpp
 )
 target_link_libraries(simDER PRIVATE
     ${OPENGL_LIBRARIES}

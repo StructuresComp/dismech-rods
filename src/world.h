@@ -7,7 +7,8 @@
 // include elastic rod class
 #include "rod_mechanics/elasticRod.h"
 #include "rod_mechanics/elasticJoint.h"
-
+#include "controllers/rodController.h"
+#include "controllers/rodOpenLoopFileKappabarSetter.h"
 // include force classes
 #include "rod_mechanics/elasticStretchingForce.h"
 #include "rod_mechanics/elasticBendingForce.h"
@@ -18,7 +19,7 @@
 #include "rod_mechanics/dampingForce.h"
 #include "rod_mechanics/externalGravityForce.h"
 #include "rod_mechanics/floorContactForce.h"
-//#include "rod_mechanics/contactPotentialIMC.h"
+// #include "rod_mechanics/contactPotentialIMC.h"
 
 // include time stepper
 #include "rod_mechanics/timeStepper.h"
@@ -50,9 +51,9 @@ public:
     // TODO: Create more sophisticated classes for these
     vector<shared_ptr<elasticRod>> limbs;
     vector<shared_ptr<elasticJoint>> joints;
+    vector<shared_ptr<rodOpenLoopFileKappabarSetter>> controllers;
 
 private:
-
     // Physical parameters
     double rodRadius;
     double youngM;
@@ -103,8 +104,13 @@ private:
     unique_ptr<externalGravityForce> m_gravityForce = nullptr;
     unique_ptr<dampingForce> m_dampingForce = nullptr;
     unique_ptr<floorContactForce> m_floorContactForce = nullptr;
-//    shared_ptr<collisionDetector> m_collisionDetector = nullptr;
-//    unique_ptr<contactPotentialIMC> m_contactPotentialIMC = nullptr;
+    //    shared_ptr<collisionDetector> m_collisionDetector = nullptr;
+    //    unique_ptr<contactPotentialIMC> m_contactPotentialIMC = nullptr;
+
+    // controller parameter and setup
+    string phi_ctrl_filepath;
+    shared_ptr<rodOpenLoopFileKappabarSetter> controller = nullptr;
+    void setupController(vector<shared_ptr<rodOpenLoopFileKappabarSetter>> &controllers, vector<shared_ptr<elasticRod>> &limbs, string phi_ctrl_filepath);
 
     int iter;
     int total_iters;

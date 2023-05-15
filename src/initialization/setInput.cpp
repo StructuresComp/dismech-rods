@@ -2,7 +2,8 @@
 
 using namespace std;
 
-setInput::setInput() {
+setInput::setInput()
+{
 
     AddOption("render", "visualization", render);
     AddOption("saveData", "should results be saved", saveData);
@@ -30,42 +31,53 @@ setInput::setInput() {
     AddOption("enableLogging", "Period of printing info to command line", enable_logging);
     AddOption("floorZ", "Z-coordinate of floor plane", floor_z);
     AddOption("simTime", "Total sim duration", sim_time);
+    AddOption("phiCtrlFilePath", "Path to Curvature angles' setpoint profiles (.csv) for all limbs", phi_ctrl_filepath);
 }
 
-setInput::~setInput() {
+setInput::~setInput()
+{
     ;
 }
 
-Option *setInput::GetOption(const string &name) {
-    if (m_options.find(name) == m_options.end()) {
+Option *setInput::GetOption(const string &name)
+{
+    if (m_options.find(name) == m_options.end())
+    {
         cerr << "Option " << name << " does not exist" << endl;
     }
     return &(m_options.find(name)->second);
 }
 
-bool &setInput::GetBoolOpt(const string &name) {
+bool &setInput::GetBoolOpt(const string &name)
+{
     return GetOption(name)->b;
 }
 
-int &setInput::GetIntOpt(const string &name) {
+int &setInput::GetIntOpt(const string &name)
+{
     return GetOption(name)->i;
 }
 
-double &setInput::GetScalarOpt(const string &name) {
+double &setInput::GetScalarOpt(const string &name)
+{
     return GetOption(name)->r;
 }
 
-Vector3d &setInput::GetVecOpt(const string &name) {
+Vector3d &setInput::GetVecOpt(const string &name)
+{
     return GetOption(name)->v;
 }
 
-string &setInput::GetStringOpt(const string &name) {
+string &setInput::GetStringOpt(const string &name)
+{
     return GetOption(name)->s;
 }
 
-int setInput::LoadOptions(const char *filename) {
+int setInput::LoadOptions(const char *filename)
+{
     ifstream input(filename);
-    if (!input.is_open()) {
+    if (!input.is_open())
+    {
         cerr << "ERROR: File " << filename << " not found" << endl;
         return -1;
     }
@@ -73,34 +85,50 @@ int setInput::LoadOptions(const char *filename) {
     string line, option;
     istringstream sIn;
     string tmp;
-    for (getline(input, line); !input.eof(); getline(input, line)) {
+    for (getline(input, line); !input.eof(); getline(input, line))
+    {
         sIn.clear();
         option.clear();
         sIn.str(line);
         sIn >> option;
-        if (option.size() == 0 || option.c_str()[0] == '#') continue;
+        if (option.size() == 0 || option.c_str()[0] == '#')
+            continue;
         OptionMap::iterator itr;
         itr = m_options.find(option);
-        if (itr == m_options.end()) {
+        if (itr == m_options.end())
+        {
             cerr << "Invalid option: " << option << endl;
             continue;
         }
-        if (itr->second.type == Option::BOOL) {
+        if (itr->second.type == Option::BOOL)
+        {
             sIn >> tmp;
-            if (tmp == "true" || tmp == "1") itr->second.b = true;
-            else if (tmp == "false" || tmp == "0") itr->second.b = false;
-        } else if (itr->second.type == Option::INT) {
+            if (tmp == "true" || tmp == "1")
+                itr->second.b = true;
+            else if (tmp == "false" || tmp == "0")
+                itr->second.b = false;
+        }
+        else if (itr->second.type == Option::INT)
+        {
             sIn >> itr->second.i;
-        } else if (itr->second.type == Option::DOUBLE) {
+        }
+        else if (itr->second.type == Option::DOUBLE)
+        {
             sIn >> itr->second.r;
-        } else if (itr->second.type == Option::VEC) {
+        }
+        else if (itr->second.type == Option::VEC)
+        {
             Vector3d &v = itr->second.v;
             sIn >> v[0];
             sIn >> v[1];
             sIn >> v[2];
-        } else if (itr->second.type == Option::STRING) {
+        }
+        else if (itr->second.type == Option::STRING)
+        {
             sIn >> itr->second.s;
-        } else {
+        }
+        else
+        {
             cerr << "Invalid option type" << endl;
         }
     }
@@ -109,35 +137,50 @@ int setInput::LoadOptions(const char *filename) {
     return 0;
 }
 
-int setInput::LoadOptions(int argc, char **argv) {
+int setInput::LoadOptions(int argc, char **argv)
+{
     string option, tmp;
     int start = 0;
-    while (start < argc && string(argv[start]) != "--") ++start;
-    for (int i = start + 1; i < argc; ++i) {
+    while (start < argc && string(argv[start]) != "--")
+        ++start;
+    for (int i = start + 1; i < argc; ++i)
+    {
         option = argv[i];
         OptionMap::iterator itr;
         itr = m_options.find(option);
-        if (itr == m_options.end()) {
+        if (itr == m_options.end())
+        {
             cerr << "Invalid option on command line: " << option << endl;
             continue;
         }
-        if (i == argc - 1) {
+        if (i == argc - 1)
+        {
             cerr << "Too few arguments on command line" << endl;
             break;
         }
-        if (itr->second.type == Option::BOOL) {
+        if (itr->second.type == Option::BOOL)
+        {
             tmp = argv[i + 1];
             ++i;
-            if (tmp == "true" || tmp == "1") itr->second.b = true;
-            if (tmp == "false" || tmp == "0") itr->second.b = false;
-        } else if (itr->second.type == Option::INT) {
+            if (tmp == "true" || tmp == "1")
+                itr->second.b = true;
+            if (tmp == "false" || tmp == "0")
+                itr->second.b = false;
+        }
+        else if (itr->second.type == Option::INT)
+        {
             itr->second.i = atoi(argv[i + 1]);
             ++i;
-        } else if (itr->second.type == Option::DOUBLE) {
+        }
+        else if (itr->second.type == Option::DOUBLE)
+        {
             itr->second.r = atof(argv[i + 1]);
             ++i;
-        } else if (itr->second.type == Option::VEC) {
-            if (i >= argc - 3) {
+        }
+        else if (itr->second.type == Option::VEC)
+        {
+            if (i >= argc - 3)
+            {
                 cerr << "Too few arguments on command line" << endl;
                 break;
             }
@@ -148,11 +191,15 @@ int setInput::LoadOptions(int argc, char **argv) {
             ++i;
             v[2] = atof(argv[i + 1]);
             ++i;
-        } else if (itr->second.type == Option::STRING) {
+        }
+        else if (itr->second.type == Option::STRING)
+        {
             itr->second.s = argv[i + 1];
             ++i;
-        } else {
-            //cerr << "Invalid option type" << endl;
+        }
+        else
+        {
+            // cerr << "Invalid option type" << endl;
         }
     }
     return 0;

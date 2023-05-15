@@ -8,13 +8,13 @@
 
 class elasticRod
 {
-    public:
-    elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
+public:
+    elasticRod(int m_limb_idx, const Vector3d &start, const Vector3d &end, int num_nodes,
                double m_rho, double m_rodRadius, double m_dt,
                double m_youngM, double m_shearM);
     elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
-    double m_rho, double m_rodRadius, double m_dt,
-    double m_youngM, double m_shearM, double m_rodLength, VectorXd m_theta);
+               double m_rho, double m_rodRadius, double m_dt,
+               double m_youngM, double m_shearM, double m_rodLength, VectorXd m_theta);
     ~elasticRod();
     void setup();
     void setMass();
@@ -24,7 +24,7 @@ class elasticRod
     void updateTimeStep();
     void computeElasticStiffness();
     void prepareForIteration();
-    void updateNewtonX(double *dx, int offset, double alpha=1.0);
+    void updateNewtonX(double *dx, int offset, double alpha = 1.0);
     void updateGuess(double weight);
 
     int limb_idx;
@@ -35,40 +35,45 @@ class elasticRod
     Vector3d getVelocity(int k);
     Vector3d getTangent(int k);
     double getTheta(int k);
+    void updatePhi(double phi_value);
 
     // Should be taken out of this class
     void computeTimeParallel();
     void computeTangent(const VectorXd &x, MatrixXd &tangentLocal);
-    void parallelTansport(const Vector3d &d1_1,const Vector3d &t1,const Vector3d &t2,Vector3d &d1_2);
+    void parallelTansport(const Vector3d &d1_1, const Vector3d &t1, const Vector3d &t2, Vector3d &d1_2);
     void computeSpaceParallel();
     void computeMaterialDirector();
     void computeKappa();
+    void computeAngle2KappaBar();
     void computeTwistBar();
     void computeEdgeLen();
     void getRefTwist();
-    void rotateAxisAngle(Vector3d &v,const Vector3d &z,const double &theta);
-    double signedAngle(const Vector3d &u,const Vector3d &v,const Vector3d &n);
-
+    void rotateAxisAngle(Vector3d &v, const Vector3d &z, const double &theta);
+    double signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n);
 
     // Elastic stiffness values
     double youngM, shearM; // Young's and shear modulus
-    double EA; // stretching stiffness
-    double EI; // bending stiffness
-    double GJ; // twisting stiffness
+    double EA;             // stretching stiffness
+    double EI;             // bending stiffness
+    double GJ;             // twisting stiffness
 
-    int nv; // number of vertices
-    int ne; // number of edges = nv-1
-    int ndof; // number of degrees of freedom = 3*nv + ne
-    int ncons; // number of constrained dof
-    int uncons; // number of unconstrained dof
-    double rho; // density
-    double rodRadius; // cross-sectional radius of the rod
+    int nv;                    // number of vertices
+    int ne;                    // number of edges = nv-1
+    int ndof;                  // number of degrees of freedom = 3*nv + ne
+    int ncons;                 // number of constrained dof
+    int uncons;                // number of unconstrained dof
+    double rho;                // density
+    double rodRadius;          // cross-sectional radius of the rod
     double crossSectionalArea; // cross-sectional area of the rod
-    double dt; // time step
-    double dm; // mass per segment
+    double dt;                 // time step
+    double dm;                 // mass per segment
 
     // Total length
     double rodLength;
+    // Bending curvature angle phi (from the end to the tip of the limb, for each edge: phi_e = phi/ne)
+    double phi;
+    // PI
+    const double PI =  3.14159265358979323846264;
     // Edge length
     VectorXd edgeLen;
     // curvature binormal
@@ -117,10 +122,10 @@ class elasticRod
     VectorXd theta;
 
     // boundary conditions
-    int* isConstrained;
+    int *isConstrained;
     int getIfConstrained(int k);
-    int* unconstrainedMap;
-    int* fullToUnconsMap;
+    int *unconstrainedMap;
+    int *fullToUnconsMap;
     void setupMap();
 
     void updateMap();
@@ -131,13 +136,13 @@ class elasticRod
 
     void addJoint(int node_num, bool remove_dof, int joint_node, int joint_limb);
     int unique_dof;
-    int* isDOFJoint;
-    int* isNodeJoint;
-    int* isEdgeJoint;
-    int* DOFoffsets;
+    int *isDOFJoint;
+    int *isNodeJoint;
+    int *isEdgeJoint;
+    int *DOFoffsets;
     vector<pair<int, int>> joint_ids;
 
-    private:
+private:
 };
 
 #endif
