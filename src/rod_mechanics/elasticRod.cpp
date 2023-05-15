@@ -469,7 +469,6 @@ void elasticRod::computeAngle2KappaBar()
 
         k = std::tan(phi / ne * (PI / 180));
         kb.row(i) = k * t0.cross(t1) / (t0.cross(t1).norm());
-        
     }
 
     for (int i = 1; i < ne; i++)
@@ -480,8 +479,8 @@ void elasticRod::computeAngle2KappaBar()
         m2f = m2.row(i);
         kappaBar(i, 0) = 0.5 * (kb.row(i)).dot(m2e + m2f);
         kappaBar(i, 1) = -0.5 * (kb.row(i)).dot(m1e + m1f);
-        cout << kappaBar(i, 0) << endl;
-        cout << kappaBar(i, 1) << endl;
+        // cout << kappaBar(i, 0) << endl;
+        // cout << kappaBar(i, 1) << endl;
     }
 }
 

@@ -136,9 +136,6 @@ void world::setupController(vector<shared_ptr<rodOpenLoopFileKappabarSetter>> &c
 {
     int num_limb;
     num_limb = limbs.size();
-    cout << "start" << endl;
-    cout << phi_ctrl_filepath << endl;
-    cout << "start1" << endl;
     controllers.push_back(make_shared<rodOpenLoopFileKappabarSetter>(num_limb, phi_ctrl_filepath, limbs));
 }
 

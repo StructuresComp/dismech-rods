@@ -31,15 +31,11 @@ rodOpenLoopFileKappabarSetter::rodOpenLoopFileKappabarSetter(int numAct, std::st
         // Concatenate the home directory.
         m_filepath = home + m_filepath;
     }
-    cout << "parse-start" << endl;
-    cout << m_filepath << endl;
     // Parse the CSV into timepoints.
     parseActuationFile(m_filepath);
     for (int idx = 0; idx<numActuators; idx++){
         desired_phi_list.push_back(0);
     }
-
-    cout << "parse-end" << endl;
 }
 
 rodOpenLoopFileKappabarSetter::~rodOpenLoopFileKappabarSetter()
@@ -105,7 +101,6 @@ void rodOpenLoopFileKappabarSetter::updateTimestep(double dt)
     // Find the corresponding timepoint in the list.
     // The actuation file is written by hand so it's probably pretty short, iterating through isn't too inefficient
     int idx = 0;
-    cout << "here0" << endl;
     // check against both timepoint and fall-off-end-of-list
     while ((idx < time_pts.size()) && (time_pts[idx] <= current_time))
     {
@@ -124,9 +119,7 @@ void rodOpenLoopFileKappabarSetter::updateTimestep(double dt)
     {
         desired_phi_list.at(i) = (desired_phies_profile.at(idx)).at(i);
     }
-    cout << "here" << endl;
     updatePhies();
-    cout << "here1" << endl;
 }
 
 // Implementation of the controller.
