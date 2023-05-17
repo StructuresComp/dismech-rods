@@ -92,7 +92,7 @@ void world::CloseFile(ofstream &outfile)
 void world::setupWorld()
 {
     get_robot_description(limbs, joints, density, rodRadius, deltaTime, youngM, shearM);
-    setupController(controllers, limbs, phi_ctrl_filepath);
+//    setupController(controllers, limbs, phi_ctrl_filepath);
     // This has to be called after joints are all set.
     for (const auto &joint : joints)
         joint->setup();
@@ -143,8 +143,8 @@ void world::updateRobot()
 {
     for (const auto &joint : joints)
         joint->prepLimbs();
-    for (const auto &controller : controllers)
-        controller->updateTimestep(deltaTime);
+//    for (const auto &controller : controllers)
+//        controller->updateTimestep(deltaTime);
     for (const auto &limb : limbs)
         limb->updateTimeStep();
     for (const auto &joint : joints)

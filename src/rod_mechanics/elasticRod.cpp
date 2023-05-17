@@ -119,7 +119,7 @@ void elasticRod::setup()
     kappaBar = MatrixXd::Zero(nv, 2);
     phi = 0;
     computeKappa();
-    computeAngle2KappaBar();
+//    computeAngle2KappaBar();
     // Reference twist
     refTwist_old = VectorXd::Zero(ne);
     getRefTwist();
@@ -575,7 +575,7 @@ void elasticRod::prepareForIteration()
     computeMaterialDirector();
     computeEdgeLen();
     // KappaBar will be updated by the controller
-    computeAngle2KappaBar();
+//    computeAngle2KappaBar();
     computeKappa();
 }
 
