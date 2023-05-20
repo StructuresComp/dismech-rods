@@ -92,7 +92,7 @@ void world::CloseFile(ofstream &outfile)
 void world::setupWorld()
 {
     get_robot_description(limbs, joints, density, rodRadius, deltaTime, youngM, shearM);
-//    setupController(controllers, limbs, phi_ctrl_filepath);
+    setupController(controllers, limbs, phi_ctrl_filepath);
     // This has to be called after joints are all set.
     for (const auto &joint : joints)
         joint->setup();
@@ -143,8 +143,8 @@ void world::updateRobot()
 {
     for (const auto &joint : joints)
         joint->prepLimbs();
-//    for (const auto &controller : controllers)
-//        controller->updateTimestep(deltaTime);
+    for (const auto &controller : controllers)
+        controller->updateTimestep(deltaTime);
     for (const auto &limb : limbs)
         limb->updateTimeStep();
     for (const auto &joint : joints)
@@ -222,8 +222,7 @@ void world::newtonMethod(bool &solved)
     for (const auto &limb : limbs)
         limb->updateGuess(0.01);
 
-    while (solved == false)
-    {
+    while (solved == false) {
         prepRobot();
 
         stepper->setZero();
@@ -248,6 +247,16 @@ void world::newtonMethod(bool &solved)
         m_dampingForce->computeJd();
 
         m_floorContactForce->computeFfJf();
+
+//        for (const auto &limb: limbs) {
+//            for (int c = 0; c < limb->uncons; c++) {
+//                int ind = limb->unconstrainedMap[c];
+//
+//                if (ind % 4 == 2 && limb->x[ind] < -0.0500) {
+//                    limb->x[ind] = -0.05;
+//                }
+//            }
+//        }
 
         //        m_collisionDetector->detectCollisions();
         //        if (iter == 0) {

@@ -119,7 +119,7 @@ void elasticRod::setup()
     kappaBar = MatrixXd::Zero(nv, 2);
     phi = 0;
     computeKappa();
-//    computeAngle2KappaBar();
+    computeAngle2KappaBar();
     // Reference twist
     refTwist_old = VectorXd::Zero(ne);
     getRefTwist();
@@ -462,26 +462,42 @@ void elasticRod::computeAngle2KappaBar()
     Vector3d m1e, m2e, m1f, m2f;
     double k;
 
-    for (int i = 1; i < ne; i++)
-    {
-        t0 = tangent.row(i - 1);
-        t1 = tangent.row(i);
+    // TODO: later add second phi angle, for now just make identical
+    double angle;
 
-        k = std::tan(phi / ne * (PI / 180));
-        kb.row(i) = k * t0.cross(t1) / (t0.cross(t1).norm());
+    for (int i = 1; i < ne; i++) {
+        angle = phi / ne * (PI / 180);
+        k = 2 * tan(angle / 2);
+        kappaBar(i, 0) = k;
+//        kappaBar(i, 1) = k;
     }
 
-    for (int i = 1; i < ne; i++)
-    {
-        m1e = m1.row(i - 1);
-        m2e = m2.row(i - 1);
-        m1f = m1.row(i);
-        m2f = m2.row(i);
-        kappaBar(i, 0) = 0.5 * (kb.row(i)).dot(m2e + m2f);
-        kappaBar(i, 1) = -0.5 * (kb.row(i)).dot(m1e + m1f);
-        // cout << kappaBar(i, 0) << endl;
-        // cout << kappaBar(i, 1) << endl;
-    }
+//    for (int i = 1; i < ne; i++)
+//    {
+//        t0 = tangent.row(i - 1);
+//        t1 = tangent.row(i);
+//
+////        k = std::tan(phi / ne * (PI / 180));
+//        angle = phi / ne * (PI / 180);
+//        k = 2 * tan(angle / 2);
+//
+//        kb.row(i) = k * t0.cross(t1) / (t0.cross(t1).norm());
+//        cout << kb << endl;
+//    }
+
+//    for (int i = 1; i < ne; i++)
+//    {
+//        m1e = m1.row(i - 1);
+//        m2e = m2.row(i - 1);
+//        m1f = m1.row(i);
+//        m2f = m2.row(i);
+//        kappaBar(i, 0) = 0.5 * (kb.row(i)).dot(m2e + m2f);
+//        kappaBar(i, 1) = -0.5 * (kb.row(i)).dot(m1e + m1f);
+//        // cout << kappaBar(i, 0) << endl;
+//        // cout << kappaBar(i, 1) << endl;
+//    }
+//    cout << kappaBar << endl;
+//    exit(0);
 }
 
 void elasticRod::getRefTwist()
@@ -575,7 +591,7 @@ void elasticRod::prepareForIteration()
     computeMaterialDirector();
     computeEdgeLen();
     // KappaBar will be updated by the controller
-//    computeAngle2KappaBar();
+    computeAngle2KappaBar();
     computeKappa();
 }
 
@@ -614,6 +630,14 @@ void elasticRod::updateGuess(double weight)
     for (int c = 0; c < uncons; c++)
     {
         ind = unconstrainedMap[c];
-        x[ind] = x0[ind] + weight * u[ind] * dt;
+
+//        x[ind] = x0[ind] + weight * u[ind] * dt;
+
+        if (ind % 4 == 2 && x0[ind] < -0.0500 && u[ind] < 0) {
+            x[ind] = x0[ind] = -0.05;
+        }
+        else {
+            x[ind] = x0[ind] + weight * u[ind] * dt;
+        }
     }
 }
