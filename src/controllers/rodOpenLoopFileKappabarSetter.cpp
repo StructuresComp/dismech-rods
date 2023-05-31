@@ -22,6 +22,8 @@ rodOpenLoopFileKappabarSetter::rodOpenLoopFileKappabarSetter(int numAct, std::st
     //     throw std::invalid_argument("Rod controller received wrong size num of actuators or wrong length lists of periods. Exiting.");
     // }
     // If there's a tilde in the file name prefix, replace with the home directory
+    if (m_filepath.empty()) return;
+
     if (m_filepath.at(0) == '~')
     {
         // Get the $HOME environment variable

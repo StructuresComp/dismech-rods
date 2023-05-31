@@ -116,12 +116,12 @@ void world::setupWorld() {
 //    stepper = make_shared<verletPosition>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
 //                                         m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
 //                                         deltaTime);
-    stepper = make_shared<backwardEuler>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
-                                         m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
-                                         deltaTime, forceTol, stol, maxIter, line_search);
-//    stepper = make_shared<implicitMidpoint>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
-//                                            m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
+//    stepper = make_shared<backwardEuler>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
+//                                         m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
 //                                         deltaTime, forceTol, stol, maxIter, line_search);
+    stepper = make_shared<implicitMidpoint>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
+                                            m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
+                                         deltaTime, forceTol, stol, maxIter, line_search);
     stepper->setupForceStepperAccess();
     totalForce = stepper->getForce();
     dx = stepper->dx;
@@ -140,32 +140,11 @@ void world::setupWorld() {
 
 void world::setupController(vector<shared_ptr<rodController>> &controllers, vector<shared_ptr<elasticRod>> &limbs, string phi_ctrl_filepath)
 {
+    if (phi_ctrl_filepath.empty()) return;
     int num_limb;
     num_limb = limbs.size();
     controllers.push_back(make_shared<rodOpenLoopFileKappabarSetter>(num_limb, phi_ctrl_filepath, limbs));
 }
-
-//void world::updateRobot()
-//{
-//    for (const auto &joint : joints)
-//        joint->prepLimbs();
-//    for (const auto &controller : controllers)
-//        controller->updateTimestep(deltaTime);
-//    for (const auto &limb : limbs)
-//        limb->updateTimeStep();
-//    for (const auto &joint : joints)
-//        joint->updateTimeStep();
-//}
-//
-//void world::prepRobot()
-//{
-//    for (const auto &joint : joints)
-//        joint->prepLimbs();
-//    for (const auto &limb : limbs)
-//        limb->prepareForIteration();
-//    for (const auto &joint : joints)
-//        joint->prepareForIteration();
-//}
 
 // TODO: this is hardcoded, fix later when needed
 void world::lockEdge(int edge_num, int limb_idx)
