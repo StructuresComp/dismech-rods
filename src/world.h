@@ -40,6 +40,8 @@ public:
     void updateTimeStep();
     int simulationRunning();
     double getScaledCoordinate(int i, int limb_idx);
+    VectorXd getM1(int i, int limb_idx);
+    VectorXd getM2(int i, int limb_idx);
     double getCurrentTime();
 
     bool isRender();

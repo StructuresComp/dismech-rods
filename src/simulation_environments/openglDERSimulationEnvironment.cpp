@@ -59,7 +59,7 @@ void openglDERSimulationEnvironment::initGL()
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
 	// Create the window.
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-	glutInitWindowSize (1000, 1000);
+	glutInitWindowSize (1500, 1200);
 	glutInitWindowPosition (100, 100);
 	glutCreateWindow ("disMech");
 
@@ -117,6 +117,7 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void)
 
 		// Draw the rod
 		glBegin(GL_LINES);
+        glColor3f(0.0, 0.0, 0.0);
         int limb_idx = 0;
         for (const auto& limb : openglWorld_p->limbs) {
             for (int i=0; i < limb->ne; i++)
@@ -133,7 +134,8 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void)
             limb_idx++;
         }
 
-        glColor3f(0.0, 1.0, 0.0);
+        // Draw joints
+        glColor3f(0.0, 0.0, 1.0);
         double scale = 0.2;  // hard coding this for now cuz I'm lazy, will fix later
         int n, l;
         for (const auto& joint : openglWorld_p->joints) {
@@ -148,15 +150,56 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void)
                             joint->x(2) / scale);
             }
         }
+        glEnd();
 
-        glColor3f(1.0, 0.0, 0.0);
-        shared_ptr<elasticRod> curr_limb = openglWorld_p->limbs[0];
-        glVertex3f( openglWorld_p->getScaledCoordinate(0, 0),
-                    openglWorld_p->getScaledCoordinate(1, 0),
-                    openglWorld_p->getScaledCoordinate(2, 0));
-        glVertex3f( openglWorld_p->getScaledCoordinate(4, 0),
-                    openglWorld_p->getScaledCoordinate(5, 0),
-                    openglWorld_p->getScaledCoordinate(6, 0));
+        // Draw material directors
+        glLineWidth(2.5);
+        glBegin(GL_LINES);
+        limb_idx = 0;
+        double x, y, z;
+        VectorXd m1, m2;
+        for (const auto& limb : openglWorld_p->limbs) {
+            for (int i=0; i < limb->ne; i++)
+            {
+                if (limb->isEdgeJoint[i] == 0) {
+                    x = 0.5 * (openglWorld_p->getScaledCoordinate(4*i, limb_idx) +
+                               openglWorld_p->getScaledCoordinate(4*(i+1), limb_idx));
+                    y = 0.5 * (openglWorld_p->getScaledCoordinate(4*i+1, limb_idx) +
+                               openglWorld_p->getScaledCoordinate(4*(i+1)+1, limb_idx));
+                    z = 0.5 * (openglWorld_p->getScaledCoordinate(4*i+2, limb_idx) +
+                               openglWorld_p->getScaledCoordinate(4*(i+1)+2, limb_idx));
+                    m1 = 0.05 * openglWorld_p->getM1(i, limb_idx);
+                    m2 = 0.05 * openglWorld_p->getM2(i, limb_idx);
+                    glColor3f(1.0, 0.0, 0.0);
+                    glVertex3f(x, y, z);
+                    glVertex3f(x+m1[0], y+m1[1], z+m1[2]);
+                    glColor3f(0.5, 0.0, 1.0);
+                    glVertex3f(x, y, z);
+                    glVertex3f(x+m2[0], y+m2[1], z+m2[2]);
+                }
+            }
+            limb_idx++;
+        }
+        glEnd();
+
+        // Draw nodes
+        glPointSize(4.0);
+        glBegin(GL_POINTS);
+        glColor3f(0.0, 1.0, 0.0);
+        limb_idx = 0;
+        for (const auto& limb : openglWorld_p->limbs) {
+            for (int i=0; i < limb->nv; i++)
+            {
+//                if (limb->isNodeJoint[i] == 0) {
+                glVertex3f( openglWorld_p->getScaledCoordinate(4*i, limb_idx),
+                            openglWorld_p->getScaledCoordinate(4*i+1, limb_idx),
+                            openglWorld_p->getScaledCoordinate(4*i+2, limb_idx));
+//                }
+            }
+            limb_idx++;
+        }
+        glEnd();
+
 
 //		double wallAngle = 6.0 * 3.141592654 / 180.0;
 //
@@ -167,7 +210,6 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void)
 //		}
 
 		// cleanup
-		glEnd();
 		glFlush();
 
 		// Step the world forward. This takes care of the SMAs, controller, rod, etc., ...

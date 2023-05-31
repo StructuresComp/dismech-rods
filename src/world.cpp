@@ -232,6 +232,16 @@ double world::getScaledCoordinate(int i, int limb_idx)
     //    return rod->x[i] / (0.20 * RodLength);
 }
 
+VectorXd world::getM1(int i, int limb_idx)
+{
+    return limbs[limb_idx]->m1.row(i);
+}
+
+VectorXd world::getM2(int i, int limb_idx)
+{
+    return limbs[limb_idx]->m2.row(i);
+}
+
 double world::getCurrentTime()
 {
     return currentTime;
