@@ -34,7 +34,7 @@ class elasticRod
     Vector3d getVelocity(int k);
     Vector3d getTangent(int k);
     double getTheta(int k);
-    void updatePhi(double phi_value);
+    void updatePhis(double phi1, double phi2);
 
     // Should be taken out of this class
     void computeTimeParallel();
@@ -69,7 +69,8 @@ class elasticRod
     // Total length
     double rodLength;
     // Bending curvature angle phi (from the end to the tip of the limb, for each edge: phi_e = phi/ne)
-    double phi;
+    double phi1;
+    double phi2;
     // PI
     const double PI =  3.14159265358979323846264;
     // Edge length

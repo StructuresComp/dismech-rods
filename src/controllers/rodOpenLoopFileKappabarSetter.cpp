@@ -33,7 +33,7 @@ rodOpenLoopFileKappabarSetter::rodOpenLoopFileKappabarSetter(int numAct, std::st
     }
     // Parse the CSV into timepoints.
     parseActuationFile(m_filepath);
-    for (int idx = 0; idx<numActuators; idx++){
+    for (int idx = 0; idx < numActuators*2; idx++){
         desired_phi_list.push_back(0);
     }
 }
@@ -84,7 +84,7 @@ void rodOpenLoopFileKappabarSetter::parseActuationFile(std::string csv_path)
             }
         }
         // verify: did this produce the correct number of columns?
-        if (phies_list.size() != numActuators)
+        if (phies_list.size() != numActuators * 2)
         {
             throw std::invalid_argument("Error! Your CSV file had an incorrect number of rows in comparison to numAct. Or, you forgot a comma at the end of the line.");
         }
@@ -115,7 +115,7 @@ void rodOpenLoopFileKappabarSetter::updateTimestep(double dt)
         prev_time_pt_idx++;
     }
     // 
-    for (std::size_t i = 0; i < numActuators; i++)
+    for (std::size_t i = 0; i < numActuators * 2; i++)
     {
         desired_phi_list.at(i) = (desired_phies_profile.at(idx)).at(i);
     }
@@ -125,18 +125,19 @@ void rodOpenLoopFileKappabarSetter::updateTimestep(double dt)
 // Implementation of the controller.
 void rodOpenLoopFileKappabarSetter::updatePhies()
 {
+    int idx1, idx2;
     // Result should be same length as number of actuators
-    for (std::size_t limb_idx = 0; limb_idx < numActuators; limb_idx++)
+    for (int limb_idx = 0; limb_idx < numActuators; limb_idx++)
     {
-        double phi_value = 0;
-        phi_value = desired_phi_list[limb_idx];
-        limbs[limb_idx]->updatePhi(phi_value);
+        idx1 = 2 * limb_idx;
+        idx2 = 2 * limb_idx + 1;
+        limbs[limb_idx]->updatePhis(desired_phi_list[idx1], desired_phi_list[idx2]);
     }
 }
 
 std::vector<int> rodOpenLoopFileKappabarSetter::getU(shared_ptr<elasticRod> rod_p)
 {
     // Result should be same length as number of actuators
-    std::vector<int> u(numActuators, 0);
+    std::vector<int> u(numActuators * 2, 0);
     return u;
 }

@@ -114,7 +114,8 @@ void elasticRod::setup()
     kb = MatrixXd::Zero(nv, 3);
     kappa = MatrixXd::Zero(nv, 2);
     kappaBar = MatrixXd::Zero(nv, 2);
-    phi = 0;
+    phi1 = 0;
+    phi2 = 0;
     computeKappa();
     computeAngle2KappaBar();
     // Reference twist
@@ -446,9 +447,10 @@ void elasticRod::computeKappa()
     }
 }
 
-void elasticRod::updatePhi(double phi_value)
+void elasticRod::updatePhis(double new_phi1, double new_phi2)
 {
-    phi = phi_value;
+    phi1 = new_phi1;
+    phi2 = new_phi2;
 }
 
 void elasticRod::computeAngle2KappaBar()
@@ -458,42 +460,14 @@ void elasticRod::computeAngle2KappaBar()
     Vector3d m1e, m2e, m1f, m2f;
     double k;
 
-    // TODO: later add second phi angle, for now just make identical
-    double angle;
+    double angle1, angle2;
 
     for (int i = 1; i < ne; i++) {
-        angle = phi / ne * (PI / 180);
-        k = 2 * tan(angle / 2);
-        kappaBar(i, 0) = k;
-//        kappaBar(i, 1) = k;
+        angle1 = phi1 / ne * (PI / 180);
+        angle2 = phi2 / ne * (PI / 180);
+        kappaBar(i, 0) = 2 * tan(angle1 / 2);
+        kappaBar(i, 1) = 2 * tan(angle2 / 2);
     }
-
-//    for (int i = 1; i < ne; i++)
-//    {
-//        t0 = tangent.row(i - 1);
-//        t1 = tangent.row(i);
-//
-////        k = std::tan(phi / ne * (PI / 180));
-//        angle = phi / ne * (PI / 180);
-//        k = 2 * tan(angle / 2);
-//
-//        kb.row(i) = k * t0.cross(t1) / (t0.cross(t1).norm());
-//        cout << kb << endl;
-//    }
-
-//    for (int i = 1; i < ne; i++)
-//    {
-//        m1e = m1.row(i - 1);
-//        m2e = m2.row(i - 1);
-//        m1f = m1.row(i);
-//        m2f = m2.row(i);
-//        kappaBar(i, 0) = 0.5 * (kb.row(i)).dot(m2e + m2f);
-//        kappaBar(i, 1) = -0.5 * (kb.row(i)).dot(m1e + m1f);
-//        // cout << kappaBar(i, 0) << endl;
-//        // cout << kappaBar(i, 1) << endl;
-//    }
-//    cout << kappaBar << endl;
-//    exit(0);
 }
 
 void elasticRod::getRefTwist()
