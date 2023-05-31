@@ -1,0 +1,9 @@
+Tripod Open-Loop Control Timepoints Trajectory 2020-09-02
+Usage: at specified time apply the corresponding PWM duty cycles to each SMA. 
+There are 2*numLimbs = 10 SMAs.
+Simulation time (sec),duty_0,duty_1,duty_2,duty_3,duty_4,duty_5,duty_6,duty_7,duty_8,duty_9
+0.0,0.0,0.02,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,,
+1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,,
+3.0,0.0,0.0,0.0,0.0,0.02,0.0,0.0,0.0,0.0,0.0,,
+6.0,0.0,0.0,0.0,0.0,0.0,0.02,0.0,0.0,0.0,0.0,,
+9.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,,

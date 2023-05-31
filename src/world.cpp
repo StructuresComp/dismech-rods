@@ -1,6 +1,7 @@
 #include "world.h"
 
-world::world() {
+world::world()
+{
     ;
 }
 
@@ -25,25 +26,29 @@ world::world(setInput &m_inputData) {
     line_search = m_inputData.GetIntOpt("lineSearch");               // flag for enabling line search
     floor_z = m_inputData.GetScalarOpt("floorZ");                    // z-coordinate of floor plane
     totalTime = m_inputData.GetScalarOpt("simTime");                       // simulation duration
+    phi_ctrl_filepath = m_inputData.GetStringOpt("phiCtrlFilePath"); // controller setpoints (bending angle phi for limbs)
 
     shearM = youngM / (2.0 * (1.0 + Poisson));                             // shear modulus
 
     data_rate = ceil(data_resolution / deltaTime);                         // iter resolution for recording data
     alpha = 1.0;                                                           // newton step size
-
 }
 
-world::~world() {
+world::~world()
+{
     ;
 }
 
-bool world::isRender() {
+bool world::isRender()
+{
     return render;
 }
 
-void world::OpenFile(ofstream &outfile, string file_type) {
-    int systemRet = system("mkdir datafiles"); //make the directory
-    if (systemRet == -1) {
+void world::OpenFile(ofstream &outfile, string file_type)
+{
+    int systemRet = system("mkdir datafiles"); // make the directory
+    if (systemRet == -1)
+    {
         cout << "Error in creating directory\n";
     }
 
@@ -59,7 +64,6 @@ void world::OpenFile(ofstream &outfile, string file_type) {
     outfile.open(file_name.str().c_str());
     outfile.precision(10);
 }
-
 
 // TODO: remove this in favor of the logging classes later
 void world::outputNodeCoordinates(ofstream &outfile) {
@@ -77,15 +81,18 @@ void world::outputNodeCoordinates(ofstream &outfile) {
 //            curr_node(2) << " " << 0.0 << endl;
 }
 
-void world::CloseFile(ofstream &outfile) {
+void world::CloseFile(ofstream &outfile)
+{
     outfile.close();
 }
 
 void world::setupWorld() {
     get_robot_description(limbs, joints, density, rodRadius, youngM, shearM);
+    setupController(controllers, limbs, phi_ctrl_filepath);
 
     // This has to be called after joints are all set.
-    for (const auto& joint : joints) joint->setup();
+    for (const auto &joint : joints)
+        joint->setup();
 
     // TODO: make characteristicForce a function of total cumulative rod length?
     double temp_value = 1.0;
@@ -106,22 +113,22 @@ void world::setupWorld() {
 
     // set up the time stepper
 //    stepper = make_shared<baseTimeStepper>(limbs);
-//    stepper = make_shared<verletPosition>(limbs, joints, m_stretchForce, m_bendingForce, m_twistingForce,
+//    stepper = make_shared<verletPosition>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
 //                                         m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
 //                                         deltaTime);
-//    stepper = make_shared<backwardEuler>(limbs, joints, m_stretchForce, m_bendingForce, m_twistingForce,
-//                                         m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
-//                                         deltaTime, forceTol, stol, maxIter, line_search);
-    stepper = make_shared<implicitMidpoint>(limbs, joints, m_stretchForce, m_bendingForce, m_twistingForce,
-                                            m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
+    stepper = make_shared<backwardEuler>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
+                                         m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
                                          deltaTime, forceTol, stol, maxIter, line_search);
+//    stepper = make_shared<implicitMidpoint>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
+//                                            m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
+//                                         deltaTime, forceTol, stol, maxIter, line_search);
     stepper->setupForceStepperAccess();
     totalForce = stepper->getForce();
     dx = stepper->dx;
 
     // Set up boundary condition
-//    lockEdge(0, 0);
-//    lockEdge(0, 1);
+    //    lockEdge(0, 0);
+    //    lockEdge(0, 1);
     updateCons();
 
     // Allocate every thing to prepare for the first iteration
@@ -131,28 +138,58 @@ void world::setupWorld() {
     timeStep = 0;
 }
 
+void world::setupController(vector<shared_ptr<rodController>> &controllers, vector<shared_ptr<elasticRod>> &limbs, string phi_ctrl_filepath)
+{
+    int num_limb;
+    num_limb = limbs.size();
+    controllers.push_back(make_shared<rodOpenLoopFileKappabarSetter>(num_limb, phi_ctrl_filepath, limbs));
+}
+
+//void world::updateRobot()
+//{
+//    for (const auto &joint : joints)
+//        joint->prepLimbs();
+//    for (const auto &controller : controllers)
+//        controller->updateTimestep(deltaTime);
+//    for (const auto &limb : limbs)
+//        limb->updateTimeStep();
+//    for (const auto &joint : joints)
+//        joint->updateTimeStep();
+//}
+//
+//void world::prepRobot()
+//{
+//    for (const auto &joint : joints)
+//        joint->prepLimbs();
+//    for (const auto &limb : limbs)
+//        limb->prepareForIteration();
+//    for (const auto &joint : joints)
+//        joint->prepareForIteration();
+//}
 
 // TODO: this is hardcoded, fix later when needed
-void world::lockEdge(int edge_num, int limb_idx) {
+void world::lockEdge(int edge_num, int limb_idx)
+{
     limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(0), 0);
     limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(1), 1);
     limbs[limb_idx]->setThetaBoundaryCondition(0.0, 0);
-//    limbs[limb_idx]->setThetaBoundaryCondition(0.0, 1);
+    //    limbs[limb_idx]->setThetaBoundaryCondition(0.0, 1);
 
-//    limbs[limb_idx]->setThetaBoundaryCondition(0.0, 1);
-//    limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(2), 2);
+    //    limbs[limb_idx]->setThetaBoundaryCondition(0.0, 1);
+    //    limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(2), 2);
 }
 
-
-void world::updateCons() {
-    for (const auto& limb : limbs) limb->updateMap();
+void world::updateCons()
+{
+    for (const auto &limb : limbs)
+        limb->updateMap();
     stepper->update();
     totalForce = stepper->getForce();
     dx = stepper->dx;
 }
 
-
-int world::getTimeStep() {
+int world::getTimeStep()
+{
     return timeStep;
 }
 
@@ -166,34 +203,36 @@ void world::updateTimeStep() {
     timeStep++;
 }
 
-
-void world::printSimData() {
+void world::printSimData()
+{
     printf("time: %.4f | iters: %i | con: %i | min_dist: %.6f | k: %.3e | fric: %.1f\n",
            currentTime, stepper->iter, 0,
            m_floorContactForce->min_dist,
            0.0,
-//           m_collisionDetector->num_collisions,
-//           m_collisionDetector->min_dist,
-//           m_contactPotentialIMC->contact_stiffness,
+           //           m_collisionDetector->num_collisions,
+           //           m_collisionDetector->min_dist,
+           //           m_contactPotentialIMC->contact_stiffness,
            mu);
 }
-
 
 int world::simulationRunning() {
     if (currentTime < totalTime)
         return 1;
-    else {
+    else
+    {
         cout << "Completed simulation." << endl;
         return -1;
     }
 }
 
-double world::getScaledCoordinate(int i, int limb_idx) {
+double world::getScaledCoordinate(int i, int limb_idx)
+{
     return limbs[limb_idx]->x[i] / 0.2;
-//    return limbs[limb_idx]->x[i] / (0.20 * RodLength);
-//    return rod->x[i] / (0.20 * RodLength);
+    //    return limbs[limb_idx]->x[i] / (0.20 * RodLength);
+    //    return rod->x[i] / (0.20 * RodLength);
 }
 
-double world::getCurrentTime() {
+double world::getCurrentTime()
+{
     return currentTime;
 }

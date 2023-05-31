@@ -34,6 +34,7 @@ class elasticRod
     Vector3d getVelocity(int k);
     Vector3d getTangent(int k);
     double getTheta(int k);
+    void updatePhi(double phi_value);
 
     // Should be taken out of this class
     void computeTimeParallel();
@@ -42,31 +43,35 @@ class elasticRod
     void computeSpaceParallel();
     void computeMaterialDirector();
     void computeKappa();
+    void computeAngle2KappaBar();
     void computeTwistBar();
     void computeEdgeLen();
     void getRefTwist();
-    void rotateAxisAngle(Vector3d &v,const Vector3d &z,const double &theta);
-    double signedAngle(const Vector3d &u,const Vector3d &v,const Vector3d &n);
-
+    void rotateAxisAngle(Vector3d &v, const Vector3d &z, const double &theta);
+    double signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n);
 
     // Elastic stiffness values
     double youngM, shearM; // Young's and shear modulus
-    double EA; // stretching stiffness
-    double EI; // bending stiffness
-    double GJ; // twisting stiffness
+    double EA;             // stretching stiffness
+    double EI;             // bending stiffness
+    double GJ;             // twisting stiffness
 
-    int nv; // number of vertices
-    int ne; // number of edges = nv-1
-    int ndof; // number of degrees of freedom = 3*nv + ne
-    int ncons; // number of constrained dof
-    int uncons; // number of unconstrained dof
-    double rho; // density
-    double rodRadius; // cross-sectional radius of the rod
+    int nv;                    // number of vertices
+    int ne;                    // number of edges = nv-1
+    int ndof;                  // number of degrees of freedom = 3*nv + ne
+    int ncons;                 // number of constrained dof
+    int uncons;                // number of unconstrained dof
+    double rho;                // density
+    double rodRadius;          // cross-sectional radius of the rod
     double crossSectionalArea; // cross-sectional area of the rod
     double dm; // mass per segment
 
     // Total length
     double rodLength;
+    // Bending curvature angle phi (from the end to the tip of the limb, for each edge: phi_e = phi/ne)
+    double phi;
+    // PI
+    const double PI =  3.14159265358979323846264;
     // Edge length
     VectorXd edgeLen;
     // curvature binormal
@@ -117,10 +122,10 @@ class elasticRod
     VectorXd theta;
 
     // boundary conditions
-    int* isConstrained;
+    int *isConstrained;
     int getIfConstrained(int k);
-    int* unconstrainedMap;
-    int* fullToUnconsMap;
+    int *unconstrainedMap;
+    int *fullToUnconsMap;
     void setupMap();
 
     void updateMap();
@@ -129,13 +134,13 @@ class elasticRod
 
     void addJoint(int node_num, bool remove_dof, int joint_node, int joint_limb);
     int unique_dof;
-    int* isDOFJoint;
-    int* isNodeJoint;
-    int* isEdgeJoint;
-    int* DOFoffsets;
+    int *isDOFJoint;
+    int *isNodeJoint;
+    int *isEdgeJoint;
+    int *DOFoffsets;
     vector<pair<int, int>> joint_ids;
 
-    private:
+private:
 };
 
 #endif

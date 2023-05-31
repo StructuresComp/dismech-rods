@@ -2,6 +2,7 @@
 
 baseTimeStepper::baseTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
                                  const vector<shared_ptr<elasticJoint>>& m_joints,
+                                 const vector<shared_ptr<rodController>>& m_controllers,
                                  shared_ptr<elasticStretchingForce> m_stretch_force,
                                  shared_ptr<elasticBendingForce> m_bending_force,
                                  shared_ptr<elasticTwistingForce> m_twisting_force,
@@ -10,11 +11,11 @@ baseTimeStepper::baseTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
                                  shared_ptr<dampingForce> m_damping_force,
                                  shared_ptr<floorContactForce> m_floor_contact_force,
                                  double m_dt) :
-                                 limbs(m_limbs), joints(m_joints), stretching_force(m_stretch_force),
-                                 bending_force(m_bending_force), twisting_force(m_twisting_force),
-                                 inertial_force(m_inertial_force), gravity_force(m_gravity_force),
-                                 damping_force(m_damping_force), floor_contact_force(m_floor_contact_force),
-                                 dt(m_dt)
+                                 limbs(m_limbs), joints(m_joints), controllers(m_controllers),
+                                 stretching_force(m_stretch_force), bending_force(m_bending_force),
+                                 twisting_force(m_twisting_force), inertial_force(m_inertial_force),
+                                 gravity_force(m_gravity_force), damping_force(m_damping_force),
+                                 floor_contact_force(m_floor_contact_force), dt(m_dt)
 
 {
     freeDOF = 0;

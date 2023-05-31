@@ -7,8 +7,8 @@ class explicitTimeStepper : public baseTimeStepper
 {
 public:
     explicitTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
-            // These are simply overwritten to
                         const vector<shared_ptr<elasticJoint>>& m_joints,
+                        const vector<shared_ptr<rodController>>& m_controllers,
                         shared_ptr<elasticStretchingForce> m_stretch_force,
                         shared_ptr<elasticBendingForce> m_bending_force,
                         shared_ptr<elasticTwistingForce> m_twisting_force,

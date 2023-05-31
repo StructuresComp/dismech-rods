@@ -11,7 +11,7 @@ floorContactForce::floorContactForce(const vector<shared_ptr<elasticRod>>& m_lim
     K1 = 15 / delta;
     K2 = 15 / slipTol;
 
-    contact_stiffness = 100000;
+    contact_stiffness = 1e5;
 
     contact_input[1] = K1;
 

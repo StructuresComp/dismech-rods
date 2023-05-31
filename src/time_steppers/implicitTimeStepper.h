@@ -18,6 +18,7 @@ class implicitTimeStepper : public baseTimeStepper
 public:
     implicitTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
                         const vector<shared_ptr<elasticJoint>>& m_joints,
+                        const vector<shared_ptr<rodController>>& m_controllers,
                         shared_ptr<elasticStretchingForce> m_stretchForce,
                         shared_ptr<elasticBendingForce> m_bendingForce,
                         shared_ptr<elasticTwistingForce> m_twistingForce,

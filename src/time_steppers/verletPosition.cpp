@@ -3,6 +3,7 @@
 
 verletPosition::verletPosition(const vector<shared_ptr<elasticRod>> &m_limbs,
                                const vector<shared_ptr<elasticJoint>> &m_joints,
+                               const vector<shared_ptr<rodController>> &m_controllers,
                                shared_ptr<elasticStretchingForce> m_stretch_force,
                                shared_ptr<elasticBendingForce> m_bending_force,
                                shared_ptr<elasticTwistingForce> m_twisting_force,
@@ -10,7 +11,7 @@ verletPosition::verletPosition(const vector<shared_ptr<elasticRod>> &m_limbs,
                                shared_ptr<externalGravityForce> m_gravity_force,
                                shared_ptr<dampingForce> m_damping_force,
                                shared_ptr<floorContactForce> m_floor_contact_force, double m_dt) :
-                               explicitTimeStepper(m_limbs, m_joints, m_stretch_force, m_bending_force,
+                               explicitTimeStepper(m_limbs, m_joints, m_controllers, m_stretch_force, m_bending_force,
                                                    m_twisting_force, m_inertial_force, m_gravity_force,
                                                    m_damping_force, m_floor_contact_force, m_dt)
 
@@ -90,6 +91,9 @@ void verletPosition::stepForwardInTime() {
 
 
 void verletPosition::updateSystemForNextTimeStep() {
+    for (const auto& controller : controllers) {
+        controller->updateTimestep(dt);
+    }
     // Update x0
     for (const auto& limb : limbs) {
         limb->x0 = limb->x;

@@ -22,3 +22,4 @@ debugVerbosity     1
 cmdlinePer         5
 floorZ             -0.1
 simTime            100
+phiCtrlFilePath    src/controllers/openloop_control_trajectories/tripod_kappabarangle_zerotest_2023-05-15.csv

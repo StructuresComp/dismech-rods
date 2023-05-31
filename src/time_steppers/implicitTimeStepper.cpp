@@ -2,6 +2,7 @@
 
 implicitTimeStepper::implicitTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
                                          const vector<shared_ptr<elasticJoint>>& m_joints,
+                                         const vector<shared_ptr<rodController>>& m_controllers,
                                          shared_ptr<elasticStretchingForce> m_stretch_force,
                                          shared_ptr<elasticBendingForce> m_bending_force,
                                          shared_ptr<elasticTwistingForce> m_twisting_force,
@@ -11,7 +12,7 @@ implicitTimeStepper::implicitTimeStepper(const vector<shared_ptr<elasticRod>>& m
                                          shared_ptr<floorContactForce> m_floor_contact_force,
                                          double m_dt, double m_force_tol, double m_stol,
                                          int m_max_iter, int m_line_search) :
-                                         baseTimeStepper(m_limbs, m_joints, m_stretch_force, m_bending_force,
+                                         baseTimeStepper(m_limbs, m_joints, m_controllers, m_stretch_force, m_bending_force,
                                                          m_twisting_force, m_inertial_force, m_gravity_force,
                                                          m_damping_force, m_floor_contact_force, m_dt),
                                          force_tol(m_force_tol), stol(m_stol), max_iter(m_max_iter), line_search(m_line_search)
