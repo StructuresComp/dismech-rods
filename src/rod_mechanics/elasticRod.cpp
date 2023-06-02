@@ -600,14 +600,6 @@ void elasticRod::updateGuess(double weight, double dt)
     for (int c = 0; c < uncons; c++)
     {
         ind = unconstrainedMap[c];
-
-//        x[ind] = x0[ind] + weight * u[ind] * dt;
-        // TODO: use floor_z for this
-        if (ind % 4 == 2 && x0[ind] < -0.0500 && u[ind] < 0) {
-            x[ind] = x0[ind] = -0.05;
-        }
-        else {
-            x[ind] = x0[ind] + weight * u[ind] * dt;
-        }
+        x[ind] = x0[ind] + weight * u[ind] * dt;
     }
 }
