@@ -31,6 +31,7 @@ setInput::setInput()
     AddOption("enableLogging", "Period of printing info to command line", enable_logging);
     AddOption("floorZ", "Z-coordinate of floor plane", floor_z);
     AddOption("simTime", "Total sim duration", sim_time);
+    AddOption("integrationScheme", "Integration scheme to be used for time stepping", integration_scheme);
     AddOption("phiCtrlFilePath", "Path to Curvature angles' setpoint profiles (.csv) for all limbs", phi_ctrl_filepath);
 }
 

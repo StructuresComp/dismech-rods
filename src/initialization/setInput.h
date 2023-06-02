@@ -71,6 +71,7 @@ private:
     bool enable_logging;
     double floor_z;
     double sim_time;
+    string integration_scheme;
     string phi_ctrl_filepath;
 };
 

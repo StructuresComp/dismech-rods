@@ -84,6 +84,7 @@ private:
     int maxIter; // maximum number of iterations
     double characteristicForce;
     double forceTol;
+    string integration_scheme;
 
     // Geometry
     MatrixXd vertices;

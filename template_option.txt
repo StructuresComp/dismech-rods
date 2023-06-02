@@ -1,25 +1,30 @@
-rodRadius          0.01
-density            1180
-youngM             0.18e6
-Poisson            0.5
-tol                1.0e-3
-stol               1.0e-3
-maxIter            500
-gVector            0.0 0.0 -9.8
-viscosity          0.00
-render             1
-saveData           1
-recordNodes        0
-dataResolution     2.5e-3
-deltaTime          2.5e-4
-colLimit           2e-3
-delta              2e-3
-kScaler            5e2
-mu                 0.3
-nu                 5e-3
-lineSearch         1
-debugVerbosity     1
-cmdlinePer         5
-floorZ             -0.1
-simTime            100
-phiCtrlFilePath    src/controllers/openloop_control_trajectories/tripod_kappabarangle_zerotest_2023-05-15.csv
+rodRadius            0.01
+density              1180
+youngM               0.60e6
+Poisson              0.5
+tol                  1.0e-3
+stol                 1.0e-3
+maxIter              500
+gVector              0.0 0.0 -9.8
+viscosity            0.00
+render               1
+saveData             1
+recordNodes          0
+dataResolution       2.5e-3
+deltaTime            2e-4
+colLimit             2e-3
+delta                5e-3
+kScaler              5e2
+mu                   0.3
+nu                   2e-3
+lineSearch           1
+debugVerbosity       1
+cmdlinePer           5
+floorZ               -0.05
+simTime              100
+
+# Possible options are verlet_position, backward_euler, and implicit_midpoint
+integrationScheme    backward_euler
+
+# To turn off actuation, simply comment out this line
+phiCtrlFilePath      src/controllers/openloop_control_trajectories/horton_controller.csv

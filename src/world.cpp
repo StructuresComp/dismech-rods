@@ -6,32 +6,33 @@ world::world()
 }
 
 world::world(setInput &m_inputData) {
-    render = m_inputData.GetBoolOpt("render");                       // boolean
-    gVector = m_inputData.GetVecOpt("gVector");                      // m/s^2
-    maxIter = m_inputData.GetIntOpt("maxIter");                      // maximum number of iterations
-    rodRadius = m_inputData.GetScalarOpt("rodRadius");               // meter
-    youngM = m_inputData.GetScalarOpt("youngM");                     // Pa
-    Poisson = m_inputData.GetScalarOpt("Poisson");                   // dimensionless
-    deltaTime = m_inputData.GetScalarOpt("deltaTime");               // seconds
-    tol = m_inputData.GetScalarOpt("tol");                           // small number like 10e-7
-    stol = m_inputData.GetScalarOpt("stol");                         // small number, e.g. 0.1%
-    density = m_inputData.GetScalarOpt("density");                   // kg/m^3
-    viscosity = m_inputData.GetScalarOpt("viscosity");               // viscosity in Pa-s
-    data_resolution = m_inputData.GetScalarOpt("dataResolution");    // time resolution for recording data
-    col_limit = m_inputData.GetScalarOpt("colLimit");                // distance limit for candidate set
-    delta = m_inputData.GetScalarOpt("delta");                       // distance tolerance for contact
-    k_scaler = m_inputData.GetScalarOpt("kScaler");                  // constant scaler for contact stiffness
-    mu = m_inputData.GetScalarOpt("mu");                             // friction coefficient
-    nu = m_inputData.GetScalarOpt("nu");                             // slipping tolerance for friction
-    line_search = m_inputData.GetIntOpt("lineSearch");               // flag for enabling line search
-    floor_z = m_inputData.GetScalarOpt("floorZ");                    // z-coordinate of floor plane
-    totalTime = m_inputData.GetScalarOpt("simTime");                       // simulation duration
-    phi_ctrl_filepath = m_inputData.GetStringOpt("phiCtrlFilePath"); // controller setpoints (bending angle phi for limbs)
+    render = m_inputData.GetBoolOpt("render");                          // boolean
+    gVector = m_inputData.GetVecOpt("gVector");                         // m/s^2
+    maxIter = m_inputData.GetIntOpt("maxIter");                         // maximum number of iterations
+    rodRadius = m_inputData.GetScalarOpt("rodRadius");                  // meter
+    youngM = m_inputData.GetScalarOpt("youngM");                        // Pa
+    Poisson = m_inputData.GetScalarOpt("Poisson");                      // dimensionless
+    deltaTime = m_inputData.GetScalarOpt("deltaTime");                  // seconds
+    tol = m_inputData.GetScalarOpt("tol");                              // small number like 10e-7
+    stol = m_inputData.GetScalarOpt("stol");                            // small number, e.g. 0.1%
+    density = m_inputData.GetScalarOpt("density");                      // kg/m^3
+    viscosity = m_inputData.GetScalarOpt("viscosity");                  // viscosity in Pa-s
+    data_resolution = m_inputData.GetScalarOpt("dataResolution");       // time resolution for recording data
+    col_limit = m_inputData.GetScalarOpt("colLimit");                   // distance limit for candidate set
+    delta = m_inputData.GetScalarOpt("delta");                          // distance tolerance for contact
+    k_scaler = m_inputData.GetScalarOpt("kScaler");                     // constant scaler for contact stiffness
+    mu = m_inputData.GetScalarOpt("mu");                                // friction coefficient
+    nu = m_inputData.GetScalarOpt("nu");                                // slipping tolerance for friction
+    line_search = m_inputData.GetIntOpt("lineSearch");                  // flag for enabling line search
+    floor_z = m_inputData.GetScalarOpt("floorZ");                       // z-coordinate of floor plane
+    totalTime = m_inputData.GetScalarOpt("simTime");                    // simulation duration
+    integration_scheme = m_inputData.GetStringOpt("integrationScheme"); // integration scheme for time stepping
+    phi_ctrl_filepath = m_inputData.GetStringOpt("phiCtrlFilePath");    // controller setpoints (bending angle phi for limbs)
 
-    shearM = youngM / (2.0 * (1.0 + Poisson));                             // shear modulus
+    shearM = youngM / (2.0 * (1.0 + Poisson));                                // shear modulus
 
     data_rate = ceil(data_resolution / deltaTime);                         // iter resolution for recording data
-    alpha = 1.0;                                                           // newton step size
+    alpha = 1.0;                                                              // newton step size
 }
 
 world::~world()
@@ -112,16 +113,27 @@ void world::setupWorld() {
 //    m_contactPotentialIMC = make_shared<contactPotentialIMC>(rod, stepper, m_collisionDetector, delta, k_scaler, mu, nu);
 
     // set up the time stepper
-//    stepper = make_shared<baseTimeStepper>(limbs);
-//    stepper = make_shared<verletPosition>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
-//                                         m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
-//                                         deltaTime);
-//    stepper = make_shared<backwardEuler>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
-//                                         m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
-//                                         deltaTime, forceTol, stol, maxIter, line_search);
-    stepper = make_shared<implicitMidpoint>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
-                                            m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
-                                         deltaTime, forceTol, stol, maxIter, line_search);
+    if (integration_scheme == "verlet_position") {
+        stepper = make_shared<verletPosition>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
+                                              m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
+                                              deltaTime);
+    }
+    else if (integration_scheme == "backward_euler") {
+        stepper = make_shared<backwardEuler>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
+                                             m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
+                                             deltaTime, forceTol, stol, maxIter, line_search);
+    }
+    else if (integration_scheme == "implicit_midpoint") {
+        stepper = make_shared<implicitMidpoint>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
+                                                m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
+                                                deltaTime, forceTol, stol, maxIter, line_search);
+    }
+    else {
+        cout << "Invalid integration scheme option was provided!" << endl;
+        exit(1);
+    }
+
+
     stepper->setupForceStepperAccess();
     totalForce = stepper->getForce();
     dx = stepper->dx;
