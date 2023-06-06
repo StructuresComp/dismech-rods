@@ -2,9 +2,11 @@
 
 
 /*
- * Define your soft robot structure in the function below.
+ * Define your soft robot structure and boundary conditions in the function below.
  * World will call it to populate its limbs and joints accordingly.
  * Some example structures have been provided, which can played around with.
+ *
+ * TODO: support dynamic boundary conditions
  */
 
 void get_robot_description(vector<shared_ptr<elasticRod>>& limbs, vector<shared_ptr<elasticJoint>>& joints,
@@ -111,4 +113,12 @@ void get_robot_description(vector<shared_ptr<elasticRod>>& limbs, vector<shared_
 //    joints[2]->addToJoint(0, 3);
 //    joints.push_back(make_shared<elasticJoint>(0, 0, limbs));
 //    joints[3]->addToJoint(5, 3);
+}
+
+
+void lock_edge(vector<shared_ptr<elasticRod>>& limbs, int edge_num, int limb_idx)
+{
+    limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(edge_num), edge_num);
+    limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(edge_num+1), edge_num+1);
+    limbs[limb_idx]->setThetaBoundaryCondition(0.0, edge_num);
 }

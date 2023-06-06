@@ -138,9 +138,7 @@ void world::setupWorld() {
     totalForce = stepper->getForce();
     dx = stepper->dx;
 
-    // Set up boundary condition
-    //    lockEdge(0, 0);
-    //    lockEdge(0, 1);
+    // Update boundary conditions
     updateCons();
 
     // Allocate every thing to prepare for the first iteration
@@ -156,18 +154,6 @@ void world::setupController(vector<shared_ptr<rodController>> &controllers, vect
     int num_limb;
     num_limb = limbs.size();
     controllers.push_back(make_shared<rodOpenLoopFileKappabarSetter>(num_limb, phi_ctrl_filepath, limbs));
-}
-
-// TODO: this is hardcoded, fix later when needed
-void world::lockEdge(int edge_num, int limb_idx)
-{
-    limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(0), 0);
-    limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(1), 1);
-    limbs[limb_idx]->setThetaBoundaryCondition(0.0, 0);
-    //    limbs[limb_idx]->setThetaBoundaryCondition(0.0, 1);
-
-    //    limbs[limb_idx]->setThetaBoundaryCondition(0.0, 1);
-    //    limbs[limb_idx]->setVertexBoundaryCondition(limbs[limb_idx]->getVertex(2), 2);
 }
 
 void world::updateCons()

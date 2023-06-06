@@ -114,8 +114,6 @@ private:
     string phi_ctrl_filepath;
     void setupController(vector<shared_ptr<rodController>> &controllers, vector<shared_ptr<elasticRod>> &limbs, string phi_ctrl_filepath);
 
-    void lockEdge(int edge_num, int limb_idx);
-
     void updateCons();
 
     void printSimData();
