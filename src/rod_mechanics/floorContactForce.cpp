@@ -11,6 +11,8 @@ floorContactForce::floorContactForce(const vector<shared_ptr<elasticRod>>& m_lim
     K1 = 15 / delta;
     K2 = 15 / slipTol;
 
+    orig_slip_tol = slipTol;
+
     contact_stiffness = 1e5;
 
     contact_input[1] = K1;
@@ -26,6 +28,19 @@ floorContactForce::~floorContactForce() {
     ;
 }
 
+
+void floorContactForce::reset_slip_tol() {
+    change_slip_tol(1.0);
+}
+
+
+void floorContactForce::change_slip_tol(double scale) {
+    slipTol = orig_slip_tol * scale;
+    K2 = 15 / slipTol;
+    fric_jacobian_input[7] = K2;
+}
+
+
 void floorContactForce::updateMu(double m_mu) {
     mu = m_mu;
     fric_jacobian_input[5] = mu;
@@ -39,6 +54,7 @@ void floorContactForce::computeFf(double dt) {
     int ind;
     Vector2d curr_node, pre_node;
     double v;  // exp(K1(floor_z - \Delta))
+
     for (const auto& limb : limbs) {
         for (int i=0; i < limb->nv; i++) {
             ind = 4 * i + 2;
@@ -51,6 +67,7 @@ void floorContactForce::computeFf(double dt) {
 
             f = (-2 * v * log(v + 1)) / (K1 * (v + 1));
             f *= contact_stiffness;
+
             stepper->addForce(ind, f, limb_idx);
 
             // Apply friction force
@@ -90,6 +107,7 @@ void floorContactForce::computeFfJf(double dt) {
 
             f *= contact_stiffness;
             J *= contact_stiffness;
+
             stepper->addForce(ind, f, limb_idx);
             stepper->addJacobian(ind, ind, J, limb_idx);
 
@@ -126,10 +144,6 @@ void floorContactForce::computeFfJf(double dt) {
             // dfry/dfn * dfn/dz
             stepper->addJacobian(4*i+1, 4*i+2, friction_partials_dfr_dfn(1) * J, limb_idx);
 
-//            cout << friction_partials_dfr_dx << endl;
-//            cout << "-----" << endl;
-//            cout << friction_partials_dfr_dfn * J << endl;
-//            cout << "=============" << endl;
         }
         limb_idx++;
     }

@@ -27,6 +27,8 @@ public:
     void lineSearch(double dt) override;
     void stepForwardInTime() override;
 
+    bool semi_explicit_fric = false;
+
 };
 
 

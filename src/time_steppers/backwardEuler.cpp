@@ -33,8 +33,10 @@ void backwardEuler::newtonMethod(double dt) {
     double normf;
     double normf0 = 0;
     bool solved = false;
+    double ratio = 1.1;
     iter = 0;
 
+    floor_contact_force->reset_slip_tol();
 
     while (!solved) {
         prepSystemForIteration();
@@ -80,6 +82,19 @@ void backwardEuler::newtonMethod(double dt) {
         if (normf <= force_tol || (iter > 0 && normf <= normf0 * stol)) {
             solved = true;
             iter++;
+        }
+
+        // If sim can't converge, relax friction rigidity and redo timestep.
+        // This is usually the issue
+        if (iter != 0 && iter % 50 == 0) {
+            for (const auto& limb : limbs) {
+                limb->x = limb->x0;
+                limb->updateGuess(0.01, dt);
+            }
+            floor_contact_force->change_slip_tol(ratio);
+            ratio += 0.1;
+            iter++;
+            continue;
         }
 
         if (!solved) {

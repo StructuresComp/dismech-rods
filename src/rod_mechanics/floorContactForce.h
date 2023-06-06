@@ -20,6 +20,10 @@ public:
     void updateMu(double mu);
 
     double min_dist;
+
+    void change_slip_tol(double scale);
+    void reset_slip_tol();
+
 private:
     shared_ptr<symbolicEquations> sym_eqs;
     Vector<double, 2> contact_input;
@@ -28,15 +32,13 @@ private:
     Vector<double, 2> friction_partials_dfr_dfn;
     Vector<double, 2> ffr;
     int fric_jaco_type;
-    double z;
     double contact_stiffness;
-    double scale;
     double mu;
     double delta;
     double slipTol;
+    double orig_slip_tol;
     double K1;
     double K2;
     double floor_z;
-
 };
 #endif
