@@ -56,6 +56,7 @@ private:
     Vector3d gVector;
     double viscosity;
     bool render;
+    bool show_mat_frames;
     bool saveData;
     bool record_nodes;
     double data_resolution;

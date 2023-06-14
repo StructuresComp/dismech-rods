@@ -40,8 +40,10 @@ class openglDERSimulationEnvironment : public derSimulationEnvironment
      * (2) set the local argc and argv from main, needed for GLUT init
      * (3) call the parents
      */
-    openglDERSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per, int m_argc, char **m_argv);
-    openglDERSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per, shared_ptr<worldLogger> m_logger, int m_argc, char **m_argv);
+    openglDERSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per,
+                                   int m_argc, char **m_argv, bool show_mat_frames);
+    openglDERSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per,
+                                   shared_ptr<worldLogger> m_logger, int m_argc, char **m_argv, bool show_mat_frames);
     ~openglDERSimulationEnvironment();
 
     /**
@@ -53,6 +55,7 @@ class openglDERSimulationEnvironment : public derSimulationEnvironment
      * Start the simulation!
      */
     void runSimulation();
+    static bool show_mat_frames;
 
     protected:
 

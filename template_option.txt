@@ -8,6 +8,7 @@ maxIter              500
 gVector              0.0 0.0 -9.8
 viscosity            0.00
 render               1
+showMatFrames        1
 saveData             1
 recordNodes          0
 dataResolution       2.5e-3

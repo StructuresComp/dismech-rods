@@ -6,6 +6,7 @@ setInput::setInput()
 {
 
     AddOption("render", "visualization", render);
+    AddOption("showMatFrames", "Flag for visualizing material frames", show_mat_frames);
     AddOption("saveData", "should results be saved", saveData);
     AddOption("rodRadius", "Radius of Rod", rodRadius);
     AddOption("youngM", "Young's Modulus", youngM);

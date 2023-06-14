@@ -29,6 +29,8 @@ bool record_nodes;
 
 int verbosity;
 
+bool openglDERSimulationEnvironment::show_mat_frames = false;
+
 
 int main(int argc,char *argv[])
 {
@@ -60,12 +62,12 @@ int main(int argc,char *argv[])
     if (record_nodes) my_world->OpenFile(node_data, "node_data");
 
 
-
     unique_ptr<derSimulationEnvironment> env = nullptr;
+    bool show_mat_frames = inputData.GetBoolOpt("showMatFrames");
 
     // TODO: will have to add logging versions as well later
     if (my_world->isRender()) {
-        env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, argc, argv);
+        env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, argc, argv, show_mat_frames);
     }
     else {
         env = make_unique<headlessDERSimulationEnvironment>(my_world, cmdline_per);
