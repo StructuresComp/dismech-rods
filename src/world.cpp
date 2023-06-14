@@ -23,11 +23,12 @@ world::world(setInput &m_inputData) {
     k_scaler = m_inputData.GetScalarOpt("kScaler");                     // constant scaler for contact stiffness
     mu = m_inputData.GetScalarOpt("mu");                                // friction coefficient
     nu = m_inputData.GetScalarOpt("nu");                                // slipping tolerance for friction
-    line_search = m_inputData.GetIntOpt("lineSearch");                  // flag for enabling line search
+    line_search = m_inputData.GetBoolOpt("lineSearch");                  // flag for enabling line search
     floor_z = m_inputData.GetScalarOpt("floorZ");                       // z-coordinate of floor plane
     totalTime = m_inputData.GetScalarOpt("simTime");                    // simulation duration
     integration_scheme = m_inputData.GetStringOpt("integrationScheme"); // integration scheme for time stepping
     phi_ctrl_filepath = m_inputData.GetStringOpt("phiCtrlFilePath");    // controller setpoints (bending angle phi for limbs)
+    enable_2d_sim = m_inputData.GetBoolOpt("enable2DSim");              // flag for restricting sim to 2D
 
     shearM = youngM / (2.0 * (1.0 + Poisson));                                // shear modulus
 
@@ -137,6 +138,10 @@ void world::setupWorld() {
     stepper->setupForceStepperAccess();
     totalForce = stepper->getForce();
     dx = stepper->dx;
+
+    if (enable_2d_sim) {
+        for (auto& limb : limbs) limb->enable2DSim();
+    }
 
     // Update boundary conditions
     updateCons();

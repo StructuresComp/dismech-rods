@@ -20,11 +20,11 @@ class elasticRod
     void setReferenceLength();
     void setVertexBoundaryCondition(Vector3d position, int k);
     void setThetaBoundaryCondition(double desiredTheta, int k);
-    void updateTimeStep();
     void computeElasticStiffness();
     void prepareForIteration();
     void updateNewtonX(double *dx, int offset, double alpha=1.0);
     void updateGuess(double weight, double dt);
+    void enable2DSim();
 
     int limb_idx;
 

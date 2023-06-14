@@ -33,6 +33,7 @@ setInput::setInput()
     AddOption("simTime", "Total sim duration", sim_time);
     AddOption("integrationScheme", "Integration scheme to be used for time stepping", integration_scheme);
     AddOption("phiCtrlFilePath", "Path to Curvature angles' setpoint profiles (.csv) for all limbs", phi_ctrl_filepath);
+    AddOption("enable2DSim", "Flag to simulate solely along 2D x-z plane", enable_2d_sim);
 }
 
 setInput::~setInput()

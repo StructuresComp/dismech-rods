@@ -603,3 +603,11 @@ void elasticRod::updateGuess(double weight, double dt)
         x[ind] = x0[ind] + weight * u[ind] * dt;
     }
 }
+
+void elasticRod::enable2DSim() {
+    for (int i = 0; i < ne; i++) {
+        isConstrained[4*i+1] = 1;
+        isConstrained[4*i+3] = 1;
+    }
+    isConstrained[4*ne+1] = 1;
+}

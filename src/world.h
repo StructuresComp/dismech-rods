@@ -75,7 +75,7 @@ private:
     double nu;
     double data_resolution;
     int data_rate;
-    int line_search;
+    bool line_search;
     string knot_config;
     double alpha;
     double floor_z;
@@ -85,6 +85,7 @@ private:
     double characteristicForce;
     double forceTol;
     string integration_scheme;
+    bool enable_2d_sim;
 
     // Geometry
     MatrixXd vertices;

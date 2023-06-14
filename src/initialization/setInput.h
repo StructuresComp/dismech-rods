@@ -73,6 +73,7 @@ private:
     double sim_time;
     string integration_scheme;
     string phi_ctrl_filepath;
+    bool enable_2d_sim;
 };
 
 #include "setInput.tcc"
