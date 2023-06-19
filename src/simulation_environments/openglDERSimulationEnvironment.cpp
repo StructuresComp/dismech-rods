@@ -210,7 +210,6 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
 //			glVertex3f( xb + axisLen/100.0, openglWorld_p->getScaledBoundary(xb+axisLen/100.0), 0);
 //		}
 
-        // cleanup
         glFlush();
 
         // Step the world forward. This takes care of the SMAs, controller, rod, etc., ...
