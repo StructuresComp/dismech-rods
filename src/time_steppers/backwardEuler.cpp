@@ -23,12 +23,6 @@ backwardEuler::backwardEuler(const vector<shared_ptr<elasticRod>>& m_limbs,
 backwardEuler::~backwardEuler() = default;
 
 
-void backwardEuler::integrator()
-{
-    pardisoSolver();
-}
-
-
 void backwardEuler::newtonMethod(double dt) {
     double normf;
     double normf0 = 0;

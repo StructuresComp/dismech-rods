@@ -22,7 +22,6 @@ public:
 
     void updateSystemForNextTimeStep() override;
 
-    void integrator() override;
     void newtonMethod(double dt) override;
     void lineSearch(double dt) override;
     void stepForwardInTime() override;

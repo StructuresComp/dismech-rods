@@ -41,6 +41,7 @@ public:
     virtual void prepSystemForIteration();
     virtual void setZero();
     virtual void update();
+    virtual void initSolver() = 0;
     virtual void integrator() = 0;
     virtual double* getJacobian() = 0;
     virtual void addJacobian(int ind1, int ind2, double p, int limb_idx) = 0;

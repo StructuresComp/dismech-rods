@@ -123,11 +123,13 @@ void world::setupWorld() {
         stepper = make_shared<backwardEuler>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
                                              m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
                                              deltaTime, forceTol, stol, maxIter, line_search);
+        stepper->initSolver();
     }
     else if (integration_scheme == "implicit_midpoint") {
         stepper = make_shared<implicitMidpoint>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
                                                 m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
                                                 deltaTime, forceTol, stol, maxIter, line_search);
+        stepper->initSolver();
     }
     else {
         cout << "Invalid integration scheme option was provided!" << endl;

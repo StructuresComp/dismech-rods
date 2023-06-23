@@ -1,18 +1,11 @@
 #ifndef IMPLICITTIMESTEPPER_H
 #define IMPLICITTIMESTEPPER_H
 
-
 #include "baseTimeStepper.h"
-#include "mkl_pardiso.h"
 #include "mkl_types.h"
-#include "mkl_spblas.h"
 
-// Define the format to printf MKL_INT values
-#if !defined(MKL_ILP64)
-#define IFORMAT "%i"
-#else
-#define IFORMAT "%lli"
-#endif
+class baseSolver;
+
 
 class implicitTimeStepper : public baseTimeStepper
 {
@@ -36,18 +29,13 @@ public:
     void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2) override;
     void setZero() override;
     void update() override;
+    void integrator() override;
+    void initSolver() override;
 
     void prepSystemForIteration() override;
     virtual void newtonMethod(double dt) = 0;
     virtual void lineSearch(double dt) = 0;
-    void pardisoSolver();
-protected:
-    double force_tol;
-    double stol;
-    int max_iter;
-    int line_search;
-private:
-    double *jacobian;
+
 
     // utility variables for dgbsv solver
     int kl, ku;
@@ -62,15 +50,16 @@ private:
     MKL_INT* ia;
     vector<pair<int, int>> non_zero_elements;
 
-    /* Internal solver memory pointer pt, */
-    /* 32-bit: int pt[64]; 64-bit: long int pt[64] */
-    /* or void *pt[64] should be OK on both architectures */
-    void *pt[64];
+protected:
+    double force_tol;
+    double stol;
+    int max_iter;
+    int line_search;
+private:
+    shared_ptr<implicitTimeStepper> shared_from_this();
 
-    /* Pardiso control parameters. */
-    MKL_INT mtype;
-    MKL_INT iparm[64];
-    MKL_INT maxfct, mnum, phase, error, msglvl;
+    double *jacobian;
+    unique_ptr<baseSolver> solver;
 };
 
 
