@@ -93,8 +93,6 @@ private:
 
     // set up the time stepper
     shared_ptr<baseTimeStepper> stepper = nullptr;
-    double *totalForce;
-    double *dx;
 
     double currentTime;
     int timeStep;

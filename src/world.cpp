@@ -122,13 +122,13 @@ void world::setupWorld() {
     else if (integration_scheme == "backward_euler") {
         stepper = make_shared<backwardEuler>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
                                              m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
-                                             deltaTime, forceTol, stol, maxIter, line_search);
+                                             deltaTime, forceTol, stol, maxIter, line_search, PARDISO_SOLVER);
         stepper->initSolver();
     }
     else if (integration_scheme == "implicit_midpoint") {
         stepper = make_shared<implicitMidpoint>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
                                                 m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
-                                                deltaTime, forceTol, stol, maxIter, line_search);
+                                                deltaTime, forceTol, stol, maxIter, line_search, PARDISO_SOLVER);
         stepper->initSolver();
     }
     else {
@@ -136,10 +136,7 @@ void world::setupWorld() {
         exit(1);
     }
 
-
     stepper->setupForceStepperAccess();
-    totalForce = stepper->getForce();
-    dx = stepper->dx;
 
     if (enable_2d_sim) {
         for (auto& limb : limbs) limb->enable2DSim();
@@ -168,8 +165,6 @@ void world::updateCons()
     for (const auto &limb : limbs)
         limb->updateMap();
     stepper->update();
-    totalForce = stepper->getForce();
-    dx = stepper->dx;
 }
 
 int world::getTimeStep()

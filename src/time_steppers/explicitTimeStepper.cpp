@@ -30,7 +30,6 @@ void explicitTimeStepper::prepSystemForIteration()
 // We simply define these to make sure derived classes are not abstract classes
 // Perhaps a better way to design this later
 void explicitTimeStepper::initSolver() {}
-double* explicitTimeStepper::getJacobian() {return nullptr;}
 void explicitTimeStepper::integrator() {}
 void explicitTimeStepper::addJacobian(int ind1, int ind2, double p, int limb_indx) {}
 void explicitTimeStepper::addJacobian(int ind1, int ind2, double p, int limb_indx1, int limb_idx2) {}

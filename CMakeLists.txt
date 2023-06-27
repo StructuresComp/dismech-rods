@@ -92,6 +92,8 @@ target_link_libraries(simDER PRIVATE
         ${LAPACK_LIBRARIES}
         ${BLAS_LIBRARIES}
 
+        lapack
+
         # gfortran
         stdc++fs
         Threads::Threads

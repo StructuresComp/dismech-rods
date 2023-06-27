@@ -34,7 +34,6 @@ public:
                     double m_dt);
     virtual ~baseTimeStepper();
 
-    double* getForce();
     void addForce(int ind, double p, int limb_idx);
 
     void setupForceStepperAccess();
@@ -43,16 +42,16 @@ public:
     virtual void update();
     virtual void initSolver() = 0;
     virtual void integrator() = 0;
-    virtual double* getJacobian() = 0;
     virtual void addJacobian(int ind1, int ind2, double p, int limb_idx) = 0;
     virtual void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2) = 0;
     virtual void updateSystemForNextTimeStep() = 0;
     virtual void stepForwardInTime() = 0;
 
-    VectorXd Force;
+    double* dx;
+    double* force;
+    Map<VectorXd> Force;
+    Map<VectorXd> DX;
     MatrixXd Jacobian;
-    VectorXd DX;
-    double *dx;
 
     int freeDOF;
     vector<int> offsets;
@@ -64,7 +63,7 @@ protected:
     int offset;
     double dt;
     double alpha = 1.0;
-    double *totalForce;
+
     vector<shared_ptr<elasticRod>> limbs;
     vector<shared_ptr<elasticJoint>> joints;
     vector<shared_ptr<rodController>> controllers;

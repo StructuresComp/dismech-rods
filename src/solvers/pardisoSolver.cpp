@@ -8,7 +8,6 @@ pardisoSolver::pardisoSolver(shared_ptr<implicitTimeStepper> stepper) :
 {
     mtype = 11;           /* Real unsymmetric matrix */
 
-    nrhs = 1;             /* Number of right hand sides. */
     maxfct = 1;           /* Maximum number of numerical factorizations. */
     mnum = 1;             /* Which factorization to use. */
     msglvl = 0;           /* Print statistical information  */
@@ -52,6 +51,9 @@ pardisoSolver::pardisoSolver(shared_ptr<implicitTimeStepper> stepper) :
 }
 
 
+pardisoSolver::~pardisoSolver() = default;
+
+
 void pardisoSolver::integrator() {
     int n = stepper->freeDOF;
 
@@ -75,8 +77,6 @@ void pardisoSolver::integrator() {
         ind++;
     }
 
-    // Descriptor of main sparse matrix properties
-    double b[n], x[n];
     /* Auxiliary variables. */
     double ddum;          /* Double dummy */
     MKL_INT idum;         /* Integer dummy. */
@@ -118,14 +118,9 @@ void pardisoSolver::integrator() {
 // descrA.diag = SPARSE_DIAG_NON_UNIT;
 // mkl_sparse_d_create_csr ( &csrA, SPARSE_INDEX_BASE_ONE, n, n, ia, ia+1, ja, a );
 
-    /* Set right hand side to one. */
-    for (int i = 0; i < n; i++ )
-    {
-        b[i] = stepper->Force[i];
-    }
 //  Loop over 3 solving steps: Ax=b, AHx=b and ATx=b
     PARDISO (pt, &maxfct, &mnum, &mtype, &phase,
-             &n, a, ia, ja, &idum, &nrhs, iparm, &msglvl, b, x, &error);
+             &n, a, ia, ja, &idum, &nrhs, iparm, &msglvl, stepper->force, stepper->dx, &error);
     if ( error != 0 )
     {
         printf ("\nERROR during solution: " IFORMAT, error);
@@ -146,10 +141,4 @@ void pardisoSolver::integrator() {
     PARDISO (pt, &maxfct, &mnum, &mtype, &phase,
              &n, &ddum, ia, ja, &idum, &nrhs,
              iparm, &msglvl, &ddum, &ddum, &error);
-
-    for (int i = 0; i < n; i++)
-    {
-        stepper->dx[i] = x[i];
-        stepper->DX[i] = x[i];
-    }
 }

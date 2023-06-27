@@ -25,6 +25,8 @@ extern "C" void keyHandler(unsigned char key, int x, int y) {
     }
 }
 
+#include <ctime>
+
 
 // Constructors just call parents and store command-line arguments from main
 openglDERSimulationEnvironment::openglDERSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per,
@@ -93,6 +95,7 @@ void openglDERSimulationEnvironment::initGL() {
 void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
     // openglWorld_p is static.
     // world knows its max time from setInput
+    clock_t t = clock();
     while (openglWorld_p->simulationRunning() > 0) {
         //  Clear screen and Z-buffer
         glClear(GL_COLOR_BUFFER_BIT);
@@ -243,6 +246,7 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
 
         // sleep(0.1);
     }
+    cout << "total time " << (double)(clock() -  t) / CLOCKS_PER_SEC << endl;
     // exit(1);
     // return;
     // FreeGLUT has a routine for actually stopping the GUI and returning cleanly

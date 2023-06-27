@@ -2,6 +2,7 @@
 #define IMPLICITTIMESTEPPER_H
 
 #include "baseTimeStepper.h"
+#include "../solvers/solverTypes.h"
 #include "mkl_types.h"
 
 class baseSolver;
@@ -21,10 +22,9 @@ public:
                         shared_ptr<dampingForce> m_dampingForce,
                         shared_ptr<floorContactForce> m_floorContactForce,
                         double m_dt, double m_force_tol, double m_stol,
-                        int m_max_iter, int m_line_search);
+                        int m_max_iter, int m_line_search, solverType m_solver_type);
     ~implicitTimeStepper() override;
 
-    double* getJacobian() override;
     void addJacobian(int ind1, int ind2, double p, int limb_idx) override;
     void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2) override;
     void setZero() override;
@@ -36,30 +36,32 @@ public:
     virtual void newtonMethod(double dt) = 0;
     virtual void lineSearch(double dt) = 0;
 
-
-    // utility variables for dgbsv solver
-    int kl, ku;
-    int jacobianLen;
-    int nrhs;
-    int *ipiv;
-    int info;
-    int ldb;
-    int NUMROWS;
-
-    // utility variables for PARDISO solver
+    // Utility variables for PARDISO solver.
+    // Need to keep track of non-zero elements
+    // in implicitTimeStepper to avoid n^2 construction later.
+    // This allows us to keep complexity to nlogn.
     MKL_INT* ia;
     vector<pair<int, int>> non_zero_elements;
+
+    // For dgbsv solver
+    double *dgbsv_jacobian;
+    int kl, ku, num_rows;
 
 protected:
     double force_tol;
     double stol;
     int max_iter;
     int line_search;
+
+    template<solverType solver_type>
+    void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2);
+
+
 private:
     shared_ptr<implicitTimeStepper> shared_from_this();
-
-    double *jacobian;
     unique_ptr<baseSolver> solver;
+    solverType solver_type;
+    int dgbsv_jacobian_len;
 };
 
 

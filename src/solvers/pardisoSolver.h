@@ -2,25 +2,15 @@
 #define PARDISO_SOLVER_H
 
 #include "baseSolver.h"
-#include "mkl_pardiso.h"
-#include "mkl_types.h"
-#include "mkl_spblas.h"
-
-
-// Define the format to printf MKL_INT values
-#if !defined(MKL_ILP64)
-#define IFORMAT "%i"
-#else
-#define IFORMAT "%lli"
-#endif
 
 
 class pardisoSolver : public baseSolver
 {
 public:
     pardisoSolver(shared_ptr<implicitTimeStepper> stepper);
+    ~pardisoSolver();
 
-    void integrator();
+    void integrator() override;
 
 private:
     /* Internal solver memory pointer pt, */
@@ -31,7 +21,7 @@ private:
     /* Pardiso control parameters. */
     MKL_INT mtype;
     MKL_INT iparm[64];
-    MKL_INT maxfct, mnum, nrhs, phase, error, msglvl;
+    MKL_INT maxfct, mnum, phase, error, msglvl;
 };
 
 

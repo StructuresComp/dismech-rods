@@ -17,7 +17,7 @@ public:
                   shared_ptr<dampingForce> m_dampingForce,
                   shared_ptr<floorContactForce> m_floorContactForce,
                   double m_dt, double m_force_tol, double m_stol,
-                  int m_max_iter, int m_line_search);
+                  int m_max_iter, int m_line_search, solverType m_solver_type);
     ~backwardEuler() override;
 
     void updateSystemForNextTimeStep() override;

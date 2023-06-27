@@ -21,7 +21,6 @@ public:
 
     void prepSystemForIteration() override;
     void initSolver() override;
-    double* getJacobian() override;
     void integrator() override;
     void addJacobian(int ind1, int ind2, double p, int limb_indx) override;
     void addJacobian(int ind1, int ind2, double p, int limb_indx1, int limb_idx2) override;

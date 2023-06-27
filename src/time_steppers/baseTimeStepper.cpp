@@ -15,7 +15,8 @@ baseTimeStepper::baseTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
                                  stretching_force(m_stretch_force), bending_force(m_bending_force),
                                  twisting_force(m_twisting_force), inertial_force(m_inertial_force),
                                  gravity_force(m_gravity_force), damping_force(m_damping_force),
-                                 floor_contact_force(m_floor_contact_force), dt(m_dt)
+                                 floor_contact_force(m_floor_contact_force), dt(m_dt),
+                                 Force(nullptr, 0), DX(nullptr, 0)
 
 {
     freeDOF = 0;
@@ -23,9 +24,12 @@ baseTimeStepper::baseTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
         offsets.push_back(freeDOF);
         freeDOF += limb->uncons;
     }
-    totalForce = new double[freeDOF];
-    dx = new double[freeDOF];
-    DX = VectorXd::Zero(freeDOF);
+
+    force = new double[freeDOF]{0};
+    new (&Force) Map<VectorXd>(force, freeDOF);
+
+    dx = new double[freeDOF]{0};
+    new (&DX) Map<VectorXd>(dx, freeDOF);
 }
 
 
@@ -44,12 +48,7 @@ void baseTimeStepper::setupForceStepperAccess() {
 baseTimeStepper::~baseTimeStepper()
 {
     delete [] dx;
-    delete [] totalForce;
-}
-
-double* baseTimeStepper::getForce()
-{
-    return totalForce;
+    delete [] force;
 }
 
 
@@ -62,17 +61,14 @@ void baseTimeStepper::addForce(int ind, double p, int limb_idx)
     if (limb->getIfConstrained(ind) == 0) // free dof
     {
         mappedInd = limb->fullToUnconsMap[ind];
-        totalForce[mappedInd + offset] += p; // subtracting elastic force
-        Force[mappedInd + offset] += p;
+        force[mappedInd + offset] += p; // subtracting elastic force
     }
 }
 
 
 void baseTimeStepper::setZero()
 {
-    for (int i=0; i < freeDOF; i++)
-        totalForce[i] = 0;
-    Force = VectorXd::Zero(freeDOF);
+    Force.setZero();
 }
 
 void baseTimeStepper::update()
@@ -83,14 +79,14 @@ void baseTimeStepper::update()
         offsets.push_back(freeDOF);
         freeDOF += limb->uncons;
     }
-    delete [] totalForce;
+    delete [] force;
     delete [] dx;
 
-    totalForce = new double[freeDOF];
-    dx = new double[freeDOF];
-    DX = VectorXd::Zero(freeDOF);
-    Force = VectorXd::Zero(freeDOF);
-    setZero();
+    force = new double[freeDOF]{0};
+    new (&Force) Map<VectorXd>(force, freeDOF);
+
+    dx = new double[freeDOF]{0};
+    new (&DX) Map<VectorXd>(dx, freeDOF);
 }
 
 

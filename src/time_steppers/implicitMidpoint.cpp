@@ -11,11 +11,11 @@ implicitMidpoint::implicitMidpoint(const vector<shared_ptr<elasticRod>>& m_limbs
                                    shared_ptr<dampingForce> m_damping_force,
                                    shared_ptr<floorContactForce> m_floor_contact_force,
                                    double m_dt, double m_force_tol, double m_stol,
-                                   int m_max_iter, int m_line_search) :
+                                   int m_max_iter, int m_line_search, solverType m_solver_type) :
                                    backwardEuler(m_limbs, m_joints, m_controllers, m_stretch_force, m_bending_force,
                                                  m_twisting_force, m_inertial_force, m_gravity_force,
                                                  m_damping_force, m_floor_contact_force, m_dt,
-                                                 m_force_tol, m_stol, m_max_iter, m_line_search)
+                                                 m_force_tol, m_stol, m_max_iter, m_line_search, m_solver_type)
 
 {
 }
