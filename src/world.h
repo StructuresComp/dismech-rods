@@ -52,6 +52,7 @@ public:
     void outputNodeCoordinates(ofstream &outfile);
 
     int getTimeStep();
+    void printSimData();
 
     // TODO: Create more sophisticated classes for these
     vector<shared_ptr<elasticRod>> limbs;
@@ -114,8 +115,6 @@ private:
     void setupController(vector<shared_ptr<rodController>> &controllers, vector<shared_ptr<elasticRod>> &limbs, string phi_ctrl_filepath);
 
     void updateCons();
-
-    void printSimData();
 
     bool render; // should the OpenGL rendering be included?
 

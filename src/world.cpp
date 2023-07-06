@@ -176,8 +176,6 @@ int world::getTimeStep()
 void world::updateTimeStep() {
     stepper->stepForwardInTime();
 
-    printSimData();
-
     currentTime += deltaTime;
     timeStep++;
 }

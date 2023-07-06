@@ -75,6 +75,7 @@ add_executable(simDER
         src/solvers/dgbsvSolver.cpp
 
         src/logging/worldLogger.cpp
+        src/logging/rodNodeLogger.cpp
 
         src/simulation_environments/derSimulationEnvironment.cpp
         src/simulation_environments/headlessDERSimulationEnvironment.cpp

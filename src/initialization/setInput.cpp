@@ -29,12 +29,14 @@ setInput::setInput()
     AddOption("lineSearch", "Flag for enabling line search", line_search);
     AddOption("debugVerbosity", "Flag for enabling informative print statements", verbosity);
     AddOption("cmdlinePer", "Period of printing info to command line", cmdline_per);
-    AddOption("enableLogging", "Period of printing info to command line", enable_logging);
     AddOption("floorZ", "Z-coordinate of floor plane", floor_z);
     AddOption("simTime", "Total sim duration", sim_time);
     AddOption("integrationScheme", "Integration scheme to be used for time stepping", integration_scheme);
     AddOption("phiCtrlFilePath", "Path to Curvature angles' setpoint profiles (.csv) for all limbs", phi_ctrl_filepath);
     AddOption("enable2DSim", "Flag to simulate solely along 2D x-z plane", enable_2d_sim);
+    AddOption("enableLogging", "Period of printing info to command line", enable_logging);
+    AddOption("logfileBase", "Base directory for saving log files", logfile_base);
+    AddOption("loggingPeriod", "Frequency of logging", logging_period);
 }
 
 setInput::~setInput()

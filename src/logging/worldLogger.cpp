@@ -101,10 +101,10 @@ void worldLogger::initLogFile()
     if (!m_dataFile.is_open()) {
         throw std::runtime_error("Log file could not be opened.");
     }
-    // Timestamp the file, TO-DO: including milliseconds, just in case we have multiple starts within a second.
-    m_dataFile << "Log started on " << getTimestamp() << std::endl;
-    // here's where the subclass' implementation is called.
-    m_dataFile << getLogHeader() << std::endl;
+//    // Timestamp the file, TO-DO: including milliseconds, just in case we have multiple starts within a second.
+//    m_dataFile << "Log started on " << getTimestamp() << std::endl;
+//    // here's where the subclass' implementation is called.
+//    m_dataFile << getLogHeader() << std::endl;
 
     // Close for now. Will get re-opened during each write.
     m_dataFile.close();
@@ -175,15 +175,17 @@ std::string worldLogger::getTimeDateFolderPath()
     std::ostringstream folderpath;
     // Some notes: tm_year is since 1900 so have to add, tm_mon is months since Jan (0-11) so have to +1.
     // year
-    folderpath << currentTime->tm_year + 1900 << "/";
-    // month
-    folderpath << currentTime->tm_year + 1900 << "_" << currentTime->tm_mon + 1 << "/";
-    // day
-    folderpath << currentTime->tm_year + 1900 << "_" << currentTime->tm_mon + 1 << "_" << currentTime->tm_mday << "/";
-    // hour
-    folderpath << currentTime->tm_year + 1900 << "_" << currentTime->tm_mon + 1 << "_" << currentTime->tm_mday << "_" << currentTime->tm_hour << "/";
+//    folderpath << currentTime->tm_year + 1900 << "/";
+//    // month
+//    folderpath << currentTime->tm_year + 1900 << "_" << currentTime->tm_mon + 1 << "/";
+//    // day
+//    folderpath << currentTime->tm_year + 1900 << "_" << currentTime->tm_mon + 1 << "_" << currentTime->tm_mday << "/";
+//    // hour
+//    folderpath << currentTime->tm_year + 1900 << "_" << currentTime->tm_mon + 1 << "_" << currentTime->tm_mday << "_" << currentTime->tm_hour << "/";
     // memory management?
     // delete currentTime;
+
+    folderpath << currentTime->tm_year + 1900 << "_" << currentTime->tm_mon + 1 << "_" << currentTime->tm_mday << "_" << currentTime->tm_hour << "/";
     return folderpath.str();
 }
 

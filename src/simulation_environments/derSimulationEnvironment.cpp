@@ -23,13 +23,14 @@ derSimulationEnvironment::derSimulationEnvironment(shared_ptr<world> m_world, in
 {
 }
 
-derSimulationEnvironment::~derSimulationEnvironment()
-{
-}
+derSimulationEnvironment::~derSimulationEnvironment() = default;
 
 // the static one does the heavy lifting
 void derSimulationEnvironment::cmdlineOutputHelper(shared_ptr<world> s_world_p, int s_cmdline_per)
 {
+    if (s_world_p->getTimeStep() % s_cmdline_per == 0) {
+        s_world_p->printSimData();
+    }
 
     // TODO: comment this out for nwo until we know what we're actually logging
 

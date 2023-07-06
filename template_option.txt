@@ -24,6 +24,9 @@ cmdlinePer           5
 floorZ               -0.05
 simTime              100
 enable2DSim          0
+enableLogging        1
+logfileBase          log_files
+loggingPeriod        10
 
 # Possible options are verlet_position, backward_euler, and implicit_midpoint
 integrationScheme    backward_euler

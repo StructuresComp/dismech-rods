@@ -7,3 +7,4 @@ simDER
 datafiles/
 option.txt
 src/robotDescription.cpp
+log_files/

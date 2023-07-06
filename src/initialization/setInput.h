@@ -69,12 +69,15 @@ private:
     int line_search;
     int verbosity;
     int cmdline_per;
-    bool enable_logging;
     double floor_z;
     double sim_time;
     string integration_scheme;
     string phi_ctrl_filepath;
     bool enable_2d_sim;
+    bool enable_logging;
+    string logfile_base;
+    int logging_period;
+
 };
 
 #include "setInput.tcc"

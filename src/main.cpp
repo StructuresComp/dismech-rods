@@ -11,6 +11,7 @@
 // Rod and stepper are included in the world
 #include "world.h"
 #include "logging/worldLogger.h"
+#include "logging/rodNodeLogger.h"
 #include "simulation_environments/derSimulationEnvironment.h"
 #include "simulation_environments/headlessDERSimulationEnvironment.h"
 #include "simulation_environments/openglDERSimulationEnvironment.h"
@@ -28,6 +29,9 @@ bool record_data;
 bool record_nodes;
 
 int verbosity;
+
+// Hack: main creates the output file for logging
+ofstream logging_output_file;
 
 bool openglDERSimulationEnvironment::show_mat_frames = false;
 
@@ -51,34 +55,51 @@ int main(int argc,char *argv[])
     // Obtain parameters relevant to simulation loop
     verbosity = inputData.GetIntOpt("debugVerbosity");
     int cmdline_per = inputData.GetIntOpt("cmdlinePer");
-    bool enable_logging = inputData.GetBoolOpt("enableLogging");
 
-    shared_ptr<worldLogger> logger = nullptr;
-
-    record_data = inputData.GetBoolOpt("saveData");
-    record_nodes = inputData.GetBoolOpt("recordNodes");
-
-    if (record_data) my_world->OpenFile(pull_data, "pull_data");
-    if (record_nodes) my_world->OpenFile(node_data, "node_data");
+//    record_data = inputData.GetBoolOpt("saveData");
+//    record_nodes = inputData.GetBoolOpt("recordNodes");
+//
+//    if (record_data) my_world->OpenFile(pull_data, "pull_data");
+//    if (record_nodes) my_world->OpenFile(node_data, "node_data");
 
 
     unique_ptr<derSimulationEnvironment> env = nullptr;
     bool show_mat_frames = inputData.GetBoolOpt("showMatFrames");
 
+    // Obtain parameters for logging
+    shared_ptr<worldLogger> logger = nullptr;
+    bool enable_logging = inputData.GetBoolOpt("enableLogging");
+    string logfile_base = inputData.GetStringOpt("logfileBase");
+    int logging_period = inputData.GetIntOpt("loggingPeriod");
+
+    if (enable_logging) {
+        logger = make_shared<rodNodeLogger>("nodes", logfile_base, logging_output_file, my_world, logging_period);
+
+		// This writes the header. You must call it here!
+        logger->setup();
+    }
+
+
     // TODO: will have to add logging versions as well later
     if (my_world->isRender()) {
-        env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, argc, argv, show_mat_frames);
+        if (enable_logging)
+            env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, logger, argc, argv, show_mat_frames);
+        else
+            env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, argc, argv, show_mat_frames);
     }
     else {
-        env = make_unique<headlessDERSimulationEnvironment>(my_world, cmdline_per);
+        if (enable_logging)
+            env = make_unique<headlessDERSimulationEnvironment>(my_world, cmdline_per, logger);
+        else
+            env = make_unique<headlessDERSimulationEnvironment>(my_world, cmdline_per);
     }
 
     env->runSimulation();
 
     // TODO: remove this type of logging
     // Close (if necessary) the data file
-    if (record_data) my_world->CloseFile(pull_data);
-    if (record_nodes) my_world->CloseFile(node_data);
+//    if (record_data) my_world->CloseFile(pull_data);
+//    if (record_nodes) my_world->CloseFile(node_data);
     exit(0);
 }
 
