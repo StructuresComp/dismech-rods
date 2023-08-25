@@ -71,6 +71,8 @@ class elasticRod
     // Bending curvature angle phi (from the end to the tip of the limb, for each edge: phi_e = phi/ne)
     double phi1;
     double phi2;
+    bool actuated;
+
     // PI
     const double PI =  3.14159265358979323846264;
     // Edge length

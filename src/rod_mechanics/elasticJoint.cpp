@@ -52,7 +52,6 @@ void elasticJoint::setup() {
 
     kb = MatrixXd::Zero(num_bending_combos, 3);
     kappa = MatrixXd::Zero(num_bending_combos, 2);
-    kappaBar = MatrixXd::Zero(num_bending_combos, 2);
     twistBar = VectorXd::Zero(num_bending_combos);
     edge_len = VectorXd::Zero(ne);
 

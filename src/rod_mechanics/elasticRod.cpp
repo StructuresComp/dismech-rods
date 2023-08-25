@@ -114,11 +114,14 @@ void elasticRod::setup()
     // compute natural curvature
     kb = MatrixXd::Zero(nv, 3);
     kappa = MatrixXd::Zero(nv, 2);
-    kappaBar = MatrixXd::Zero(nv, 2);
+    computeKappa();
+    kappaBar = kappa;
+
+    // params for control via kappaBar
     phi1 = 0;
     phi2 = 0;
-    computeKappa();
-    computeAngle2KappaBar();
+    actuated = false;
+
     // Reference twist
     refTwist_old = VectorXd::Zero(ne);
     getRefTwist();
@@ -452,10 +455,13 @@ void elasticRod::updatePhis(double new_phi1, double new_phi2)
 {
     phi1 = new_phi1;
     phi2 = new_phi2;
+    actuated = true;
 }
 
 void elasticRod::computeAngle2KappaBar()
 {
+    if (!actuated) return;
+    actuated = false;
     // We know the tangent, m1, m2. Compute kappa using them
     Vector3d t0, t1;
     Vector3d m1e, m2e, m1f, m2f;

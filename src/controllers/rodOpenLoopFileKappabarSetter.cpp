@@ -116,7 +116,10 @@ void rodOpenLoopFileKappabarSetter::updateTimestep(double dt)
         std::cout << "TIMEPOINT: ROW " << idx << std::endl;
         prev_time_pt_idx++;
     }
-    // 
+    else {
+        return;
+    }
+
     for (std::size_t i = 0; i < numActuators * 2; i++)
     {
         desired_phi_list.at(i) = (desired_phies_profile.at(idx)).at(i);
