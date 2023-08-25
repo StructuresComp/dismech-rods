@@ -22,7 +22,8 @@ public:
                         shared_ptr<dampingForce> m_dampingForce,
                         shared_ptr<floorContactForce> m_floorContactForce,
                         double m_dt, double m_force_tol, double m_stol,
-                        int m_max_iter, int m_line_search, solverType m_solver_type);
+                        int m_max_iter, int m_line_search,
+                        int m_adaptive_time_stepping, solverType m_solver_type);
     ~implicitTimeStepper() override;
 
     void addJacobian(int ind1, int ind2, double p, int limb_idx) override;
@@ -33,7 +34,7 @@ public:
     void initSolver() override;
 
     void prepSystemForIteration() override;
-    virtual void newtonMethod(double dt) = 0;
+    virtual double newtonMethod(double dt) = 0;
     virtual void lineSearch(double dt) = 0;
 
     // Utility variables for PARDISO solver.
@@ -55,6 +56,10 @@ protected:
 
     template<solverType solver_type>
     void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2);
+
+    double orig_dt;
+    bool adaptive_time_stepping;
+    int adaptive_time_stepping_threshold;
 
 
 private:

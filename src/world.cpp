@@ -23,12 +23,13 @@ world::world(setInput &m_inputData) {
     k_scaler = m_inputData.GetScalarOpt("kScaler");                     // constant scaler for contact stiffness
     mu = m_inputData.GetScalarOpt("mu");                                // friction coefficient
     nu = m_inputData.GetScalarOpt("nu");                                // slipping tolerance for friction
-    line_search = m_inputData.GetBoolOpt("lineSearch");                  // flag for enabling line search
+    line_search = m_inputData.GetBoolOpt("lineSearch");                 // flag for enabling line search
     floor_z = m_inputData.GetScalarOpt("floorZ");                       // z-coordinate of floor plane
     totalTime = m_inputData.GetScalarOpt("simTime");                    // simulation duration
     integration_scheme = m_inputData.GetStringOpt("integrationScheme"); // integration scheme for time stepping
     phi_ctrl_filepath = m_inputData.GetStringOpt("phiCtrlFilePath");    // controller setpoints (bending angle phi for limbs)
     enable_2d_sim = m_inputData.GetBoolOpt("enable2DSim");              // flag for restricting sim to 2D
+    adaptive_time_stepping = m_inputData.GetIntOpt("adaptiveTimeStepping");
 
     shearM = youngM / (2.0 * (1.0 + Poisson));                                // shear modulus
 
@@ -122,13 +123,15 @@ void world::setupWorld() {
     else if (integration_scheme == "backward_euler") {
         stepper = make_shared<backwardEuler>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
                                              m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
-                                             deltaTime, forceTol, stol, maxIter, line_search, PARDISO_SOLVER);
+                                             deltaTime, forceTol, stol, maxIter, line_search,
+                                             adaptive_time_stepping, PARDISO_SOLVER);
         stepper->initSolver();
     }
     else if (integration_scheme == "implicit_midpoint") {
         stepper = make_shared<implicitMidpoint>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
                                                 m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
-                                                deltaTime, forceTol, stol, maxIter, line_search, PARDISO_SOLVER);
+                                                deltaTime, forceTol, stol, maxIter, line_search,
+                                                adaptive_time_stepping, PARDISO_SOLVER);
         stepper->initSolver();
     }
     else {
@@ -174,9 +177,7 @@ int world::getTimeStep()
 
 
 void world::updateTimeStep() {
-    stepper->stepForwardInTime();
-
-    currentTime += deltaTime;
+    currentTime += stepper->stepForwardInTime();
     timeStep++;
 }
 

@@ -45,7 +45,7 @@ public:
     virtual void addJacobian(int ind1, int ind2, double p, int limb_idx) = 0;
     virtual void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2) = 0;
     virtual void updateSystemForNextTimeStep() = 0;
-    virtual void stepForwardInTime() = 0;
+    virtual double stepForwardInTime() = 0;
 
     double* dx;
     double* force;

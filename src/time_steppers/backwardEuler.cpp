@@ -12,11 +12,12 @@ backwardEuler::backwardEuler(const vector<shared_ptr<elasticRod>>& m_limbs,
                              shared_ptr<dampingForce> m_damping_force,
                              shared_ptr<floorContactForce> m_floor_contact_force,
                              double m_dt, double m_force_tol, double m_stol,
-                             int m_max_iter, int m_line_search, solverType m_solver_type) :
+                             int m_max_iter, int m_line_search, int m_adaptive_time_stepping, solverType m_solver_type) :
                              implicitTimeStepper(m_limbs, m_joints, m_controllers, m_stretch_force, m_bending_force,
                                                  m_twisting_force, m_inertial_force, m_gravity_force,
                                                  m_damping_force, m_floor_contact_force, m_dt,
-                                                 m_force_tol, m_stol, m_max_iter, m_line_search, m_solver_type)
+                                                 m_force_tol, m_stol, m_max_iter, m_line_search,
+                                                 m_adaptive_time_stepping, m_solver_type)
 
 {
 }
@@ -24,14 +25,11 @@ backwardEuler::backwardEuler(const vector<shared_ptr<elasticRod>>& m_limbs,
 backwardEuler::~backwardEuler() = default;
 
 
-void backwardEuler::newtonMethod(double dt) {
+double backwardEuler::newtonMethod(double dt) {
     double normf;
     double normf0 = 0;
     bool solved = false;
-    double ratio = 1.1;
     iter = 0;
-
-    floor_contact_force->reset_slip_tol();
 
     while (!solved) {
         prepSystemForIteration();
@@ -78,32 +76,31 @@ void backwardEuler::newtonMethod(double dt) {
         if (normf <= force_tol || (iter > 0 && normf <= normf0 * stol)) {
             solved = true;
             iter++;
+            continue;
         }
 
-        // If sim can't converge, relax friction rigidity and redo timestep.
-        // This is usually the issue
-        if (iter != 0 && iter % 50 == 0) {
+        // If sim can't converge, apply adaptive time stepping if enabled.
+        if (adaptive_time_stepping && iter != 0 && iter % adaptive_time_stepping_threshold == 0) {
+            dt *= 0.5;
             for (const auto& limb : limbs) {
                 limb->x = limb->x0;
                 limb->updateGuess(0.01, dt);
             }
-            floor_contact_force->change_slip_tol(ratio);
-            ratio += 0.1;
             iter++;
             continue;
         }
 
-        if (!solved) {
-            integrator(); // Solve equations of motion
-            if (line_search) lineSearch(dt);
+        // Solve equations of motion
+        integrator();
+        if (line_search) lineSearch(dt);
 
-            int limb_idx = 0;
-            for (const auto& limb : limbs) {
-                limb->updateNewtonX(dx, offsets[limb_idx], alpha);
-                limb_idx++;
-            }
-            iter++;
+        // Apply Newton update
+        int limb_idx = 0;
+        for (const auto& limb : limbs) {
+            limb->updateNewtonX(dx, offsets[limb_idx], alpha);
+            limb_idx++;
         }
+        iter++;
 
         // Exit if unable to converge
         if (iter > max_iter) {
@@ -112,6 +109,7 @@ void backwardEuler::newtonMethod(double dt) {
         }
 
     }
+    return dt;
 }
 
 
@@ -204,9 +202,10 @@ void backwardEuler::lineSearch(double dt) {
 }
 
 
-void backwardEuler::stepForwardInTime() {
+double backwardEuler::stepForwardInTime() {
+    dt = orig_dt;
     for (const auto& limb : limbs) limb->updateGuess(0.01, dt);
-    newtonMethod(dt);
+    dt = newtonMethod(dt);
 
     // Update limbs
     for (const auto& limb : limbs) {
@@ -217,6 +216,7 @@ void backwardEuler::stepForwardInTime() {
     }
 
     updateSystemForNextTimeStep();
+    return dt;
 }
 
 

@@ -87,6 +87,7 @@ private:
     double forceTol;
     string integration_scheme;
     bool enable_2d_sim;
+    int adaptive_time_stepping;
 
     // Geometry
     MatrixXd vertices;

@@ -77,6 +77,7 @@ private:
     bool enable_logging;
     string logfile_base;
     int logging_period;
+    int adaptive_time_stepping;
 
 };
 

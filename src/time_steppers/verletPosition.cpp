@@ -46,7 +46,7 @@ void verletPosition::constructInverseMassVector() {
 }
 
 
-void verletPosition::stepForwardInTime() {
+double verletPosition::stepForwardInTime() {
     // First position half step
     // Update q_t+dt/2 = q_t + v_t*dt/2
     for (const auto& limb : limbs) {
@@ -87,6 +87,7 @@ void verletPosition::stepForwardInTime() {
         limb_num++;
     }
     updateSystemForNextTimeStep();
+    return dt;
 }
 
 

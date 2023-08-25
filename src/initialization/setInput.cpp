@@ -37,6 +37,7 @@ setInput::setInput()
     AddOption("enableLogging", "Period of printing info to command line", enable_logging);
     AddOption("logfileBase", "Base directory for saving log files", logfile_base);
     AddOption("loggingPeriod", "Frequency of logging", logging_period);
+    AddOption("adaptiveTimeStepping", "Adaptive time stepping flag / number of iters", adaptive_time_stepping);
 }
 
 setInput::~setInput()

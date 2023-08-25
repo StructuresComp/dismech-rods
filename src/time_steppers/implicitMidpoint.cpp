@@ -11,11 +11,13 @@ implicitMidpoint::implicitMidpoint(const vector<shared_ptr<elasticRod>>& m_limbs
                                    shared_ptr<dampingForce> m_damping_force,
                                    shared_ptr<floorContactForce> m_floor_contact_force,
                                    double m_dt, double m_force_tol, double m_stol,
-                                   int m_max_iter, int m_line_search, solverType m_solver_type) :
+                                   int m_max_iter, int m_line_search,
+                                   int m_adaptive_time_stepping, solverType m_solver_type) :
                                    backwardEuler(m_limbs, m_joints, m_controllers, m_stretch_force, m_bending_force,
                                                  m_twisting_force, m_inertial_force, m_gravity_force,
                                                  m_damping_force, m_floor_contact_force, m_dt,
-                                                 m_force_tol, m_stol, m_max_iter, m_line_search, m_solver_type)
+                                                 m_force_tol, m_stol, m_max_iter, m_line_search,
+                                                 m_adaptive_time_stepping, m_solver_type)
 
 {
 }
@@ -23,10 +25,11 @@ implicitMidpoint::implicitMidpoint(const vector<shared_ptr<elasticRod>>& m_limbs
 implicitMidpoint::~implicitMidpoint() = default;
 
 
-void implicitMidpoint::stepForwardInTime() {
+double implicitMidpoint::stepForwardInTime() {
+    dt = orig_dt;
     for (const auto& limb : limbs) limb->updateGuess(0.01, 0.5 * dt);
     // Compute position at T=t+0.5dt
-    newtonMethod(0.5 * dt);
+    dt = 2 * newtonMethod(0.5 * dt);
     for (const auto& limb : limbs) {
         // Compute velocity at T=t+0.5dt
         limb->u = (limb->x - limb->x0) / (0.5 * dt);
@@ -40,4 +43,5 @@ void implicitMidpoint::stepForwardInTime() {
         limb->u0 = limb->u;
     }
     updateSystemForNextTimeStep();
+    return dt;
 }

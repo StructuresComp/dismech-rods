@@ -19,7 +19,7 @@ public:
                    double m_dt);
     ~verletPosition() override;
 
-    void stepForwardInTime() override;
+    double stepForwardInTime() override;
 
     void updateSystemForNextTimeStep() override;
 
