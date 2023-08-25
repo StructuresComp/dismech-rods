@@ -24,6 +24,7 @@ public:
     Vector3d x0;
     Vector3d x_ls;
     Vector3d u;
+    Vector3d u0;
     vector<pair<int, int>> connected_nodes;  // node_number and limb_idx
     vector<pair<int, int>> replaced_nodes;  // node_number and limb_idx
 

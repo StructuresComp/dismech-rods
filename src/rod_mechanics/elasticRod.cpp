@@ -57,6 +57,7 @@ void elasticRod::setup()
     x0 = x;
 
     u = VectorXd::Zero(ndof);
+    u0 = u;
 
     // We will start off with an unconstrained system
     ncons = 0;

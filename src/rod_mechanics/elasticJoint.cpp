@@ -30,7 +30,7 @@ void elasticJoint::setup() {
     updateJoint();
     updateRods();
     x0 = x;
-    u = VectorXd::Zero(3);
+    u0 = u;
 
     // All nodal quantities will have multiple values since there are
     // multiple possible connections to the joint
@@ -125,6 +125,15 @@ void elasticJoint::updateJoint() {
     x(0) = limbs[joint_limb]->x(4*joint_node);
     x(1) = limbs[joint_limb]->x(4*joint_node+1);
     x(2) = limbs[joint_limb]->x(4*joint_node+2);
+    x0(0) = limbs[joint_limb]->x0(4*joint_node);
+    x0(1) = limbs[joint_limb]->x0(4*joint_node+1);
+    x0(2) = limbs[joint_limb]->x0(4*joint_node+2);
+    u(0) = limbs[joint_limb]->u(4*joint_node);
+    u(1) = limbs[joint_limb]->u(4*joint_node+1);
+    u(2) = limbs[joint_limb]->u(4*joint_node+2);
+    u0(0) = limbs[joint_limb]->u0(4*joint_node);
+    u0(1) = limbs[joint_limb]->u0(4*joint_node+1);
+    u0(2) = limbs[joint_limb]->u0(4*joint_node+2);
 }
 
 

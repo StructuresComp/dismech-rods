@@ -92,6 +92,7 @@ class elasticRod
     VectorXd x_ls;
     // velocity vector
     VectorXd u;
+    VectorXd u0;
 
     // nodes
     MatrixXd nodes, nodesUndeformed;

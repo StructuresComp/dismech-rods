@@ -207,6 +207,15 @@ void backwardEuler::lineSearch(double dt) {
 void backwardEuler::stepForwardInTime() {
     for (const auto& limb : limbs) limb->updateGuess(0.01, dt);
     newtonMethod(dt);
+
+    // Update limbs
+    for (const auto& limb : limbs) {
+        // Update velocity
+        limb->u = (limb->x - limb->x0) / dt;
+        // Update start position
+        limb->x0 = limb->x;
+    }
+
     updateSystemForNextTimeStep();
 }
 
@@ -219,12 +228,6 @@ void backwardEuler::updateSystemForNextTimeStep() {
     }
 
     for (const auto& limb : limbs) {
-        // Update velocity
-        limb->u = (limb->x - limb->x0) / dt;
-
-        // Update x0
-        limb->x0 = limb->x;
-
         // Update reference directors
         limb->d1_old = limb->d1;
         limb->d2_old = limb->d2;
@@ -236,8 +239,6 @@ void backwardEuler::updateSystemForNextTimeStep() {
 
     // Do the same updates as above for joints
     for (const auto& joint : joints) {
-        joint->u = (joint->x - joint->x0) / dt;
-        joint->x0 = joint->x;
         joint->d1_old = joint->d1;
         joint->d2_old = joint->d2;
         joint->tangents_old = joint->tangents;
