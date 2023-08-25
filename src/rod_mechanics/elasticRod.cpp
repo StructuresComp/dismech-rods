@@ -268,9 +268,14 @@ void elasticRod::setMass()
 
     for (int i = 0; i < nv; i++)
     {
-        dm = rodLength * crossSectionalArea * rho / ne;
-        if (i == 0 || i == nv - 1)
-            dm = dm / 2.0;
+        dm = 0.5 * crossSectionalArea * rho;
+
+        if (i == 0)
+            dm *= refLen(i);
+        else if (i == nv-1)
+            dm *= refLen(i-1);
+        else
+            dm *= (refLen(i-1) + refLen(i));
 
         for (int k = 0; k < 3; k++)
         {
@@ -288,10 +293,9 @@ void elasticRod::setReferenceLength()
 {
     // This function is only run once at sim initilization
     refLen = VectorXd(ne);
-    Vector3d dx;
     for (int i = 0; i < ne; i++)
     {
-        refLen(i) = rodLength / ne;
+        refLen(i) = (x.segment(4*(i+1), 3) - x.segment(4*i, 3)).norm();
     }
 
     voronoiLen = VectorXd(nv);

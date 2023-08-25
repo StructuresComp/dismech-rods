@@ -55,9 +55,9 @@ void elasticJoint::setup() {
     twistBar = VectorXd::Zero(num_bending_combos);
     edge_len = VectorXd::Zero(ne);
 
-    setMass();
-
     setReferenceLength();
+
+    setMass();
 
     computeTangent();
 
@@ -160,11 +160,14 @@ void elasticJoint::addToJoint(int node_num, int limb_idx) {
 
 void elasticJoint::setReferenceLength() {
     shared_ptr<elasticRod> curr_limb;
-    int limb_idx;
+    int node, limb_idx;
     for (int i = 0; i < ne; i++) {
+        node = connected_nodes[i].first;
         limb_idx = connected_nodes[i].second;
         curr_limb = limbs[limb_idx];
-        ref_len(i) = curr_limb->rodLength / curr_limb->ne;
+//        ref_len(i) = curr_limb->rodLength / curr_limb->ne;
+//        ref_len(i) = (curr_limb->x.segment(4*(node+1), 3) - curr_limb->x.segment(4*node, 3)).norm();
+        ref_len(i) = (x - curr_limb->x.segment(4*node, 3)).norm();
     }
 
     int curr_index = 0;
@@ -467,14 +470,13 @@ void elasticJoint::prepareForIteration() {
 
 void elasticJoint::setMass() {
     mass = 0;
-    double curr_mass;
+    int limb_idx;
     shared_ptr<elasticRod> curr_limb;
     for (int i = 0; i < ne; i++) {
-        int limb_num = connected_nodes[i].second;
-        curr_limb = limbs[limb_num];
+        limb_idx = connected_nodes[i].second;
+        curr_limb = limbs[limb_idx];
 
-        curr_mass = (curr_limb->rodLength * curr_limb->crossSectionalArea * curr_limb->rho / curr_limb->ne) / 2.0;
-        mass += curr_mass;
+        mass += 0.5 * ref_len(i) * curr_limb->crossSectionalArea * curr_limb->rho;
     }
 }
 
