@@ -1,2 +1,2 @@
 cp template_option.txt option.txt
-cp src/misc/templateRobotDescription.cpp src/robotDescription.cpp
+cp examples/templateRobotDescription.cpp robotDescription.cpp

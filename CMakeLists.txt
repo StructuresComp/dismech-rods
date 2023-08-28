@@ -45,7 +45,7 @@ link_directories(${MKL_LIBRARY_DIR})
 add_executable(simDER
         src/main.cpp
         src/world.cpp
-        src/robotDescription.cpp
+        robotDescription.cpp
 
         src/initialization/setInput.cpp
 
@@ -83,6 +83,8 @@ add_executable(simDER
 
         src/controllers/rodController.cpp
         src/controllers/rodOpenLoopFileKappabarSetter.cpp
+
+        src/utils/utils.cpp
         )
 
 target_link_libraries(simDER PRIVATE

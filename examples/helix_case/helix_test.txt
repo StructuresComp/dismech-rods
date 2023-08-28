@@ -1,0 +1,35 @@
+rodRadius            0.005
+density              1273.52
+youngM               1e7
+Poisson              0.5
+tol                  1.0e-4
+stol                 1.0e-4
+maxIter              500
+gVector              0.0 0.0 -9.8
+viscosity            0.00
+render               1
+showMatFrames        0
+saveData             1
+recordNodes          0
+dataResolution       2.5e-3
+deltaTime            2e-3
+colLimit             2e-3
+delta                1e-3
+kScaler              5e2
+mu                   0.4
+nu                   1e-2
+lineSearch           1
+debugVerbosity       1
+cmdlinePer           1
+floorZ               -100
+simTime              10
+enable2DSim          0
+enableLogging        0
+logfileBase          log_files
+loggingPeriod        5
+
+# Possible options are verlet_position, backward_euler, and implicit_midpoint
+integrationScheme    implicit_midpoint
+
+# To turn off actuation, simply comment out this line
+# phiCtrlFilePath      src/controllers/openloop_control_trajectories/horton_controller.csv

@@ -6,5 +6,5 @@ cmake-build-debug/
 simDER
 datafiles/
 option.txt
-src/robotDescription.cpp
+robotDescription.cpp
 log_files/

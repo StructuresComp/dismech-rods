@@ -1,5 +1,4 @@
 #include "backwardEuler.h"
-#include <ctime>
 
 backwardEuler::backwardEuler(const vector<shared_ptr<elasticRod>>& m_limbs,
                              const vector<shared_ptr<elasticJoint>>& m_joints,
