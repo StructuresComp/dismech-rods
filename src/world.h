@@ -7,22 +7,24 @@
 // include elastic rod class
 #include "rod_mechanics/elasticRod.h"
 #include "rod_mechanics/elasticJoint.h"
+
+// include controllers
 #include "controllers/rodController.h"
 #include "controllers/rodOpenLoopFileKappabarSetter.h"
-// include force classes
-#include "rod_mechanics/elasticStretchingForce.h"
-#include "rod_mechanics/elasticBendingForce.h"
-#include "rod_mechanics/elasticTwistingForce.h"
-#include "rod_mechanics/inertialForce.h"
 
-// include external force
-#include "rod_mechanics/dampingForce.h"
-#include "rod_mechanics/externalGravityForce.h"
-#include "rod_mechanics/floorContactForce.h"
-// #include "rod_mechanics/contactPotentialIMC.h"
+// include inner force classes
+#include "rod_mechanics/inner_forces/inertialForce.h"
+#include "rod_mechanics/inner_forces/elasticStretchingForce.h"
+#include "rod_mechanics/inner_forces/elasticBendingForce.h"
+#include "rod_mechanics/inner_forces/elasticTwistingForce.h"
+
+// include external forces
+#include "rod_mechanics/external_forces/dampingForce.h"
+#include "rod_mechanics/external_forces/externalGravityForce.h"
+#include "rod_mechanics/external_forces/floorContactForce.h"
+// #include "rod_mechanics/external_forces/contactPotentialIMC.h"
 
 // include time stepper
-//#include "time_steppers/timeStepper.h"
 #include "time_steppers/verletPosition.h"
 #include "time_steppers/backwardEuler.h"
 #include "time_steppers/implicitMidpoint.h"
@@ -101,15 +103,8 @@ private:
     double totalTime;
 
     // declare the forces
-    shared_ptr<elasticStretchingForce> m_stretchForce = nullptr;
-    shared_ptr<elasticBendingForce> m_bendingForce = nullptr;
-    shared_ptr<elasticTwistingForce> m_twistingForce = nullptr;
-    shared_ptr<inertialForce> m_inertialForce = nullptr;
-    shared_ptr<externalGravityForce> m_gravityForce = nullptr;
-    shared_ptr<dampingForce> m_dampingForce = nullptr;
-    shared_ptr<floorContactForce> m_floorContactForce = nullptr;
-//    shared_ptr<collisionDetector> m_collisionDetector = nullptr;
-//    shared_ptr<contactPotentialIMC> m_contactPotentialIMC = nullptr;
+    shared_ptr<innerForces> inner_forces;
+    shared_ptr<externalForces> external_forces;
 
     // controller parameter and setup
     string phi_ctrl_filepath;

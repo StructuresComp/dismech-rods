@@ -1,10 +1,11 @@
 #ifndef ELASTICROD_H
 #define ELASTICROD_H
 
+// TODO: check if these are necessary
 #include <map>
 #include <array>
 #include <cassert>
-#include "../eigenIncludes.h"
+#include "eigenIncludes.h"
 
 class elasticRod
 {

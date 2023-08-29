@@ -1,7 +1,7 @@
 #ifndef CONTACTPOTENTIALIMC_H
 #define CONTACTPOTENTIALIMC_H
 
-#include "../eigenIncludes.h"
+#include "eigenIncludes.h"
 #include "elasticRod.h"
 #include "collisionDetector.h"
 #include "symbolicEquations.h"

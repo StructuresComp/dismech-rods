@@ -1,7 +1,7 @@
 #ifndef DAMPINGFORCE_H
 #define DAMPINGFORCE_H
 
-#include "baseForce.h"
+#include "rod_mechanics/baseForce.h"
 
 class baseTimeStepper;
 

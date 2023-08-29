@@ -2,7 +2,7 @@
 #define ELASTICJOINT_H
 
 #include "elasticRod.h"
-#include "../eigenIncludes.h"
+#include "eigenIncludes.h"
 
 class elasticJoint
 {

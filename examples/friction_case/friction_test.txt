@@ -21,12 +21,18 @@ nu                   1e-2
 lineSearch           1
 debugVerbosity       1
 cmdlinePer           10000000
-floorZ               0.0
 simTime              1.0
 enable2DSim          1
 enableLogging        0
 logfileBase          log_files
 loggingPeriod        1
+
+# Disable floor contact by setting to -9999
+floorZ             0.0
+
+# If nonzero, turns on adaptive time stepping which halves time step if failure to converge
+# after set number of iterations. deltaTime is used as starting time step size.
+adaptiveTimeStepping    1
 
 # Possible options are verlet_position, backward_euler, and implicit_midpoint
 integrationScheme    implicit_midpoint

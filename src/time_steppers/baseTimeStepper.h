@@ -1,21 +1,12 @@
 #ifndef BASETIMESTEPPER_H
 #define BASETIMESTEPPER_H
 
-#include "../controllers/rodController.h"
-#include "../rod_mechanics/elasticRod.h"
-#include "../eigenIncludes.h"
+#include "controllers/rodController.h"
+#include "rod_mechanics/elasticRod.h"
+#include "eigenIncludes.h"
 
-// include force classes
-#include "../rod_mechanics/elasticStretchingForce.h"
-#include "../rod_mechanics/elasticBendingForce.h"
-#include "../rod_mechanics/elasticTwistingForce.h"
-#include "../rod_mechanics/inertialForce.h"
-
-// include external force
-#include "../rod_mechanics/dampingForce.h"
-#include "../rod_mechanics/externalGravityForce.h"
-#include "../rod_mechanics/floorContactForce.h"
-#include "../rod_mechanics/contactPotentialIMC.h"
+#include "rod_mechanics/inner_forces/innerForces.h"
+#include "rod_mechanics/external_forces/externalForces.h"
 
 
 class baseTimeStepper : public enable_shared_from_this<baseTimeStepper>
@@ -24,13 +15,8 @@ public:
     baseTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
                     const vector<shared_ptr<elasticJoint>>& m_joints,
                     const vector<shared_ptr<rodController>>& m_controllers,
-                    shared_ptr<elasticStretchingForce> m_stretchForce,
-                    shared_ptr<elasticBendingForce> m_bendingForce,
-                    shared_ptr<elasticTwistingForce> m_twistingForce,
-                    shared_ptr<inertialForce> m_inertialForce,
-                    shared_ptr<externalGravityForce> m_gravityForce,
-                    shared_ptr<dampingForce> m_dampingForce,
-                    shared_ptr<floorContactForce> m_floorContactForce,
+                    shared_ptr<innerForces> m_inner_forces,
+                    shared_ptr<externalForces> m_external_forces,
                     double m_dt);
     virtual ~baseTimeStepper();
 
@@ -67,13 +53,9 @@ protected:
     vector<shared_ptr<elasticRod>> limbs;
     vector<shared_ptr<elasticJoint>> joints;
     vector<shared_ptr<rodController>> controllers;
-    shared_ptr<elasticStretchingForce> stretching_force;
-    shared_ptr<elasticBendingForce> bending_force;
-    shared_ptr<elasticTwistingForce> twisting_force;
-    shared_ptr<inertialForce> inertial_force;
-    shared_ptr<externalGravityForce> gravity_force;
-    shared_ptr<dampingForce> damping_force;
-    shared_ptr<floorContactForce> floor_contact_force;
+
+    shared_ptr<innerForces> inner_forces;
+    shared_ptr<externalForces> external_forces;
 };
 
 #endif

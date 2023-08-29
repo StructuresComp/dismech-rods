@@ -1,8 +1,8 @@
 #ifndef FLOORCONTACT_H
 #define FLOORCONTACT_H
 
-#include "baseForce.h"
 #include "symbolicEquations.h"
+#include "rod_mechanics/baseForce.h"
 
 class baseTimeStepper;
 

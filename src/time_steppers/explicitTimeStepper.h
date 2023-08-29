@@ -9,13 +9,8 @@ public:
     explicitTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
                         const vector<shared_ptr<elasticJoint>>& m_joints,
                         const vector<shared_ptr<rodController>>& m_controllers,
-                        shared_ptr<elasticStretchingForce> m_stretch_force,
-                        shared_ptr<elasticBendingForce> m_bending_force,
-                        shared_ptr<elasticTwistingForce> m_twisting_force,
-                        shared_ptr<inertialForce> m_inertial_force,
-                        shared_ptr<externalGravityForce> m_gravity_force,
-                        shared_ptr<dampingForce> m_damping_force,
-                        shared_ptr<floorContactForce> m_floor_contact_force,
+                        const shared_ptr<innerForces>& m_inner_forces,
+                        const shared_ptr<externalForces>& m_external_forces,
                         double m_dt);
     ~explicitTimeStepper() override;
 

@@ -1,5 +1,5 @@
 #include "externalGravityForce.h"
-#include "../time_steppers/baseTimeStepper.h"
+#include "time_steppers/baseTimeStepper.h"
 
 externalGravityForce::externalGravityForce(const vector<shared_ptr<elasticRod>>& m_limbs,
                                            const vector<shared_ptr<elasticJoint>>& m_joints,

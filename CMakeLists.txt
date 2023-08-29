@@ -9,6 +9,7 @@ set(CMAKE_CXX_FLAGS "-Wno-deprecated-declarations")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../")
 
+
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 # Per https://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html eigen should be used
@@ -51,17 +52,21 @@ add_executable(simDER
 
         src/rod_mechanics/baseForce.cpp
         src/rod_mechanics/elasticRod.cpp
-        src/rod_mechanics/elasticStretchingForce.cpp
-        src/rod_mechanics/elasticBendingForce.cpp
-        src/rod_mechanics/elasticTwistingForce.cpp
-        src/rod_mechanics/externalGravityForce.cpp
-        src/rod_mechanics/dampingForce.cpp
-        src/rod_mechanics/inertialForce.cpp
-        src/rod_mechanics/symbolicEquations.cpp
-        src/rod_mechanics/floorContactForce.cpp
         src/rod_mechanics/elasticJoint.cpp
-        # src/rod_mechanics/collisionDetector.cpp
-        # src/rod_mechanics/contactPotentialIMC.cpp
+
+        src/rod_mechanics/inner_forces/inertialForce.cpp
+        src/rod_mechanics/inner_forces/elasticStretchingForce.cpp
+        src/rod_mechanics/inner_forces/elasticBendingForce.cpp
+        src/rod_mechanics/inner_forces/elasticTwistingForce.cpp
+        src/rod_mechanics/inner_forces/innerForces.cpp
+
+        src/rod_mechanics/external_forces/externalGravityForce.cpp
+        src/rod_mechanics/external_forces/dampingForce.cpp
+        src/rod_mechanics/external_forces/floorContactForce.cpp
+        src/rod_mechanics/external_forces/symbolicEquations.cpp
+        # src/rod_mechanics/external_forces/collisionDetector.cpp
+        # src/rod_mechanics/external_forces/contactPotentialIMC.cpp
+        src/rod_mechanics/external_forces/externalForces.cpp
 
         src/time_steppers/baseTimeStepper.cpp
         src/time_steppers/explicitTimeStepper.cpp
@@ -86,6 +91,10 @@ add_executable(simDER
 
         src/utils/utils.cpp
         )
+
+target_include_directories(simDER PRIVATE
+        src
+)
 
 target_link_libraries(simDER PRIVATE
         ${OPENGL_LIBRARIES}

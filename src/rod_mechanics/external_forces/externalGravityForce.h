@@ -1,7 +1,7 @@
 #ifndef EXTERNALGRAVITYFORCE_H
 #define EXTERNALGRAVITYFORCE_H
 
-#include "baseForce.h"
+#include "rod_mechanics/baseForce.h"
 
 class baseTimeStepper;
 

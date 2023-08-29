@@ -103,33 +103,51 @@ void world::setupWorld() {
     characteristicForce = M_PI * pow(rodRadius, 4) / 4.0 * youngM / pow(temp_value, 2);
     forceTol = tol * characteristicForce;
 
-    // declare the forces
-    m_stretchForce = make_shared<elasticStretchingForce>(limbs, joints );
-    m_bendingForce = make_shared<elasticBendingForce>(limbs, joints );
-    m_twistingForce = make_shared<elasticTwistingForce>(limbs, joints);
-    m_inertialForce = make_shared<inertialForce>(limbs, joints);
-    m_gravityForce = make_shared<externalGravityForce>(limbs, joints, gVector);
-    m_dampingForce = make_shared<dampingForce>(limbs, joints, viscosity);
-    m_floorContactForce = make_shared<floorContactForce>(limbs, joints, delta, nu, mu, floor_z);
-//    m_collisionDetector = make_shared<collisionDetector>(rod, delta, col_limit);
-//    m_contactPotentialIMC = make_shared<contactPotentialIMC>(rod, stepper, m_collisionDetector, delta, k_scaler, mu, nu);
+    // Declare inner elastic forces
+    shared_ptr<elasticStretchingForce> stretching_force = make_shared<elasticStretchingForce>(limbs, joints);
+    shared_ptr<elasticBendingForce> bending_force = make_shared<elasticBendingForce>(limbs, joints);
+    shared_ptr<elasticTwistingForce> twisting_force = make_shared<elasticTwistingForce>(limbs, joints);
+
+    // Declare inertial
+    shared_ptr<inertialForce> inertial_force = nullptr;
+    if (integration_scheme != "verlet_position") {  // good enough for now, perhaps come up with cleaner method
+        inertial_force = make_shared<inertialForce>(limbs, joints);
+    }
+
+    // Declare gravity
+    shared_ptr<externalGravityForce> gravity_force = nullptr;
+    if ((abs(gVector(0)) + abs(gVector(1)) + abs(gVector(2))) != 0) {
+        gravity_force = make_shared<externalGravityForce>(limbs, joints, gVector);
+    }
+
+    // Declare viscous damping
+    shared_ptr<dampingForce> damping_force = nullptr;
+    if (viscosity != 0) {
+        damping_force = make_shared<dampingForce>(limbs, joints, viscosity);
+    }
+
+    // Declare floor contact
+    shared_ptr<floorContactForce> floor_contact_force = nullptr;
+    if (floor_z != -9999) {  // come up with a better method for this later
+        floor_contact_force = make_shared<floorContactForce>(limbs, joints, delta, nu, mu, floor_z);
+    }
+
+    inner_forces = make_shared<innerForces>(inertial_force, stretching_force, bending_force, twisting_force);
+    external_forces = make_shared<externalForces>(gravity_force, damping_force, floor_contact_force);
+
 
     // set up the time stepper
     if (integration_scheme == "verlet_position") {
-        stepper = make_shared<verletPosition>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
-                                              m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
-                                              deltaTime);
+        stepper = make_shared<verletPosition>(limbs, joints, controllers, inner_forces, external_forces, deltaTime);
     }
     else if (integration_scheme == "backward_euler") {
-        stepper = make_shared<backwardEuler>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
-                                             m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
+        stepper = make_shared<backwardEuler>(limbs, joints, controllers, inner_forces, external_forces,
                                              deltaTime, forceTol, stol, maxIter, line_search,
                                              adaptive_time_stepping, PARDISO_SOLVER);
         stepper->initSolver();
     }
     else if (integration_scheme == "implicit_midpoint") {
-        stepper = make_shared<implicitMidpoint>(limbs, joints, controllers, m_stretchForce, m_bendingForce, m_twistingForce,
-                                                m_inertialForce, m_gravityForce, m_dampingForce, m_floorContactForce,
+        stepper = make_shared<implicitMidpoint>(limbs, joints, controllers, inner_forces, external_forces,
                                                 deltaTime, forceTol, stol, maxIter, line_search,
                                                 adaptive_time_stepping, PARDISO_SOLVER);
         stepper->initSolver();
@@ -183,14 +201,26 @@ void world::updateTimeStep() {
 
 void world::printSimData()
 {
-    printf("time: %.4f | iters: %i | con: %i | min_dist: %.6f | k: %.3e | fric: %.1f\n",
-           currentTime, stepper->iter, 0,
-           m_floorContactForce->min_dist,
-           0.0,
-           //           m_collisionDetector->num_collisions,
-           //           m_collisionDetector->min_dist,
-           //           m_contactPotentialIMC->contact_stiffness,
-           mu);
+    if (external_forces->floor_contact_force) {
+        printf("time: %.4f | iters: %i | con: %i | min_dist: %.6f | k: %.3e | fric: %.1f\n",
+               currentTime, stepper->iter, 0,
+               external_forces->floor_contact_force->min_dist,
+               0.0,
+                //           m_collisionDetector->num_collisions,
+                //           m_collisionDetector->min_dist,
+                //           m_contactPotentialIMC->contact_stiffness,
+               mu);
+    }
+    else {
+        printf("time: %.4f | iters: %i | con: %i | min_dist: %s | k: %.3e | fric: %.1f\n",
+               currentTime, stepper->iter, 0,
+               "N/A",
+               0.0,
+                //           m_collisionDetector->num_collisions,
+                //           m_collisionDetector->min_dist,
+                //           m_contactPotentialIMC->contact_stiffness,
+               mu);
+    }
 }
 
 int world::simulationRunning() {

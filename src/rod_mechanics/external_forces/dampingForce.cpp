@@ -1,5 +1,5 @@
 #include "dampingForce.h"
-#include "../time_steppers/baseTimeStepper.h"
+#include "time_steppers/baseTimeStepper.h"
 
 dampingForce::dampingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
                            const vector<shared_ptr<elasticJoint>>& m_joints,

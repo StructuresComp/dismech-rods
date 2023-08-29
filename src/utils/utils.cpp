@@ -2,7 +2,7 @@
 #include <fstream>
 
 
-void lock_edge(shared_ptr<elasticRod> limb, int edge_num)
+void lock_edge(const shared_ptr<elasticRod>& limb, int edge_num)
 {
     limb->setVertexBoundaryCondition(limb->getVertex(edge_num), edge_num);
     limb->setVertexBoundaryCondition(limb->getVertex(edge_num+1), edge_num+1);
@@ -10,7 +10,7 @@ void lock_edge(shared_ptr<elasticRod> limb, int edge_num)
 }
 
 
-void apply_initial_velocities(shared_ptr<elasticRod> limb, vector<Vector3d>& velocities) {
+void apply_initial_velocities(const shared_ptr<elasticRod>& limb, vector<Vector3d>& velocities) {
     if (limb->nv != velocities.size()) {
         throw runtime_error("The number of nodes (" + to_string(limb->nv) +
                             ") and velocities (" + to_string(velocities.size()) + ") given did not match!");
@@ -22,7 +22,7 @@ void apply_initial_velocities(shared_ptr<elasticRod> limb, vector<Vector3d>& vel
 
 
 
-void load_txt(string filename, vector<Vector3d>& data) {
+void load_txt(const string& filename, vector<Vector3d>& data) {
     fstream cin;
     cin.open(filename);
     if (cin.fail()) {

@@ -2,7 +2,7 @@
 #define SYMBOLICEQUATIONS_H
 
 #include <symengine/llvm_double.h>
-#include "../eigenIncludes.h"
+#include "eigenIncludes.h"
 
 using namespace SymEngine;
 

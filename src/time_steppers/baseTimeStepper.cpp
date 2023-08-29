@@ -1,22 +1,16 @@
 #include "baseTimeStepper.h"
 
+#include <utility>
+
 baseTimeStepper::baseTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
                                  const vector<shared_ptr<elasticJoint>>& m_joints,
                                  const vector<shared_ptr<rodController>>& m_controllers,
-                                 shared_ptr<elasticStretchingForce> m_stretch_force,
-                                 shared_ptr<elasticBendingForce> m_bending_force,
-                                 shared_ptr<elasticTwistingForce> m_twisting_force,
-                                 shared_ptr<inertialForce> m_inertial_force,
-                                 shared_ptr<externalGravityForce> m_gravity_force,
-                                 shared_ptr<dampingForce> m_damping_force,
-                                 shared_ptr<floorContactForce> m_floor_contact_force,
+                                 shared_ptr<innerForces> m_inner_forces,
+                                 shared_ptr<externalForces> m_external_forces,
                                  double m_dt) :
                                  limbs(m_limbs), joints(m_joints), controllers(m_controllers),
-                                 stretching_force(m_stretch_force), bending_force(m_bending_force),
-                                 twisting_force(m_twisting_force), inertial_force(m_inertial_force),
-                                 gravity_force(m_gravity_force), damping_force(m_damping_force),
-                                 floor_contact_force(m_floor_contact_force), dt(m_dt),
-                                 Force(nullptr, 0), DX(nullptr, 0)
+                                 inner_forces(std::move(m_inner_forces)), external_forces(std::move(m_external_forces)),
+                                 dt(m_dt), Force(nullptr, 0), DX(nullptr, 0)
 
 {
     freeDOF = 0;
@@ -34,13 +28,8 @@ baseTimeStepper::baseTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
 
 
 void baseTimeStepper::setupForceStepperAccess() {
-    stretching_force->setTimeStepper(shared_from_this());
-    bending_force->setTimeStepper(shared_from_this());
-    twisting_force->setTimeStepper(shared_from_this());
-    inertial_force->setTimeStepper(shared_from_this());
-    gravity_force->setTimeStepper(shared_from_this());
-    damping_force->setTimeStepper(shared_from_this());
-    floor_contact_force->setTimeStepper(shared_from_this());
+    inner_forces->setupForceStepperAccess(shared_from_this());
+    external_forces->setupForceStepperAccess(shared_from_this());
 }
 
 

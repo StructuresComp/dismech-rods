@@ -1,7 +1,7 @@
 #ifndef ELASTICTWISTINGFORCE_H
 #define ELASTICTWISTINGFORCE_H
 
-#include "baseForce.h"
+#include "rod_mechanics/baseForce.h"
 
 class baseTimeStepper;
 

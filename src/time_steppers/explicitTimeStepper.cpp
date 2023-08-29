@@ -4,18 +4,11 @@
 explicitTimeStepper::explicitTimeStepper(const vector<shared_ptr<elasticRod>> &m_limbs,
                                          const vector<shared_ptr<elasticJoint>> &m_joints,
                                          const vector<shared_ptr<rodController>> &m_controllers,
-                                         shared_ptr<elasticStretchingForce> m_stretch_force,
-                                         shared_ptr<elasticBendingForce> m_bending_force,
-                                         shared_ptr<elasticTwistingForce> m_twisting_force,
-                                         shared_ptr<inertialForce> m_inertial_force,
-                                         shared_ptr<externalGravityForce> m_gravity_force,
-                                         shared_ptr<dampingForce> m_damping_force,
-                                         shared_ptr<floorContactForce> m_floor_contact_force, double m_dt) :
-                                         baseTimeStepper(m_limbs, m_joints, m_controllers, m_stretch_force, m_bending_force,
-                                                         m_twisting_force, m_inertial_force, m_gravity_force,
-                                                         m_damping_force, m_floor_contact_force, m_dt)
+                                         const shared_ptr<innerForces>& m_inner_forces,
+                                         const shared_ptr<externalForces>& m_external_forces, double m_dt) :
+                                         baseTimeStepper(m_limbs, m_joints, m_controllers, m_inner_forces,
+                                                         m_external_forces, m_dt)
 {
-
 }
 
 explicitTimeStepper::~explicitTimeStepper() = default;
