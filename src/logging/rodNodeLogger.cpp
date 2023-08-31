@@ -1,9 +1,9 @@
 #include "rodNodeLogger.h"
+#include "world.h"
 
 
-rodNodeLogger::rodNodeLogger(std::string file_name_prefix, std::string logfile_base, std::ofstream &df,
-                             shared_ptr<world> w, int per) :
-                             worldLogger(file_name_prefix, logfile_base, df, w, per)
+rodNodeLogger::rodNodeLogger(std::string logfile_base, std::ofstream &df, int per) :
+                             worldLogger("node", logfile_base, df, per)
 {
 }
 
@@ -16,8 +16,8 @@ string rodNodeLogger::getLogHeader() {
 
 string rodNodeLogger::getLogData() {
     ostringstream logdata;
-    logdata << m_world_p->getCurrentTime();
-    for (auto& limb : m_world_p->limbs) {
+    logdata << world_ptr->getCurrentTime();
+    for (auto& limb : world_ptr->limbs) {
         for (int i = 0; i < limb->nv; i++) {
             Vector3d v = limb->getVertex(i);
             logdata << "," << v(0) << "," << v(1) << "," << v(2);

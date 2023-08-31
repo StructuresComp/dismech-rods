@@ -6,7 +6,7 @@
 
 class rodNodeLogger : public worldLogger {
 public:
-    rodNodeLogger(string file_name_prefix, string logfile_base, ofstream& df, shared_ptr<world> w, int per);
+    rodNodeLogger(string logfile_base, ofstream& df, int per);
     ~rodNodeLogger();
 private:
     string getLogHeader() override;

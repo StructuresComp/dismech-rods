@@ -89,7 +89,7 @@ void world::CloseFile(ofstream &outfile)
     outfile.close();
 }
 
-void world::setupWorld(int argc, char**argv) {
+void world::setupWorld(int argc, char**argv, setInput& input_data, shared_ptr<worldLogger>& logger) {
     // TODO: make characteristicForce a function of total cumulative rod length?
     double temp_value = 1.0;
     // Find out the tolerance, e.g. how small is enough?
@@ -98,7 +98,8 @@ void world::setupWorld(int argc, char**argv) {
 
     // Setup robot geometry as well as custom external forces. Done in robotDescription.cpp!!!
     vector<shared_ptr<baseForce>> custom_external_forces;
-    get_robot_description(argc, argv, limbs, joints, custom_external_forces, density, rodRadius, youngM, shearM);
+    get_robot_description(argc, argv, input_data, limbs, joints, custom_external_forces,
+                          logger, density, rodRadius, youngM, shearM);
     setupController(controllers, limbs, phi_ctrl_filepath);
 
     // This has to be called after joints are all set.

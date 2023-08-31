@@ -11,7 +11,6 @@
 // Rod and stepper are included in the world
 #include "world.h"
 #include "logging/worldLogger.h"
-#include "logging/rodNodeLogger.h"
 #include "simulation_environments/derSimulationEnvironment.h"
 #include "simulation_environments/headlessDERSimulationEnvironment.h"
 #include "simulation_environments/openglDERSimulationEnvironment.h"
@@ -49,38 +48,19 @@ int main(int argc,char *argv[])
     inputData.LoadOptions(argv[1]);
     inputData.LoadOptions(argc, argv);
 
+    shared_ptr<worldLogger> logger = nullptr;
     my_world = make_shared<world>(inputData);
-    my_world->setupWorld(argc, argv);
+    my_world->setupWorld(argc, argv, inputData, logger);
 
     // Obtain parameters relevant to simulation loop
     verbosity = inputData.GetIntOpt("debugVerbosity");
     int cmdline_per = inputData.GetIntOpt("cmdlinePer");
 
-//    record_data = inputData.GetBoolOpt("saveData");
-//    record_nodes = inputData.GetBoolOpt("recordNodes");
-//
-//    if (record_data) my_world->OpenFile(pull_data, "pull_data");
-//    if (record_nodes) my_world->OpenFile(node_data, "node_data");
-
-
     unique_ptr<derSimulationEnvironment> env = nullptr;
     bool show_mat_frames = inputData.GetBoolOpt("showMatFrames");
 
-    // Obtain parameters for logging
-    shared_ptr<worldLogger> logger = nullptr;
-    bool enable_logging = inputData.GetBoolOpt("enableLogging");
-    string logfile_base = inputData.GetStringOpt("logfileBase");
-    int logging_period = inputData.GetIntOpt("loggingPeriod");
-
-    if (enable_logging) {
-        logger = make_shared<rodNodeLogger>("nodes", logfile_base, logging_output_file, my_world, logging_period);
-
-		// This writes the header. You must call it here!
-        logger->setup();
-    }
-
-
     // TODO: will have to add logging versions as well later
+    bool enable_logging = inputData.GetBoolOpt("enableLogging");
     if (my_world->isRender()) {
         if (enable_logging)
             env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, logger, argc, argv, show_mat_frames);

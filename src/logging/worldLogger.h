@@ -12,10 +12,11 @@
 #define WORLD_LOGGER_H
 
 // Only operating on a DER world.
-#include "../world.h"
+class world;
 // Some constants used throughout this program
-#include "../global_const.h"
+#include "global_const.h"
 #include "filesystem_finder.hpp"
+#include "eigenIncludes.h"
 
 // the C++ standard library
 #include <fstream> // for writing to a file
@@ -31,10 +32,9 @@ class worldLogger
      * @param fileNamePrefix a string to prepend to the file name
      * @param logfile_base the base folder for the logs (actual folder will be organized by year, month, day)
      * @param df ref to an ofstream to use to write to the data file
-     * @param w pointer to the world to log from
      * @param per integer, period to write to log file (only once per this many samples)
      */
-    worldLogger(std::string fileNamePrefix, std::string logfile_base, std::ofstream& df, shared_ptr<world> w, int per);
+    worldLogger(std::string fileNamePrefix, std::string logfile_base, std::ofstream& df, int per);
     ~worldLogger();
 
     /**
@@ -43,6 +43,8 @@ class worldLogger
      * Note, calls a secondary (abstract) function for the children to do whatever else they'd need
      */
     void setup();
+
+    shared_ptr<world> world_ptr;
 
     /**
      * Log data, used by the caller.
@@ -100,9 +102,6 @@ class worldLogger
 
     // A file stream reference. Here, empty constructor, will be replaced in constructor.
     std::ofstream& m_dataFile;
-
-    // Store a reference to the world also, easier than passing in each time.
-    shared_ptr<world> m_world_p = nullptr;
 
     // and an update period. This many samples in between writes to log file.
     int period;

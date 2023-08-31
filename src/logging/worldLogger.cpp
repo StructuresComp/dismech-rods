@@ -10,14 +10,15 @@
 #include "worldLogger.h"
 
 // The C++ Standard Library
+#include "world.h"
 #include <stdexcept>
 #include <time.h> // for the file name of the log file
 // for the folder creation
 namespace fs = std::filesystem;
 
 // Constructor: creates the file name, stores locals
-worldLogger::worldLogger(std::string fileNamePrefix, std::string logfile_base, std::ofstream& df, shared_ptr<world> w, int per) :
-                         m_dataFile(df), m_world_p(w), period(per), num_lines_header(0)
+worldLogger::worldLogger(std::string fileNamePrefix, std::string logfile_base, std::ofstream& df, int per) :
+                         m_dataFile(df), period(per), num_lines_header(0)
 {
     // A quick check on the passed-in strings: must not be the empty string.
     if (fileNamePrefix == "") {
@@ -41,13 +42,15 @@ worldLogger::worldLogger(std::string fileNamePrefix, std::string logfile_base, s
         logfile_base = home + logfile_base;
     }
 
-    // Expand out the folder path based on a nicely organized year, month, day, hour heirarchy
-    logfile_base = logfile_base + "/" + getTimeDateFolderPath();
-    if( verbosity >= 1 ){
-        std::cout << "Logging data in the folder " << logfile_base << std::endl;
-    }
-    // Create this folder if it does not already exist.
-    fs::create_directories(logfile_base);
+    // NOTE: Don't use subdirectories for now
+    logfile_base += "/";
+//    // Expand out the folder path based on a nicely organized year, month, day, hour heirarchy
+//    logfile_base = logfile_base + "/" + getTimeDateFolderPath();
+//    if( verbosity >= 1 ){
+//        std::cout << "Logging data in the folder " << logfile_base << std::endl;
+//    }
+//    // Create this folder if it does not already exist.
+//    fs::create_directories(logfile_base);
 
     // Save the file name here.
     // Assume that we'll log to a file in the datafiles directory.
@@ -131,7 +134,7 @@ int worldLogger::countLinesInLog()
 void worldLogger::logWorldData()
 {
     // Only log at the given period.
-    if ( m_world_p->getTimeStep() % period == 0) {
+    if (world_ptr->getTimeStep() % period == 0) {
         // Open the log file for writing, appending and not overwriting.
         m_dataFile.open(m_fileName.c_str(), std::ios::app);
         // append whatever the children would like to output
@@ -156,7 +159,8 @@ std::string worldLogger::getTimestamp()
     currentTime = localtime(&rawtime);
     // strftime(fileTime, fileTimeSize, "%m%d%Y_%H%M%S", currentTime);
     // Formatting consistent with the new folder structure:
-    strftime(fileTime, fileTimeSize, "%Y_%m_%d_%H%M%S", currentTime);
+//    strftime(fileTime, fileTimeSize, "%Y_%m_%d_%H%M%S", currentTime);
+    strftime(fileTime, fileTimeSize, "%m_%d_%H_%M_%S", currentTime);
     // memory management?
     // delete currentTime;
     // Result: fileTime is a string with the time information.

@@ -33,13 +33,17 @@
 // include input file and option
 #include "initialization/setInput.h"
 
+
+class worldLogger;
+
+
 class world
 {
 public:
     world();
     world(setInput &m_inputData);
     ~world();
-    void setupWorld(int argc, char** argv);
+    void setupWorld(int argc, char** argv, setInput& input_data, shared_ptr<worldLogger>& logger);
     void updateTimeStep();
     int simulationRunning();
     double getScaledCoordinate(int i, int limb_idx);

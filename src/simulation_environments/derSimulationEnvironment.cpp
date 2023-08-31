@@ -21,6 +21,8 @@ derSimulationEnvironment::derSimulationEnvironment(shared_ptr<world> m_world, in
 derSimulationEnvironment::derSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per, shared_ptr<worldLogger> m_logger) :
                                 w_p(m_world), cmdline_per(m_cmdline_per), logger_p(m_logger), is_logging(true)
 {
+    logger_p->world_ptr = w_p;
+    logger_p->setup();
 }
 
 derSimulationEnvironment::~derSimulationEnvironment() = default;
