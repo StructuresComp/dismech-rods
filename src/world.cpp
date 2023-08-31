@@ -96,9 +96,9 @@ void world::setupWorld(int argc, char**argv) {
     characteristicForce = M_PI * pow(rodRadius, 4) / 4.0 * youngM / pow(temp_value, 2);
     forceTol = tol * characteristicForce;
 
-    // Declare a constant external force. This is set in the robot description file
-    shared_ptr<uniformConstantForce> uniform_force = nullptr;
-    get_robot_description(argc, argv, limbs, joints, uniform_force, density, rodRadius, youngM, shearM);
+    // Setup robot geometry as well as custom external forces. Done in robotDescription.cpp!!!
+    vector<shared_ptr<baseForce>> custom_external_forces;
+    get_robot_description(argc, argv, limbs, joints, custom_external_forces, density, rodRadius, youngM, shearM);
     setupController(controllers, limbs, phi_ctrl_filepath);
 
     // This has to be called after joints are all set.
@@ -135,8 +135,8 @@ void world::setupWorld(int argc, char**argv) {
     }
 
     inner_forces = make_shared<innerForces>(inertial_force, stretching_force, bending_force, twisting_force);
-    external_forces = make_shared<externalForces>(gravity_force, damping_force, floor_contact_force, uniform_force);
-
+    external_forces = make_shared<externalForces>(gravity_force, damping_force, floor_contact_force);
+    external_forces->addToForces(custom_external_forces);
 
     // set up the time stepper
     if (integration_scheme == "verlet_position") {
