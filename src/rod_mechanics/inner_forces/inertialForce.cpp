@@ -12,7 +12,7 @@ inertialForce::~inertialForce()
     ;
 }
 
-void inertialForce::computeFi(double dt)
+void inertialForce::computeForce(double dt)
 {
     int limb_idx = 0;
     for (const auto& limb : limbs) {
@@ -33,10 +33,10 @@ void inertialForce::computeFi(double dt)
     }
 }
 
-void inertialForce::computeJi(double dt)
+void inertialForce::computeForceAndJacobian(double dt)
 {
-    // TODO: we should not need to compute this at every iteration.
-    // TODO: We should compute and store it in iteration 1 and then reuse it.
+    computeForce(dt);
+
     int limb_idx = 0;
     for (const auto& limb : limbs) {
         for (int i = 0; i < limb->ndof; i++) {

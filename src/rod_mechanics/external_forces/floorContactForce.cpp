@@ -47,7 +47,7 @@ void floorContactForce::updateMu(double m_mu) {
 }
 
 
-void floorContactForce::computeFf(double dt) {
+void floorContactForce::computeForce(double dt) {
     double dist;
     double f;
     int limb_idx = 0;
@@ -82,7 +82,7 @@ void floorContactForce::computeFf(double dt) {
 }
 
 
-void floorContactForce::computeFfJf(double dt) {
+void floorContactForce::computeForceAndJacobian(double dt) {
     double dist;
     double f;
     double J;

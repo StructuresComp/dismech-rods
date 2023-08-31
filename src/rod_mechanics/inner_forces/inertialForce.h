@@ -12,8 +12,8 @@ public:
                   const vector<shared_ptr<elasticJoint>>& m_joints);
 
     ~inertialForce() override;
-    void computeFi(double dt);
-    void computeJi(double dt);
+    void computeForce(double dt) override;
+    void computeForceAndJacobian(double dt) override;
 
 private:
     double f, jac;

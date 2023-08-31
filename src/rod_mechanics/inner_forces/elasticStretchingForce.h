@@ -11,8 +11,8 @@ public:
     elasticStretchingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
                            const vector<shared_ptr<elasticJoint>>& m_joints);
     ~elasticStretchingForce() override;
-    void computeFs();
-    void computeJs();
+    void computeForce(double dt) override;
+    void computeForceAndJacobian(double dt) override;
 
 private:
     double len, refLength;

@@ -51,6 +51,7 @@ add_executable(simDER
         src/initialization/setInput.cpp
 
         src/rod_mechanics/baseForce.cpp
+        src/rod_mechanics/baseForceContainer.cpp
         src/rod_mechanics/elasticRod.cpp
         src/rod_mechanics/elasticJoint.cpp
 

@@ -17,7 +17,7 @@ elasticStretchingForce::~elasticStretchingForce()
     ;
 }
 
-void elasticStretchingForce::computeFs()
+void elasticStretchingForce::computeForce(double dt)
 {
     int limb_idx = 0;
     for (const auto& limb : limbs) {
@@ -63,8 +63,10 @@ void elasticStretchingForce::computeFs()
     }
 }
 
-void elasticStretchingForce::computeJs()
+void elasticStretchingForce::computeForceAndJacobian(double dt)
 {
+    computeForce(dt);
+
     int limb_idx = 0;
     for (const auto& limb : limbs) {
         for (int i = 0; i < limb->ne; i++)

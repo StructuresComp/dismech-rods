@@ -13,7 +13,7 @@ dampingForce::~dampingForce()
     ;
 }
 
-void dampingForce::computeFd(double dt)
+void dampingForce::computeForce(double dt)
 {
     int limb_idx = 0;
     for (const auto& limb : limbs) {
@@ -46,8 +46,10 @@ void dampingForce::computeFd(double dt)
     }
 }
 
-void dampingForce::computeJd(double dt)
+void dampingForce::computeForceAndJacobian(double dt)
 {
+    computeForce(dt);
+
     int limb_idx = 0;
     for (const auto& limb : limbs) {
         // Here, we take advantage of the fact that the damping force Jacobian is a diagonal matrix of identical values.

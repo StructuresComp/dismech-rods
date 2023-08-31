@@ -14,6 +14,9 @@ public:
               const vector<shared_ptr<elasticJoint>>& m_joints);
     virtual ~baseForce() = 0;
 
+    virtual void computeForce(double dt) = 0;
+    virtual void computeForceAndJacobian(double dt) = 0;
+
     void setTimeStepper(shared_ptr<baseTimeStepper> m_stepper);
 
 protected:

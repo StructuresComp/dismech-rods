@@ -14,7 +14,7 @@ externalGravityForce::~externalGravityForce()
     ;
 }
 
-void externalGravityForce::computeFg()
+void externalGravityForce::computeForce(double dt)
 {
     int limb_idx = 0;
     for (const auto& limb : limbs) {
@@ -37,9 +37,9 @@ void externalGravityForce::computeFg()
     }
 }
 
-void externalGravityForce::computeJg()
+void externalGravityForce::computeForceAndJacobian(double dt)
 {
-    ;
+    computeForce(dt);
 }
 
 void externalGravityForce::setGravity()

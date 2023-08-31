@@ -46,7 +46,7 @@ elasticBendingForce::~elasticBendingForce()
     ;
 }
 
-void elasticBendingForce::computeFb()
+void elasticBendingForce::computeForce(double dt)
 {
     int limb_idx = 0;
     for (const auto& limb : limbs) {
@@ -227,8 +227,10 @@ void elasticBendingForce::computeFb()
     }
 }
 
-void elasticBendingForce::computeJb()
+void elasticBendingForce::computeForceAndJacobian(double dt)
 {
+    computeForce(dt);
+
     int limb_idx = 0;
     for (const auto& limb : limbs) {
         gradKappa1 = gradKappa1s[limb_idx];

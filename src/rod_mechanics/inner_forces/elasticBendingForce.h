@@ -11,8 +11,8 @@ public:
     elasticBendingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
                         const vector<shared_ptr<elasticJoint>>& m_joints);
     ~elasticBendingForce() override;
-    void computeFb();
-    void computeJb();
+    void computeForce(double dt) override;
+    void computeForceAndJacobian(double dt) override;
 
 private:
     void JacobianComputation();

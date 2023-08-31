@@ -13,10 +13,8 @@ public:
                       double m_floor_delta, double m_floor_slipTol, double m_mu, double m_floor_z);
     ~floorContactForce() override;
 
-    void computeFf(double dt);
-    void computeFfJf(double dt);
-    void computeFriction(const Vector2d& curr_node, const Vector2d& pre_node, double fn, double dt);
-    void prepFrictionJacobianInput(const Vector2d& curr_node, const Vector2d& pre_node, double fn, double dt);
+    void computeForce(double dt) override;
+    void computeForceAndJacobian(double dt) override;
     void updateMu(double mu);
 
     double min_dist;
@@ -25,6 +23,9 @@ public:
     void reset_slip_tol();
 
 private:
+    void computeFriction(const Vector2d& curr_node, const Vector2d& pre_node, double fn, double dt);
+    void prepFrictionJacobianInput(const Vector2d& curr_node, const Vector2d& pre_node, double fn, double dt);
+
     shared_ptr<symbolicEquations> sym_eqs;
     Vector<double, 2> contact_input;
     Vector<double, 8> fric_jacobian_input;

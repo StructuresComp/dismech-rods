@@ -31,7 +31,7 @@ elasticTwistingForce::~elasticTwistingForce()
     ;
 }
 
-void elasticTwistingForce::computeFt()
+void elasticTwistingForce::computeForce(double dt)
 {
     int limb_idx = 0;
     for (const auto& limb : limbs) {
@@ -190,8 +190,10 @@ void elasticTwistingForce::computeFt()
 
 }
 
-void elasticTwistingForce::computeJt()
+void elasticTwistingForce::computeForceAndJacobian(double dt)
 {
+    computeForce(dt);
+
     int limb_idx = 0;
     for (const auto& limb : limbs) {
         GJ = limb->GJ;

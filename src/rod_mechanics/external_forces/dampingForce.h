@@ -12,8 +12,9 @@ public:
                  const vector<shared_ptr<elasticJoint>>& m_joints,
                  double m_viscosity);
     ~dampingForce() override;
-    void computeFd(double dt);
-    void computeJd(double dt);
+
+    void computeForce(double dt) override;
+    void computeForceAndJacobian(double dt) override;
 
 private:
     double viscosity;

@@ -14,11 +14,12 @@ public:
     ~externalGravityForce() override;
 
     Vector3d gVector;
-    void setGravity();
-    void computeFg();
-    void computeJg();
+
+    void computeForce(double dt) override;
+    void computeForceAndJacobian(double dt) override;
 
 private:
+    void setGravity();
     vector<VectorXd> massGravities;
     VectorXd massGravity;
 };
