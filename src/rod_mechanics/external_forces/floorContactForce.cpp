@@ -1,6 +1,12 @@
 #include "floorContactForce.h"
 #include "time_steppers/baseTimeStepper.h"
 
+
+/* TODO: CURRENTLY ASSUMES JOINTS DO NOT EXIST AS CONTACT POINTS
+ * ADD CONTACT FOR JOINTS!!!
+ */
+
+
 floorContactForce::floorContactForce(const vector<shared_ptr<elasticRod>>& m_limbs,
                                      const vector<shared_ptr<elasticJoint>>& m_joints,
                                      double m_floor_delta, double m_floor_slipTol, double m_floor_mu,

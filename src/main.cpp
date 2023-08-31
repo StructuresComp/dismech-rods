@@ -47,10 +47,10 @@ int main(int argc,char *argv[])
     }
 
     inputData.LoadOptions(argv[1]);
-    inputData.LoadOptions(argc,argv);
+    inputData.LoadOptions(argc, argv);
 
     my_world = make_shared<world>(inputData);
-    my_world->setupWorld();
+    my_world->setupWorld(argc, argv);
 
     // Obtain parameters relevant to simulation loop
     verbosity = inputData.GetIntOpt("debugVerbosity");

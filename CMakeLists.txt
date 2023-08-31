@@ -65,6 +65,7 @@ add_executable(simDER
         src/rod_mechanics/external_forces/dampingForce.cpp
         src/rod_mechanics/external_forces/floorContactForce.cpp
         src/rod_mechanics/external_forces/symbolicEquations.cpp
+        src/rod_mechanics/external_forces/uniformConstantForce.cpp
         # src/rod_mechanics/external_forces/collisionDetector.cpp
         # src/rod_mechanics/external_forces/contactPotentialIMC.cpp
         src/rod_mechanics/external_forces/externalForces.cpp

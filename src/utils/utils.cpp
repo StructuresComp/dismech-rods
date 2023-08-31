@@ -1,5 +1,4 @@
 #include "utils.h"
-#include <fstream>
 
 
 void lock_edge(const shared_ptr<elasticRod>& limb, int edge_num)
@@ -21,8 +20,8 @@ void apply_initial_velocities(const shared_ptr<elasticRod>& limb, vector<Vector3
 }
 
 
-
-void load_txt(const string& filename, vector<Vector3d>& data) {
+template <class VecN>
+void load_txt(const string& filename, vector<VecN>& data) {
     fstream cin;
     cin.open(filename);
     if (cin.fail()) {
@@ -30,7 +29,7 @@ void load_txt(const string& filename, vector<Vector3d>& data) {
         exit(1);
     }
 
-    // TODO: add a check to see data is in proper structure (N, 3)
+    // TODO: add a check to see data is in proper (N, M) structure
     string s;
     int number_of_lines = 0;
     while (getline(cin, s)) {
@@ -39,16 +38,21 @@ void load_txt(const string& filename, vector<Vector3d>& data) {
     cin.close();
 
     cin.open(filename);
-    Vector3d entry = Vector3d::Zero();
+    VecN entry = VecN::Zero();
     int i = 0;
+    int j;
+    int shape = entry.size();
     while (i < number_of_lines) {
-        cin >> s;
-        entry(0) = stod(s);
-        cin >> s;
-        entry(1) = stod(s);
-        cin >> s;
-        entry(2) = stod(s);
+        j = 0;
+        while (j < shape) {
+            cin >> s;
+            entry(j) = stod(s);
+            j++;
+        }
         data.emplace_back(entry);
         i++;
     }
 }
+
+template void load_txt<Vector3d>(const string& filename, vector<Vector3d>& data);
+template void load_txt<Vector4d>(const string& filename, vector<Vector4d>& data);

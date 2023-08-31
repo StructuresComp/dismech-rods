@@ -89,26 +89,28 @@ void world::CloseFile(ofstream &outfile)
     outfile.close();
 }
 
-void world::setupWorld() {
-    get_robot_description(limbs, joints, density, rodRadius, youngM, shearM);
-    setupController(controllers, limbs, phi_ctrl_filepath);
-
-    // This has to be called after joints are all set.
-    for (const auto &joint : joints)
-        joint->setup();
-
+void world::setupWorld(int argc, char**argv) {
     // TODO: make characteristicForce a function of total cumulative rod length?
     double temp_value = 1.0;
     // Find out the tolerance, e.g. how small is enough?
     characteristicForce = M_PI * pow(rodRadius, 4) / 4.0 * youngM / pow(temp_value, 2);
     forceTol = tol * characteristicForce;
 
-    // Declare inner elastic forces
+    // Declare a constant external force. This is set in the robot description file
+    shared_ptr<uniformConstantForce> uniform_force = nullptr;
+    get_robot_description(argc, argv, limbs, joints, uniform_force, density, rodRadius, youngM, shearM);
+    setupController(controllers, limbs, phi_ctrl_filepath);
+
+    // This has to be called after joints are all set.
+    for (const auto &joint : joints)
+        joint->setup();
+
+    // Declare inner elastic forces. These should never be optional.
     shared_ptr<elasticStretchingForce> stretching_force = make_shared<elasticStretchingForce>(limbs, joints);
     shared_ptr<elasticBendingForce> bending_force = make_shared<elasticBendingForce>(limbs, joints);
     shared_ptr<elasticTwistingForce> twisting_force = make_shared<elasticTwistingForce>(limbs, joints);
 
-    // Declare inertial
+    // Declare inertial force. Only optional for verlet position scheme.
     shared_ptr<inertialForce> inertial_force = nullptr;
     if (integration_scheme != "verlet_position") {  // good enough for now, perhaps come up with cleaner method
         inertial_force = make_shared<inertialForce>(limbs, joints);
@@ -133,7 +135,7 @@ void world::setupWorld() {
     }
 
     inner_forces = make_shared<innerForces>(inertial_force, stretching_force, bending_force, twisting_force);
-    external_forces = make_shared<externalForces>(gravity_force, damping_force, floor_contact_force);
+    external_forces = make_shared<externalForces>(gravity_force, damping_force, floor_contact_force, uniform_force);
 
 
     // set up the time stepper

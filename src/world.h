@@ -22,6 +22,7 @@
 #include "rod_mechanics/external_forces/dampingForce.h"
 #include "rod_mechanics/external_forces/externalGravityForce.h"
 #include "rod_mechanics/external_forces/floorContactForce.h"
+#include "rod_mechanics/external_forces/uniformConstantForce.h"
 // #include "rod_mechanics/external_forces/contactPotentialIMC.h"
 
 // include time stepper
@@ -38,7 +39,7 @@ public:
     world();
     world(setInput &m_inputData);
     ~world();
-    void setupWorld();
+    void setupWorld(int argc, char** argv);
     void updateTimeStep();
     int simulationRunning();
     double getScaledCoordinate(int i, int limb_idx);
