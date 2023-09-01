@@ -1,13 +1,10 @@
 #include "elasticRod.h"
 
 elasticRod::elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
-                       double m_rho, double m_rodRadius, double m_youngM, double m_shearM)
+                       double m_rho, double m_rod_radius, double m_youngs_modulus, double m_shear_modulus) :
+                       limb_idx(m_limb_idx), ndof(num_nodes*4-1), nv(num_nodes), ne(num_nodes-1), rho(m_rho),
+                       rodRadius(m_rod_radius), youngM(m_youngs_modulus), shearM(m_shear_modulus)
 {
-    ndof = num_nodes * 4 - 1;
-    nv = num_nodes;
-    ne = num_nodes - 1;
-    limb_idx = m_limb_idx;
-
     Vector3d dir = (end - start) / (num_nodes - 1);
     for (int i = 0; i < num_nodes; i++)
     {
@@ -16,29 +13,22 @@ elasticRod::elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& en
 
     rodLength = (end - start).norm();
 
-    youngM = m_youngM;
-    shearM = m_shearM;
-    rho = m_rho;
-    rodRadius = m_rodRadius;
-
     setup();
 }
 
-// TODO: this is no longer supported, add support later if needed
-elasticRod::elasticRod(MatrixXd initialNodes, MatrixXd undeformed, double m_rho, double m_rodRadius,
-                       double m_youngM, double m_shearM, double m_rodLength, VectorXd m_theta)
+
+elasticRod::elasticRod(int m_limb_idx, const vector<Vector3d>& m_nodes, double m_rho, double m_rod_radius,
+                       double m_youngs_modulus, double m_shear_modulus) :
+                       limb_idx(m_limb_idx), ndof(m_nodes.size()*4-1), nv(m_nodes.size()), ne(m_nodes.size()-1),
+                       all_nodes(m_nodes), rho(m_ rho), rodRadius(m_rod_radius),
+                       youngM(m_youngs_modulus), shearM(m_shear_modulus)
 {
-    rodLength = m_rodLength;
-    nodes = initialNodes;
-    nodesUndeformed = undeformed;
-    nv = nodes.rows();
-    ne = nv - 1;
-    ndof = 3*nv + ne;
-    youngM = m_youngM;
-    shearM = m_shearM;
-    rho = m_rho;
-    rodRadius = m_rodRadius;
-    theta = m_theta;
+    rodLength = 0;
+    for (int i = 1; i < nv; i++)  {
+        rodLength += (all_nodes[i] - all_nodes[i-1]).norm();
+    }
+
+    setup();
 }
 
 void elasticRod::setup()

@@ -11,10 +11,9 @@ class elasticRod
 {
     public:
     elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
-               double m_rho, double m_rodRadius, double m_youngM, double m_shearM);
-    elasticRod(MatrixXd initialNodes, MatrixXd undeformed,
-    double m_rho, double m_rodRadius,
-    double m_youngM, double m_shearM, double m_rodLength, VectorXd m_theta);
+               double m_rho, double m_rod_radius, double m_youngs_modulus, double m_shear_modulus);
+    elasticRod(int m_limb_idx, const vector<Vector3d>& m_nodes, double m_rho, double m_rod_radius,
+               double m_youngs_modulus, double m_shear_modulus);
     ~elasticRod();
     void setup();
     void setMass();
