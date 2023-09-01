@@ -17,7 +17,7 @@ floorContactForce::floorContactForce(const shared_ptr<softRobots>& m_soft_robots
 
     orig_slip_tol = slipTol;
 
-    contact_stiffness = 1e5;
+    contact_stiffness = 1e4;
 
     contact_input[1] = K1;
 
@@ -64,7 +64,7 @@ void floorContactForce::computeForce(double dt) {
             ind = 4 * i + 2;
             if (limb->isDOFJoint[ind] == 1) continue;
 
-            dist = limb->x[ind] - floor_z;
+            dist = limb->x[ind] - limb->rodRadius - floor_z;
             if (dist > delta) continue;
 
             v = exp(-K1 * dist);
@@ -100,7 +100,7 @@ void floorContactForce::computeForceAndJacobian(double dt) {
             ind = 4 * i + 2;
             if (limb->isDOFJoint[ind] == 1) continue;
 
-            dist = limb->x[ind] - floor_z;
+            dist = limb->x[ind] - limb->rodRadius - floor_z;
             if (dist < min_dist) min_dist = dist;
             if (dist > delta) continue;
 

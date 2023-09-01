@@ -19,19 +19,12 @@
 
 
 shared_ptr<world> my_world;
-ofstream pull_data;
-ofstream node_data;
-
-double time_taken;
-
-bool record_data;
-bool record_nodes;
-
 int verbosity;
 
 // Hack: main creates the output file for logging
 ofstream logging_output_file;
 
+double openglDERSimulationEnvironment::render_scale = 1.0;
 bool openglDERSimulationEnvironment::show_mat_frames = false;
 
 
@@ -55,18 +48,18 @@ int main(int argc,char *argv[])
     // Obtain parameters relevant to simulation loop
     verbosity = inputData.GetIntOpt("debugVerbosity");
     int cmdline_per = inputData.GetIntOpt("cmdlinePer");
-
-    unique_ptr<derSimulationEnvironment> env = nullptr;
+    double render_scale = inputData.GetScalarOpt("renderScale");
     bool show_mat_frames = inputData.GetBoolOpt("showMatFrames");
-
-    // TODO: will have to add logging versions as well later
     bool enable_logging = inputData.GetBoolOpt("enableLogging");
 
+    unique_ptr<derSimulationEnvironment> env;
     if (my_world->isRender()) {
         if (enable_logging && logger)
-            env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, logger, argc, argv, show_mat_frames);
+            env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, logger, argc, argv,
+                                                              render_scale, show_mat_frames);
         else
-            env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, argc, argv, show_mat_frames);
+            env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, argc, argv, render_scale,
+                                                              show_mat_frames);
     }
     else {
         if (enable_logging && logger)
@@ -77,10 +70,6 @@ int main(int argc,char *argv[])
 
     env->runSimulation();
 
-    // TODO: remove this type of logging
-    // Close (if necessary) the data file
-//    if (record_data) my_world->CloseFile(pull_data);
-//    if (record_nodes) my_world->CloseFile(node_data);
     exit(0);
 }
 

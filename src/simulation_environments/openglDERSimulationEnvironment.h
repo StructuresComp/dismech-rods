@@ -41,9 +41,10 @@ class openglDERSimulationEnvironment : public derSimulationEnvironment
      * (3) call the parents
      */
     openglDERSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per,
-                                   int m_argc, char **m_argv, bool show_mat_frames);
+                                   int m_argc, char **m_argv, double render_scale, bool show_mat_frames);
     openglDERSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per,
-                                   shared_ptr<worldLogger> m_logger, int m_argc, char **m_argv, bool show_mat_frames);
+                                   shared_ptr<worldLogger> m_logger, int m_argc, char **m_argv,
+                                   double render_scale, bool show_mat_frames);
     ~openglDERSimulationEnvironment();
 
     /**
@@ -56,6 +57,7 @@ class openglDERSimulationEnvironment : public derSimulationEnvironment
      */
     void runSimulation();
     static bool show_mat_frames;
+    static double render_scale;
 
     protected:
 

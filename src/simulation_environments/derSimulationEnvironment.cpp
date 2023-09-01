@@ -30,6 +30,7 @@ derSimulationEnvironment::~derSimulationEnvironment() = default;
 // the static one does the heavy lifting
 void derSimulationEnvironment::cmdlineOutputHelper(shared_ptr<world> s_world_p, int s_cmdline_per)
 {
+    if (s_cmdline_per == 0) return;
     if (s_world_p->getTimeStep() % s_cmdline_per == 0) {
         s_world_p->printSimData();
     }

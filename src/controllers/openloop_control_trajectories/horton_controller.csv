@@ -3,7 +3,7 @@ Usage: times and angles,,,,,,,,,,,
 There are numLimbs limbs and corresponding k = 2*tan(phi/2) values that is then compute to kappabar matrixes in elastic rod class by computeKappa 
 Simulation time (sec),kappabar_phi_00,kappabar_phi_01,kappabar_phi_10,kappabar_phi_11,kappabar_phi_20,kappabar_phi_21,kappabar_phi_30,kappabar_phi_31,kappabar_phi_40,kappabar_phi_41,EmptyColForSavingExtraComma
 0,0, 0, 0, 0, 0, 0,0,0,0,0,
-0.5,30,0, 0, 0,-30, 0, 0, 0, 0, 0,
+0.5,60,0, 0, 0,-60, 0, 0, 0, 0, 0,
 1.0,-30, 0, 0, 0, 30, 0, 0, 0, 0, 0,
-2.0,30, 0, 0, 0, -30, 0, 0, 0, 0, 0,
+2.0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 3.0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

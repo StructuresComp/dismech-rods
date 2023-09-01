@@ -1,0 +1,42 @@
+rodRadius               0.025
+density                 1180
+youngM                  0.20e6
+Poisson                 0.5
+tol                     1.0e-4
+stol                    1.0e-4
+maxIter                 500
+gVector                 2.0 0.0 -9.8
+viscosity               0.00
+render                  1
+renderScale             3.5
+showMatFrames           1
+deltaTime               5e-4
+colLimit                1e-3
+delta                   2e-3
+kScaler                 5e2
+mu                      0.4
+nu                      1e-2
+lineSearch              1
+simTime                 100
+enable2DSim             0
+enableLogging           0
+logfileBase             log_files/spider
+loggingPeriod           10
+debugVerbosity          1
+
+# Rate of printing sim information. Set to 0 to disable.
+cmdlinePer           1
+
+# Determines z-coordinate of floor. Set to -9999 to disable.
+floorZ             -0.05
+
+# If nonzero, turns on adaptive time stepping which halves time step if failure to converge
+# after set number of iterations. deltaTime is used as starting time step size.
+# Valid only for implicit integration schemes.
+adaptiveTimeStepping    10
+
+# Possible options are verlet_position, backward_euler, and implicit_midpoint
+integrationScheme       implicit_midpoint
+
+# To turn off actuation, simply comment out this line
+# phiCtrlFilePath         src/controllers/openloop_control_trajectories/horton_controller.csv

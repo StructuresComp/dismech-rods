@@ -30,27 +30,30 @@ extern "C" void keyHandler(unsigned char key, int x, int y) {
 
 // Constructors just call parents and store command-line arguments from main
 openglDERSimulationEnvironment::openglDERSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per,
-                                                               int m_argc, char **m_argv, bool m_show_mat_frames) :
+                                                               int m_argc, char **m_argv, double m_render_scale,
+                                                               bool m_show_mat_frames) :
                                                                derSimulationEnvironment(m_world, m_cmdline_per),
                                                                argc_main(m_argc), argv_main(m_argv) {
     // also make static copies of the passed-in pointers.
     openglWorld_p = m_world;
     opengl_is_logging = false;
     opengl_cmdline_per = m_cmdline_per;
+    render_scale = m_render_scale;
     show_mat_frames = m_show_mat_frames;
 }
 
 openglDERSimulationEnvironment::openglDERSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per,
                                                                shared_ptr<worldLogger> m_logger, int m_argc,
-                                                               char **m_argv, bool m_show_mat_frames) :
+                                                               char **m_argv, double m_render_scale,
+                                                               bool m_show_mat_frames) :
                                                                derSimulationEnvironment(m_world, m_cmdline_per, m_logger),
                                                                argc_main(m_argc), argv_main(m_argv) {
-//                                                               show_mat_frames(m_show_mat_frames) {
 
     openglWorld_p = m_world;
     openglWorldLogger_p = m_logger;
     opengl_is_logging = true;
     opengl_cmdline_per = m_cmdline_per;
+    render_scale = m_render_scale;
     show_mat_frames = m_show_mat_frames;
 }
 
@@ -127,12 +130,12 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
         for (const auto &limb: openglWorld_p->soft_robots->limbs) {
             for (int i = 0; i < limb->ne; i++) {
                 if (limb->isEdgeJoint[i] == 0) {
-                    glVertex3f(openglWorld_p->getScaledCoordinate(4 * i, limb_idx),
-                               openglWorld_p->getScaledCoordinate(4 * i + 1, limb_idx),
-                               openglWorld_p->getScaledCoordinate(4 * i + 2, limb_idx));
-                    glVertex3f(openglWorld_p->getScaledCoordinate(4 * (i + 1), limb_idx),
-                               openglWorld_p->getScaledCoordinate(4 * (i + 1) + 1, limb_idx),
-                               openglWorld_p->getScaledCoordinate(4 * (i + 1) + 2, limb_idx));
+                    glVertex3f(openglWorld_p->getCoordinate(4 * i, limb_idx) * render_scale,
+                               openglWorld_p->getCoordinate(4 * i + 1, limb_idx) * render_scale,
+                               openglWorld_p->getCoordinate(4 * i + 2, limb_idx) * render_scale);
+                    glVertex3f(openglWorld_p->getCoordinate(4 * (i + 1), limb_idx) * render_scale,
+                               openglWorld_p->getCoordinate(4 * (i + 1) + 1, limb_idx) * render_scale,
+                               openglWorld_p->getCoordinate(4 * (i + 1) + 2, limb_idx) * render_scale);
                 }
             }
             limb_idx++;
@@ -140,18 +143,17 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
 
         // Draw joints
         glColor3f(0.0, 0.0, 1.0);
-        double scale = 0.2;  // hard coding this for now cuz I'm lazy, will fix later
         int n, l;
         for (const auto &joint: openglWorld_p->soft_robots->joints) {
             for (int i = 0; i < joint->ne; i++) {
                 n = joint->connected_nodes[i].first;
                 l = joint->connected_nodes[i].second;
-                glVertex3f(openglWorld_p->getScaledCoordinate(4 * n, l),
-                           openglWorld_p->getScaledCoordinate(4 * n + 1, l),
-                           openglWorld_p->getScaledCoordinate(4 * n + 2, l));
-                glVertex3f(joint->x(0) / scale,
-                           joint->x(1) / scale,
-                           joint->x(2) / scale);
+                glVertex3f(openglWorld_p->getCoordinate(4 * n, l) * render_scale,
+                           openglWorld_p->getCoordinate(4 * n + 1, l) * render_scale,
+                           openglWorld_p->getCoordinate(4 * n + 2, l) * render_scale);
+                glVertex3f(joint->x(0) * render_scale,
+                           joint->x(1) * render_scale,
+                           joint->x(2) * render_scale);
             }
         }
         glEnd();
@@ -166,12 +168,12 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
             for (const auto &limb: openglWorld_p->soft_robots->limbs) {
                 for (int i = 0; i < limb->ne; i++) {
                     if (limb->isEdgeJoint[i] == 0) {
-                        x = 0.5 * (openglWorld_p->getScaledCoordinate(4 * i, limb_idx) +
-                                   openglWorld_p->getScaledCoordinate(4 * (i + 1), limb_idx));
-                        y = 0.5 * (openglWorld_p->getScaledCoordinate(4 * i + 1, limb_idx) +
-                                   openglWorld_p->getScaledCoordinate(4 * (i + 1) + 1, limb_idx));
-                        z = 0.5 * (openglWorld_p->getScaledCoordinate(4 * i + 2, limb_idx) +
-                                   openglWorld_p->getScaledCoordinate(4 * (i + 1) + 2, limb_idx));
+                        x = 0.5 * render_scale * (openglWorld_p->getCoordinate(4 * i, limb_idx) +
+                                                  openglWorld_p->getCoordinate(4 * (i + 1), limb_idx));
+                        y = 0.5 * render_scale * (openglWorld_p->getCoordinate(4 * i + 1, limb_idx) +
+                                                  openglWorld_p->getCoordinate(4 * (i + 1) + 1, limb_idx));
+                        z = 0.5 * render_scale * (openglWorld_p->getCoordinate(4 * i + 2, limb_idx) +
+                                                  openglWorld_p->getCoordinate(4 * (i + 1) + 2, limb_idx));
                         m1 = 0.05 * openglWorld_p->getM1(i, limb_idx);
                         m2 = 0.05 * openglWorld_p->getM2(i, limb_idx);
                         glColor3f(1.0, 0.0, 0.0);
@@ -194,10 +196,9 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
         limb_idx = 0;
         for (const auto &limb: openglWorld_p->soft_robots->limbs) {
             for (int i = 0; i < limb->nv; i++) {
-//                if (limb->isNodeJoint[i] == 0) {
-                glVertex3f(openglWorld_p->getScaledCoordinate(4 * i, limb_idx),
-                           openglWorld_p->getScaledCoordinate(4 * i + 1, limb_idx),
-                           openglWorld_p->getScaledCoordinate(4 * i + 2, limb_idx));
+                glVertex3f(openglWorld_p->getCoordinate(4 * i, limb_idx) * render_scale,
+                           openglWorld_p->getCoordinate(4 * i + 1, limb_idx) * render_scale,
+                           openglWorld_p->getCoordinate(4 * i + 2, limb_idx) * render_scale);
 //                }
             }
             limb_idx++;

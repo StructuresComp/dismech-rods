@@ -7,7 +7,6 @@
 #include "rod_mechanics/softRobots.h"
 
 // include controllers
-#include "controllers/rodController.h"
 #include "controllers/rodOpenLoopFileKappabarSetter.h"
 
 // include inner force classes
@@ -38,32 +37,22 @@ class worldLogger;
 class world
 {
 public:
-    world();
-    world(setInput &m_inputData);
+    explicit world(setInput &m_inputData);
     ~world();
     void setupWorld(int argc, char** argv, setInput& input_data, shared_ptr<worldLogger>& logger);
     void updateTimeStep();
     int simulationRunning();
-    double getScaledCoordinate(int i, int limb_idx);
+    double getCoordinate(int i, int limb_idx);
     VectorXd getM1(int i, int limb_idx);
     VectorXd getM2(int i, int limb_idx);
     double getCurrentTime();
 
     bool isRender();
 
-    // file output
-    void OpenFile(ofstream &outfile, string filename);
-    void CloseFile(ofstream &outfile);
-    void outputNodeCoordinates(ofstream &outfile);
-
     int getTimeStep();
     void printSimData();
 
-    // TODO: Create more sophisticated classes for these
     shared_ptr<softRobots> soft_robots;
-//    vector<shared_ptr<elasticRod>> limbs;
-//    vector<shared_ptr<elasticJoint>> joints;
-//    vector<shared_ptr<rodController>> controllers;
 
 private:
     // Physical parameters
@@ -80,8 +69,6 @@ private:
     double k_scaler;
     double mu;
     double nu;
-    double data_resolution;
-    int data_rate;
     bool line_search;
     string knot_config;
     double alpha;
@@ -112,7 +99,6 @@ private:
 
     // controller parameter and setup
     string phi_ctrl_filepath;
-    void setupController(vector<shared_ptr<rodController>> &controllers, vector<shared_ptr<elasticRod>> &limbs, string phi_ctrl_filepath);
 
     void updateCons();
 

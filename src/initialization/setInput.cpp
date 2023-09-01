@@ -6,8 +6,8 @@ setInput::setInput()
 {
 
     AddOption("render", "visualization", render);
+    AddOption("renderScale", "visualization", render_scale);
     AddOption("showMatFrames", "Flag for visualizing material frames", show_mat_frames);
-    AddOption("saveData", "should results be saved", saveData);
     AddOption("rodRadius", "Radius of Rod", rodRadius);
     AddOption("youngM", "Young's Modulus", youngM);
     AddOption("Poisson", "Poisson Ratio", Poisson);
@@ -19,13 +19,10 @@ setInput::setInput()
     AddOption("viscosity", "Viscous Force after wait time", viscosity);
     AddOption("gVector", "Gravity", gVector);
     AddOption("colLimit", "Limit for collision detection to be put in candidate set", col_limit);
-    AddOption("knotConfig", "Initial knot configuration", knot_config);
     AddOption("delta", "Distance tolerance for contact", delta);
     AddOption("kScaler", "Constant scaler for contact stiffness", k_scaler);
     AddOption("mu", "Coefficient of friction", mu);
     AddOption("nu", "Slipping tolerance for friction ", nu);
-    AddOption("recordNodes", "Option for whether or not to record nodes", record_nodes);
-    AddOption("dataResolution", "Frequency of data recording", data_resolution);
     AddOption("lineSearch", "Flag for enabling line search", line_search);
     AddOption("debugVerbosity", "Flag for enabling informative print statements", verbosity);
     AddOption("cmdlinePer", "Period of printing info to command line", cmdline_per);

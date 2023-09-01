@@ -56,16 +56,13 @@ private:
     Vector3d gVector;
     double viscosity;
     bool render;
+    double render_scale;
     bool show_mat_frames;
-    bool saveData;
-    bool record_nodes;
-    double data_resolution;
     double col_limit;
     double delta;
     double k_scaler;
     double mu;
     double nu;
-    string knot_config;
     int line_search;
     int verbosity;
     int cmdline_per;

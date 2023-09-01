@@ -1,9 +1,5 @@
 #include "world.h"
 
-world::world()
-{
-    ;
-}
 
 world::world(setInput &m_inputData) {
     render = m_inputData.GetBoolOpt("render");                          // boolean
@@ -17,7 +13,6 @@ world::world(setInput &m_inputData) {
     stol = m_inputData.GetScalarOpt("stol");                            // small number, e.g. 0.1%
     density = m_inputData.GetScalarOpt("density");                      // kg/m^3
     viscosity = m_inputData.GetScalarOpt("viscosity");                  // viscosity in Pa-s
-    data_resolution = m_inputData.GetScalarOpt("dataResolution");       // time resolution for recording data
     col_limit = m_inputData.GetScalarOpt("colLimit");                   // distance limit for candidate set
     delta = m_inputData.GetScalarOpt("delta");                          // distance tolerance for contact
     k_scaler = m_inputData.GetScalarOpt("kScaler");                     // constant scaler for contact stiffness
@@ -33,61 +28,18 @@ world::world(setInput &m_inputData) {
 
     shearM = youngM / (2.0 * (1.0 + Poisson));                                // shear modulus
 
-    data_rate = ceil(data_resolution / deltaTime);                         // iter resolution for recording data
     alpha = 1.0;                                                              // newton step size
 }
 
-world::~world()
-{
-    ;
-}
+
+world::~world() = default;
+
 
 bool world::isRender()
 {
     return render;
 }
 
-void world::OpenFile(ofstream &outfile, string file_type)
-{
-    int systemRet = system("mkdir datafiles"); // make the directory
-    if (systemRet == -1)
-    {
-        cout << "Error in creating directory\n";
-    }
-
-    // Open an input file named after the current time
-    ostringstream file_name;
-    file_name.precision(6);
-    file_name << "datafiles/" << file_type;
-    file_name << "_" << knot_config;
-    file_name << "_dt_" << deltaTime;
-    file_name << "_totalTime_" << totalTime;
-    file_name << "_mu_" << mu;
-    file_name << ".txt";
-    outfile.open(file_name.str().c_str());
-    outfile.precision(10);
-}
-
-// TODO: remove this in favor of the logging classes later
-void world::outputNodeCoordinates(ofstream &outfile) {
-//    if (timeStep % data_rate != 0) return;
-//    Vector3d curr_node;
-//    double curr_theta;
-//    for (int i = 0; i < rod->nv-1; i++) {
-//        curr_node = rod->getVertex(i);
-//        curr_theta = rod->getTheta(i);
-//        outfile << curr_node(0) << " " << curr_node(1) << " " <<
-//                curr_node(2) << " " << curr_theta << endl;
-//    }
-//    curr_node = rod->getVertex(rod->nv-1);
-//    outfile << curr_node(0) << " " << curr_node(1) << " " <<
-//            curr_node(2) << " " << 0.0 << endl;
-}
-
-void world::CloseFile(ofstream &outfile)
-{
-    outfile.close();
-}
 
 void world::setupWorld(int argc, char**argv, setInput& input_data, shared_ptr<worldLogger>& logger) {
     // TODO: make characteristicForce a function of total cumulative rod length?
@@ -103,7 +55,6 @@ void world::setupWorld(int argc, char**argv, setInput& input_data, shared_ptr<wo
                           logger, density, rodRadius, youngM, shearM);
     // Provide kappaBar controller file. TODO: add additional control options
     soft_robots->addController(phi_ctrl_filepath);
-//    setupController(controllers, limbs, phi_ctrl_filepath);
 
     // This has to be called after joints are all set.
     soft_robots->setup();
@@ -178,13 +129,6 @@ void world::setupWorld(int argc, char**argv, setInput& input_data, shared_ptr<wo
     timeStep = 0;
 }
 
-void world::setupController(vector<shared_ptr<rodController>> &controllers, vector<shared_ptr<elasticRod>> &limbs, string phi_ctrl_filepath)
-{
-    if (phi_ctrl_filepath.empty()) return;
-    int num_limb;
-    num_limb = limbs.size();
-    controllers.push_back(make_shared<rodOpenLoopFileKappabarSetter>(num_limb, phi_ctrl_filepath, limbs));
-}
 
 void world::updateCons()
 {
@@ -238,11 +182,9 @@ int world::simulationRunning() {
     }
 }
 
-double world::getScaledCoordinate(int i, int limb_idx)
+double world::getCoordinate(int i, int limb_idx)
 {
-    return soft_robots->limbs[limb_idx]->x[i] / 0.2;
-    //    return limbs[limb_idx]->x[i] / (0.20 * RodLength);
-    //    return rod->x[i] / (0.20 * RodLength);
+    return soft_robots->limbs[limb_idx]->x[i];
 }
 
 VectorXd world::getM1(int i, int limb_idx)
