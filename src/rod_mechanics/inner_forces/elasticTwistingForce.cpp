@@ -1,18 +1,17 @@
 #include "elasticTwistingForce.h"
 #include "time_steppers/baseTimeStepper.h"
 
-elasticTwistingForce::elasticTwistingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                                           const vector<shared_ptr<elasticJoint>>& m_joints) :
-                                           baseForce(m_limbs, m_joints)
+elasticTwistingForce::elasticTwistingForce(const shared_ptr<softRobots>& m_soft_robots) :
+                                           baseForce(m_soft_robots)
 {
-    for (const auto& limb : m_limbs) {
+    for (const auto& limb : soft_robots->limbs) {
         gradTwists.push_back(make_shared<MatrixXd>(MatrixXd::Zero(limb->nv,11)));
         deltams.push_back(make_shared<VectorXd>(VectorXd::Zero(limb->ne)));
         theta_fs.push_back(make_shared<VectorXd>(VectorXd::Zero(limb->ne)));
         theta_es.push_back(make_shared<VectorXd>(VectorXd::Zero(limb->ne)));
     }
 
-    for (const auto& joint : m_joints) {
+    for (const auto& joint : soft_robots->joints) {
         int nb = joint->num_bending_combos;
         gradTwists.push_back(make_shared<MatrixXd>(MatrixXd::Zero(nb,11)));
         deltams.push_back(make_shared<VectorXd>(VectorXd::Zero(nb)));
@@ -34,7 +33,7 @@ elasticTwistingForce::~elasticTwistingForce()
 void elasticTwistingForce::computeForce(double dt)
 {
     int limb_idx = 0;
-    for (const auto& limb : limbs) {
+    for (const auto& limb : soft_robots->limbs) {
         GJ = limb->GJ;
         gradTwist = gradTwists[limb_idx];
         deltam = deltams[limb_idx];
@@ -111,12 +110,13 @@ void elasticTwistingForce::computeForce(double dt)
     int n3, l3;
     int curr_iter = 0;
     int sgn1, sgn2;
-    for (const auto& joint : joints) {
-        GJ = limbs[0]->GJ;  // NOTE: CHANGE THIS LATER
-        gradTwist = gradTwists[limbs.size()+joint_idx];
-        deltam = deltams[limbs.size()+joint_idx];
-        theta_f = theta_fs[limbs.size()+joint_idx];
-        theta_e = theta_es[limbs.size()+joint_idx];
+    int num_limbs = soft_robots->limbs.size();
+    for (const auto& joint : soft_robots->joints) {
+        GJ = soft_robots->limbs[0]->GJ;  // NOTE: CHANGE THIS LATER
+        gradTwist = gradTwists[num_limbs+joint_idx];
+        deltam = deltams[num_limbs+joint_idx];
+        theta_f = theta_fs[num_limbs+joint_idx];
+        theta_e = theta_es[num_limbs+joint_idx];
 
         curr_iter = 0;
         for (int i = 0; i < joint->ne; i++)  {
@@ -129,8 +129,8 @@ void elasticTwistingForce::computeForce(double dt)
                 theta1_i = joint->theta_inds[curr_iter][0];
                 theta2_i = joint->theta_inds[curr_iter][1];
 
-                theta_e->coeffRef(curr_iter) = limbs[l1]->x(theta1_i) * sgn1;
-                theta_f->coeffRef(curr_iter) = limbs[l3]->x(theta2_i) * sgn2;
+                theta_e->coeffRef(curr_iter) = soft_robots->limbs[l1]->x(theta1_i) * sgn1;
+                theta_f->coeffRef(curr_iter) = soft_robots->limbs[l3]->x(theta2_i) * sgn2;
 
                 curr_iter++;
             }
@@ -195,7 +195,7 @@ void elasticTwistingForce::computeForceAndJacobian(double dt)
     computeForce(dt);
 
     int limb_idx = 0;
-    for (const auto& limb : limbs) {
+    for (const auto& limb : soft_robots->limbs) {
         GJ = limb->GJ;
         gradTwist = gradTwists[limb_idx];
         deltam = deltams[limb_idx];
@@ -313,11 +313,12 @@ void elasticTwistingForce::computeForceAndJacobian(double dt)
     int n2, l2;
     int n3, l3;
     int curr_iter = 0;
-    for (const auto& joint : joints) {
+    int num_limbs = soft_robots->limbs.size();
+    for (const auto& joint : soft_robots->joints) {
         curr_iter = 0;
-        GJ = limbs[0]->GJ;  // NOTE: CHANGE THIS LATER
-        gradTwist = gradTwists[limbs.size() + joint_idx];
-        deltam = deltams[limbs.size()+joint_idx];
+        GJ = soft_robots->limbs[0]->GJ;  // NOTE: CHANGE THIS LATER
+        gradTwist = gradTwists[num_limbs+joint_idx];
+        deltam = deltams[num_limbs+joint_idx];
         n2 = joint->joint_node;
         l2 = joint->joint_limb;
         for (int i = 0; i < joint->ne; i++) {

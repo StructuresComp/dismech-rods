@@ -54,6 +54,7 @@ add_executable(simDER
         src/rod_mechanics/baseForceContainer.cpp
         src/rod_mechanics/elasticRod.cpp
         src/rod_mechanics/elasticJoint.cpp
+        src/rod_mechanics/softRobots.cpp
 
         src/rod_mechanics/inner_forces/inertialForce.cpp
         src/rod_mechanics/inner_forces/elasticStretchingForce.cpp

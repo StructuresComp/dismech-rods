@@ -11,9 +11,7 @@ class baseSolver;
 class implicitTimeStepper : public baseTimeStepper
 {
 public:
-    implicitTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
-                        const vector<shared_ptr<elasticJoint>>& m_joints,
-                        const vector<shared_ptr<rodController>>& m_controllers,
+    implicitTimeStepper(const shared_ptr<softRobots>& m_soft_robots,
                         const shared_ptr<innerForces>& m_inner_forces,
                         const shared_ptr<externalForces>& m_external_forces,
                         double m_dt, double m_force_tol, double m_stol,

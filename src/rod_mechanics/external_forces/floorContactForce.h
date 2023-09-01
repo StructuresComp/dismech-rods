@@ -9,8 +9,8 @@ class baseTimeStepper;
 class floorContactForce : public baseForce
 {
 public:
-    floorContactForce(const vector<shared_ptr<elasticRod>>& m_limbs, const vector<shared_ptr<elasticJoint>>& m_joints,
-                      double m_floor_delta, double m_floor_slipTol, double m_mu, double m_floor_z);
+    floorContactForce(const shared_ptr<softRobots>& m_soft_robots, double m_floor_delta,
+                      double m_floor_slipTol, double m_mu, double m_floor_z);
     ~floorContactForce() override;
 
     void computeForce(double dt) override;

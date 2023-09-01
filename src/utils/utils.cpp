@@ -1,25 +1,6 @@
 #include "utils.h"
 
 
-void lock_edge(const shared_ptr<elasticRod>& limb, int edge_num)
-{
-    limb->setVertexBoundaryCondition(limb->getVertex(edge_num), edge_num);
-    limb->setVertexBoundaryCondition(limb->getVertex(edge_num+1), edge_num+1);
-    limb->setThetaBoundaryCondition(0.0, edge_num);
-}
-
-
-void apply_initial_velocities(const shared_ptr<elasticRod>& limb, vector<Vector3d>& velocities) {
-    if (limb->nv != velocities.size()) {
-        throw runtime_error("The number of nodes (" + to_string(limb->nv) +
-                            ") and velocities (" + to_string(velocities.size()) + ") given did not match!");
-    }
-    for (int i = 0; i < limb->nv; i++) {
-        limb->u.segment(4*i, 3) = limb->u0.segment(4*i, 3) = velocities.at(i);
-    }
-}
-
-
 template <class VecN>
 void load_txt(const string& filename, vector<VecN>& data) {
     fstream cin;

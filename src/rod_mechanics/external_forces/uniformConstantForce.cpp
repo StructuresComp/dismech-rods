@@ -1,9 +1,8 @@
 #include "uniformConstantForce.h"
 #include "time_steppers/baseTimeStepper.h"
 
-uniformConstantForce::uniformConstantForce(const vector<shared_ptr<elasticRod>> &m_limbs,
-                                           const vector<shared_ptr<elasticJoint>> &m_joints) :
-                                           baseForce(m_limbs, m_joints)
+uniformConstantForce::uniformConstantForce(const shared_ptr<softRobots>& m_soft_robots) :
+                                           baseForce(m_soft_robots)
 {
 }
 
@@ -20,7 +19,7 @@ void uniformConstantForce::computeForce(double dt) {
     for (const auto& limb_force_pair : limb_force_pairs) {
         limb_idx = limb_force_pair.first;
 
-        limb = limbs[limb_idx];
+        limb = soft_robots->limbs[limb_idx];
 
         force = limb_force_pair.second / limb->ne;
 
@@ -42,7 +41,7 @@ void uniformConstantForce::computeForce(double dt) {
         }
 
         // Not the most efficient, but okay for now.
-        for (const auto& joint : joints) {
+        for (const auto& joint : soft_robots->joints) {
             if (joint->joint_limb == limb_idx) {
                 if (joint->joint_node == 0 || joint->joint_node == limb->nv-1) {
                     stepper->addForce(4*joint->joint_node, 0.5*force(0), joint->joint_limb);

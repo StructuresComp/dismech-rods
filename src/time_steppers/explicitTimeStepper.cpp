@@ -1,13 +1,10 @@
 #include "explicitTimeStepper.h"
 
 
-explicitTimeStepper::explicitTimeStepper(const vector<shared_ptr<elasticRod>> &m_limbs,
-                                         const vector<shared_ptr<elasticJoint>> &m_joints,
-                                         const vector<shared_ptr<rodController>> &m_controllers,
+explicitTimeStepper::explicitTimeStepper(const shared_ptr<softRobots>& m_soft_robots,
                                          const shared_ptr<innerForces>& m_inner_forces,
                                          const shared_ptr<externalForces>& m_external_forces, double m_dt) :
-                                         baseTimeStepper(m_limbs, m_joints, m_controllers, m_inner_forces,
-                                                         m_external_forces, m_dt)
+                                         baseTimeStepper(m_soft_robots, m_inner_forces, m_external_forces, m_dt)
 {
 }
 

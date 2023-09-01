@@ -1,9 +1,8 @@
 #include "elasticStretchingForce.h"
 #include "time_steppers/baseTimeStepper.h"
 
-elasticStretchingForce::elasticStretchingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                                               const vector<shared_ptr<elasticJoint>>& m_joints) :
-                                               baseForce(m_limbs, m_joints)
+elasticStretchingForce::elasticStretchingForce(const shared_ptr<softRobots>& m_soft_robots) :
+                                               baseForce(m_soft_robots)
 {
     f.setZero(3);
     Jss.setZero(7,7);
@@ -20,7 +19,7 @@ elasticStretchingForce::~elasticStretchingForce()
 void elasticStretchingForce::computeForce(double dt)
 {
     int limb_idx = 0;
-    for (const auto& limb : limbs) {
+    for (const auto& limb : soft_robots->limbs) {
 
         for (int i = 0; i < limb->ne; i++)
         {
@@ -42,12 +41,12 @@ void elasticStretchingForce::computeForce(double dt)
     shared_ptr<elasticRod> curr_limb;
     int n1;
     int sgn;
-    for (const auto& joint : joints) {
+    for (const auto& joint : soft_robots->joints) {
         for (int i = 0; i < joint->ne; i++) {
             joint->bending_twist_signs[i] == 1 ? sgn = 1 : sgn = -1;
             n1 = joint->connected_nodes[i].first;
             limb_idx = joint->connected_nodes[i].second;
-            curr_limb = limbs[limb_idx];
+            curr_limb = soft_robots->limbs[limb_idx];
             epsX = joint->edge_len(i) / joint->ref_len(i) - 1.0;
             f = curr_limb->EA * joint->tangents.row(i) * sgn * epsX;
             for (int k = 0; k < 3; k++) {
@@ -68,7 +67,7 @@ void elasticStretchingForce::computeForceAndJacobian(double dt)
     computeForce(dt);
 
     int limb_idx = 0;
-    for (const auto& limb : limbs) {
+    for (const auto& limb : soft_robots->limbs) {
         for (int i = 0; i < limb->ne; i++)
         {
             if (limb->isEdgeJoint[i]) continue;
@@ -103,11 +102,11 @@ void elasticStretchingForce::computeForceAndJacobian(double dt)
 
     int n1;
     shared_ptr<elasticRod> curr_limb;
-    for (const auto& joint : joints) {
+    for (const auto& joint : soft_robots->joints) {
         for (int i = 0; i < joint->ne; i++) {
             n1 = joint->connected_nodes[i].first;
             limb_idx = joint->connected_nodes[i].second;
-            curr_limb = limbs[limb_idx];
+            curr_limb = soft_robots->limbs[limb_idx];
 
             len = joint->edge_len(i);
             refLength = joint->ref_len(i);

@@ -49,8 +49,8 @@ worldLogger::worldLogger(std::string fileNamePrefix, std::string logfile_base, s
 //    if( verbosity >= 1 ){
 //        std::cout << "Logging data in the folder " << logfile_base << std::endl;
 //    }
-//    // Create this folder if it does not already exist.
-//    fs::create_directories(logfile_base);
+    // Create this folder if it does not already exist.
+    fs::create_directories(logfile_base);
 
     // Save the file name here.
     // Assume that we'll log to a file in the datafiles directory.

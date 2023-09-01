@@ -1,9 +1,9 @@
 #ifndef BASETIMESTEPPER_H
 #define BASETIMESTEPPER_H
 
-#include "controllers/rodController.h"
-#include "rod_mechanics/elasticRod.h"
 #include "eigenIncludes.h"
+#include "rod_mechanics/softRobots.h"
+#include "controllers/rodController.h"
 
 #include "rod_mechanics/inner_forces/innerForces.h"
 #include "rod_mechanics/external_forces/externalForces.h"
@@ -12,9 +12,7 @@
 class baseTimeStepper : public enable_shared_from_this<baseTimeStepper>
 {
 public:
-    baseTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
-                    const vector<shared_ptr<elasticJoint>>& m_joints,
-                    const vector<shared_ptr<rodController>>& m_controllers,
+    baseTimeStepper(const shared_ptr<softRobots>& m_soft_robots,
                     shared_ptr<innerForces> m_inner_forces,
                     shared_ptr<externalForces> m_external_forces,
                     double m_dt);
@@ -50,10 +48,9 @@ protected:
     double dt;
     double alpha = 1.0;
 
-    vector<shared_ptr<elasticRod>> limbs;
-    vector<shared_ptr<elasticJoint>> joints;
-    vector<shared_ptr<rodController>> controllers;
-
+    vector<shared_ptr<elasticRod>>& limbs;
+    vector<shared_ptr<elasticJoint>>& joints;
+    vector<shared_ptr<rodController>>& controllers;
     shared_ptr<innerForces> inner_forces;
     shared_ptr<externalForces> external_forces;
 };

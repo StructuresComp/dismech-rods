@@ -1,15 +1,14 @@
 #include "elasticBendingForce.h"
 #include "time_steppers/baseTimeStepper.h"
 
-elasticBendingForce::elasticBendingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                                         const vector<shared_ptr<elasticJoint>>& m_joints) :
-                                         baseForce(m_limbs, m_joints)
+elasticBendingForce::elasticBendingForce(const shared_ptr<softRobots>& m_soft_robots) :
+                                         baseForce(m_soft_robots)
 {
     Id3 << 1, 0, 0,
            0, 1, 0,
            0, 0, 1;
 
-    for (const auto& limb : limbs) {
+    for (const auto& limb : soft_robots->limbs) {
         double EI = limb->EI;
         Matrix2d EIMat;
         EIMat << EI, 0,
@@ -21,7 +20,7 @@ elasticBendingForce::elasticBendingForce(const vector<shared_ptr<elasticRod>>& m
         gradKappa2s.push_back(make_shared<MatrixXd>(MatrixXd::Zero(nv, 11)));
     }
 
-    for (const auto& joint : joints) {
+    for (const auto& joint : soft_robots->joints) {
         int nb = joint->num_bending_combos;
         gradKappa1s.push_back(make_shared<MatrixXd>(MatrixXd::Zero(nb, 11)));
         gradKappa2s.push_back(make_shared<MatrixXd>(MatrixXd::Zero(nb, 11)));
@@ -49,7 +48,7 @@ elasticBendingForce::~elasticBendingForce()
 void elasticBendingForce::computeForce(double dt)
 {
     int limb_idx = 0;
-    for (const auto& limb : limbs) {
+    for (const auto& limb : soft_robots->limbs) {
         gradKappa1 = gradKappa1s[limb_idx];
         gradKappa2 = gradKappa2s[limb_idx];
         for (int i = 1; i < limb->ne; i++)
@@ -134,10 +133,11 @@ void elasticBendingForce::computeForce(double dt)
 
     int joint_idx = 0;
     int sgn1, sgn2;
-    for (const auto& joint : joints) {
+    int num_limbs = soft_robots->limbs.size();
+    for (const auto& joint : soft_robots->joints) {
         int curr_iter = 0;
-        gradKappa1 = gradKappa1s[limbs.size() + joint_idx];
-        gradKappa2 = gradKappa2s[limbs.size() + joint_idx];
+        gradKappa1 = gradKappa1s[num_limbs + joint_idx];
+        gradKappa2 = gradKappa2s[num_limbs + joint_idx];
         for (int i = 0; i < joint->ne; i++) {
             joint->bending_twist_signs[i] == 1 ? sgn1 = 1 : sgn1 = -1;
             for (int j = i+1; j < joint->ne; j++) {
@@ -232,7 +232,7 @@ void elasticBendingForce::computeForceAndJacobian(double dt)
     computeForce(dt);
 
     int limb_idx = 0;
-    for (const auto& limb : limbs) {
+    for (const auto& limb : soft_robots->limbs) {
         gradKappa1 = gradKappa1s[limb_idx];
         gradKappa2 = gradKappa2s[limb_idx];
         for (int i = 1; i < limb->ne; i++) {
@@ -339,10 +339,11 @@ void elasticBendingForce::computeForceAndJacobian(double dt)
     int n1, l1;
     int n2, l2;
     int n3, l3;
-    for (const auto& joint : joints) {
+    int num_limbs = soft_robots->limbs.size();
+    for (const auto& joint : soft_robots->joints) {
         int curr_iter = 0;
-        gradKappa1 = gradKappa1s[limbs.size() + joint_idx];
-        gradKappa2 = gradKappa2s[limbs.size() + joint_idx];
+        gradKappa1 = gradKappa1s[num_limbs+joint_idx];
+        gradKappa2 = gradKappa2s[num_limbs+joint_idx];
         n2 = joint->joint_node;
         l2 = joint->joint_limb;
         for (int i = 0; i < joint->ne; i++) {

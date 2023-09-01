@@ -1,9 +1,7 @@
 #include "baseForce.h"
 
-baseForce::baseForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                     const vector<shared_ptr<elasticJoint>>& m_joints) :
-                     limbs(m_limbs), joints(m_joints) {
-
+baseForce::baseForce(const shared_ptr<softRobots>& m_soft_robots) : soft_robots(m_soft_robots)
+{
 }
 
 baseForce::~baseForce() = default;

@@ -7,11 +7,9 @@
  */
 
 
-floorContactForce::floorContactForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                                     const vector<shared_ptr<elasticJoint>>& m_joints,
-                                     double m_floor_delta, double m_floor_slipTol, double m_floor_mu,
-                                     double m_floor_z) :
-                                     baseForce(m_limbs, m_joints), delta(m_floor_delta), slipTol(m_floor_slipTol),
+floorContactForce::floorContactForce(const shared_ptr<softRobots>& m_soft_robots, double m_floor_delta,
+                                     double m_floor_slipTol, double m_floor_mu, double m_floor_z) :
+                                     baseForce(m_soft_robots), delta(m_floor_delta), slipTol(m_floor_slipTol),
                                      mu(m_floor_mu), floor_z(m_floor_z)
 {
     K1 = 15 / delta;
@@ -61,7 +59,7 @@ void floorContactForce::computeForce(double dt) {
     Vector2d curr_node, pre_node;
     double v;  // exp(K1(floor_z - \Delta))
 
-    for (const auto& limb : limbs) {
+    for (const auto& limb : soft_robots->limbs) {
         for (int i=0; i < limb->nv; i++) {
             ind = 4 * i + 2;
             if (limb->isDOFJoint[ind] == 1) continue;
@@ -97,7 +95,7 @@ void floorContactForce::computeForceAndJacobian(double dt) {
     Vector2d curr_node, pre_node;
     double v;  // exp(K1(floor_z - \Delta))
     min_dist = 1e7;
-    for (const auto& limb : limbs) {
+    for (const auto& limb : soft_robots->limbs) {
         for (int i = 0; i < limb->nv; i++) {
             ind = 4 * i + 2;
             if (limb->isDOFJoint[ind] == 1) continue;

@@ -8,8 +8,7 @@ class baseTimeStepper;
 class elasticTwistingForce : public baseForce
 {
 public:
-    elasticTwistingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                         const vector<shared_ptr<elasticJoint>>& m_joints);
+    elasticTwistingForce(const shared_ptr<softRobots>& m_soft_robots);
     ~elasticTwistingForce() override;
     void computeForce(double dt) override;
     void computeForceAndJacobian(double dt) override;

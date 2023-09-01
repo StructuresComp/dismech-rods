@@ -21,7 +21,7 @@ string velocityLogger::getLogHeader() {
 string velocityLogger::getLogData() {
     ostringstream log_data;
     log_data << world_ptr->getCurrentTime();
-    for (const auto& limb : world_ptr->limbs) {
+    for (const auto& limb : world_ptr->soft_robots->limbs) {
         for (int i = 0; i < limb->nv; i++) {
             Vector3d v = limb->getVelocity(i);
             log_data << "," << v(0) << "," << v(1) << "," << v(2);

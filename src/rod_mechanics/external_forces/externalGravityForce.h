@@ -8,9 +8,7 @@ class baseTimeStepper;
 class externalGravityForce : public baseForce
 {
 public:
-    externalGravityForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                         const vector<shared_ptr<elasticJoint>>& m_joints,
-                         Vector3d m_gVector);
+    externalGravityForce(const shared_ptr<softRobots>& m_soft_robots, Vector3d m_gVector);
     ~externalGravityForce() override;
 
     Vector3d gVector;

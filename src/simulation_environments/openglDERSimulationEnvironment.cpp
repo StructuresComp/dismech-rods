@@ -124,7 +124,7 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
         glBegin(GL_LINES);
         glColor3f(0.0, 0.0, 0.0);
         int limb_idx = 0;
-        for (const auto &limb: openglWorld_p->limbs) {
+        for (const auto &limb: openglWorld_p->soft_robots->limbs) {
             for (int i = 0; i < limb->ne; i++) {
                 if (limb->isEdgeJoint[i] == 0) {
                     glVertex3f(openglWorld_p->getScaledCoordinate(4 * i, limb_idx),
@@ -142,7 +142,7 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
         glColor3f(0.0, 0.0, 1.0);
         double scale = 0.2;  // hard coding this for now cuz I'm lazy, will fix later
         int n, l;
-        for (const auto &joint: openglWorld_p->joints) {
+        for (const auto &joint: openglWorld_p->soft_robots->joints) {
             for (int i = 0; i < joint->ne; i++) {
                 n = joint->connected_nodes[i].first;
                 l = joint->connected_nodes[i].second;
@@ -163,7 +163,7 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
             limb_idx = 0;
             double x, y, z;
             VectorXd m1, m2;
-            for (const auto &limb: openglWorld_p->limbs) {
+            for (const auto &limb: openglWorld_p->soft_robots->limbs) {
                 for (int i = 0; i < limb->ne; i++) {
                     if (limb->isEdgeJoint[i] == 0) {
                         x = 0.5 * (openglWorld_p->getScaledCoordinate(4 * i, limb_idx) +
@@ -192,7 +192,7 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
         glBegin(GL_POINTS);
         glColor3f(0.0, 1.0, 0.0);
         limb_idx = 0;
-        for (const auto &limb: openglWorld_p->limbs) {
+        for (const auto &limb: openglWorld_p->soft_robots->limbs) {
             for (int i = 0; i < limb->nv; i++) {
 //                if (limb->isNodeJoint[i] == 0) {
                 glVertex3f(openglWorld_p->getScaledCoordinate(4 * i, limb_idx),

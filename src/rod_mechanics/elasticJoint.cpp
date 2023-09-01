@@ -21,8 +21,8 @@ void elasticJoint::setup() {
             n2 = connected_nodes[j].first;
             bending_twist_signs[j] == 1 ? sgn2 = -1 : sgn2 = 1;
             bending_twist_signs[j] == 1 ? theta2_i = 4*n2+3 : theta2_i = 4*n2-1;
-            sgns.emplace_back(Vector2i(sgn1, sgn2));
-            theta_inds.emplace_back(Vector2i(theta1_i, theta2_i));
+            sgns.emplace_back(sgn1, sgn2);
+            theta_inds.emplace_back(theta1_i, theta2_i);
             num_bending_combos++;
         }
     }

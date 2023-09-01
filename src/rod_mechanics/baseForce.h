@@ -1,17 +1,15 @@
 #ifndef BASEFORCE_H
 #define BASEFORCE_H
 
-#include "../eigenIncludes.h"
-#include "elasticRod.h"
-#include "elasticJoint.h"
+#include "eigenIncludes.h"
+#include "softRobots.h"
 
 class baseTimeStepper;
 
 class baseForce
 {
 public:
-    baseForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-              const vector<shared_ptr<elasticJoint>>& m_joints);
+    baseForce(const shared_ptr<softRobots>& m_soft_robots);
     virtual ~baseForce() = 0;
 
     virtual void computeForce(double dt) = 0;
@@ -20,8 +18,7 @@ public:
     void setTimeStepper(shared_ptr<baseTimeStepper> m_stepper);
 
 protected:
-    vector<shared_ptr<elasticRod>> limbs;
-    vector<shared_ptr<elasticJoint>> joints;
+    shared_ptr<softRobots> soft_robots;
     shared_ptr<baseTimeStepper> stepper = nullptr;
 };
 

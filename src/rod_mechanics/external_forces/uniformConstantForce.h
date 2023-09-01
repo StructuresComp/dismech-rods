@@ -8,8 +8,7 @@ class baseTimeStepper;
 class uniformConstantForce : public baseForce
 {
 public:
-    uniformConstantForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                         const vector<shared_ptr<elasticJoint>>& m_joints);
+    uniformConstantForce(const shared_ptr<softRobots>& m_soft_robots);
     ~uniformConstantForce() override;
 
     void add_force_to_limb(int limb_idx, const Vector3d& force);

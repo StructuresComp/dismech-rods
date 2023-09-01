@@ -8,9 +8,7 @@ class baseTimeStepper;
 class dampingForce : public baseForce
 {
 public:
-    dampingForce(const vector<shared_ptr<elasticRod>>& m_limbs,
-                 const vector<shared_ptr<elasticJoint>>& m_joints,
-                 double m_viscosity);
+    dampingForce(const shared_ptr<softRobots>& m_soft_robots, double m_viscosity);
     ~dampingForce() override;
 
     void computeForce(double dt) override;

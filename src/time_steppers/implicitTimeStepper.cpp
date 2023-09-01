@@ -4,18 +4,17 @@
 #include <algorithm>
 
 
-implicitTimeStepper::implicitTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
-                                         const vector<shared_ptr<elasticJoint>>& m_joints,
-                                         const vector<shared_ptr<rodController>>& m_controllers,
+implicitTimeStepper::implicitTimeStepper(const shared_ptr<softRobots>& m_soft_robots,
                                          const shared_ptr<innerForces>& m_inner_forces,
                                          const shared_ptr<externalForces>& m_external_forces,
                                          double m_dt, double m_force_tol, double m_stol,
                                          int m_max_iter, int m_line_search,
                                          int m_adaptive_time_stepping, solverType m_solver_type) :
-                                         baseTimeStepper(m_limbs, m_joints, m_controllers,
-                                                         m_inner_forces, m_external_forces, m_dt),
-                                         force_tol(m_force_tol), stol(m_stol), max_iter(m_max_iter), line_search(m_line_search),
-                                         orig_dt(m_dt), adaptive_time_stepping_threshold(m_adaptive_time_stepping), solver_type(m_solver_type)
+                                         baseTimeStepper(m_soft_robots, m_inner_forces, m_external_forces, m_dt),
+                                         force_tol(m_force_tol), stol(m_stol), max_iter(m_max_iter),
+                                         line_search(m_line_search), orig_dt(m_dt),
+                                         adaptive_time_stepping_threshold(m_adaptive_time_stepping),
+                                         solver_type(m_solver_type)
 {
     adaptive_time_stepping = m_adaptive_time_stepping != 0;
     Jacobian = MatrixXd::Zero(freeDOF, freeDOF);

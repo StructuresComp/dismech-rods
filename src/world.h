@@ -4,9 +4,7 @@
 #include "eigenIncludes.h"
 #include "robotDescription.h"
 
-// include elastic rod class
-#include "rod_mechanics/elasticRod.h"
-#include "rod_mechanics/elasticJoint.h"
+#include "rod_mechanics/softRobots.h"
 
 // include controllers
 #include "controllers/rodController.h"
@@ -62,9 +60,10 @@ public:
     void printSimData();
 
     // TODO: Create more sophisticated classes for these
-    vector<shared_ptr<elasticRod>> limbs;
-    vector<shared_ptr<elasticJoint>> joints;
-    vector<shared_ptr<rodController>> controllers;
+    shared_ptr<softRobots> soft_robots;
+//    vector<shared_ptr<elasticRod>> limbs;
+//    vector<shared_ptr<elasticJoint>> joints;
+//    vector<shared_ptr<rodController>> controllers;
 
 private:
     // Physical parameters

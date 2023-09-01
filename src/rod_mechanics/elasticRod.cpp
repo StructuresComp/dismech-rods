@@ -20,7 +20,7 @@ elasticRod::elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& en
 elasticRod::elasticRod(int m_limb_idx, const vector<Vector3d>& m_nodes, double m_rho, double m_rod_radius,
                        double m_youngs_modulus, double m_shear_modulus) :
                        limb_idx(m_limb_idx), ndof(m_nodes.size()*4-1), nv(m_nodes.size()), ne(m_nodes.size()-1),
-                       all_nodes(m_nodes), rho(m_ rho), rodRadius(m_rod_radius),
+                       all_nodes(m_nodes), rho(m_rho), rodRadius(m_rod_radius),
                        youngM(m_youngs_modulus), shearM(m_shear_modulus)
 {
     rodLength = 0;

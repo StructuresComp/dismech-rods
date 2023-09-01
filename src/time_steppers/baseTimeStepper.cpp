@@ -1,15 +1,14 @@
 #include "baseTimeStepper.h"
-
 #include <utility>
 
-baseTimeStepper::baseTimeStepper(const vector<shared_ptr<elasticRod>>& m_limbs,
-                                 const vector<shared_ptr<elasticJoint>>& m_joints,
-                                 const vector<shared_ptr<rodController>>& m_controllers,
+baseTimeStepper::baseTimeStepper(const shared_ptr<softRobots>& m_soft_robots,
                                  shared_ptr<innerForces> m_inner_forces,
                                  shared_ptr<externalForces> m_external_forces,
                                  double m_dt) :
-                                 limbs(m_limbs), joints(m_joints), controllers(m_controllers),
-                                 inner_forces(std::move(m_inner_forces)), external_forces(std::move(m_external_forces)),
+                                 limbs(m_soft_robots->limbs), joints(m_soft_robots->joints),
+                                 controllers(m_soft_robots->controllers),
+                                 inner_forces(std::move(m_inner_forces)),
+                                 external_forces(std::move(m_external_forces)),
                                  dt(m_dt), Force(nullptr, 0), DX(nullptr, 0)
 
 {

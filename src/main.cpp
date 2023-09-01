@@ -61,14 +61,15 @@ int main(int argc,char *argv[])
 
     // TODO: will have to add logging versions as well later
     bool enable_logging = inputData.GetBoolOpt("enableLogging");
+
     if (my_world->isRender()) {
-        if (enable_logging)
+        if (enable_logging && logger)
             env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, logger, argc, argv, show_mat_frames);
         else
             env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, argc, argv, show_mat_frames);
     }
     else {
-        if (enable_logging)
+        if (enable_logging && logger)
             env = make_unique<headlessDERSimulationEnvironment>(my_world, cmdline_per, logger);
         else
             env = make_unique<headlessDERSimulationEnvironment>(my_world, cmdline_per);
