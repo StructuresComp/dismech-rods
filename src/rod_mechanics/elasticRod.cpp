@@ -312,17 +312,17 @@ void elasticRod::setReferenceLength()
 
 Vector3d elasticRod::getVertex(int k)
 {
-    return Vector3d(x(4 * k), x(4 * k + 1), x(4 * k + 2));
+    return Vector3d{x(4 * k), x(4 * k + 1), x(4 * k + 2)};
 }
 
 Vector3d elasticRod::getPreVertex(int k)
 {
-    return Vector3d(x0(4 * k), x0(4 * k + 1), x0(4 * k + 2));
+    return Vector3d{x0(4 * k), x0(4 * k + 1), x0(4 * k + 2)};
 }
 
 Vector3d elasticRod::getVelocity(int k)
 {
-    return Vector3d(u(4 * k), u(4 * k + 1), u(4 * k + 2));
+    return Vector3d{u(4 * k), u(4 * k + 1), u(4 * k + 2)};
 }
 
 Vector3d elasticRod::getTangent(int k)

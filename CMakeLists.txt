@@ -83,6 +83,7 @@ add_executable(simDER
 
         src/logging/worldLogger.cpp
         src/logging/rodNodeLogger.cpp
+        src/logging/velocityLogger.cpp
 
         src/simulation_environments/derSimulationEnvironment.cpp
         src/simulation_environments/headlessDERSimulationEnvironment.cpp

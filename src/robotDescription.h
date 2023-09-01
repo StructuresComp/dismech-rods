@@ -11,6 +11,11 @@
 
 // different type of loggers
 #include "logging/rodNodeLogger.h"
+#include "logging/velocityLogger.h"
+
+
+// TODO: add option for logging multiple values, i.e., vector<shared_ptr<worldLogger>>
+// TODO: make logging for multiple limbs more coherent, currently only makes sense for single rods
 
 
 void get_robot_description(int argc, char** argv,
