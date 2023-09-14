@@ -53,7 +53,7 @@ private:
     std::vector<std::vector<double>> desired_phies_profile; //
     std::vector<double> desired_phi_list; //
     // The CSV file will have a certain number of lines as a header. We'll need to remove them.
-    int csv_header_lines = 4;
+    int csv_header_lines = 1;
 
     // For debugging, if desired: detect when we've change to the next timepoint, so we can pause and inspect the gait.
     int prev_time_pt_idx = 0;

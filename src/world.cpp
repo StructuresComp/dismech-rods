@@ -1,5 +1,7 @@
 #include "world.h"
 
+extern int verbosity;
+
 
 world::world(setInput &m_inputData) {
     render = m_inputData.GetBoolOpt("render");                          // boolean
@@ -177,7 +179,8 @@ int world::simulationRunning() {
         return 1;
     else
     {
-        cout << "Completed simulation." << endl;
+        if (verbosity)
+            cout << "Completed simulation." << endl;
         return -1;
     }
 }

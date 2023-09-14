@@ -1,34 +1,34 @@
-rodRadius               0.025
+rodRadius               0.005
 density                 1180
-youngM                  0.20e6
+youngM                  3.0e6
 Poisson                 0.5
 tol                     1.0e-4
 stol                    1.0e-4
 maxIter                 500
-gVector                 2.0 0.0 -9.8
+gVector                 0.707 0.707 -9.8
 viscosity               0.00
-render                  1
+render                  0
 renderScale             3.5
 showMatFrames           1
-deltaTime               5e-4
+deltaTime               1e-4
 colLimit                1e-3
 delta                   2e-3
 kScaler                 5e2
 mu                      0.4
 nu                      1e-2
 lineSearch              1
-simTime                 100
+simTime                 2
 enable2DSim             0
-enableLogging           0
+enableLogging           1
 logfileBase             log_files/spider
-loggingPeriod           10
+loggingPeriod           20
 debugVerbosity          1
 
 # Rate of printing sim information. Set to 0 to disable.
 cmdlinePer           1
 
 # Determines z-coordinate of floor. Set to -9999 to disable.
-floorZ             -0.05
+floorZ             -0.10
 
 # If nonzero, turns on adaptive time stepping which halves time step if failure to converge
 # after set number of iterations. deltaTime is used as starting time step size.

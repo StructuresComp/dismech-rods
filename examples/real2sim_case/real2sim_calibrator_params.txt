@@ -1,0 +1,42 @@
+rodRadius               0.01
+density                 1240
+youngM                  1.793e6
+Poisson                 0.5
+tol                     1.0e-4
+stol                    1.0e-4
+maxIter                 500
+gVector                 0.0 0.0 -9.8
+viscosity               3.5
+render                  1
+renderScale             3.5
+showMatFrames           1
+deltaTime               1e-2
+colLimit                1e-3
+delta                   2e-3
+kScaler                 5e2
+mu                      0.4
+nu                      1e-2
+lineSearch              1
+simTime                 3
+enable2DSim             1
+enableLogging           1
+logfileBase             log_files/real2sim
+loggingPeriod           50
+debugVerbosity          0
+
+# Rate of printing sim information. Set to 0 to disable.
+cmdlinePer           0
+
+# Determines z-coordinate of floor. Set to -9999 to disable.
+floorZ             -9999
+
+# If nonzero, turns on adaptive time stepping which halves time step if failure to converge
+# after set number of iterations. deltaTime is used as starting time step size.
+# Valid only for implicit integration schemes.
+adaptiveTimeStepping    10
+
+# Possible options are verlet_position, backward_euler, and implicit_midpoint
+integrationScheme       backward_euler
+
+# To turn off actuation, simply comment out this line
+phiCtrlFilePath         src/controllers/openloop_control_trajectories/real2sim_controller.csv

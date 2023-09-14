@@ -59,7 +59,7 @@ void rodOpenLoopFileKappabarSetter::parseActuationFile(std::string csv_path)
     {
         std::getline(csv_file, temp_row);
         // Debugging
-        std::cout << temp_row << std::endl;
+//        std::cout << temp_row << std::endl;
     }
     // Then, start reading rows until the end
     while (std::getline(csv_file, temp_row))
@@ -113,7 +113,7 @@ void rodOpenLoopFileKappabarSetter::updateTimestep(double dt)
     // Timepoint check during the gait: are we at the next row of the actuation file?
     if (idx > prev_time_pt_idx)
     {
-        std::cout << "TIMEPOINT: ROW " << idx << std::endl;
+//        std::cout << "TIMEPOINT: ROW " << idx << std::endl;
         prev_time_pt_idx++;
     }
     else {

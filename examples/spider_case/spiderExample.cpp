@@ -19,10 +19,10 @@ void get_robot_description(int argc, char** argv, setInput& input_data, const sh
     soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0, 0.10, 0.10), 25, density, rodRadius, youngM, shearM);
     soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0, -0.10, 0.10), 25, density, rodRadius, youngM, shearM);
     soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(-0.10, 0, 0.10), 25, density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(0.10, 0, 0.10), Vector3d(0.10, 0, 0.00), 15, density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(0.0, 0.10, 0.10), Vector3d(0.0, 0.10, 0.00), 15, density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(0.0, -0.10, 0.10), Vector3d(0.0, -0.10, 0.00), 15, density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(-0.10, 0, 0.10), Vector3d(-0.10, 0, 0.00), 15, density, rodRadius, youngM, shearM);
+    soft_robots->addLimb(Vector3d(0.10, 0, 0.10), Vector3d(0.10, 0, 0.00), 25, density, rodRadius, youngM, shearM);
+    soft_robots->addLimb(Vector3d(0.0, 0.10, 0.10), Vector3d(0.0, 0.10, 0.00), 25, density, rodRadius, youngM, shearM);
+    soft_robots->addLimb(Vector3d(0.0, -0.10, 0.10), Vector3d(0.0, -0.10, 0.00), 25, density, rodRadius, youngM, shearM);
+    soft_robots->addLimb(Vector3d(-0.10, 0, 0.10), Vector3d(-0.10, 0, 0.00), 25, density, rodRadius, youngM, shearM);
 
     // Create joints and connect appropriately
     soft_robots->createJoint(0, -1);
