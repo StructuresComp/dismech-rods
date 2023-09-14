@@ -78,6 +78,64 @@ worldLogger::worldLogger(std::string fileNamePrefix, std::string logfile_base, s
     // initLogFile(p_world, fileNamePrefix);
 }
 
+
+// Constructor: creates the file name, stores locals
+worldLogger::worldLogger(std::string fileNamePrefix, std::string file_name_suffix,
+                         std::string logfile_base, std::ofstream& df, int per) :
+                         m_dataFile(df), period(per), num_lines_header(0)
+{
+    // A quick check on the passed-in strings: must not be the empty string.
+    if (fileNamePrefix == "") {
+        throw std::invalid_argument("Must specify a prefix for the worldLogger file name!");
+    }
+    if (logfile_base == "") {
+        throw std::invalid_argument("Must specify the folder to be used for logging via logfile-base in options.txt!");
+    }
+
+    // We want to be able to expand the "~" string in logfile_base
+    // to be the full home directory of the current user.
+    // It's a real pain to have to specify the complete directory structure
+    // for these log file names.
+    // Check if the first character of the string is a tilde:
+    if (logfile_base.at(0) == '~') {
+        // Get the $HOME environment variable
+        std::string home = std::getenv("HOME");
+        // Remove the tilde (the first element) from the string
+        logfile_base.erase(0,1);
+        // Concatenate the home directory.
+        logfile_base = home + logfile_base;
+    }
+
+    logfile_base += "/";
+    // Create this folder if it does not already exist.
+    fs::create_directories(logfile_base);
+
+    // Save the file name here.
+    // Assume that we'll log to a file in the datafiles directory.
+    std::ostringstream sFileName;
+    // with the timestamp included.
+    sFileName << logfile_base << fileNamePrefix << "_" << file_name_suffix;
+    //  << ".csv";
+    // save to a string, without the csv ending, for just a moment
+    m_fileName = sFileName.str();
+    // Finally, since it's possible that we will run multiple simulations within one second,
+    // check if a previous iteration already created this file and append a 1, 2, 3, etc. on it.
+    if( fs::exists(m_fileName + ".csv") ){
+        // find the next biggest counter to add
+        int repeated_file_num = 2;
+        while( fs::exists(m_fileName + "_" + to_string(repeated_file_num) + ".csv") ){
+            repeated_file_num++;
+        }
+        // and tack it on
+        m_fileName = m_fileName + "_" + to_string(repeated_file_num);
+    }
+    // and put the .csv back on. Done!
+    m_fileName = m_fileName + ".csv";
+}
+
+
+
+
 // destructor: nothing.
 worldLogger::~worldLogger()
 {

@@ -26,5 +26,6 @@ void get_robot_description(int argc, char** argv, setInput& input_data, const sh
     // Set logger to record nodes
     string logfile_base = input_data.GetStringOpt("logfileBase");
     int logging_period = input_data.GetIntOpt("loggingPeriod");
-    logger = make_shared<rodNodeLogger>(logfile_base, logging_output_file, logging_period);
+    logger = make_shared<rodNodeLogger>(logfile_base, convert_float_to_scientific_str(youngM),
+                                        logging_output_file, logging_period);
 }

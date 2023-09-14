@@ -1,4 +1,14 @@
 #include "utils.h"
+#include <iomanip>      // std::setprecision
+
+
+string convert_float_to_scientific_str(double d)
+{
+    std::stringstream ss;
+    ss << std::fixed << scientific << setprecision(2); // I know the precision, so this is fine
+    ss << d;
+    return ss.str();
+}
 
 
 template <class VecN>

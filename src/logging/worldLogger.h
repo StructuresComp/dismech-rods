@@ -35,6 +35,7 @@ class worldLogger
      * @param per integer, period to write to log file (only once per this many samples)
      */
     worldLogger(std::string fileNamePrefix, std::string logfile_base, std::ofstream& df, int per);
+    worldLogger(std::string fileNamePrefix, std::string file_name_suffix, std::string logfile_base, std::ofstream& df, int per);
     ~worldLogger();
 
     /**

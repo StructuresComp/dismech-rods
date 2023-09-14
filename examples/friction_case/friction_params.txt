@@ -25,7 +25,7 @@ loggingPeriod        1
 debugVerbosity       1
 
 # Rate of printing sim information. Set to 0 to disable.
-cmdlinePer           1
+cmdlinePer           0
 
 # Determines z-coordinate of floor. Set to -9999 to disable.
 floorZ             0.0

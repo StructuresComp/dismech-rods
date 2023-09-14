@@ -1,6 +1,6 @@
 rodRadius            0.020
 density              500
-youngM               1e5
+youngM               1e7
 Poisson              0.5
 tol                  1.0e-4
 stol                 1.0e-4
@@ -10,14 +10,14 @@ viscosity            0.00
 render               1
 renderScale          1.0
 showMatFrames        1
-deltaTime            5e-2
+deltaTime            5e-3
 colLimit             2e-3
 delta                1e-3
 kScaler              5e2
 mu                   0.4
 nu                   1e-2
 lineSearch           1
-simTime              100
+simTime              20
 enable2DSim          1
 enableLogging        1
 logfileBase          log_files/cantilever

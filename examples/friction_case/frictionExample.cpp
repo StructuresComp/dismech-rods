@@ -22,7 +22,8 @@ void get_robot_description(int argc, char** argv, setInput& input_data, const sh
 
     // Define a force value from script input
     Vector3d force = Vector3d::Zero();
-    force(0) = stod(argv[2]);
+    string force_value = argv[2];
+    force(0) = stod(force_value);  // apply along x-direction
 
     // Add uniform constant force to the cylinder
     uniform_force->add_force_to_limb(0, force);
@@ -31,5 +32,5 @@ void get_robot_description(int argc, char** argv, setInput& input_data, const sh
     // Set logger to record velocities
     string logfile_base = input_data.GetStringOpt("logfileBase");
     int logging_period = input_data.GetIntOpt("loggingPeriod");
-    logger = make_shared<velocityLogger>(logfile_base, logging_output_file, logging_period);
+    logger = make_shared<velocityLogger>(logfile_base, force_value, logging_output_file, logging_period);
 }
