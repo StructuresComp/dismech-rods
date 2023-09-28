@@ -1,8 +1,27 @@
-## DisMech
+## DisMech: A Discrete Differential Geometry-based Physical Simulator
+
+<p align="center">
+<img src="media/spider_incline.gif" width="600"alt>
+<br>
+<em> Spider robot created using DisMech's API dropped onto an incline. </em>
+</p>
+
+<p align="center">
+<img src="media/real2sim.gif" width="600"alt>
+<br>
+<em> Real2sim soft manipulator example. </em>
+</p>
 
 DisMech is a discrete differential geometry-based physical simulator for elastic rod-like structures and soft robots.
 Based on the [Discrete Elastic Rods](https://www.cs.columbia.edu/cg/pdfs/143-rods.pdf) framework, it can be used to simulate soft structures for a wide variety of purposes such as robotic deformable material manipulation and soft robot control. 
 
+***
+
+### TODO
+If you'd like DisMech to support a new feature, feel free create an issue and we'll add it to the list here.
+- [ ] Add detailed documentation for all examples. 
+- [ ] Add self-contact.
+- [ ] Add shell functionality.
 ***
 
 ### Dependencies
