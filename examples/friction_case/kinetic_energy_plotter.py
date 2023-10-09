@@ -13,7 +13,7 @@ plt.plot(u, af, linewidth=2, label="theoretical", zorder=0)
 
 
 # Construct Mass Array
-ne = 50
+ne = 25
 # rod length * pi * rod radius^2 * rho
 mass = 1 * np.pi * 0.025**2 * 509.2985
 dm = mass / ne

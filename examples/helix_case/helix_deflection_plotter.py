@@ -12,5 +12,5 @@ plt.xlabel("Sim Time [s]", fontsize=18)
 plt.ylabel("Tip Position [m]", fontsize=18)
 plt.grid(which="both", color="k", linestyle="--")
 # plt.savefig("helix.png", bbox_inches="tight", dpi=300)
-plt.show()
 
+plt.show()

@@ -44,6 +44,12 @@ double verletPosition::stepForwardInTime() {
         limb->x = limb->x0 + limb->u * 0.5 * dt;
     }
 
+    // Perform collision detection if contact is enabled
+    auto cf = external_forces->contact_force;
+    if (cf) {
+        cf->broadPhaseCollisionDetection();
+    }
+
     // Evaluation of local accelerations
     // compute F(q_t+dt/2)
     // Make sure to leave out inertial force

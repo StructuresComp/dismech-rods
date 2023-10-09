@@ -3,10 +3,10 @@ density                 1240
 youngM                  1.793e6
 Poisson                 0.5
 tol                     1.0e-4
-stol                    1.0e-4
+stol                    1.0e-3
 maxIter                 500
 gVector                 0.0 0.0 -9.8
-viscosity               3.5
+viscosity               7.0
 render                  1
 renderScale             3.5
 showMatFrames           1
@@ -14,7 +14,7 @@ deltaTime               1e-4
 colLimit                1e-3
 delta                   2e-3
 kScaler                 5e2
-mu                      0.4
+mu                      0.0
 nu                      1e-2
 lineSearch              1
 simTime                 11.6

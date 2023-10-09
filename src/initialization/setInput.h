@@ -63,7 +63,7 @@ private:
     double k_scaler;
     double mu;
     double nu;
-    int line_search;
+    bool line_search;
     int verbosity;
     int cmdline_per;
     double floor_z;

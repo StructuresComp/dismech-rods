@@ -1,16 +1,16 @@
 rodRadius            0.020
 density              500
-youngM               1e7
+youngM               1e5
 Poisson              0.5
 tol                  1.0e-4
-stol                 1.0e-4
+stol                 1.0e-3
 maxIter              500
 gVector              0.0 0.0 0.0
 viscosity            0.00
-render               1
+render               0
 renderScale          1.0
 showMatFrames        1
-deltaTime            5e-3
+deltaTime            1e-2
 colLimit             2e-3
 delta                1e-3
 kScaler              5e2
@@ -25,7 +25,7 @@ loggingPeriod        1
 debugVerbosity       1
 
 # Rate of printing sim information. Set to 0 to disable.
-cmdlinePer           1
+cmdlinePer           0
 
 # Determines z-coordinate of floor. Set to -9999 to disable.
 floorZ             -9999

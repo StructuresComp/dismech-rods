@@ -27,6 +27,7 @@ find_package(BLAS REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
 find_package(OpenMP)
+find_package(FCL REQUIRED)
 
 if (${HAVE_SYMENGINE_LLVM})
     message(STATUS "Testing SymEngine LLVM & SBML support - found")
@@ -67,8 +68,8 @@ add_executable(simDER
         src/rod_mechanics/external_forces/floorContactForce.cpp
         src/rod_mechanics/external_forces/symbolicEquations.cpp
         src/rod_mechanics/external_forces/uniformConstantForce.cpp
-        # src/rod_mechanics/external_forces/collisionDetector.cpp
-        # src/rod_mechanics/external_forces/contactPotentialIMC.cpp
+        src/rod_mechanics/external_forces/collisionDetector.cpp
+        src/rod_mechanics/external_forces/contactForce.cpp
         src/rod_mechanics/external_forces/externalForces.cpp
 
         src/time_steppers/baseTimeStepper.cpp
@@ -114,7 +115,9 @@ target_link_libraries(simDER PRIVATE
         stdc++fs
         Threads::Threads
         m
-        ${SYMENGINE_LIBRARIES})
+        ${SYMENGINE_LIBRARIES}
+        fcl
+)
 
 if (OpenMP_CXX_FOUND)
     target_link_libraries(simDER PUBLIC OpenMP::OpenMP_CXX)

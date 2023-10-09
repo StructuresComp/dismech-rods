@@ -20,7 +20,7 @@
 #include "rod_mechanics/external_forces/externalGravityForce.h"
 #include "rod_mechanics/external_forces/floorContactForce.h"
 #include "rod_mechanics/external_forces/uniformConstantForce.h"
-// #include "rod_mechanics/external_forces/contactPotentialIMC.h"
+#include "rod_mechanics/external_forces/contactForce.h"
 
 // include time stepper
 #include "time_steppers/verletPosition.h"

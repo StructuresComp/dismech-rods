@@ -566,34 +566,26 @@ void elasticRod::prepareForIteration()
     computeKappa();
 }
 
-void elasticRod::updateNewtonX(double *dx, int offset, double alpha)
+double elasticRod::updateNewtonX(double *dx, int offset, double alpha)
 {
     int ind;
+    double max_dx = 0;
+    double curr_dx = 0;
     for (int c = 0; c < uncons; c++)
     {
         ind = unconstrainedMap[c];
         x[ind] -= alpha * dx[offset + c];
+
+        if ((ind-3) % 4 != 0) {  // non-theta degree of freedom
+            curr_dx = abs(dx[offset + c]);
+            if (curr_dx > max_dx) {
+                max_dx = curr_dx;
+            }
+        }
     }
+    return max_dx;
 }
 
-//void elasticRod::updateTimeStep()
-//{
-//    prepareForIteration();
-//
-//    // compute velocity
-//    u = (x - x0) / dt;
-//
-//    // update x
-//    x0 = x;
-//
-//    // update reference directors
-//    d1_old = d1;
-//    d2_old = d2;
-//
-//    // We do not need to update m1, m2. They can be determined from theta.
-//    tangent_old = tangent;
-//    refTwist_old = refTwist;
-//}
 
 void elasticRod::updateGuess(double weight, double dt)
 {

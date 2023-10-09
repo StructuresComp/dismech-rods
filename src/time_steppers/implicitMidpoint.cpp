@@ -18,9 +18,19 @@ implicitMidpoint::~implicitMidpoint() = default;
 
 double implicitMidpoint::stepForwardInTime() {
     dt = orig_dt;
+
+    // Newton Guess. Just use approximately last solution
     for (const auto& limb : limbs) limb->updateGuess(0.01, 0.5 * dt);
+
+    // Perform collision detection if contact is enabled
+    auto cf = external_forces->contact_force;
+    if (cf) {
+        cf->broadPhaseCollisionDetection();
+    }
+
     // Compute position at T=t+0.5dt
     dt = 2 * newtonMethod(0.5 * dt);
+
     for (const auto& limb : limbs) {
         // Compute velocity at T=t+0.5dt
         limb->u = (limb->x - limb->x0) / (0.5 * dt);

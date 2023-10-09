@@ -28,18 +28,14 @@ double backwardEuler::newtonMethod(double dt) {
         external_forces->computeForcesAndJacobian(dt);
 
         // Compute norm of the force equations.
-        // TODO: replace with eigen operation
-        normf = 0;
-        for (int i = 0; i < freeDOF; i++) {
-            normf += force[i] * force[i];
-        }
-        normf = sqrt(normf);
+        normf = Force.norm();
 
         if (iter == 0) {
             normf0 = normf;
         }
 
-        if (normf <= force_tol || (iter > 0 && normf <= normf0 * stol)) {
+        // Force tolerance check
+        if (normf <= normf0 * 1e-4) {
             solved = true;
             iter++;
             continue;
@@ -49,9 +45,9 @@ double backwardEuler::newtonMethod(double dt) {
         if (adaptive_time_stepping && iter != 0 && iter % adaptive_time_stepping_threshold == 0) {
             dt *= 0.5;
             for (const auto& limb : limbs) {
-                limb->x = limb->x0;
                 limb->updateGuess(0.01, dt);
             }
+
             iter++;
             continue;
         }
@@ -61,12 +57,28 @@ double backwardEuler::newtonMethod(double dt) {
         if (line_search) lineSearch(dt);
 
         // Apply Newton update
+        double curr_dx;
+        double max_dx = 0;
         int limb_idx = 0;
         for (const auto& limb : limbs) {
-            limb->updateNewtonX(dx, offsets[limb_idx], alpha);
+            // TODO: make sure that joint dx's are properly included in this?
+            curr_dx = limb->updateNewtonX(dx, offsets[limb_idx], alpha);
+
+            // Record max change dx
+            if (curr_dx > max_dx) {
+                max_dx = curr_dx;
+            }
+
             limb_idx++;
         }
         iter++;
+
+        // Dynamics tolerance check
+        if (max_dx / dt < stol) {
+            solved = true;
+            iter++;
+            continue;
+        }
 
         // Exit if unable to converge
         if (iter > max_iter) {
@@ -163,7 +175,14 @@ void backwardEuler::lineSearch(double dt) {
 
 double backwardEuler::stepForwardInTime() {
     dt = orig_dt;
+
+    // Newton Guess. Just use approximately last solution
     for (const auto& limb : limbs) limb->updateGuess(0.01, dt);
+
+    // Perform collision detection if contact is enabled
+    auto cf = external_forces->contact_force;
+    if (cf) cf->broadPhaseCollisionDetection();
+
     dt = newtonMethod(dt);
 
     // Update limbs
@@ -204,4 +223,3 @@ void backwardEuler::updateSystemForNextTimeStep() {
         joint->ref_twist_old = joint->ref_twist;
     }
 }
-

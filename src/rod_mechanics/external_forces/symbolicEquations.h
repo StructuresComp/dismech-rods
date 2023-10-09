@@ -14,7 +14,7 @@ public:
 
     void generateContactPotentialPiecewiseFunctions();
     void generateFrictionJacobianPiecewiseFunctions();
-    void generateFloorContactForce();
+//    void generateFloorContactForce();
     void generateFloorFrictionJacobianFunctions();
 
     LLVMDoubleVisitor E_p2p_gradient_func;
@@ -46,9 +46,9 @@ private:
     int opt_level;
 
     // Helper functions for symbolic differentiation process
-    void subtract_matrix(const DenseMatrix &A, const DenseMatrix &B, DenseMatrix &C);
-    void get_norm(const DenseMatrix &num, RCP<const Basic> &C);
-    void convert_to_unit_vector(const DenseMatrix &num, DenseMatrix &C);
+    static void subtract_matrix(const DenseMatrix &A, const DenseMatrix &B, DenseMatrix &C);
+    static void get_norm(const DenseMatrix &num, RCP<const Basic> &C);
+    static void convert_to_unit_vector(const DenseMatrix &num, DenseMatrix &C);
 
     RCP<const Basic> x1s_x;
     RCP<const Basic> x1s_y;

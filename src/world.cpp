@@ -85,13 +85,20 @@ void world::setupWorld(int argc, char**argv, setInput& input_data, shared_ptr<wo
     }
 
     // Declare floor contact
+    // TODO: maybe better to replace this with modified mass method
     shared_ptr<floorContactForce> floor_contact_force = nullptr;
     if (floor_z != -9999) {  // come up with a better method for this later
         floor_contact_force = make_shared<floorContactForce>(soft_robots, delta, nu, mu, floor_z);
     }
 
+    // Declare self-contact
+    shared_ptr<contactForce> contact_force = nullptr;
+//    if (true) {  // TODO: add option
+//        contact_force = make_shared<contactForce>(soft_robots, col_limit, delta, k_scaler, mu, nu);
+//    }
+
     inner_forces = make_shared<innerForces>(inertial_force, stretching_force, bending_force, twisting_force);
-    external_forces = make_shared<externalForces>(gravity_force, damping_force, floor_contact_force);
+    external_forces = make_shared<externalForces>(gravity_force, damping_force, floor_contact_force, contact_force);
     external_forces->addToForces(custom_external_forces);
 
     // set up the time stepper
@@ -152,15 +159,38 @@ void world::updateTimeStep() {
 
 void world::printSimData()
 {
-    if (external_forces->floor_contact_force) {
-        printf("time: %.4f | iters: %i | con: %i | min_dist: %.6f | k: %.3e | fric: %.1f\n",
-               currentTime, stepper->iter, 0,
-               external_forces->floor_contact_force->min_dist,
-               0.0,
-                //           m_collisionDetector->num_collisions,
-                //           m_collisionDetector->min_dist,
-                //           m_contactPotentialIMC->contact_stiffness,
-               mu);
+    if (external_forces->contact_force) {
+        if (external_forces->contact_force->getNumCollisions() > 0) {
+            printf("time: %.4f | iters: %i | con: %i | min_dist: %.6f | k: %.3e | fric: %.1f\n",
+                   currentTime, stepper->iter, external_forces->contact_force->getNumCollisions(),
+//               external_forces->floor_contact_force->min_dist,
+                   external_forces->contact_force->getMinDist(),
+                   0.0,
+                    //           m_collisionDetector->num_collisions,
+                    //           m_collisionDetector->min_dist,
+                    //           m_contactPotentialIMC->contact_stiffness,
+                   mu);
+        }
+        else{
+            printf("time: %.4f | iters: %i | con: %i | min_dist: %s | k: %.3e | fric: %.1f\n",
+                   currentTime, stepper->iter, 0,
+                   "N/A",
+                   0.0,
+                    //           m_collisionDetector->num_collisions,
+                    //           m_collisionDetector->min_dist,
+                    //           m_contactPotentialIMC->contact_stiffness,
+                   mu);
+
+        }
+//        printf("time: %.4f | iters: %i | con: %i | min_dist: %.6f | k: %.3e | fric: %.1f\n",
+//               currentTime, stepper->iter, external_forces->contact_force->getNumCollisions(),
+////               external_forces->floor_contact_force->min_dist,
+//               external_forces->contact_force->getMinDist(),
+//               0.0,
+//                //           m_collisionDetector->num_collisions,
+//                //           m_collisionDetector->min_dist,
+//                //           m_contactPotentialIMC->contact_stiffness,
+//               mu);
     }
     else {
         printf("time: %.4f | iters: %i | con: %i | min_dist: %s | k: %.3e | fric: %.1f\n",
