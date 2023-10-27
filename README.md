@@ -1,16 +1,24 @@
-## DisMech: A Discrete Differential Geometry-based Physical Simulator
+## DisMech: A Discrete Differential Geometry-based Physical Simulator for Soft Robots and Structures
 
-<p align="center">
-<img src="media/spider_incline.gif" width="600"alt>
-<br>
-<em> Spider robot created using DisMech's API dropped onto an incline. </em>
-</p>
+<div style="text-align: center;">
+<table>
+   <tr>
+      <td align="center">  <img src="media/spider_incline.gif" width="500"> <br>
+            <em> Spider robot dropped onto an incline </em>
+      </td>
+      <td align="center" rowspan="2">
+        <img src="media/active_entanglement_cropped.gif" width="250"/> <br>
+        <em> Active entanglement gripper </em>
+     </td>
+   </tr>
+   <tr>
+      <td align="center"> <img src="media/real2sim.gif" width="500">  <br>
+           <em> Real2Sim soft manipulator modelling </em>
+      </td>
+   </tr>
+</table>
+</div>
 
-<p align="center">
-<img src="media/real2sim.gif" width="600"alt>
-<br>
-<em> Real2sim soft manipulator example. </em>
-</p>
 
 DisMech is a discrete differential geometry-based physical simulator for elastic rod-like structures and soft robots.
 Based on the [Discrete Elastic Rods](https://www.cs.columbia.edu/cg/pdfs/143-rods.pdf) framework, it can be used to simulate soft structures for a wide variety of purposes such as robotic deformable material manipulation and soft robot control. 
@@ -46,13 +54,23 @@ For other operating systems you should be able to modify the commands below appr
     cmake ..
     sudo make install
     ```
+    
+- [Flexible Collision Library (fcl)](https://github.com/flexible-collision-library/fcl)
+  - The fcl library is used to perform both broadphase and narrowphase collision detection with each discrete rod represented as a chain of cylinders.
+  - Install fcl from source using the following commands:
+    ```bash
+    git clone https://github.com/flexible-collision-library/fcl
+    cd fcl && mkdir build && cd build
+    cmake ..
+    sudo make install
+    ```
 - [SymEngine](https://github.com/symengine/symengine)
   - SymEngine is used for symbolic differentiation and function generation.
   - **macOS**: SymEngine with LLVM can be installed with MacPorts: `sudo port install symengine`.
   - Before installing SymEngine, LLVM is required which can be installed most easily via a package manager:
     - **Ubuntu**: `sudo apt-get install llvm`
     - **macOS**: `sudo port install llvm-15`
-  - Afterwards, install SymEngine from source using the following commands.
+  - Afterwards, install SymEngine from source using the following commands:
     ```bash
     git clone https://github.com/symengine/symengine
     cd symengine && mkdir build && cd build
