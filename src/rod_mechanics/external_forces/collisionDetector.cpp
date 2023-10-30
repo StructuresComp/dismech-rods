@@ -33,7 +33,7 @@ collisionDetector::collisionDetector(const shared_ptr<softRobots> &m_soft_robots
         for (int i = 0; i < limb->ne; i++) {
             // Just init a random length. This will be updated later whenever we do broadphase detection
             // Also notice that we add a distance buffer to the radius for proper IMC force computation
-            shared_ptr<fcl::Cylinderf> shape = make_shared<fcl::Cylinderf>(limb->rodRadius + 0.5 * col_limit, 1.0);
+            shared_ptr<fcl::Cylinderf> shape = make_shared<fcl::Cylinderf>(limb->rod_radius + 0.5 * col_limit, 1.0);
 
             // For each cylinder, set limb and node ids
             shape->setUserData(&(limb_edge_ids[index][i]));
@@ -298,7 +298,7 @@ void collisionDetector::narrowPhaseCollisionDetection() {
         lumelskyMinDist(idx1, idx2, idx3, idx4, idx5, idx6, curr_dist, constraint_type);
 
         // Maybe we'll store this later
-        double centerline_to_centerline_dist = soft_robots->limbs[idx5]->rodRadius + soft_robots->limbs[idx6]->rodRadius;
+        double centerline_to_centerline_dist = soft_robots->limbs[idx5]->rod_radius + soft_robots->limbs[idx6]->rod_radius;
         double contact_limit = centerline_to_centerline_dist + delta;
         double numerical_limit = centerline_to_centerline_dist - delta;
 

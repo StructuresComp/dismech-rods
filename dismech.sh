@@ -1,1 +1,1 @@
-time OMP_NUM_THREADS=1 ./simDER "$@"
+time OMP_NUM_THREADS=1 ./disMech "$@"

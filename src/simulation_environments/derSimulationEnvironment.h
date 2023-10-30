@@ -12,10 +12,11 @@
 #define DER_SIMULATION_ENVIRONMENT_H
 
 // We'll need access to the world, and to Eigen classes.
-#include "../eigenIncludes.h"
-#include "../world.h"
+#include "robotDescription.h"
+#include "eigenIncludes.h"
+#include "world.h"
 // The logging framework is separate from world.
-#include "../logging/worldLogger.h"
+#include "logging/worldLogger.h"
 
 // Abstract class: stores the world and optionally the logger to use for that world.
 class derSimulationEnvironment
@@ -26,14 +27,8 @@ class derSimulationEnvironment
     // max time until self-destruct
     // frequency of reporting to command line (per "VERBOSITY")
 
-    /**
-     * Constructor for a derSimulationEnvironment.
-     * @param m_world pointer to the world to simulate
-     * @param m_cmdline_per int, time interval (in msec) to output a little check-in to the command line
-     * @param m_logger pointer to the logger to use for the world, optionally
-     */
-    derSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per);
-    derSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per, shared_ptr<worldLogger> m_logger);
+    derSimulationEnvironment(const shared_ptr<world>& m_world, const simParams& sim_params,
+                             const shared_ptr<worldLogger>& logger);
     virtual ~derSimulationEnvironment();
 
     /**
@@ -52,7 +47,7 @@ class derSimulationEnvironment
     // Note, must be called manually in a child's runSimulation!
     // and annoyingly enough, to make compatible with GLUT's C implementation, need to have a
     // static method that takes in the world, etc. to output.
-    static void cmdlineOutputHelper(shared_ptr<world> s_world_p, int s_cmdline_per);
+    static void cmdlineOutputHelper(const shared_ptr<world>& s_world_p, int s_cmdline_per);
     // the non-static version will call the static one with our local variables.
     void cmdlineOutputHelper();
 

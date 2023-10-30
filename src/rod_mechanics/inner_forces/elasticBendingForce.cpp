@@ -53,8 +53,8 @@ void elasticBendingForce::computeForce(double dt)
         gradKappa2 = gradKappa2s[limb_idx];
         for (int i = 1; i < limb->ne; i++)
         {
-            norm_e = limb->edgeLen(i-1);
-            norm_f = limb->edgeLen(i);
+            norm_e = limb->edge_len(i-1);
+            norm_f = limb->edge_len(i);
             te = limb->tangent.row(i-1);
             tf = limb->tangent.row(i);
             d1e = limb->m1.row(i-1);
@@ -96,9 +96,9 @@ void elasticBendingForce::computeForce(double dt)
         {
             relevantPart.col(0) = gradKappa1->row(i);
             relevantPart.col(1) = gradKappa2->row(i);
-            kappaL = (limb->kappa).row(i) - (limb->kappaBar).row(i);
+            kappaL = (limb->kappa).row(i) - (limb->kappa_bar).row(i);
 
-            f = - relevantPart * EIMatrices[limb_idx] * kappaL / limb->voronoiLen(i);
+            f = - relevantPart * EIMatrices[limb_idx] * kappaL / limb->voronoi_len(i);
 
             if (limb->isNodeJoint[i-1] != 1 && limb->isNodeJoint[i] != 1 && limb->isNodeJoint[i+1] != 1) {
                 ci = 4*i-4;
@@ -206,7 +206,7 @@ void elasticBendingForce::computeForce(double dt)
 
                 relevantPart.col(0) = gradKappa1->row(curr_iter);
                 relevantPart.col(1) = gradKappa2->row(curr_iter);
-                kappaL = joint->kappa.row(curr_iter) - joint->kappaBar.row(curr_iter);
+                kappaL = joint->kappa.row(curr_iter) - joint->kappa_bar.row(curr_iter);
                 // TODO: NEED TO CONSTRUCT UNIQUE EI MATRICES WITH EACH RODS EI
                 f = -relevantPart * EIMatrices[0] * kappaL / joint->voronoi_len(curr_iter);
 
@@ -236,8 +236,8 @@ void elasticBendingForce::computeForceAndJacobian(double dt)
         gradKappa1 = gradKappa1s[limb_idx];
         gradKappa2 = gradKappa2s[limb_idx];
         for (int i = 1; i < limb->ne; i++) {
-            norm_e = limb->edgeLen(i - 1);
-            norm_f = limb->edgeLen(i);
+            norm_e = limb->edge_len(i - 1);
+            norm_f = limb->edge_len(i);
             te = limb->tangent.row(i - 1);
             tf = limb->tangent.row(i);
             d1e = limb->m1.row(i - 1);
@@ -260,13 +260,13 @@ void elasticBendingForce::computeForceAndJacobian(double dt)
 
             JacobianComputation();
 
-            len = limb->voronoiLen(i);
+            len = limb->voronoi_len(i);
             relevantPart.col(0) = gradKappa1->row(i);
             relevantPart.col(1) = gradKappa2->row(i);
 
             Jbb = -1.0 / len * relevantPart * EIMatrices[limb_idx] * relevantPart.transpose();
 
-            kappaL = (limb->kappa).row(i) - (limb->kappaBar).row(i);
+            kappaL = (limb->kappa).row(i) - (limb->kappa_bar).row(i);
 
             temp = -1.0 / len * kappaL.transpose() * EIMatrices[limb_idx];
 
@@ -389,7 +389,7 @@ void elasticBendingForce::computeForceAndJacobian(double dt)
                 // TODO: ADD CORRECT EI MATRICES FOR JOINTS
                 Jbb = -1.0 / len * relevantPart * EIMatrices[0] * relevantPart.transpose();
 
-                kappaL = (joint->kappa).row(curr_iter) - (joint->kappaBar).row(curr_iter);
+                kappaL = (joint->kappa).row(curr_iter) - (joint->kappa_bar).row(curr_iter);
 
                 temp = -1.0 / len * kappaL.transpose() * EIMatrices[0];
 

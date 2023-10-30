@@ -1,19 +1,6 @@
-/**
- * openglDERSimulationEnvironment.cpp
- *
- * Definitions for the class openglDERSimulationEnvironment.
- * Creates, updates, manages, etc., a graphical interface to the DER simulation.
- * Uses GLUT, code originally from main.cpp from Huang et al.
- *
- * Copyright 2020 Andrew P. Sabelhaus and Soft Machines Lab at CMU
- */
-
-// all includes should be in header
 #include "openglDERSimulationEnvironment.h"
-
-// Includes for GLUT.
-// We need the one with "ext" to get glutLeaveMainLoop
 #include <GL/freeglut.h>
+#include <ctime>
 
 // the callbacks for openGL.
 // Note this is a C function now
@@ -25,40 +12,24 @@ extern "C" void keyHandler(unsigned char key, int x, int y) {
     }
 }
 
-#include <ctime>
 
+openglDERSimulationEnvironment::openglDERSimulationEnvironment(const shared_ptr<world>& m_world,
+                                                               const simParams& sim_params,
+                                                               const shared_ptr<worldLogger>& logger,
+                                                               int argc, char **argv) :
+                                                               derSimulationEnvironment(m_world, sim_params, logger),
+                                                               argc_main(argc), argv_main(argv) {
 
-// Constructors just call parents and store command-line arguments from main
-openglDERSimulationEnvironment::openglDERSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per,
-                                                               int m_argc, char **m_argv, double m_render_scale,
-                                                               bool m_show_mat_frames) :
-                                                               derSimulationEnvironment(m_world, m_cmdline_per),
-                                                               argc_main(m_argc), argv_main(m_argv) {
-    // also make static copies of the passed-in pointers.
-    openglWorld_p = m_world;
-    opengl_is_logging = false;
-    opengl_cmdline_per = m_cmdline_per;
-    render_scale = m_render_scale;
-    show_mat_frames = m_show_mat_frames;
+    opengl_world = m_world;
+    opengl_cmdline_per = sim_params.cmd_line_per;
+    render_scale = sim_params.render_scale;
+    show_mat_frames = sim_params.show_mat_frames;
+    opengl_is_logging = logger != nullptr;
+    opengl_logger = logger;
+
 }
 
-openglDERSimulationEnvironment::openglDERSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per,
-                                                               shared_ptr<worldLogger> m_logger, int m_argc,
-                                                               char **m_argv, double m_render_scale,
-                                                               bool m_show_mat_frames) :
-                                                               derSimulationEnvironment(m_world, m_cmdline_per, m_logger),
-                                                               argc_main(m_argc), argv_main(m_argv) {
-
-    openglWorld_p = m_world;
-    openglWorldLogger_p = m_logger;
-    opengl_is_logging = true;
-    opengl_cmdline_per = m_cmdline_per;
-    render_scale = m_render_scale;
-    show_mat_frames = m_show_mat_frames;
-}
-
-openglDERSimulationEnvironment::~openglDERSimulationEnvironment() {
-}
+openglDERSimulationEnvironment::~openglDERSimulationEnvironment() = default;
 
 /* Initialize OpenGL Graphics */
 void openglDERSimulationEnvironment::initGL() {
@@ -91,7 +62,7 @@ void openglDERSimulationEnvironment::initGL() {
     // Here, we take an initial reading for the x0 state.
     // log if specified.
     if (opengl_is_logging) {
-        openglWorldLogger_p->logWorldData();
+        opengl_logger->logWorldData();
     }
 }
 
@@ -99,25 +70,25 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
     // openglWorld_p is static.
     // world knows its max time from setInput
     clock_t t = clock();
-    while (openglWorld_p->simulationRunning() > 0) {
+    while (opengl_world->simulationRunning() > 0) {
         //  Clear screen and Z-buffer
         glClear(GL_COLOR_BUFFER_BIT);
 
         // draw axis
-        double axisLen = 1;
+        float axis_len = 1;
         glLineWidth(0.5);
 
         // Draw axes.
         glBegin(GL_LINES);
         glColor3f(1.0, 0.0, 0.0);
         glVertex3f(0.0, 0.0, 0.0);
-        glVertex3f(axisLen, 0.0, 0.0);
+        glVertex3f(axis_len, 0.0, 0.0);
         glColor3f(0.0, 1.0, 0.0);
         glVertex3f(0.0, 0.0, 0.0);
-        glVertex3f(0.0, axisLen, 0.0);
+        glVertex3f(0.0, axis_len, 0.0);
         glColor3f(0.0, 0.0, 1.0);
         glVertex3f(0.0, 0.0, 0.0);
-        glVertex3f(0.0, 0.0, axisLen);
+        glVertex3f(0.0, 0.0, axis_len);
         glEnd();
 
         // much thicker lines
@@ -127,15 +98,15 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
         glBegin(GL_LINES);
         glColor3f(0.0, 0.0, 0.0);
         int limb_idx = 0;
-        for (const auto &limb: openglWorld_p->soft_robots->limbs) {
+        for (const auto &limb: opengl_world->soft_robots->limbs) {
             for (int i = 0; i < limb->ne; i++) {
                 if (limb->isEdgeJoint[i] == 0) {
-                    glVertex3f(openglWorld_p->getCoordinate(4 * i, limb_idx) * render_scale,
-                               openglWorld_p->getCoordinate(4 * i + 1, limb_idx) * render_scale,
-                               openglWorld_p->getCoordinate(4 * i + 2, limb_idx) * render_scale);
-                    glVertex3f(openglWorld_p->getCoordinate(4 * (i + 1), limb_idx) * render_scale,
-                               openglWorld_p->getCoordinate(4 * (i + 1) + 1, limb_idx) * render_scale,
-                               openglWorld_p->getCoordinate(4 * (i + 1) + 2, limb_idx) * render_scale);
+                    glVertex3f(opengl_world->getCoordinate(4 * i, limb_idx) * render_scale,
+                               opengl_world->getCoordinate(4 * i + 1, limb_idx) * render_scale,
+                               opengl_world->getCoordinate(4 * i + 2, limb_idx) * render_scale);
+                    glVertex3f(opengl_world->getCoordinate(4 * (i + 1), limb_idx) * render_scale,
+                               opengl_world->getCoordinate(4 * (i + 1) + 1, limb_idx) * render_scale,
+                               opengl_world->getCoordinate(4 * (i + 1) + 2, limb_idx) * render_scale);
                 }
             }
             limb_idx++;
@@ -144,13 +115,13 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
         // Draw joints
         glColor3f(0.0, 0.0, 1.0);
         int n, l;
-        for (const auto &joint: openglWorld_p->soft_robots->joints) {
+        for (const auto &joint: opengl_world->soft_robots->joints) {
             for (int i = 0; i < joint->ne; i++) {
                 n = joint->connected_nodes[i].first;
                 l = joint->connected_nodes[i].second;
-                glVertex3f(openglWorld_p->getCoordinate(4 * n, l) * render_scale,
-                           openglWorld_p->getCoordinate(4 * n + 1, l) * render_scale,
-                           openglWorld_p->getCoordinate(4 * n + 2, l) * render_scale);
+                glVertex3f(opengl_world->getCoordinate(4 * n, l) * render_scale,
+                           opengl_world->getCoordinate(4 * n + 1, l) * render_scale,
+                           opengl_world->getCoordinate(4 * n + 2, l) * render_scale);
                 glVertex3f(joint->x(0) * render_scale,
                            joint->x(1) * render_scale,
                            joint->x(2) * render_scale);
@@ -165,17 +136,17 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
             limb_idx = 0;
             double x, y, z;
             VectorXd m1, m2;
-            for (const auto &limb: openglWorld_p->soft_robots->limbs) {
+            for (const auto &limb: opengl_world->soft_robots->limbs) {
                 for (int i = 0; i < limb->ne; i++) {
                     if (limb->isEdgeJoint[i] == 0) {
-                        x = 0.5 * render_scale * (openglWorld_p->getCoordinate(4 * i, limb_idx) +
-                                                  openglWorld_p->getCoordinate(4 * (i + 1), limb_idx));
-                        y = 0.5 * render_scale * (openglWorld_p->getCoordinate(4 * i + 1, limb_idx) +
-                                                  openglWorld_p->getCoordinate(4 * (i + 1) + 1, limb_idx));
-                        z = 0.5 * render_scale * (openglWorld_p->getCoordinate(4 * i + 2, limb_idx) +
-                                                  openglWorld_p->getCoordinate(4 * (i + 1) + 2, limb_idx));
-                        m1 = 0.05 * openglWorld_p->getM1(i, limb_idx);
-                        m2 = 0.05 * openglWorld_p->getM2(i, limb_idx);
+                        x = 0.5 * render_scale * (opengl_world->getCoordinate(4 * i, limb_idx) +
+                                                  opengl_world->getCoordinate(4 * (i + 1), limb_idx));
+                        y = 0.5 * render_scale * (opengl_world->getCoordinate(4 * i + 1, limb_idx) +
+                                                  opengl_world->getCoordinate(4 * (i + 1) + 1, limb_idx));
+                        z = 0.5 * render_scale * (opengl_world->getCoordinate(4 * i + 2, limb_idx) +
+                                                  opengl_world->getCoordinate(4 * (i + 1) + 2, limb_idx));
+                        m1 = 0.05 * opengl_world->getM1(i, limb_idx);
+                        m2 = 0.05 * opengl_world->getM2(i, limb_idx);
                         glColor3f(1.0, 0.0, 0.0);
                         glVertex3f(x, y, z);
                         glVertex3f(x + m1[0], y + m1[1], z + m1[2]);
@@ -194,11 +165,11 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
         glBegin(GL_POINTS);
         glColor3f(0.0, 1.0, 0.0);
         limb_idx = 0;
-        for (const auto &limb: openglWorld_p->soft_robots->limbs) {
+        for (const auto &limb: opengl_world->soft_robots->limbs) {
             for (int i = 0; i < limb->nv; i++) {
-                glVertex3f(openglWorld_p->getCoordinate(4 * i, limb_idx) * render_scale,
-                           openglWorld_p->getCoordinate(4 * i + 1, limb_idx) * render_scale,
-                           openglWorld_p->getCoordinate(4 * i + 2, limb_idx) * render_scale);
+                glVertex3f(opengl_world->getCoordinate(4 * i, limb_idx) * render_scale,
+                           opengl_world->getCoordinate(4 * i + 1, limb_idx) * render_scale,
+                           opengl_world->getCoordinate(4 * i + 2, limb_idx) * render_scale);
 //                }
             }
             limb_idx++;
@@ -206,21 +177,13 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
         glEnd();
 
 
-//		double wallAngle = 6.0 * 3.141592654 / 180.0;
-//
-//		for (double xb = - axisLen; xb < axisLen; xb += axisLen/100.0)
-//		{
-//			glVertex3f( xb, openglWorld_p->getScaledBoundary(xb), 0);
-//			glVertex3f( xb + axisLen/100.0, openglWorld_p->getScaledBoundary(xb+axisLen/100.0), 0);
-//		}
-
         glFlush();
 
         // Step the world forward. This takes care of the SMAs, controller, rod, etc., ...
         // openglWorld_p->updateTimeStep();
         // catch convergence errors
         try {
-            openglWorld_p->updateTimeStep(); // update time step
+            opengl_world->updateTimeStep(); // update time step
         }
         catch (std::runtime_error &excep) {
             if (verbosity >= 1) {
@@ -229,7 +192,7 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
                 std::cout << "Attempting clean shutdown..." << std::endl;
             }
             // superclass has the method
-            cleanShutdown(openglWorldLogger_p, opengl_is_logging);
+            cleanShutdown(opengl_logger, opengl_is_logging);
             // ugly to return here, but that's life
             // exit(1);
             // return;
@@ -239,11 +202,11 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
 
         // log if specified.
         if (opengl_is_logging) {
-            openglWorldLogger_p->logWorldData();
+            opengl_logger->logWorldData();
         }
 
         // The helper from our superclass handles command line output.
-        cmdlineOutputHelper(openglWorld_p, opengl_cmdline_per);
+        cmdlineOutputHelper(opengl_world, opengl_cmdline_per);
 
         // sleep(0.1);
     }

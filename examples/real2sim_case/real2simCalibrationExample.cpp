@@ -15,8 +15,8 @@ void get_robot_description(int argc, char** argv,
                            shared_ptr<worldLogger>& logger,
                            simParams& sim_params) {
 
-    sim_params.dt = 1e-4;
-    sim_params.sim_time = 11.6;
+    sim_params.dt = 1e-2;
+    sim_params.sim_time = 3;
     sim_params.dtol = 1e-3;
     sim_params.render_scale = 3.5;
     sim_params.show_mat_frames = true;
@@ -51,7 +51,7 @@ void get_robot_description(int argc, char** argv,
     forces->addForce(make_shared<dampingForce>(soft_robots, viscosity));
 
     // Add kappa_bar controller
-    string phi_ctrl_file_path = "src/controllers/openloop_control_trajectories/solved_phis.csv";
+    string phi_ctrl_file_path = "src/controllers/openloop_control_trajectories/real2sim_controller.csv";
     soft_robots->addController(make_shared<rodOpenLoopFileKappabarSetter>(soft_robots, phi_ctrl_file_path));
 
     // Set logger to record nodes

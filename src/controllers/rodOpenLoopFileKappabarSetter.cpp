@@ -1,20 +1,10 @@
-/**
- * rodOpenLoopFileController.h
- *
- * Definition(s) for the concrete class rodOpenLoopFileController.
- * Pipes through the output of PWM blocks, based on a given CSV file of duty cycle timepoints.
- *
- * Copyright 2020 Andrew P. Sabelhaus and Soft Machines Lab at CMU
- */
-
 #include "rodOpenLoopFileKappabarSetter.h"
-// For exception handling
-#include <exception>
-// for the CSV file
+#include "rod_mechanics/softRobots.h"
 #include <fstream>
 
-// Constructor and destructor call parents
-rodOpenLoopFileKappabarSetter::rodOpenLoopFileKappabarSetter(int numAct, std::string m_filepath, vector<shared_ptr<elasticRod>> &m_limbs) : rodController(numAct), limbs(m_limbs)
+
+rodOpenLoopFileKappabarSetter::rodOpenLoopFileKappabarSetter(const shared_ptr<softRobots>& soft_robots, string filepath) :
+                                                             rodController(soft_robots->limbs)
 {
     // to-do: validate number of columns of file vs. numAct.
     // if (numAct != m_periods.size())
@@ -22,62 +12,60 @@ rodOpenLoopFileKappabarSetter::rodOpenLoopFileKappabarSetter(int numAct, std::st
     //     throw std::invalid_argument("Rod controller received wrong size num of actuators or wrong length lists of periods. Exiting.");
     // }
     // If there's a tilde in the file name prefix, replace with the home directory
-    if (m_filepath.empty()) return;
+    if (filepath.empty()) return;
 
-    if (m_filepath.at(0) == '~')
+    if (filepath.at(0) == '~')
     {
         // Get the $HOME environment variable
-        std::string home = std::getenv("HOME");
+        string home = getenv("HOME");
         // Remove the tilde (the first element) from the string
-        m_filepath.erase(0, 1);
+        filepath.erase(0, 1);
         // Concatenate the home directory.
-        m_filepath = home + m_filepath;
+        filepath = home + filepath;
     }
     // Parse the CSV into timepoints.
-    parseActuationFile(m_filepath);
-    for (int idx = 0; idx < numActuators*2; idx++){
+    parseActuationFile(filepath);
+    for (int idx = 0; idx < num_actuators*2; idx++){
         desired_phi_list.push_back(0);
     }
 }
 
-rodOpenLoopFileKappabarSetter::~rodOpenLoopFileKappabarSetter()
-{
-}
 
-void rodOpenLoopFileKappabarSetter::parseActuationFile(std::string csv_path)
+rodOpenLoopFileKappabarSetter::~rodOpenLoopFileKappabarSetter() = default;
+
+
+void rodOpenLoopFileKappabarSetter::parseActuationFile(string csv_path)
 {
     // open the file and check if it worked
-    std::ifstream csv_file(csv_path);
+    ifstream csv_file(csv_path);
     if (!csv_file.is_open())
     {
-        throw std::invalid_argument("Couldn't open the CSV file, check the path.");
+        throw invalid_argument("Couldn't open the CSV file, check the path.");
     }
     // various helpers for use as we iterate over rows and columns
-    std::string temp_row;
+    string temp_row;
     // Read over the first N-many lines of the header. Easiest to iterate on getline...
     for (int i = 0; i < csv_header_lines; i++)
     {
-        std::getline(csv_file, temp_row);
-        // Debugging
-//        std::cout << temp_row << std::endl;
+        getline(csv_file, temp_row);
     }
     // Then, start reading rows until the end
-    while (std::getline(csv_file, temp_row))
+    while (getline(csv_file, temp_row))
     {
         // Parse as a stringstream by commas
-        std::stringstream ss_row(temp_row);
+        stringstream ss_row(temp_row);
         // The first column is assumed to be the timepoint for row i. It's a string at first
-        std::string val_ij;
-        std::getline(ss_row, val_ij, ',');
+        string val_ij;
+        getline(ss_row, val_ij, ',');
         // and we can push it directly back into the timepoints.
         time_pts.push_back(atof(val_ij.c_str()));
         // we'll keep track of the duty cycles for this timepoint in a new vector, which will then be appended to the vector of vectors.
-        std::vector<double> phies_list;
+        vector<double> phies_list;
         // then add everything else to the duty cycle vector. Boolean check of stringstream is false when emptied out
         while (ss_row)
         {
             // the next column is...
-            std::getline(ss_row, val_ij, ',');
+            getline(ss_row, val_ij, ',');
             // getline returns an empty string at the end of a line that terminates in a comma.
             if (!val_ij.empty())
             {
@@ -86,9 +74,9 @@ void rodOpenLoopFileKappabarSetter::parseActuationFile(std::string csv_path)
             }
         }
         // verify: did this produce the correct number of columns?
-        if (phies_list.size() != numActuators * 2)
+        if (phies_list.size() != num_actuators * 2)
         {
-            throw std::invalid_argument("Error! Your CSV file had an incorrect number of rows in comparison to numAct. Or, you forgot a comma at the end of the line.");
+            throw invalid_argument("Error! Your CSV file had an incorrect number of rows in comparison to numAct. Or, you forgot a comma at the end of the line.");
         }
         // if all good, then add to the indexed duty cycle vector
         desired_phies_profile.push_back(phies_list);
@@ -120,7 +108,7 @@ void rodOpenLoopFileKappabarSetter::updateTimestep(double dt)
         return;
     }
 
-    for (std::size_t i = 0; i < numActuators * 2; i++)
+    for (std::size_t i = 0; i < num_actuators * 2; i++)
     {
         desired_phi_list.at(i) = (desired_phies_profile.at(idx)).at(i);
     }
@@ -132,17 +120,10 @@ void rodOpenLoopFileKappabarSetter::updatePhies()
 {
     int idx1, idx2;
     // Result should be same length as number of actuators
-    for (int limb_idx = 0; limb_idx < numActuators; limb_idx++)
+    for (int limb_idx = 0; limb_idx < num_actuators; limb_idx++)
     {
         idx1 = 2 * limb_idx;
         idx2 = 2 * limb_idx + 1;
         limbs[limb_idx]->updatePhis(desired_phi_list[idx1], desired_phi_list[idx2]);
     }
-}
-
-std::vector<int> rodOpenLoopFileKappabarSetter::getU(shared_ptr<elasticRod> rod_p)
-{
-    // Result should be same length as number of actuators
-    std::vector<int> u(numActuators * 2, 0);
-    return u;
 }

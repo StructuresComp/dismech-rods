@@ -44,33 +44,30 @@ include_directories(${SYMENGINE_INCLUDE_DIRS}
 
 link_directories(${MKL_LIBRARY_DIR})
 
-add_executable(simDER
+add_executable(disMech
         src/main.cpp
         src/world.cpp
         robotDescription.cpp
 
-        src/initialization/setInput.cpp
-
         src/rod_mechanics/baseForce.cpp
-        src/rod_mechanics/baseForceContainer.cpp
         src/rod_mechanics/elasticRod.cpp
         src/rod_mechanics/elasticJoint.cpp
         src/rod_mechanics/softRobots.cpp
+
+        src/rod_mechanics/forceContainer.cpp
 
         src/rod_mechanics/inner_forces/inertialForce.cpp
         src/rod_mechanics/inner_forces/elasticStretchingForce.cpp
         src/rod_mechanics/inner_forces/elasticBendingForce.cpp
         src/rod_mechanics/inner_forces/elasticTwistingForce.cpp
-        src/rod_mechanics/inner_forces/innerForces.cpp
 
-        src/rod_mechanics/external_forces/externalGravityForce.cpp
+        src/rod_mechanics/external_forces/gravityForce.cpp
         src/rod_mechanics/external_forces/dampingForce.cpp
         src/rod_mechanics/external_forces/floorContactForce.cpp
         src/rod_mechanics/external_forces/symbolicEquations.cpp
         src/rod_mechanics/external_forces/uniformConstantForce.cpp
         src/rod_mechanics/external_forces/collisionDetector.cpp
         src/rod_mechanics/external_forces/contactForce.cpp
-        src/rod_mechanics/external_forces/externalForces.cpp
 
         src/time_steppers/baseTimeStepper.cpp
         src/time_steppers/explicitTimeStepper.cpp
@@ -97,11 +94,11 @@ add_executable(simDER
         src/utils/utils.cpp
         )
 
-target_include_directories(simDER PRIVATE
+target_include_directories(disMech PRIVATE
         src
 )
 
-target_link_libraries(simDER PRIVATE
+target_link_libraries(disMech PRIVATE
         ${OPENGL_LIBRARIES}
         ${GLUT_LIBRARIES}
         MKL::MKL
@@ -120,5 +117,5 @@ target_link_libraries(simDER PRIVATE
 )
 
 if (OpenMP_CXX_FOUND)
-    target_link_libraries(simDER PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(disMech PUBLIC OpenMP::OpenMP_CXX)
 endif ()

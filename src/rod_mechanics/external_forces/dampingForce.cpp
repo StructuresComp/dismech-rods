@@ -17,7 +17,7 @@ void dampingForce::computeForce(double dt)
     for (const auto& limb : soft_robots->limbs) {
         for (int i = 0; i < limb->ne; i++) {
             if (limb->isEdgeJoint[i]) continue;
-            force = -viscosity * (limb->getVertex(i) - limb->getPreVertex(i)) / dt * limb->voronoiLen(i);
+            force = -viscosity * (limb->getVertex(i) - limb->getPreVertex(i)) / dt * limb->voronoi_len(i);
             for (int k = 0; k < 3; k++) {
                 ind = 4 * i + k;
                 stepper->addForce(ind, -force[k], limb_idx); // subtracting external force
@@ -53,7 +53,7 @@ void dampingForce::computeForceAndJacobian(double dt)
         // Here, we take advantage of the fact that the damping force Jacobian is a diagonal matrix of identical values.
         for (int i = 0; i < limb->ne; i++) {
             if (limb->isEdgeJoint[i]) continue;
-            jac = -viscosity * limb->voronoiLen(i) / dt;
+            jac = -viscosity * limb->voronoi_len(i) / dt;
             for (int k = 0; k < 3; k++) {
                 ind = 4 * i + k;
                 stepper->addJacobian(ind, ind, -jac, limb_idx);

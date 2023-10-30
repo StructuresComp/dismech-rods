@@ -2,29 +2,26 @@
 #define BASETIMESTEPPER_H
 
 #include "eigenIncludes.h"
+#include "robotDescription.h"
 #include "rod_mechanics/softRobots.h"
+#include "rod_mechanics/forceContainer.h"
 #include "controllers/rodController.h"
-
-#include "rod_mechanics/inner_forces/innerForces.h"
-#include "rod_mechanics/external_forces/externalForces.h"
 
 
 class baseTimeStepper : public enable_shared_from_this<baseTimeStepper>
 {
 public:
     baseTimeStepper(const shared_ptr<softRobots>& m_soft_robots,
-                    shared_ptr<innerForces> m_inner_forces,
-                    shared_ptr<externalForces> m_external_forces,
-                    double m_dt);
+                    const shared_ptr<forceContainer>& m_forces,
+                    const simParams& sim_params);
     virtual ~baseTimeStepper();
 
     void addForce(int ind, double p, int limb_idx);
 
-    void setupForceStepperAccess();
+    virtual void initStepper();
     virtual void prepSystemForIteration();
     virtual void setZero();
     virtual void update();
-    virtual void initSolver() = 0;
     virtual void integrator() = 0;
     virtual void addJacobian(int ind1, int ind2, double p, int limb_idx) = 0;
     virtual void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2) = 0;
@@ -51,8 +48,7 @@ protected:
     vector<shared_ptr<elasticRod>>& limbs;
     vector<shared_ptr<elasticJoint>>& joints;
     vector<shared_ptr<rodController>>& controllers;
-    shared_ptr<innerForces> inner_forces;
-    shared_ptr<externalForces> external_forces;
+    shared_ptr<forceContainer> forces;
 };
 
 #endif

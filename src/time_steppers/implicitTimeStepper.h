@@ -11,12 +11,10 @@ class baseSolver;
 class implicitTimeStepper : public baseTimeStepper
 {
 public:
-    implicitTimeStepper(const shared_ptr<softRobots>& m_soft_robots,
-                        const shared_ptr<innerForces>& m_inner_forces,
-                        const shared_ptr<externalForces>& m_external_forces,
-                        double m_dt, double m_force_tol, double m_stol,
-                        int m_max_iter, int m_line_search,
-                        int m_adaptive_time_stepping, solverType m_solver_type);
+    implicitTimeStepper(const shared_ptr<softRobots>& soft_robots,
+                        const shared_ptr<forceContainer>& forces,
+                        const simParams& sim_params,
+                        solverType solver_type);
     ~implicitTimeStepper() override;
 
     void addJacobian(int ind1, int ind2, double p, int limb_idx) override;
@@ -24,7 +22,7 @@ public:
     void setZero() override;
     void update() override;
     void integrator() override;
-    void initSolver() override;
+    void initStepper() override;
 
     void prepSystemForIteration() override;
     virtual double newtonMethod(double dt) = 0;
@@ -42,18 +40,16 @@ public:
     int kl, ku, num_rows;
 
 protected:
-    double force_tol;
-    double stol;
+    double ftol;
+    double dtol;
     int max_iter;
-    int line_search;
-
-    template<solverType solver_type>
-    void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2);
-
+    bool line_search;
     double orig_dt;
     bool adaptive_time_stepping;
     int adaptive_time_stepping_threshold;
 
+    template<solverType solver_type>
+    void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2);
 
 private:
     shared_ptr<implicitTimeStepper> shared_from_this();

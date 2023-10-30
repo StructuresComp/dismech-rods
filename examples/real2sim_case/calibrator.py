@@ -76,7 +76,7 @@ env = {**os.environ, "OMP_NUM_THREADS": str(1)}
 
 def get_lambda_from_sim(a_kappa1, a_kappa2, t_kappa):
     change_kappabar(a_kappa1, a_kappa2)
-    subprocess.call(["./simDER", "examples/real2sim_case/real2sim_calibrator_params.txt"], env=env)
+    subprocess.call(["./disMech"], env=env)
     res_kappa = compute_current_kappas()
     return np.sum(np.abs(t_kappa - res_kappa))
 

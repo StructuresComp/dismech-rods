@@ -7,16 +7,16 @@ softRobots::~softRobots() = default;
 
 
 void softRobots::addLimb(const Vector3d& start, const Vector3d& end, int num_nodes,
-                        double rho, double rod_radius, double youngs_modulus, double shear_modulus) {
+                        double rho, double rod_radius, double youngs_modulus, double poisson_ratio) {
     limbs.push_back(make_shared<elasticRod>(num_limbs, start, end, num_nodes, rho,
-                                            rod_radius, youngs_modulus, shear_modulus));
+                                            rod_radius, youngs_modulus, poisson_ratio));
     num_limbs++;
 }
 
 
 void softRobots::addLimb(const vector<Eigen::Vector3d> &nodes, double rho, double rod_radius, double youngs_modulus,
-                        double shear_modulus) {
-    limbs.push_back(make_shared<elasticRod>(num_limbs, nodes, rho, rod_radius, youngs_modulus, shear_modulus));
+                        double poisson_ratio) {
+    limbs.push_back(make_shared<elasticRod>(num_limbs, nodes, rho, rod_radius, youngs_modulus, poisson_ratio));
     num_limbs++;
 }
 
@@ -66,7 +66,6 @@ void softRobots::setup() {
 }
 
 
-void softRobots::addController(string phi_ctrl_filepath) {
-    if (phi_ctrl_filepath.empty()) return;
-    controllers.push_back(make_shared<rodOpenLoopFileKappabarSetter>(limbs.size(), phi_ctrl_filepath, limbs));
+void softRobots::addController(const shared_ptr<rodController>& controller) {
+    controllers.emplace_back(controller);
 }

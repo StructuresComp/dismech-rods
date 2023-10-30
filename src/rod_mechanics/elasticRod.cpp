@@ -1,9 +1,9 @@
 #include "elasticRod.h"
 
 elasticRod::elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
-                       double m_rho, double m_rod_radius, double m_youngs_modulus, double m_shear_modulus) :
+                       double m_rho, double m_rod_radius, double m_youngs_modulus, double m_poisson_ratio) :
                        limb_idx(m_limb_idx), ndof(num_nodes*4-1), nv(num_nodes), ne(num_nodes-1), rho(m_rho),
-                       rodRadius(m_rod_radius), youngM(m_youngs_modulus), shearM(m_shear_modulus)
+                       rod_radius(m_rod_radius), youngM(m_youngs_modulus), poisson_ratio(m_poisson_ratio)
 {
     Vector3d dir = (end - start) / (num_nodes - 1);
     for (int i = 0; i < num_nodes; i++)
@@ -11,21 +11,21 @@ elasticRod::elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& en
         all_nodes.emplace_back(start + i * dir);
     }
 
-    rodLength = (end - start).norm();
+    rod_length = (end - start).norm();
 
     setup();
 }
 
 
 elasticRod::elasticRod(int m_limb_idx, const vector<Vector3d>& m_nodes, double m_rho, double m_rod_radius,
-                       double m_youngs_modulus, double m_shear_modulus) :
+                       double m_youngs_modulus, double m_poisson_ratio) :
                        limb_idx(m_limb_idx), ndof(m_nodes.size()*4-1), nv(m_nodes.size()), ne(m_nodes.size()-1),
-                       all_nodes(m_nodes), rho(m_rho), rodRadius(m_rod_radius),
-                       youngM(m_youngs_modulus), shearM(m_shear_modulus)
+                       all_nodes(m_nodes), rho(m_rho), rod_radius(m_rod_radius),
+                       youngM(m_youngs_modulus), poisson_ratio(m_poisson_ratio)
 {
-    rodLength = 0;
+    rod_length = 0;
     for (int i = 1; i < nv; i++)  {
-        rodLength += (all_nodes[i] - all_nodes[i-1]).norm();
+        rod_length += (all_nodes[i] - all_nodes[i-1]).norm();
     }
 
     setup();
@@ -80,7 +80,7 @@ void elasticRod::setup()
     fullToUnconsMap = new int[ndof];
     setupMap();
 
-    crossSectionalArea = M_PI * rodRadius * rodRadius;
+    cross_sectional_area = M_PI * rod_radius * rod_radius;
 
     d1 = MatrixXd::Zero(ne, 3);
     d2 = MatrixXd::Zero(ne, 3);
@@ -88,7 +88,7 @@ void elasticRod::setup()
     d2_old = MatrixXd::Zero(ne, 3);
     m1 = MatrixXd::Zero(ne, 3);
     m2 = MatrixXd::Zero(ne, 3);
-    refTwist = VectorXd(ne);
+    ref_twist = VectorXd(ne);
 
     // compute reference and voronoi lengths
     setReferenceLength();
@@ -105,23 +105,23 @@ void elasticRod::setup()
     kb = MatrixXd::Zero(nv, 3);
     kappa = MatrixXd::Zero(nv, 2);
     computeKappa();
-    kappaBar = kappa;
+    kappa_bar = kappa;
 
-    // params for control via kappaBar
+    // params for control via kappa_bar
     phi1 = 0;
     phi2 = 0;
     actuated = false;
 
     // Reference twist
-    refTwist_old = VectorXd::Zero(ne);
+    ref_twist_old = VectorXd::Zero(ne);
     getRefTwist();
 
     // Compute undeformed twist
-    twistBar = VectorXd::Zero(ne);
+    twist_bar = VectorXd::Zero(ne);
     computeTwistBar();
 
     // compute edge length
-    edgeLen = VectorXd(ne);
+    edge_len = VectorXd(ne);
     computeEdgeLen();
     // compute elastic stiffness
     computeElasticStiffness();
@@ -130,7 +130,7 @@ void elasticRod::setup()
     d1_old = d1;
     d2_old = d2;
     tangent_old = tangent;
-    refTwist_old = refTwist;
+    ref_twist_old = ref_twist;
 }
 
 void elasticRod::addJoint(int node_num, bool remove_dof, int joint_node, int joint_limb)
@@ -211,12 +211,14 @@ void elasticRod::updateMap()
     setupMap();
 }
 
+
 void elasticRod::freeVertexBoundaryCondition(int k)
 {
     isConstrained[4 * k] = 0;
     isConstrained[4 * k + 1] = 0;
     isConstrained[4 * k + 2] = 0;
 }
+
 
 // functions to handle boundary condition
 void elasticRod::setVertexBoundaryCondition(Vector3d position, int k)
@@ -229,6 +231,7 @@ void elasticRod::setVertexBoundaryCondition(Vector3d position, int k)
     x(4 * k + 1) = position(1);
     x(4 * k + 2) = position(2);
 }
+
 
 void elasticRod::setThetaBoundaryCondition(double desiredTheta, int k)
 {
@@ -254,27 +257,27 @@ int elasticRod::getIfConstrained(int k)
 
 void elasticRod::setMass()
 {
-    massArray = VectorXd::Zero(ndof);
+    mass_array = VectorXd::Zero(ndof);
 
     for (int i = 0; i < nv; i++)
     {
-        dm = 0.5 * crossSectionalArea * rho;
+        dm = 0.5 * cross_sectional_area * rho;
 
         if (i == 0)
-            dm *= refLen(i);
+            dm *= ref_len(i);
         else if (i == nv-1)
-            dm *= refLen(i-1);
+            dm *= ref_len(i-1);
         else
-            dm *= (refLen(i-1) + refLen(i));
+            dm *= (ref_len(i-1) + ref_len(i));
 
         for (int k = 0; k < 3; k++)
         {
-            massArray[4 * i + k] = dm;
+            mass_array[4 * i + k] = dm;
         }
 
         if (i < nv - 1)
         {
-            massArray[4 * i + 3] = rodRadius * rodRadius * dm / 2.0;
+            mass_array[4 * i + 3] = rod_radius * rod_radius * dm / 2.0;
         }
     }
 }
@@ -282,21 +285,21 @@ void elasticRod::setMass()
 void elasticRod::setReferenceLength()
 {
     // This function is only run once at sim initilization
-    refLen = VectorXd(ne);
+    ref_len = VectorXd(ne);
     for (int i = 0; i < ne; i++)
     {
-        refLen(i) = (x.segment(4*(i+1), 3) - x.segment(4*i, 3)).norm();
+        ref_len(i) = (x.segment(4*(i+1), 3) - x.segment(4*i, 3)).norm();
     }
 
-    voronoiLen = VectorXd(nv);
+    voronoi_len = VectorXd(nv);
     for (int i = 0; i < nv; i++)
     {
         if (i == 0)
-            voronoiLen(i) = 0.5 * refLen(i);
+            voronoi_len(i) = 0.5 * ref_len(i);
         else if (i == nv - 1)
-            voronoiLen(i) = 0.5 * refLen(i - 1);
+            voronoi_len(i) = 0.5 * ref_len(i - 1);
         else
-            voronoiLen(i) = 0.5 * (refLen(i - 1) + refLen(i));
+            voronoi_len(i) = 0.5 * (ref_len(i - 1) + ref_len(i));
     }
 }
 
@@ -334,7 +337,7 @@ void elasticRod::computeTimeParallel()
     {
         t0 = tangent_old.row(i);
         t1 = tangent.row(i);
-        parallelTansport(d1_old.row(i), t0, t1, d1_vector);
+        parallelTransport(d1_old.row(i), t0, t1, d1_vector);
 
         d1.row(i) = d1_vector;
         d2.row(i) = t1.cross(d1_vector);
@@ -350,7 +353,7 @@ void elasticRod::computeTangent()
     }
 }
 
-void elasticRod::parallelTansport(const Vector3d &d1_1, const Vector3d &t1, const Vector3d &t2, Vector3d &d1_2)
+void elasticRod::parallelTransport(const Vector3d &d1_1, const Vector3d &t1, const Vector3d &t2, Vector3d &d1_2)
 {
     Vector3d b;
     Vector3d n1, n2;
@@ -399,7 +402,7 @@ void elasticRod::computeSpaceParallel()
         a = d1.row(i);
         b = tangent.row(i);
         c = tangent.row(i + 1);
-        parallelTansport(a, b, c, d);
+        parallelTransport(a, b, c, d);
         d1.row(i + 1) = d;
         d2.row(i + 1) = c.cross(d);
     }
@@ -407,7 +410,6 @@ void elasticRod::computeSpaceParallel()
 
 void elasticRod::computeMaterialDirector()
 {
-    // TODOder: take out cs, ss out of the function and declare them as privates in elasticRod class
     double cs, ss;
     double angle;
 
@@ -466,8 +468,8 @@ void elasticRod::computeAngle2KappaBar()
     for (int i = 1; i < ne; i++) {
         angle1 = phi1 / ne * (PI / 180);
         angle2 = phi2 / ne * (PI / 180);
-        kappaBar(i, 0) = 2 * tan(angle1 / 2);
-        kappaBar(i, 1) = 2 * tan(angle2 / 2);
+        kappa_bar(i, 0) = 2 * tan(angle1 / 2);
+        kappa_bar(i, 1) = 2 * tan(angle2 / 2);
     }
 }
 
@@ -483,11 +485,11 @@ void elasticRod::getRefTwist()
         t0 = tangent.row(i - 1);
         t1 = tangent.row(i);
 
-        parallelTansport(u0, t0, t1, ut);
-        rotateAxisAngle(ut, t1, refTwist_old(i));
+        parallelTransport(u0, t0, t1, ut);
+        rotateAxisAngle(ut, t1, ref_twist_old(i));
 
         sgnAngle = signedAngle(ut, u1, t1);
-        refTwist(i) = refTwist_old(i) + sgnAngle;
+        ref_twist(i) = ref_twist_old(i) + sgnAngle;
     }
 }
 
@@ -498,7 +500,7 @@ void elasticRod::computeTwistBar()
     {
         theta_i = x(4 * (i - 1) + 3);
         theta_f = x(4 * i + 3);
-        twistBar(i) = theta_f - theta_i + refTwist(i);
+        twist_bar(i) = theta_f - theta_i + ref_twist(i);
     }
 }
 
@@ -506,7 +508,7 @@ void elasticRod::computeEdgeLen()
 {
     for (int i = 0; i < ne; i++)
     {
-        edgeLen[i] = (x.segment(4 * (i + 1), 3) - x.segment(4 * i, 3)).norm();
+        edge_len[i] = (x.segment(4 * (i + 1), 3) - x.segment(4 * i, 3)).norm();
     }
 }
 
@@ -549,9 +551,10 @@ void elasticRod::setupMap()
 
 void elasticRod::computeElasticStiffness()
 {
-    EI = (youngM * M_PI * rodRadius * rodRadius * rodRadius * rodRadius) / 4;
-    EA = youngM * M_PI * rodRadius * rodRadius;
-    GJ = (shearM * M_PI * rodRadius * rodRadius * rodRadius * rodRadius) / 2;
+    shearM = youngM / (2.0 * (1.0 + poisson_ratio));
+    EI = (youngM * M_PI * rod_radius * rod_radius * rod_radius * rod_radius) / 4;
+    EA = youngM * M_PI * rod_radius * rod_radius;
+    GJ = (shearM * M_PI * rod_radius * rod_radius * rod_radius * rod_radius) / 2;
 }
 
 void elasticRod::prepareForIteration()

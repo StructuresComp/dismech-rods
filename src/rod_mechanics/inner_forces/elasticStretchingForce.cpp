@@ -24,7 +24,7 @@ void elasticStretchingForce::computeForce(double dt)
         for (int i = 0; i < limb->ne; i++)
         {
             if (limb->isEdgeJoint[i]) continue;
-            epsX = limb->edgeLen(i) / limb->refLen(i) - 1.0;
+            epsX = limb->edge_len(i) / limb->ref_len(i) - 1.0;
             f = limb->EA * (limb->tangent).row(i) * epsX;
             for (int k = 0; k < 3; k++)
             {
@@ -71,8 +71,8 @@ void elasticStretchingForce::computeForceAndJacobian(double dt)
         for (int i = 0; i < limb->ne; i++)
         {
             if (limb->isEdgeJoint[i]) continue;
-            len = limb->edgeLen[i];
-            refLength = limb->refLen[i];
+            len = limb->edge_len[i];
+            refLength = limb->ref_len[i];
 
             dxx(0) = limb->x(4*i+4) - limb->x(4*i+0);
             dxx(1) = limb->x(4*i+5) - limb->x(4*i+1);

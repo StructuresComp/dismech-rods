@@ -4,13 +4,14 @@
 
 /* TODO: CURRENTLY ASSUMES JOINTS DO NOT EXIST AS CONTACT POINTS
  * ADD CONTACT FOR JOINTS!!!
+ * TODO: ADD MORE EFFICIENT COLLISION DETECTION
  */
 
 
-floorContactForce::floorContactForce(const shared_ptr<softRobots>& m_soft_robots, double m_floor_delta,
-                                     double m_floor_slipTol, double m_floor_mu, double m_floor_z) :
-                                     baseForce(m_soft_robots), delta(m_floor_delta), slipTol(m_floor_slipTol),
-                                     mu(m_floor_mu), floor_z(m_floor_z)
+floorContactForce::floorContactForce(const shared_ptr<softRobots>& soft_robots, double floor_delta,
+                                     double floor_slipTol, double floor_mu, double floor_z) :
+                                     baseForce(soft_robots), delta(floor_delta), slipTol(floor_slipTol),
+                                     mu(floor_mu), floor_z(floor_z)
 {
     K1 = 15 / delta;
     K2 = 15 / slipTol;
@@ -64,7 +65,7 @@ void floorContactForce::computeForce(double dt) {
             ind = 4 * i + 2;
             if (limb->isDOFJoint[ind] == 1) continue;
 
-            dist = limb->x[ind] - limb->rodRadius - floor_z;
+            dist = limb->x[ind] - limb->rod_radius - floor_z;
             if (dist > delta) continue;
 
             v = exp(-K1 * dist);
@@ -95,12 +96,13 @@ void floorContactForce::computeForceAndJacobian(double dt) {
     Vector2d curr_node, pre_node;
     double v;  // exp(K1(floor_z - \Delta))
     min_dist = 1e7;
+    num_contacts = 0;
     for (const auto& limb : soft_robots->limbs) {
         for (int i = 0; i < limb->nv; i++) {
             ind = 4 * i + 2;
             if (limb->isDOFJoint[ind] == 1) continue;
 
-            dist = limb->x[ind] - limb->rodRadius - floor_z;
+            dist = limb->x[ind] - limb->rod_radius - floor_z;
             if (dist < min_dist) min_dist = dist;
             if (dist > delta) continue;
 
@@ -139,15 +141,16 @@ void floorContactForce::computeForceAndJacobian(double dt) {
 
             // dfrx/dx
             stepper->addJacobian(4*i, 4*i, friction_partials_dfr_dx(0, 0), limb_idx);
-            stepper->addJacobian(4*i+1, 4*i, friction_partials_dfr_dx(0, 1), limb_idx);
+            stepper->addJacobian(4*i, 4*i+1, friction_partials_dfr_dx(0, 1), limb_idx);
             // dfry/dy
-            stepper->addJacobian(4*i, 4*i+1, friction_partials_dfr_dx(1, 0), limb_idx);
+            stepper->addJacobian(4*i+1, 4*i, friction_partials_dfr_dx(1, 0), limb_idx);
             stepper->addJacobian(4*i+1, 4*i+1, friction_partials_dfr_dx(1, 1), limb_idx);
             // dfrx/dfn * dfn/dz
-            stepper->addJacobian(4*i, 4*i+2, friction_partials_dfr_dfn(0) * J, limb_idx);
+            stepper->addJacobian(4*i+2, 4*i, friction_partials_dfr_dfn(0) * J, limb_idx);
             // dfry/dfn * dfn/dz
-            stepper->addJacobian(4*i+1, 4*i+2, friction_partials_dfr_dfn(1) * J, limb_idx);
+            stepper->addJacobian(4*i+2, 4*i+1, friction_partials_dfr_dfn(1) * J, limb_idx);
 
+            num_contacts++;
         }
         limb_idx++;
     }

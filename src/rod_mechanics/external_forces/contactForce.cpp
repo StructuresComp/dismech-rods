@@ -103,7 +103,7 @@ void contactForce::setupContactVariables(const Vector<int, 8>& contact_id) {
     auto limb1 = soft_robots->limbs[idx5];
     auto limb2 = soft_robots->limbs[idx6];
 
-    surface_limit = limb1->rodRadius + limb2->rodRadius;
+    surface_limit = limb1->rod_radius + limb2->rod_radius;
 
     x1s = limb1->getVertex(idx1);
     x1e = limb1->getVertex(idx3);

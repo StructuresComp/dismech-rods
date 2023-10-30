@@ -1,14 +1,9 @@
 #include "backwardEuler.h"
 
-backwardEuler::backwardEuler(const shared_ptr<softRobots>& m_soft_robots,
-                             const shared_ptr<innerForces>& m_inner_forces,
-                             const shared_ptr<externalForces>& m_external_forces,
-                             double m_dt, double m_force_tol, double m_stol,
-                             int m_max_iter, int m_line_search, int m_adaptive_time_stepping, solverType m_solver_type) :
-                             implicitTimeStepper(m_soft_robots, m_inner_forces, m_external_forces,
-                                                 m_dt, m_force_tol, m_stol, m_max_iter, m_line_search,
-                                                 m_adaptive_time_stepping, m_solver_type)
-
+backwardEuler::backwardEuler(const shared_ptr<softRobots>& soft_robots,
+                             const shared_ptr<forceContainer>& forces,
+                             const simParams& sim_params, solverType solver_type) :
+                             implicitTimeStepper(soft_robots, forces, sim_params, solver_type)
 {
 }
 
@@ -24,8 +19,7 @@ double backwardEuler::newtonMethod(double dt) {
     while (!solved) {
         prepSystemForIteration();
 
-        inner_forces->computeForcesAndJacobian(dt);
-        external_forces->computeForcesAndJacobian(dt);
+        forces->computeForcesAndJacobian(dt);
 
         // Compute norm of the force equations.
         normf = Force.norm();
@@ -35,7 +29,7 @@ double backwardEuler::newtonMethod(double dt) {
         }
 
         // Force tolerance check
-        if (normf <= normf0 * 1e-4) {
+        if (normf <= normf0 * ftol) {
             solved = true;
             iter++;
             continue;
@@ -47,7 +41,6 @@ double backwardEuler::newtonMethod(double dt) {
             for (const auto& limb : limbs) {
                 limb->updateGuess(0.01, dt);
             }
-
             iter++;
             continue;
         }
@@ -74,7 +67,7 @@ double backwardEuler::newtonMethod(double dt) {
         iter++;
 
         // Dynamics tolerance check
-        if (max_dx / dt < stol) {
+        if (max_dx / dt < dtol) {
             solved = true;
             iter++;
             continue;
@@ -101,8 +94,8 @@ void backwardEuler::lineSearch(double dt) {
     }
     // Initialize an interval for optimal learning rate alpha
     double amax = 2;
-//    double amin = 1e-3;
-    double amin = 1e-5;
+    double amin = 1e-3;
+//    double amin = 1e-5;
     double al = 0;
     double au = 1;
 
@@ -130,8 +123,7 @@ void backwardEuler::lineSearch(double dt) {
         prepSystemForIteration();
 
         // Compute the forces
-        inner_forces->computeForces(dt);
-        external_forces->computeForces(dt);
+        forces->computeForces(dt);
 
         double q = 0.5 * pow(Force.norm(), 2);
 
@@ -151,17 +143,17 @@ void backwardEuler::lineSearch(double dt) {
             if (au < amax) {
                 a = 0.5 * (al + au);
             }
-//            else {
-//                a = 10 * a;
-//            }
+            else {
+                a = 10 * a;
+            }
         }
         if (a > amax || a < amin) {
             break;
         }
-        if (iter_l > 100) {
-            break;
-        }
-        iter_l++;
+//        if (iter_l > 100) {
+//            break;
+//        }
+//        iter_l++;
     }
     for (auto& limb : limbs) {
         limb->x = limb->x_ls;
@@ -180,8 +172,7 @@ double backwardEuler::stepForwardInTime() {
     for (const auto& limb : limbs) limb->updateGuess(0.01, dt);
 
     // Perform collision detection if contact is enabled
-    auto cf = external_forces->contact_force;
-    if (cf) cf->broadPhaseCollisionDetection();
+    if (forces->cf) forces->cf->broadPhaseCollisionDetection();
 
     dt = newtonMethod(dt);
 
@@ -212,7 +203,7 @@ void backwardEuler::updateSystemForNextTimeStep() {
 
         // Update necessary info for time parallel
         limb->tangent_old = limb->tangent;
-        limb->refTwist_old = limb->refTwist;
+        limb->ref_twist_old = limb->ref_twist;
     }
 
     // Do the same updates as above for joints

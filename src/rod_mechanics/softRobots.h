@@ -1,7 +1,6 @@
 #ifndef SOFTROBOTS_H
 #define SOFTROBOTS_H
 
-// TODO: support different type of controllers later
 
 #include "eigenIncludes.h"
 #include "elasticRod.h"
@@ -16,9 +15,9 @@ public:
     ~softRobots();
 
     void addLimb(const Vector3d& start, const Vector3d& end, int num_nodes,
-                 double rho, double rod_radius, double youngs_modulus, double shear_modulus);
+                 double rho, double rod_radius, double youngs_modulus, double poisson_ratio);
     void addLimb(const vector<Vector3d>& nodes, double rho, double rod_radius,
-                 double youngs_modulus, double shear_modulus);
+                 double youngs_modulus, double poisson_ratio);
 
     void createJoint(int limb_idx, int node_idx);
     void addToJoint(int joint_idx, int limb_idx, int node_idx);
@@ -28,7 +27,7 @@ public:
 
     void setup();
 
-    void addController(string phi_ctrl_filepath);
+    void addController(const shared_ptr<rodController>& controller);
 
     vector<shared_ptr<elasticRod>> limbs;
     vector<shared_ptr<elasticJoint>> joints;

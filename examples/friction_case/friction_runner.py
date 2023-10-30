@@ -9,7 +9,7 @@ def run_fric_test(force):
         **os.environ,
         "OMP_NUM_THREADS": str(1)
     }
-    subprocess.call(["./simDER", "examples/friction_case/friction_params.txt", str(force)], env=env)
+    subprocess.call(["./disMech", str(force)], env=env)
     print("Finished simulation with force {}".format(force))
 
 

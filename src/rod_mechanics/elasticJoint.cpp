@@ -52,7 +52,7 @@ void elasticJoint::setup() {
 
     kb = MatrixXd::Zero(num_bending_combos, 3);
     kappa = MatrixXd::Zero(num_bending_combos, 2);
-    twistBar = VectorXd::Zero(num_bending_combos);
+    twist_bar = VectorXd::Zero(num_bending_combos);
     edge_len = VectorXd::Zero(ne);
 
     setReferenceLength();
@@ -67,7 +67,7 @@ void elasticJoint::setup() {
 
     computeKappa();
 
-    kappaBar = kappa;
+    kappa_bar = kappa;
 
     getRefTwist();
 
@@ -402,7 +402,7 @@ void elasticJoint::computeTwistBar()
 
             theta_i = limbs[l1]->x[theta1_i] * sgn1;
             theta_f = limbs[l2]->x[theta2_i] * sgn2;
-            twistBar(curr_iter) = theta_f - theta_i + ref_twist(curr_iter);
+            twist_bar(curr_iter) = theta_f - theta_i + ref_twist(curr_iter);
             curr_iter++;
         }
     }
@@ -476,27 +476,7 @@ void elasticJoint::setMass() {
         limb_idx = connected_nodes[i].second;
         curr_limb = limbs[limb_idx];
 
-        mass += 0.5 * ref_len(i) * curr_limb->crossSectionalArea * curr_limb->rho;
+        mass += 0.5 * ref_len(i) * curr_limb->cross_sectional_area * curr_limb->rho;
     }
 }
 
-
-// NOTE: don't use this, because this will be different depending on integration scheme
-//void elasticJoint::updateTimeStep()
-//{
-//    prepareForIteration();
-//
-//    // compute velocity
-//    u = (x - x0) / dt;
-//
-//    // update x
-//    x0 = x;
-//
-//    // update reference directors
-//    d1_old = d1;
-//    d2_old = d2;
-//
-//    // We do not need to update m1, m2. They can be determined from theta.
-//    tangents_old = tangents;
-//    ref_twist_old = ref_twist;
-//}

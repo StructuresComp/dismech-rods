@@ -9,21 +9,32 @@ extern ofstream logging_output_file;  // defined in main.cpp
  * custom external forces, and loggers in the function below.
  */
 
-void get_robot_description(int argc, char** argv, setInput& input_data, const shared_ptr<softRobots>& soft_robots,
-                           vector<shared_ptr<baseForce>>& forces, shared_ptr<worldLogger>& logger,
-                           double density, double rodRadius, double youngM, double shearM) {
+void get_robot_description(int argc, char** argv,
+                           const shared_ptr<softRobots>& soft_robots,
+                           const shared_ptr<forceContainer>& forces,
+                           shared_ptr<worldLogger>& logger,
+                           simParams& sim_params) {
+    
+    sim_params.dt = 2.5e-4;
+    sim_params.sim_time = 5;
+    sim_params.render_scale = 3.5;
+    sim_params.show_mat_frames = true;
+    sim_params.enable_2d_sim = true;
+    sim_params.adaptive_time_stepping = 20;
+    sim_params.nis = IMPLICIT_MIDPOINT;
+    
+    int n = 15;
+    double radius = 0.015;
+    double young_mod = 5e5;
+    double density = 1180;
+    double poisson = 0.5;
 
     // Create the limbs
-    soft_robots->addLimb(Vector3d(-0.10, 0.00, 0.00), Vector3d(-0.10, 0.00, 0.10), 15,
-                         density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(0.00, 0.00, 0.00), Vector3d(0.00, 0.00, 0.10), 15,
-                         density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(0.10, 0.00, 0.00), Vector3d(0.10, 0.00, 0.10), 15,
-                         density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(-0.10, 0.00, 0.10), Vector3d(0.00, 0.00, 0.10), 15,
-                         density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(0.10, 0.00, 0.10), Vector3d(0.00, 0.00, 0.10), 15,
-                         density, rodRadius, youngM, shearM);
+    soft_robots->addLimb(Vector3d(-0.10, 0.00, 0.00), Vector3d(-0.10, 0.00, 0.10), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(0.00, 0.00, 0.00), Vector3d(0.00, 0.00, 0.10), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(0.10, 0.00, 0.00), Vector3d(0.10, 0.00, 0.10), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(-0.10, 0.00, 0.10), Vector3d(0.00, 0.00, 0.10), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(0.10, 0.00, 0.10), Vector3d(0.00, 0.00, 0.10), n, density, radius, young_mod, poisson);
 
     // Create joints and connect appropriately
     soft_robots->createJoint(0, -1);
@@ -33,4 +44,22 @@ void get_robot_description(int argc, char** argv, setInput& input_data, const sh
     soft_robots->addToJoint(1, 4, -1);
     soft_robots->createJoint(2, -1);
     soft_robots->addToJoint(2, 4, 0);
+
+    // This has to be called after all joints are declared
+    soft_robots->setup();
+
+    // Add gravity
+    Vector3d gravity_vec(0.0, 0.0, -9.8);
+    forces->addForce(make_shared<gravityForce>(soft_robots, gravity_vec));
+
+    // Add floor contact
+    double delta = 5e-4;
+    double nu = 5e-3;
+    double mu = 0.4;
+    double floor_z = -0.015;
+    forces->addForce(make_shared<floorContactForce>(soft_robots, delta, nu, mu, floor_z));
+
+    // Add kappa_bar controller
+    string phi_ctrl_file_path = "src/controllers/openloop_control_trajectories/horton_controller.csv";
+    soft_robots->addController(make_shared<rodOpenLoopFileKappabarSetter>(soft_robots, phi_ctrl_file_path));
 }

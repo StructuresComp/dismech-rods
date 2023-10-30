@@ -1,16 +1,12 @@
 #include "baseTimeStepper.h"
-#include <utility>
 
-baseTimeStepper::baseTimeStepper(const shared_ptr<softRobots>& m_soft_robots,
-                                 shared_ptr<innerForces> m_inner_forces,
-                                 shared_ptr<externalForces> m_external_forces,
-                                 double m_dt) :
-                                 limbs(m_soft_robots->limbs), joints(m_soft_robots->joints),
-                                 controllers(m_soft_robots->controllers),
-                                 inner_forces(std::move(m_inner_forces)),
-                                 external_forces(std::move(m_external_forces)),
-                                 dt(m_dt), Force(nullptr, 0), DX(nullptr, 0)
-
+baseTimeStepper::baseTimeStepper(const shared_ptr<softRobots>& soft_robots,
+                                 const shared_ptr<forceContainer>& forces,
+                                 const simParams& sim_params) :
+                                 limbs(soft_robots->limbs), joints(soft_robots->joints),
+                                 controllers(soft_robots->controllers),
+                                 forces(forces), dt(sim_params.dt),
+                                 Force(nullptr, 0), DX(nullptr, 0)
 {
     freeDOF = 0;
     for (const auto& limb : limbs) {
@@ -26,9 +22,8 @@ baseTimeStepper::baseTimeStepper(const shared_ptr<softRobots>& m_soft_robots,
 }
 
 
-void baseTimeStepper::setupForceStepperAccess() {
-    inner_forces->setupForceStepperAccess(shared_from_this());
-    external_forces->setupForceStepperAccess(shared_from_this());
+void baseTimeStepper::initStepper() {
+    forces->setupForceStepperAccess(shared_from_this());
 }
 
 

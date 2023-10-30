@@ -61,14 +61,14 @@ public:
 
     MatrixXd kb;
     MatrixXd kappa;
-    MatrixXd kappaBar;
+    MatrixXd kappa_bar;
     void computeKappa();
 
-    VectorXd twistBar;
+    VectorXd twist_bar;
     VectorXd ref_twist_old;
-    void rotateAxisAngle(Vector3d &v,const Vector3d &z,const double &theta);
-    void parallelTransport(const Vector3d &d1_1,const Vector3d &t1, const Vector3d &t2, Vector3d &d1_2);
-    double signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n);
+    static void rotateAxisAngle(Vector3d &v,const Vector3d &z,const double &theta);
+    static void parallelTransport(const Vector3d &d1_1,const Vector3d &t1, const Vector3d &t2, Vector3d &d1_2);
+    static double signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n);
 
     void getRefTwist();
     void computeTwistBar();

@@ -1,5 +1,5 @@
 #include "pardisoSolver.h"
-#include "../time_steppers/implicitTimeStepper.h"
+#include "time_steppers/implicitTimeStepper.h"
 
 
 
@@ -29,7 +29,7 @@ pardisoSolver::pardisoSolver(shared_ptr<implicitTimeStepper> stepper) :
     {
         iparm[i] = 0;
     }
-    iparm[0] = 0;         /* No solver default */
+    iparm[0] = 1;         /* No solver default */
     iparm[1] = 2;         /* Fill-in reordering from METIS */
     iparm[3] = 0;         /* No iterative-direct algorithm */
     iparm[4] = 0;         /* No user fill-in reducing permutation */
@@ -38,16 +38,17 @@ pardisoSolver::pardisoSolver(shared_ptr<implicitTimeStepper> stepper) :
     iparm[7] = 2;         /* Max numbers of iterative refinement steps */
     iparm[8] = 0;         /* Not in use */
     iparm[9] = 13;        /* Perturb the pivot elements with 1E-13 */
-    iparm[10] = 1;        /* Use nonsymmetric permutation and scaling MPS */
+    iparm[10] = 0;        /* Use nonsymmetric permutation and scaling MPS */
     iparm[11] = 0;        /* Conjugate transposed/transpose solve */
-    iparm[12] = 1;        /* Maximum weighted matching algorithm is switched-on (default for non-symmetric) */
+    iparm[12] = 0;        /* Maximum weighted matching algorithm is switched-on (default for non-symmetric) */
     iparm[13] = 0;        /* Output: Number of perturbed pivots */
     iparm[14] = 0;        /* Not in use */
     iparm[15] = 0;        /* Not in use */
     iparm[16] = 0;        /* Not in use */
-    iparm[17] = -1;       /* Output: Number of nonzeros in the factor LU */
-    iparm[18] = -1;       /* Output: Mflops for LU factorization */
+    iparm[17] = 0;        /* Output: Number of nonzeros in the factor LU */
+    iparm[18] = 0;        /* Output: Mflops for LU factorization */
     iparm[19] = 0;        /* Output: Numbers of CG Iterations */
+    iparm[23] = 10;       /* Two-level factorization for nonsymmetric matrices iparm[10 & 12] must be 0 */
 }
 
 

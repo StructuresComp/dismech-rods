@@ -1,22 +1,14 @@
-/**
- * rodController.cpp
- * 
- * Some minimal definitions for functions in the abstract 
- * class rodController. TO-DO: what to include here??
- * 
- * Copyright 2020 Andrew P. Sabelhaus and Soft Machines Lab at CMU
- */
-
 #include "rodController.h"
 
-// Constructor just stores the number of actuators.
-rodController::rodController(int numAct) : numActuators(numAct), current_time(0.0)
+
+rodController::rodController(const vector<shared_ptr<elasticRod>>& limbs) :
+                             limbs(limbs), num_actuators(limbs.size()), current_time(0)
 {
 }
 
-rodController::~rodController()
-{
-}
+
+rodController::~rodController() = default;
+
 
 // but we can also implement the timestepping here, for others to override if desired.
 void rodController::updateTimestep(double dt)

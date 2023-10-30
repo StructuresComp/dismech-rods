@@ -7,8 +7,8 @@
 class dgbsvSolver : public baseSolver
 {
 public:
-    dgbsvSolver(shared_ptr<implicitTimeStepper> stepper);
-    ~dgbsvSolver();
+    explicit dgbsvSolver(shared_ptr<implicitTimeStepper> stepper);
+    ~dgbsvSolver() override;
 
     void integrator() override;
 

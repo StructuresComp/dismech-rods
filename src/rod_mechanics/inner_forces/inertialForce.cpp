@@ -18,7 +18,7 @@ void inertialForce::computeForce(double dt)
         for (int i=0; i < limb->ndof; i++)
         {
             if (limb->isDOFJoint[i]) continue;
-            f = (limb->massArray[i] / dt) * ((limb->x[i] - limb->x0[i]) / dt - limb->u[i]);
+            f = (limb->mass_array[i] / dt) * ((limb->x[i] - limb->x0[i]) / dt - limb->u[i]);
             stepper->addForce(i, f, limb_idx);
         }
         limb_idx++;
@@ -40,7 +40,7 @@ void inertialForce::computeForceAndJacobian(double dt)
     for (const auto& limb : soft_robots->limbs) {
         for (int i = 0; i < limb->ndof; i++) {
             if (limb->isDOFJoint[i]) continue;
-            jac = limb->massArray(i) / (dt * dt);
+            jac = limb->mass_array(i) / (dt * dt);
             stepper->addJacobian(i, i, jac, limb_idx);
         }
         limb_idx++;

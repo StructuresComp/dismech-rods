@@ -9,8 +9,8 @@ class baseTimeStepper;
 class floorContactForce : public baseForce
 {
 public:
-    floorContactForce(const shared_ptr<softRobots>& m_soft_robots, double m_floor_delta,
-                      double m_floor_slipTol, double m_mu, double m_floor_z);
+    floorContactForce(const shared_ptr<softRobots>& soft_robots, double floor_delta,
+                      double floor_slipTol, double mu, double floor_z);
     ~floorContactForce() override;
 
     void computeForce(double dt) override;
@@ -18,6 +18,7 @@ public:
     void updateMu(double mu);
 
     double min_dist;
+    int num_contacts;
 
     void change_slip_tol(double scale);
     void reset_slip_tol();

@@ -9,20 +9,36 @@ extern ofstream logging_output_file;  // defined in main.cpp
  * custom external forces, and loggers in the function below.
  */
 
-void get_robot_description(int argc, char** argv, setInput& input_data, const shared_ptr<softRobots>& soft_robots,
-                           vector<shared_ptr<baseForce>>& forces, shared_ptr<worldLogger>& logger,
-                           double density, double rodRadius, double youngM, double shearM) {
+void get_robot_description(int argc, char** argv,
+                           const shared_ptr<softRobots>& soft_robots,
+                           const shared_ptr<forceContainer>& forces,
+                           shared_ptr<worldLogger>& logger,
+                           simParams& sim_params) {
+
+    sim_params.dt = 2e-4;
+    sim_params.sim_time = 2;
+    sim_params.ftol = 1e-3;
+    sim_params.render_scale = 3.0;
+    sim_params.show_mat_frames = true;
+    sim_params.adaptive_time_stepping = 20;
+    sim_params.nis = IMPLICIT_MIDPOINT;
+
+    int n = 25;
+    double radius = 5e-3;
+    double young_mod = 3e6;
+    double density = 1180;
+    double poisson = 0.5;
 
     // Create the limbs
-    soft_robots->addLimb(Vector3d(0, 0, 0.20), Vector3d(0, 0.00, 0.10), 25, density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0.10, 0, 0.10), 25, density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0, 0.10, 0.10), 25, density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0, -0.10, 0.10), 25, density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(-0.10, 0, 0.10), 25, density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(0.10, 0, 0.10), Vector3d(0.10, 0, 0.00), 25, density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(0.0, 0.10, 0.10), Vector3d(0.0, 0.10, 0.00), 25, density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(0.0, -0.10, 0.10), Vector3d(0.0, -0.10, 0.00), 25, density, rodRadius, youngM, shearM);
-    soft_robots->addLimb(Vector3d(-0.10, 0, 0.10), Vector3d(-0.10, 0, 0.00), 25, density, rodRadius, youngM, shearM);
+    soft_robots->addLimb(Vector3d(0, 0, 0.20), Vector3d(0, 0.00, 0.10), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0.10, 0, 0.10), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0, 0.10, 0.10), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0, -0.10, 0.10), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(-0.10, 0, 0.10), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(0.10, 0, 0.10), Vector3d(0.10, 0, 0.00), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(0.0, 0.10, 0.10), Vector3d(0.0, 0.10, 0.00), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(0.0, -0.10, 0.10), Vector3d(0.0, -0.10, 0.00), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(-0.10, 0, 0.10), Vector3d(-0.10, 0, 0.00), n, density, radius, young_mod, poisson);
 
     // Create joints and connect appropriately
     soft_robots->createJoint(0, -1);
@@ -39,14 +55,21 @@ void get_robot_description(int argc, char** argv, setInput& input_data, const sh
     soft_robots->createJoint(4, -1);
     soft_robots->addToJoint(4, 8, 0);
 
-    // Apply an external force
-//    shared_ptr<uniformConstantForce> uniform_force = make_shared<uniformConstantForce>(soft_robots);
-//    Vector3d force = Vector3d::Zero();
-//    force(2) = stod(argv[2]);
-//    uniform_force->add_force_to_limb(1, force);
-//    forces.emplace_back(uniform_force);
+    // This has to be called after all joints are declared
+    soft_robots->setup();
 
-//    string logfile_base = input_data.GetStringOpt("logfileBase");
-//    int logging_period = input_data.GetIntOpt("loggingPeriod");
-//    logger = make_shared<rodNodeLogger>(logfile_base, logging_output_file, logging_period);
+    // Add gravity with a slight x-axis perturbation
+    Vector3d gravity_vec(1.0, 0.0, -9.8);
+    forces->addForce(make_shared<gravityForce>(soft_robots, gravity_vec));
+
+    // Add floor contact
+    double delta = 5e-4;
+    double nu = 5e-3;
+    double mu = 0.4;
+    double floor_z = -0.10;
+    forces->addForce(make_shared<floorContactForce>(soft_robots, delta, nu, mu, floor_z));
+
+    string logfile_base = "log_files/spider";
+    int logging_period = 20;
+    logger = make_shared<rodNodeLogger>(logfile_base, logging_output_file, logging_period);
 }

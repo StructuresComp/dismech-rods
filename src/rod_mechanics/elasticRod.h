@@ -11,9 +11,9 @@ class elasticRod
 {
     public:
     elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
-               double m_rho, double m_rod_radius, double m_youngs_modulus, double m_shear_modulus);
+               double m_rho, double m_rod_radius, double m_youngs_modulus, double m_poisson_ratio);
     elasticRod(int m_limb_idx, const vector<Vector3d>& m_nodes, double m_rho, double m_rod_radius,
-               double m_youngs_modulus, double m_shear_modulus);
+               double m_youngs_modulus, double m_poisson_ratio);
     ~elasticRod();
     void setup();
     void setMass();
@@ -39,7 +39,6 @@ class elasticRod
     // Should be taken out of this class
     void computeTimeParallel();
     void computeTangent();
-    void parallelTansport(const Vector3d &d1_1,const Vector3d &t1,const Vector3d &t2,Vector3d &d1_2);
     void computeSpaceParallel();
     void computeMaterialDirector();
     void computeKappa();
@@ -47,10 +46,12 @@ class elasticRod
     void computeTwistBar();
     void computeEdgeLen();
     void getRefTwist();
-    void rotateAxisAngle(Vector3d &v, const Vector3d &z, const double &theta);
-    double signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n);
+    static void parallelTransport(const Vector3d &d1_1,const Vector3d &t1,const Vector3d &t2,Vector3d &d1_2);
+    static void rotateAxisAngle(Vector3d &v, const Vector3d &z, const double &theta);
+    static double signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n);
 
     // Elastic stiffness values
+    double poisson_ratio;
     double youngM, shearM; // Young's and shear modulus
     double EA;             // stretching stiffness
     double EI;             // bending stiffness
@@ -62,12 +63,12 @@ class elasticRod
     int ncons;                 // number of constrained dof
     int uncons;                // number of unconstrained dof
     double rho;                // density
-    double rodRadius;          // cross-sectional radius of the rod
-    double crossSectionalArea; // cross-sectional area of the rod
+    double rod_radius;           // cross-sectional radius of the rod
+    double cross_sectional_area; // cross-sectional area of the rod
     double dm; // mass per segment
 
     // Total length
-    double rodLength;
+    double rod_length;
     // Bending curvature angle phi (from the end to the tip of the limb, for each edge: phi_e = phi/ne)
     double phi1;
     double phi2;
@@ -76,13 +77,13 @@ class elasticRod
     // PI
     const double PI =  3.14159265358979323846264;
     // Edge length
-    VectorXd edgeLen;
+    VectorXd edge_len;
     // curvature binormal
     MatrixXd kb;
     // reference lengths
-    VectorXd refLen;
+    VectorXd ref_len;
     // Voronoi lengths
-    VectorXd voronoiLen;
+    VectorXd voronoi_len;
 
     vector<Vector3d> all_nodes;
 
@@ -96,8 +97,6 @@ class elasticRod
     VectorXd u;
     VectorXd u0;
 
-    // nodes
-    MatrixXd nodes, nodesUndeformed;
     // Reference directors
     MatrixXd d1;
     MatrixXd d2;
@@ -110,18 +109,18 @@ class elasticRod
     MatrixXd tangent;
     MatrixXd tangent_old;
     // Reference twist
-    VectorXd refTwist;
-    VectorXd refTwist_old;
+    VectorXd ref_twist;
+    VectorXd ref_twist_old;
     // Undeformed twist
-    VectorXd twistBar;
+    VectorXd twist_bar;
     // lumped mass
-    VectorXd massArray;
+    VectorXd mass_array;
     // lumped mass at unconstrained dofs
     VectorXd mUncons;
     // Curvature
     MatrixXd kappa;
     // Natural curvature
-    MatrixXd kappaBar;
+    MatrixXd kappa_bar;
     // twist angle theta;
     VectorXd theta;
 

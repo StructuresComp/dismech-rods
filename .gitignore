@@ -3,7 +3,7 @@ build/
 .idea/
 cmake-build-debug/
 
-simDER
+disMech
 datafiles/
 option.txt
 robotDescription.cpp

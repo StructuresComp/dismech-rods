@@ -1,7 +1,7 @@
 #ifndef BASESOLVER_H
 #define BASESOLVER_H
 
-#include "../eigenIncludes.h"
+#include "eigenIncludes.h"
 #include "solverTypes.h"
 #include "mkl_pardiso.h"
 #include "mkl_types.h"

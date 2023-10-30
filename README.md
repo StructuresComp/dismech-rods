@@ -27,9 +27,24 @@ Based on the [Discrete Elastic Rods](https://www.cs.columbia.edu/cg/pdfs/143-rod
 
 ### TODO
 If you'd like DisMech to support a new feature, feel free create an issue and we'll add it to the list here.
+
+#### High priority
+- [ ] Add forward Euler integration scheme.
+- [ ] Add predictor-corrector integration option.
+- [ ] Add per-limb friction coefficient logic.
+- [ ] Add active entanglement example code.
+- [ ] Add limb self-contact option.
+- [ ] Add contact logic for joints.
 - [ ] Add detailed documentation for all examples. 
-- [ ] Add self-contact.
+- [ ] Add more code examples for initializing limbs and joints.
+
+#### Low priority
+- [ ] Add time varying boundary condition logic.
+- [ ] Add more controller types.
 - [ ] Add shell functionality.
+
+### COMPLETED
+- [x] Add contact logic for limbs.
 ***
 
 ### Dependencies
@@ -107,7 +122,7 @@ For other operating systems you should be able to modify the commands below appr
 ***
 
 ### Running Examples
-DisMech is setup so that simulation environments can be instantiated using a single cpp file called `robotDescription.cpp` and a parameter file in the form of a text file.
+DisMech is setup so that simulation environments can be instantiated using a single cpp file called `robotDescription.cpp`.
 
 Several example of working DisMech simulations can be seen in the `examples/` directory.
 In order to run an example, copy the example cpp file into the main directory and then compile DisMech.
@@ -120,46 +135,48 @@ cmake ..
 make -j4
 cd ..
 ```
-Each example has its own corresponding parameter text file. Therefore, in order to run each example simulation, run the `dismech.sh` script along with the respective example parameter file as shown.
+Afterwards, simply run the simulation using the `dismech.sh` script.
 ```bash
-./dismech.sh examples/cantilever_case/cantilever_params.txt
+./dismech.sh
 ```
-If you want to run another example, simply replace the `robotDescription.cpp` file and remake and rerun DisMech with the appropriate parameter file.
+If you want to run another example, simply replace the `robotDescription.cpp` file and recompile.
 
 ***
 
 ### Creating Custom Simulation Environments
 In case you want to create a custom simulation environment, take a look at the provided examples on how to do so.
 
-Defining the soft structure(s) / robot(s), boundary conditions, custom external forces, and logging are done in `robotDescription.cpp`.
+Simulation parameters such as defining the soft structure(s) / robot(s), boundary conditions, forces, and logging are done solely in `robotDescription.cpp` so that large recompiles do not take place.
 
-All other parameters are set through a text file fed as an argument to the `dismech.sh` script.
+In addition, many numerical parameters can be set through the `simParams` struct shown below with default values and descriptions. Note that parameters with a `*` have additional explanations below. Parameters with a `^` only apply when an implicit numerical integration scheme is chosen and are otherwise ignored.
+```c++
+struct simParams {
+  double sim_time = 10;                              //    Total time for simulation [s]
+  double dt = 1e-3;                                  //    Time step size [s]
+  bool render = true;                                //    Live OpenGL rendering
+  bool show_mat_frames = false;                      //    Render material frames
+  double render_scale = 1.0;                         //    Rendering scale
+  double dtol = 1e-2;                                // *^ Dynamics tolerance [m/s]
+  double ftol = 1e-4;                                // *^ Force tolerance
+  int max_iter = 500;                                // ^  Maximum iterations for a time step
+  int adaptive_time_stepping = 0;                    // *^ Adaptive time stepping
+  int cmd_line_per = 1;                              //    Command line sim info output period
+  bool enable_2d_sim = false;                        //    Lock z and theta DOFs
+  bool line_search = true;                           // ^  Enable line search method
+  numerical_integration_scheme nis = BACKWARD_EULER; // *  Numerical integration scheme 
+  int debug_verbosity = 1;                           //    Prints certain debug statements 
+};
+```
 
-Specifiable parameters are as follows (we use SI units):
-- ```rodRadius``` - Cross-sectional radius of the rod.
-- ```density``` - Mass per unit volume.
-- ```youngM``` - Young's modulus.
-- ```Poisson``` - Poisson ratio.
-- ```tol``` and ```stol``` - Small numbers used in solving the linear system. Fraction of a percent, e.g. 1.0e-4, is often a good choice.
-- ```maxIter``` - Maximum number of iterations allowed before the solver quits.
-- ```gVector``` - 3x1 vector specifying acceleration due to gravity.
-- ```viscosity``` - Viscosity for applying environmental damping forces.
-- ```render (0 or 1)```- Flag indicating whether OpenGL visualization should be rendered.
-- ```renderScale```- Scale factor for the rendering. Ignored if `render` is set to 0.
-- ```showMatFrames (0 or 1)```- Flag for rendering the material frames. Ignored if `render` is set to 0.
-- ```deltaTime``` - Time step size.
-- ```delta``` - Distance tolerance for contact.
-- ```mu``` - Friction coefficient. A value of zero turns friction off.
-- ```nu``` - Slipping tolerance for friction.
-- ```lineSearch (0 or 1)``` - Flag indicating whether line search will be used.
-- ```simTime``` - Total time for simulation.
-- ```enable2DSim (0 or 1)``` - Flag indicating whether 2D simulation is adequate.
-- ```enableLogging (0 or 1)``` - Flag indicating whether logging should be enabled.
-- ```logfileBase``` - File path where log files should be saved.
-- ```loggingPeriod``` - Number of time steps to wait before logging each entry.
-- ```debugVerbosity (0 or 1)``` - Dictates whether certain debug messages will be printed.
-- ```cmdLinePer``` - Number of time steps to wait before printing sim info to command line. Set to 0 to disable printing.
-- ```floorZ``` - Z-coordinate of the floor. Set to -9999 to disable.
-- ```adaptiveTimeStepping``` - Turns on adaptive time stepping which halves the time step size is failure to converge after set number of iterations. Only valid for implicit integration schemes. Set to 0 to disable.
-- ```integrationScheme``` - Available options are `verlet_position, backward_euler, implicit_midpoint`.
-- ```phiCtrlFilePath``` - File path to kappa bar actuation file. Comment out to disable soft limb actuation.
+Detailed parameter explanations:
+
+- `numerical_integration_scheme` - Determines the numerical integration scheme. Currently, available options are 
+  - `VERLET_POSITION`: https://en.wikipedia.org/wiki/Verlet_integration
+  - `BACKWARD_EULER`: https://en.wikipedia.org/wiki/Backward_Euler_method
+  - `IMPLICIT_MIDPOINT`: https://en.wikipedia.org/wiki/Midpoint_method
+- `dtol` - A dynamics tolerance. Considers Newton's method to converge if the infinity norm of the DOF update divided by time step size for Cartesian positions is less than `dtol`: 
+  $$\frac{|| \Delta \mathbf q ||_{\infty}} {\Delta t} < \textrm{dtol}$$
+  Note that we ignore $\theta$ DOFs due to difference in scaling.
+- `ftol` - A force tolerance. Considers Newton's method to converge if the cumulative force norm becomes less than the starting force norm * `ftol`.
+  $$|| \mathbf f || < || \mathbf f_0 || * \textrm{ftol}$$
+- `adaptive_time_stepping` - Turns on adaptive time stepping which halves the time step size if failure to converge after set number of iterations. Set to 0 to disable.

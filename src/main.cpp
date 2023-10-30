@@ -1,20 +1,9 @@
-/**
- * simDER
- * simDER stands for "[sim]plified [D]iscrete [E]lastic [R]ods"
- * Dec 2017
- * This code is based on previous iterations.
- * */
-
-#include <iostream>
 #include "eigenIncludes.h"
-
-// Rod and stepper are included in the world
 #include "world.h"
 #include "logging/worldLogger.h"
-#include "simulation_environments/derSimulationEnvironment.h"
 #include "simulation_environments/headlessDERSimulationEnvironment.h"
 #include "simulation_environments/openglDERSimulationEnvironment.h"
-#include "initialization/setInput.h"
+#include "robotDescription.h"
 #include "global_const.h"
 
 
@@ -30,42 +19,23 @@ bool openglDERSimulationEnvironment::show_mat_frames = false;
 
 int main(int argc,char *argv[])
 {
-    // Load from the options file.
-    setInput inputData;
-    inputData = setInput();
-
-    if (argc < 2) {
-        throw runtime_error("Not enough arguments. Must pass an options file.");
-    }
-
-    inputData.LoadOptions(argv[1]);
-    inputData.LoadOptions(argc, argv);
-
+    shared_ptr<softRobots> soft_robots = make_shared<softRobots>();
+    shared_ptr<forceContainer> forces = make_shared<forceContainer>();
+    simParams sim_params;  // TODO: make sure this is correct
     shared_ptr<worldLogger> logger = nullptr;
-    my_world = make_shared<world>(inputData);
-    my_world->setupWorld(argc, argv, inputData, logger);
 
-    // Obtain parameters relevant to simulation loop
-    verbosity = inputData.GetIntOpt("debugVerbosity");
-    int cmdline_per = inputData.GetIntOpt("cmdlinePer");
-    double render_scale = inputData.GetScalarOpt("renderScale");
-    bool show_mat_frames = inputData.GetBoolOpt("showMatFrames");
-    bool enable_logging = inputData.GetBoolOpt("enableLogging");
+    get_robot_description(argc, argv, soft_robots, forces, logger, sim_params);
+
+    my_world = make_shared<world>(soft_robots, forces, sim_params);
+
+    verbosity = sim_params.debug_verbosity;
 
     unique_ptr<derSimulationEnvironment> env;
-    if (my_world->isRender()) {
-        if (enable_logging && logger)
-            env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, logger, argc, argv,
-                                                              render_scale, show_mat_frames);
-        else
-            env = make_unique<openglDERSimulationEnvironment>(my_world, cmdline_per, argc, argv, render_scale,
-                                                              show_mat_frames);
+    if (sim_params.render) {
+        env = make_unique<openglDERSimulationEnvironment>(my_world, sim_params, logger, argc, argv);
     }
     else {
-        if (enable_logging && logger)
-            env = make_unique<headlessDERSimulationEnvironment>(my_world, cmdline_per, logger);
-        else
-            env = make_unique<headlessDERSimulationEnvironment>(my_world, cmdline_per);
+        env = make_unique<headlessDERSimulationEnvironment>(my_world, sim_params, logger);
     }
 
     env->runSimulation();

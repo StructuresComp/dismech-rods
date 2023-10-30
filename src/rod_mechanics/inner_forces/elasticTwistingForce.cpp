@@ -57,8 +57,8 @@ void elasticTwistingForce::computeForce(double dt)
 
         for(int i = 1; i < limb->ne; i++)
         {
-            norm_e = limb->edgeLen(i-1);
-            norm_f = limb->edgeLen(i);
+            norm_e = limb->edge_len(i-1);
+            norm_f = limb->edge_len(i);
             gradTwist->row(i).segment(0,3) = -0.5 / norm_e * (limb->kb).row(i);
             gradTwist->row(i).segment(8,3) = 0.5 / norm_f * (limb->kb).row(i);
             gradTwist->row(i).segment(4,3) = -(gradTwist->row(i).segment(0,3)+gradTwist->row(i).segment(8,3));
@@ -68,7 +68,7 @@ void elasticTwistingForce::computeForce(double dt)
 
         for(int i = 1; i < limb->ne; i++)
         {
-            value = GJ / limb->voronoiLen(i) * (deltam->coeff(i) + limb->refTwist (i) - limb->twistBar(i));
+            value = GJ / limb->voronoi_len(i) * (deltam->coeff(i) + limb->ref_twist (i) - limb->twist_bar(i));
             f = -value * gradTwist->row(i);
 
             if (limb->isNodeJoint[i-1] != 1 && limb->isNodeJoint[i] != 1 && limb->isNodeJoint[i+1] != 1) {
@@ -169,7 +169,7 @@ void elasticTwistingForce::computeForce(double dt)
                 theta2_i = joint->theta_inds[curr_iter][1];
 
                 value = GJ / joint->voronoi_len(curr_iter) * (deltam->coeff(curr_iter) +
-                        joint->ref_twist(curr_iter) - joint->twistBar(curr_iter));
+                        joint->ref_twist(curr_iter) - joint->twist_bar(curr_iter));
                 f = -value * gradTwist->row(curr_iter);
 
                 // Nodal forces
@@ -200,8 +200,8 @@ void elasticTwistingForce::computeForceAndJacobian(double dt)
         gradTwist = gradTwists[limb_idx];
         deltam = deltams[limb_idx];
         for (int i = 1; i < limb->ne; i++) {
-            norm_e = limb->edgeLen(i - 1);
-            norm_f = limb->edgeLen(i);
+            norm_e = limb->edge_len(i - 1);
+            norm_f = limb->edge_len(i);
             te = limb->tangent.row(i - 1);
             tf = limb->tangent.row(i);
 
@@ -235,10 +235,10 @@ void elasticTwistingForce::computeForceAndJacobian(double dt)
 
             gradTwistLocal = gradTwist->row(i);
 
-            milen = -1 / limb->voronoiLen(i);
+            milen = -1 / limb->voronoi_len(i);
 
             // TODO: check that deltam is being properly saved from computeFt
-            Jtt = GJ * milen * ((deltam->coeff(i) + limb->refTwist(i) - limb->twistBar(i))
+            Jtt = GJ * milen * ((deltam->coeff(i) + limb->ref_twist(i) - limb->twist_bar(i))
                                 * DDtwist + gradTwistLocal * gradTwistLocal.transpose());
 
 
@@ -371,7 +371,7 @@ void elasticTwistingForce::computeForceAndJacobian(double dt)
                 milen = -1 / joint->voronoi_len(curr_iter);
 
                 Jtt = GJ * milen * ((deltam->coeff(curr_iter) + joint->ref_twist(curr_iter) -
-                                     joint->twistBar(curr_iter)) * DDtwist +
+                                     joint->twist_bar(curr_iter)) * DDtwist +
                                     gradTwistLocal * gradTwistLocal.transpose());
 
                 if (sgn1 == -1) {

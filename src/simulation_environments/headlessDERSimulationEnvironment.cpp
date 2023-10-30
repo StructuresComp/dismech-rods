@@ -1,35 +1,22 @@
-/**
- * headlessDERSimulationEnvironment.cpp
- *
- * Definitions for the concrete class headlessDERSimulationEnvironment.
- * Runs the DER simulation with no interface.
- *
- * Copyright 2020 Andrew P. Sabelhaus and Soft Machines Lab at CMU
- */
-
-// all includes should be in header
 #include "headlessDERSimulationEnvironment.h"
 
-// Constructors just call parents
-headlessDERSimulationEnvironment::headlessDERSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per) :
-									derSimulationEnvironment(m_world, m_cmdline_per)
+
+headlessDERSimulationEnvironment::headlessDERSimulationEnvironment(const shared_ptr<world>& m_world,
+                                                                   const simParams& sim_params,
+                                                                   const shared_ptr<worldLogger>& logger) :
+	                                                               derSimulationEnvironment(m_world, sim_params, logger)
 {
 }
 
-headlessDERSimulationEnvironment::headlessDERSimulationEnvironment(shared_ptr<world> m_world, int m_cmdline_per, shared_ptr<worldLogger> m_logger) :
-	derSimulationEnvironment(m_world, m_cmdline_per, m_logger)
-{
-}
 
-headlessDERSimulationEnvironment::~headlessDERSimulationEnvironment()
-{
-}
+headlessDERSimulationEnvironment::~headlessDERSimulationEnvironment() = default;
+
 
 // Loop while world has yet to reach its final time.
 void headlessDERSimulationEnvironment::runSimulation()
 {
 	// let our users know not to expect a GUI
-	if( verbosity >= 1){
+	if(verbosity >= 1){
 		std::cout << "Using a headless simulation environment. Reporting back at an interval of " << cmdline_per << " msec." << std::endl;
 	}
 	// Before the simulation starts: log the x0 state.

@@ -4,19 +4,17 @@
 #include <algorithm>
 
 
-implicitTimeStepper::implicitTimeStepper(const shared_ptr<softRobots>& m_soft_robots,
-                                         const shared_ptr<innerForces>& m_inner_forces,
-                                         const shared_ptr<externalForces>& m_external_forces,
-                                         double m_dt, double m_force_tol, double m_stol,
-                                         int m_max_iter, int m_line_search,
-                                         int m_adaptive_time_stepping, solverType m_solver_type) :
-                                         baseTimeStepper(m_soft_robots, m_inner_forces, m_external_forces, m_dt),
-                                         force_tol(m_force_tol), stol(m_stol), max_iter(m_max_iter),
-                                         line_search(m_line_search), orig_dt(m_dt),
-                                         adaptive_time_stepping_threshold(m_adaptive_time_stepping),
-                                         solver_type(m_solver_type)
+implicitTimeStepper::implicitTimeStepper(const shared_ptr<softRobots>& soft_robots,
+                                         const shared_ptr<forceContainer>& forces,
+                                         const simParams& sim_params,
+                                         solverType solver_type) :
+                                         baseTimeStepper(soft_robots, forces, sim_params),
+                                         ftol(sim_params.ftol), dtol(sim_params.dtol), max_iter(sim_params.max_iter),
+                                         line_search(sim_params.line_search), orig_dt(sim_params.dt),
+                                         adaptive_time_stepping_threshold(sim_params.adaptive_time_stepping),
+                                         adaptive_time_stepping(sim_params.adaptive_time_stepping != 0),
+                                         solver_type(solver_type)
 {
-    adaptive_time_stepping = m_adaptive_time_stepping != 0;
     Jacobian = MatrixXd::Zero(freeDOF, freeDOF);
 }
 
@@ -27,7 +25,8 @@ implicitTimeStepper::~implicitTimeStepper() {
 }
 
 
-void implicitTimeStepper::initSolver() {
+void implicitTimeStepper::initStepper() {
+    baseTimeStepper::initStepper();
     switch (solver_type) {
         case PARDISO_SOLVER:
             solver = make_unique<pardisoSolver>(shared_from_this());

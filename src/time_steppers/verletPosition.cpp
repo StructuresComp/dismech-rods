@@ -1,11 +1,10 @@
 #include "verletPosition.h"
 
 
-verletPosition::verletPosition(const shared_ptr<softRobots>& m_soft_robots,
-                               const shared_ptr<innerForces>& m_inner_forces,
-                               const shared_ptr<externalForces>& m_external_forces, double m_dt) :
-                               explicitTimeStepper(m_soft_robots, m_inner_forces, m_external_forces, m_dt)
-
+verletPosition::verletPosition(const shared_ptr<softRobots>& soft_robots,
+                               const shared_ptr<forceContainer>& forces,
+                               const simParams& sim_params) :
+                               explicitTimeStepper(soft_robots, forces, sim_params)
 {
     constructInverseMassVector();
 }
@@ -19,7 +18,7 @@ void verletPosition::constructInverseMassVector() {
     for (const auto& limb : limbs) {
         VectorXd curr_inv_masses = VectorXd::Zero(limb->ndof);
         for (int i = 0; i < limb->ndof; i++) {
-            curr_inv_masses[i] = 1 / limb->massArray[i];
+            curr_inv_masses[i] = 1 / limb->mass_array[i];
         }
         inverse_masses.push_back(curr_inv_masses);
         total_dof += limb->ndof;
@@ -45,17 +44,13 @@ double verletPosition::stepForwardInTime() {
     }
 
     // Perform collision detection if contact is enabled
-    auto cf = external_forces->contact_force;
-    if (cf) {
-        cf->broadPhaseCollisionDetection();
-    }
+    if (forces->cf) forces->cf->broadPhaseCollisionDetection();
 
     // Evaluation of local accelerations
     // compute F(q_t+dt/2)
     // Make sure to leave out inertial force
     prepSystemForIteration();
-    inner_forces->computeForces(0.5 * dt);
-    external_forces->computeForces(0.5 * dt);
+    forces->computeForces(0.5 * dt);
 
     // Could perhaps explore a vectorized solution for this later but too complicated for now.
     int counter = 0;
@@ -91,6 +86,24 @@ void verletPosition::updateSystemForNextTimeStep() {
     // Update x0
     for (const auto& limb : limbs) {
         limb->x0 = limb->x;
+    }
+    prepSystemForIteration();
+    for (const auto& limb : limbs) {
+        // Update reference directors
+        limb->d1_old = limb->d1;
+        limb->d2_old = limb->d2;
+
+        // Update necessary info for time parallel
+        limb->tangent_old = limb->tangent;
+        limb->ref_twist_old = limb->ref_twist;
+    }
+
+    // Do the same updates as above for joints
+    for (const auto& joint : joints) {
+        joint->d1_old = joint->d1;
+        joint->d2_old = joint->d2;
+        joint->tangents_old = joint->tangents;
+        joint->ref_twist_old = joint->ref_twist;
     }
 }
 
