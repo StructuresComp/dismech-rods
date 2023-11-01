@@ -47,6 +47,9 @@ void get_robot_description(int argc, char** argv,
     shared_ptr<uniformConstantForce> uniform_force = make_shared<uniformConstantForce>(soft_robots);
 
     // Define a force value from script input
+    if (argc < 2) {
+        throw runtime_error("Need to supply a force as input.");
+    }
     Vector3d force = Vector3d::Zero();
     string force_value = argv[1];
     force(0) = stod(force_value);  // apply along x-direction

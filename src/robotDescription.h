@@ -1,6 +1,8 @@
 #ifndef ROBOTDESCRIPTION_H
 #define ROBOTDESCRIPTION_H
 
+#include <stdexcept>
+
 #include "rod_mechanics/softRobots.h"
 #include "rod_mechanics/forceContainer.h"
 

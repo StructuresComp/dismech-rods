@@ -26,7 +26,7 @@ void get_robot_description(int argc, char** argv,
     double radius = 0.02;
     double young_mod = 1e5;
     double density = 500;
-    double poisson= 0.5;
+    double poisson = 0.5;
 
     // Create a beam along the x-y plane
     soft_robots->addLimb(Vector3d(0.0, 0.0, 0.0), Vector3d(1.0, 0.0, 0.0), n, density, radius, young_mod, poisson);
