@@ -59,13 +59,15 @@ void floorContactForce::computeForce(double dt) {
     int ind;
     Vector2d curr_node, pre_node;
     double v;  // exp(K1(floor_z - \Delta))
-
+    min_dist = 1e7;
+    num_contacts = 0;
     for (const auto& limb : soft_robots->limbs) {
         for (int i=0; i < limb->nv; i++) {
             ind = 4 * i + 2;
             if (limb->isDOFJoint[ind] == 1) continue;
 
             dist = limb->x[ind] - limb->rod_radius - floor_z;
+            if (dist < min_dist) min_dist = dist;
             if (dist > delta) continue;
 
             v = exp(-K1 * dist);
@@ -81,6 +83,8 @@ void floorContactForce::computeForce(double dt) {
             computeFriction(curr_node, pre_node, f, dt);
             stepper->addForce(4*i, ffr(0), limb_idx);
             stepper->addForce(4*i+1, ffr(1), limb_idx);
+
+            num_contacts++;
         }
         limb_idx++;
     }

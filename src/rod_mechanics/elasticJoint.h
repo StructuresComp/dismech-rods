@@ -7,6 +7,7 @@
 class elasticJoint
 {
 public:
+    // NOTE: probably could move more stuff to private
     elasticJoint(int node, int limb_idx, const vector<shared_ptr<elasticRod>> &limbs);
     int joint_node;
     int joint_limb;
@@ -30,23 +31,16 @@ public:
 
     vector<int> bending_twist_signs;
 
-    void setup();
 
     double mass;
-    void setMass();
 
     int num_bending_combos;
 
     VectorXd ref_len;
     VectorXd voronoi_len;
-    void setReferenceLength();
 
     MatrixXd tangents;
     MatrixXd tangents_old;
-    void computeTangent();
-
-    void createReferenceDirectors();
-    void computeMaterialDirectors();
 
     vector<Matrix<double, 2, 3>> d1;
     vector<Matrix<double, 2, 3>> d2;
@@ -62,27 +56,32 @@ public:
     MatrixXd kb;
     MatrixXd kappa;
     MatrixXd kappa_bar;
-    void computeKappa();
 
     VectorXd twist_bar;
     VectorXd ref_twist_old;
-    static void rotateAxisAngle(Vector3d &v,const Vector3d &z,const double &theta);
-    static void parallelTransport(const Vector3d &d1_1,const Vector3d &t1, const Vector3d &t2, Vector3d &d1_2);
-    static double signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n);
-
-    void getRefTwist();
-    void computeTwistBar();
 
     VectorXd edge_len;
-    void computeEdgeLen();
 
     void prepLimbs();
     void prepareForIteration();
-    void computeTimeParallel();
-
-    void updateTimeStep();
+    void setup();
 
 private:
+
+    // NOTE: perhaps move these to util.h later?
+    void setMass();
+    void setReferenceLength();
+    void getRefTwist();
+    void computeTwistBar();
+    void computeEdgeLen();
+    void computeTimeParallel();
+    void computeKappa();
+    void computeTangent();
+    void createReferenceDirectors();
+    void computeMaterialDirectors();
+    static void rotateAxisAngle(Vector3d &v,const Vector3d &z,const double &theta);
+    static void parallelTransport(const Vector3d &d1_1,const Vector3d &t1, const Vector3d &t2, Vector3d &d1_2);
+    static double signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n);
 };
 
 

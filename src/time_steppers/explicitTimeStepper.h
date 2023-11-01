@@ -16,6 +16,12 @@ public:
     void addJacobian(int ind1, int ind2, double p, int limb_indx) override;
     void addJacobian(int ind1, int ind2, double p, int limb_indx1, int limb_idx2) override;
 
+protected:
+    vector<VectorXd> inverse_masses;
+
+private:
+    void constructInverseMassVector();
+
 };
 
 

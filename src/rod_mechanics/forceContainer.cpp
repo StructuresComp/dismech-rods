@@ -6,13 +6,7 @@ forceContainer::forceContainer() : cf(nullptr), ff(nullptr) {}
 
 forceContainer::forceContainer(const vector<shared_ptr<baseForce>>& m_forces) : cf(nullptr), ff(nullptr) {
     for (const auto& force : m_forces)  {
-        if (cf == nullptr) {
-            cf = dynamic_pointer_cast<contactForce>(force);
-        }
-        if (ff == nullptr) {
-            ff = dynamic_pointer_cast<floorContactForce>(force);
-        }
-        forces.emplace_back(force);
+        addForce(force);
     }
 }
 

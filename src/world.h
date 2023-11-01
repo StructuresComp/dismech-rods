@@ -14,6 +14,7 @@
 #include "rod_mechanics/inner_forces/elasticTwistingForce.h"
 
 // include time stepper
+#include "time_steppers/forwardEuler.h"
 #include "time_steppers/verletPosition.h"
 #include "time_steppers/backwardEuler.h"
 #include "time_steppers/implicitMidpoint.h"

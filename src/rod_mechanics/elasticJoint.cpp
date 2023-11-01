@@ -1,7 +1,7 @@
 #include "elasticJoint.h"
 
-elasticJoint::elasticJoint(int node, int limb_idx, const vector<shared_ptr<elasticRod>> &m_limbs)
-            : joint_node(node), joint_limb(limb_idx), limbs(m_limbs)
+elasticJoint::elasticJoint(int node, int limb_idx, const vector<shared_ptr<elasticRod>> &limbs)
+            : joint_node(node), joint_limb(limb_idx), limbs(limbs)
 {
     ne = 0;
     limbs[limb_idx]->addJoint(joint_node, false, 0, 0);

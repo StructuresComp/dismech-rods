@@ -18,7 +18,8 @@
 #include "logging/velocityLogger.h"
 
 
-typedef enum {VERLET_POSITION,
+typedef enum {FORWARD_EULER,
+              VERLET_POSITION,
               BACKWARD_EULER,
               IMPLICIT_MIDPOINT}
               numerical_integration_scheme;

@@ -29,21 +29,21 @@ Based on the [Discrete Elastic Rods](https://www.cs.columbia.edu/cg/pdfs/143-rod
 If you'd like DisMech to support a new feature, feel free create an issue and we'll add it to the list here.
 
 #### High priority
-- [ ] Add forward Euler integration scheme.
-- [ ] Add predictor-corrector integration option.
 - [ ] Add per-limb friction coefficient logic.
 - [ ] Add active entanglement example code.
 - [ ] Add limb self-contact option.
 - [ ] Add contact logic for joints.
-- [ ] Add detailed documentation for all examples. 
-- [ ] Add more code examples for initializing limbs and joints.
+- [ ] Possibly replace floor contact force (currently uses IMC) with modified mass method. 
 
 #### Low priority
+- [ ] Add detailed documentation for all examples.
+- [ ] Add more code examples for initializing limbs and joints.
 - [ ] Add time varying boundary condition logic.
 - [ ] Add more controller types.
 - [ ] Add shell functionality.
 
 ### COMPLETED
+- [x] Add forward Euler integration scheme.
 - [x] Add contact logic for limbs.
 ***
 
@@ -171,6 +171,7 @@ struct simParams {
 Detailed parameter explanations:
 
 - `numerical_integration_scheme` - Determines the numerical integration scheme. Currently, available options are 
+  - `FORWARD_EULER`: https://en.wikipedia.org/wiki/Euler_method
   - `VERLET_POSITION`: https://en.wikipedia.org/wiki/Verlet_integration
   - `BACKWARD_EULER`: https://en.wikipedia.org/wiki/Backward_Euler_method
   - `IMPLICIT_MIDPOINT`: https://en.wikipedia.org/wiki/Midpoint_method

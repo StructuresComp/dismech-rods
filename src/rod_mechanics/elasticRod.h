@@ -1,30 +1,24 @@
 #ifndef ELASTICROD_H
 #define ELASTICROD_H
 
-// TODO: check if these are necessary
-#include <map>
-#include <array>
-#include <cassert>
 #include "eigenIncludes.h"
 
 class elasticRod
 {
+    // NOTE: probably could move more stuff to private
     public:
-    elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
-               double m_rho, double m_rod_radius, double m_youngs_modulus, double m_poisson_ratio);
-    elasticRod(int m_limb_idx, const vector<Vector3d>& m_nodes, double m_rho, double m_rod_radius,
-               double m_youngs_modulus, double m_poisson_ratio);
+    elasticRod(int limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
+               double rho, double rod_radius, double youngs_modulus, double poisson_ratio);
+    elasticRod(int limb_idx, const vector<Vector3d>& nodes, double rho, double rod_radius,
+               double youngs_modulus, double poisson_ratio);
     ~elasticRod();
-    void setup();
-    void setMass();
-    void setReferenceLength();
+
     void setVertexBoundaryCondition(Vector3d position, int k);
-    void setThetaBoundaryCondition(double desiredTheta, int k);
-    void computeElasticStiffness();
+    void setThetaBoundaryCondition(double desired_theta, int k);
     void prepareForIteration();
     double updateNewtonX(double *dx, int offset, double alpha=1.0);
     void updateGuess(double weight, double dt);
-    void enable2DSim();
+    void enable2DSim() const;
 
     int limb_idx;
 
@@ -35,20 +29,6 @@ class elasticRod
     Vector3d getTangent(int k);
     double getTheta(int k);
     void updatePhis(double phi1, double phi2);
-
-    // Should be taken out of this class
-    void computeTimeParallel();
-    void computeTangent();
-    void computeSpaceParallel();
-    void computeMaterialDirector();
-    void computeKappa();
-    void computeAngle2KappaBar();
-    void computeTwistBar();
-    void computeEdgeLen();
-    void getRefTwist();
-    static void parallelTransport(const Vector3d &d1_1,const Vector3d &t1,const Vector3d &t2,Vector3d &d1_2);
-    static void rotateAxisAngle(Vector3d &v, const Vector3d &z, const double &theta);
-    static double signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n);
 
     // Elastic stiffness values
     double poisson_ratio;
@@ -126,10 +106,9 @@ class elasticRod
 
     // boundary conditions
     int *isConstrained;
-    int getIfConstrained(int k);
+    int getIfConstrained(int k) const;
     int *unconstrainedMap;
     int *fullToUnconsMap;
-    void setupMap();
 
     void updateMap();
 
@@ -144,6 +123,25 @@ class elasticRod
     vector<pair<int, int>> joint_ids;
 
 private:
+    void setupMap();
+
+    // NOTE: perhaps move these to util.h later?
+    void setup();
+    void computeElasticStiffness();
+    void setMass();
+    void setReferenceLength();
+    void computeTimeParallel();
+    void computeTangent();
+    void computeSpaceParallel();
+    void computeMaterialDirector();
+    void computeKappa();
+    void computeAngle2KappaBar();
+    void computeTwistBar();
+    void computeEdgeLen();
+    void getRefTwist();
+    static void parallelTransport(const Vector3d &d1_1,const Vector3d &t1,const Vector3d &t2,Vector3d &d1_2);
+    static void rotateAxisAngle(Vector3d &v, const Vector3d &z, const double &theta);
+    static double signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n);
 };
 
 #endif

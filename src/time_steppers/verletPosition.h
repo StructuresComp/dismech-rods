@@ -13,10 +13,6 @@ public:
 
     double stepForwardInTime() override;
     void updateSystemForNextTimeStep() override;
-
-private:
-    vector<VectorXd> inverse_masses;
-    void constructInverseMassVector();
 };
 
 

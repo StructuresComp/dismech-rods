@@ -1,9 +1,9 @@
 #include "elasticRod.h"
 
-elasticRod::elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
-                       double m_rho, double m_rod_radius, double m_youngs_modulus, double m_poisson_ratio) :
-                       limb_idx(m_limb_idx), ndof(num_nodes*4-1), nv(num_nodes), ne(num_nodes-1), rho(m_rho),
-                       rod_radius(m_rod_radius), youngM(m_youngs_modulus), poisson_ratio(m_poisson_ratio)
+elasticRod::elasticRod(int limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
+                       double rho, double rod_radius, double youngs_modulus, double poisson_ratio) :
+                       limb_idx(limb_idx), ndof(num_nodes*4-1), nv(num_nodes), ne(num_nodes-1), rho(rho),
+                       rod_radius(rod_radius), youngM(youngs_modulus), poisson_ratio(poisson_ratio)
 {
     Vector3d dir = (end - start) / (num_nodes - 1);
     for (int i = 0; i < num_nodes; i++)
@@ -17,11 +17,11 @@ elasticRod::elasticRod(int m_limb_idx, const Vector3d& start, const Vector3d& en
 }
 
 
-elasticRod::elasticRod(int m_limb_idx, const vector<Vector3d>& m_nodes, double m_rho, double m_rod_radius,
-                       double m_youngs_modulus, double m_poisson_ratio) :
-                       limb_idx(m_limb_idx), ndof(m_nodes.size()*4-1), nv(m_nodes.size()), ne(m_nodes.size()-1),
-                       all_nodes(m_nodes), rho(m_rho), rod_radius(m_rod_radius),
-                       youngM(m_youngs_modulus), poisson_ratio(m_poisson_ratio)
+elasticRod::elasticRod(int limb_idx, const vector<Vector3d>& nodes, double rho, double rod_radius,
+                       double youngs_modulus, double poisson_ratio) :
+                       limb_idx(limb_idx), ndof(nodes.size()*4-1), nv(nodes.size()), ne(nodes.size()-1),
+                       all_nodes(nodes), rho(rho), rod_radius(rod_radius),
+                       youngM(youngs_modulus), poisson_ratio(poisson_ratio)
 {
     rod_length = 0;
     for (int i = 1; i < nv; i++)  {
@@ -233,10 +233,10 @@ void elasticRod::setVertexBoundaryCondition(Vector3d position, int k)
 }
 
 
-void elasticRod::setThetaBoundaryCondition(double desiredTheta, int k)
+void elasticRod::setThetaBoundaryCondition(double desired_theta, int k)
 {
     isConstrained[4 * k + 3] = 1;
-    x(4 * k + 3) = desiredTheta;
+    x(4 * k + 3) = desired_theta;
 }
 
 elasticRod::~elasticRod()
@@ -250,7 +250,7 @@ elasticRod::~elasticRod()
     delete[] DOFoffsets;
 }
 
-int elasticRod::getIfConstrained(int k)
+int elasticRod::getIfConstrained(int k) const
 {
     return isConstrained[k];
 }
@@ -305,17 +305,17 @@ void elasticRod::setReferenceLength()
 
 Vector3d elasticRod::getVertex(int k)
 {
-    return Vector3d{x(4 * k), x(4 * k + 1), x(4 * k + 2)};
+    return x.segment<3>(4*k);
 }
 
 Vector3d elasticRod::getPreVertex(int k)
 {
-    return Vector3d{x0(4 * k), x0(4 * k + 1), x0(4 * k + 2)};
+    return x0.segment<3>(4*k);
 }
 
 Vector3d elasticRod::getVelocity(int k)
 {
-    return Vector3d{u(4 * k), u(4 * k + 1), u(4 * k + 2)};
+    return u.segment<3>(4*k);
 }
 
 Vector3d elasticRod::getTangent(int k)
@@ -600,7 +600,7 @@ void elasticRod::updateGuess(double weight, double dt)
     }
 }
 
-void elasticRod::enable2DSim() {
+void elasticRod::enable2DSim() const {
     for (int i = 0; i < ne; i++) {
         isConstrained[4*i+1] = 1;
         isConstrained[4*i+3] = 1;
