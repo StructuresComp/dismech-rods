@@ -64,7 +64,6 @@ double backwardEuler::newtonMethod(double dt) {
 
             limb_idx++;
         }
-        iter++;
 
         // Dynamics tolerance check
         if (max_dx / dt < dtol) {
@@ -73,12 +72,13 @@ double backwardEuler::newtonMethod(double dt) {
             continue;
         }
 
+        iter++;
+
         // Exit if unable to converge
         if (iter > max_iter) {
             cout << "No convergence after " << max_iter << " iterations" << endl;
             exit(1);
         }
-
     }
     return dt;
 }
