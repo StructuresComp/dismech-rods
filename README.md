@@ -1,4 +1,4 @@
-## DisMech: A Discrete Differential Geometry-based Physical Simulator for Soft Robots and Structures
+## [DisMech: A Discrete Differential Geometry-based Physical Simulator for Soft Robots and Structures](http://dismech.github.io/)
 
 <div style="text-align: center;">
 <table>
@@ -20,8 +20,8 @@
 </div>
 
 
-DisMech is a discrete differential geometry-based physical simulator for elastic rod-like structures and soft robots.
-Based on the [Discrete Elastic Rods](https://www.cs.columbia.edu/cg/pdfs/143-rods.pdf) framework, it can be used to simulate soft structures for a wide variety of purposes such as robotic deformable material manipulation and soft robot control. 
+[DisMech](http://dismech.github.io/) is a discrete differential geometry-based physical simulator for elastic rod-like structures and soft robots.
+Based on the [Discrete Elastic Rods](https://www.cs.columbia.edu/cg/pdfs/143-rods.pdf) framework, it can be used to simulate soft structures for a wide variety of purposes such as robotic deformable material manipulation and soft robot control.
 
 ***
 
@@ -181,3 +181,8 @@ Detailed parameter explanations:
 - `ftol` - A force tolerance. Considers Newton's method to converge if the cumulative force norm becomes less than the starting force norm * `ftol`.
   $$|| \mathbf f || < || \mathbf f_0 || * \textrm{ftol}$$
 - `adaptive_time_stepping` - Turns on adaptive time stepping which halves the time step size if failure to converge after set number of iterations. Set to 0 to disable.
+
+
+***
+### Acknowledgements
+This material is based upon work supported by the National Science Foundation. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
