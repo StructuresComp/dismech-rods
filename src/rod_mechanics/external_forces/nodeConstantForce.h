@@ -1,5 +1,5 @@
-#ifndef NON_UNIFORM_CONSTANT_FORCE_H
-#define NON_UNIFORM_CONSTANT_FORCE_H
+#ifndef NODE_CONSTANT_FORCE_H
+#define NODE_CONSTANT_FORCE_H
 
 #include "rod_mechanics/baseForce.h"
 
@@ -12,11 +12,11 @@ struct limbNodeForceItem{
     Vector3d force;
 };  
 
-class nonUniformConstantForce : public baseForce
+class nodeConstantForce : public baseForce
 {
 public:
-    nonUniformConstantForce(const shared_ptr<softRobots>& m_soft_robots);
-    ~nonUniformConstantForce() override;
+    nodeConstantForce(const shared_ptr<softRobots>& m_soft_robots);
+    ~nodeConstantForce() override;
 
     void add_force_to_limb_node(int limb_idx, int node_idx, const Vector3d& force);
 

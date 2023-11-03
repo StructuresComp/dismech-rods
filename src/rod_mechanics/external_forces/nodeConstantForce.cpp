@@ -1,17 +1,17 @@
-#include "nonUniformConstantForce.h"
+#include "nodeConstantForce.h"
 #include "time_steppers/baseTimeStepper.h"
 #include <iostream>
 
 // Applies a constant force to a specific node of a specific LIMB
 // to limbs only, not joints
-nonUniformConstantForce::nonUniformConstantForce(const shared_ptr<softRobots>& m_soft_robots) :
+nodeConstantForce::nodeConstantForce(const shared_ptr<softRobots>& m_soft_robots) :
                                            baseForce(m_soft_robots)
 {
 }
 
-nonUniformConstantForce::~nonUniformConstantForce() = default;
+nodeConstantForce::~nodeConstantForce() = default;
 
-void nonUniformConstantForce::add_force_to_limb_node(int limb_idx, int node_idx, const Vector3d& force) {
+void nodeConstantForce::add_force_to_limb_node(int limb_idx, int node_idx, const Vector3d& force) {
     struct limbNodeForceItem force_item;
     force_item.limb_idx = limb_idx;
     force_item.node_idx = node_idx;
@@ -19,7 +19,7 @@ void nonUniformConstantForce::add_force_to_limb_node(int limb_idx, int node_idx,
     limb_node_forces.emplace_back(force_item);
 }
 
-void nonUniformConstantForce::computeForce(double dt) {
+void nodeConstantForce::computeForce(double dt) {
     int limb_idx;
     int node_idx;
     shared_ptr<elasticRod> limb;
@@ -51,6 +51,6 @@ void nonUniformConstantForce::computeForce(double dt) {
     }
 }
 
-void nonUniformConstantForce::computeForceAndJacobian(double dt) {
+void nodeConstantForce::computeForceAndJacobian(double dt) {
     computeForce(dt);
 }

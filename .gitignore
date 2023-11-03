@@ -6,6 +6,7 @@ cmake-build-debug/
 disMech
 simDER
 
+run_example.sh
 run_SML_robot.sh
 custom_bot/SML_Robots/
 
