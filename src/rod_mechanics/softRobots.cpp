@@ -9,14 +9,14 @@ softRobots::~softRobots() = default;
 void softRobots::addLimb(const Vector3d& start, const Vector3d& end, int num_nodes,
                         double rho, double rod_radius, double youngs_modulus, double poisson_ratio, double mu) {
     limbs.push_back(make_shared<elasticRod>(num_limbs, start, end, num_nodes, rho,
-                                            rod_radius, youngs_modulus, poisson_ratio));
+                                            rod_radius, youngs_modulus, poisson_ratio, mu));
     num_limbs++;
 }
 
 
 void softRobots::addLimb(const vector<Eigen::Vector3d> &nodes, double rho, double rod_radius, double youngs_modulus,
                         double poisson_ratio, double mu) {
-    limbs.push_back(make_shared<elasticRod>(num_limbs, nodes, rho, rod_radius, youngs_modulus, poisson_ratio));
+    limbs.push_back(make_shared<elasticRod>(num_limbs, nodes, rho, rod_radius, youngs_modulus, poisson_ratio, mu));
     num_limbs++;
 }
 

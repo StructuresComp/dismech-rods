@@ -30,7 +30,8 @@ void get_robot_description(int argc, char** argv,
     double young_mod = 1e5;
     double density = 509.2985;
     double poisson = 0.5;
-    soft_robots->addLimb(Vector3d(0.0, 0.00, 0.025), Vector3d(1.0, 0.00, 0.025), n, density, radius, young_mod, poisson);
+    double mu = 0.4;
+    soft_robots->addLimb(Vector3d(0.0, 0.00, 0.025), Vector3d(1.0, 0.00, 0.025), n, density, radius, young_mod, poisson, mu);
 
     // Add gravity
     Vector3d gravity_vec(0.0, 0.0, -9.8);
@@ -39,9 +40,8 @@ void get_robot_description(int argc, char** argv,
     // Add floor contact
     double delta = 5e-4;
     double nu = 1e-3;
-    double mu = 0.4;
     double floor_z = 0.0;
-    forces->addForce(make_shared<floorContactForce>(soft_robots, delta, nu, mu, floor_z));
+    forces->addForce(make_shared<floorContactForce>(soft_robots, delta, nu, floor_z));
 
     // Create an external constant uniform force
     shared_ptr<uniformConstantForce> uniform_force = make_shared<uniformConstantForce>(soft_robots);

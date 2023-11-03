@@ -71,7 +71,6 @@ add_executable(disMech
         src/rod_mechanics/external_forces/floorContactForce.cpp
         src/rod_mechanics/external_forces/symbolicEquations.cpp
         src/rod_mechanics/external_forces/uniformConstantForce.cpp
-        src/rod_mechanics/external_forces/nonUniformConstantForce.cpp
         src/rod_mechanics/external_forces/collisionDetector.cpp
         src/rod_mechanics/external_forces/contactForce.cpp
 
