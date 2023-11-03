@@ -27,17 +27,17 @@ void get_robot_description(int argc, char** argv,
     double young_mod = 3e6;
     double density = 1180;
     double poisson = 0.5;
-
+    double mu = 0.4;
     // Create the limbs
-    soft_robots->addLimb(Vector3d(0, 0, 0.20), Vector3d(0, 0.00, 0.10), n, density, radius, young_mod, poisson);
-    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0.10, 0, 0.10), n, density, radius, young_mod, poisson);
-    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0, 0.10, 0.10), n, density, radius, young_mod, poisson);
-    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0, -0.10, 0.10), n, density, radius, young_mod, poisson);
-    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(-0.10, 0, 0.10), n, density, radius, young_mod, poisson);
-    soft_robots->addLimb(Vector3d(0.10, 0, 0.10), Vector3d(0.10, 0, 0.00), n, density, radius, young_mod, poisson);
-    soft_robots->addLimb(Vector3d(0.0, 0.10, 0.10), Vector3d(0.0, 0.10, 0.00), n, density, radius, young_mod, poisson);
-    soft_robots->addLimb(Vector3d(0.0, -0.10, 0.10), Vector3d(0.0, -0.10, 0.00), n, density, radius, young_mod, poisson);
-    soft_robots->addLimb(Vector3d(-0.10, 0, 0.10), Vector3d(-0.10, 0, 0.00), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(0, 0, 0.20), Vector3d(0, 0.00, 0.10), n, density, radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0.10, 0, 0.10), n, density, radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0, 0.10, 0.10), n, density, radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0, -0.10, 0.10), n, density, radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(-0.10, 0, 0.10), n, density, radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(0.10, 0, 0.10), Vector3d(0.10, 0, 0.00), n, density, radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(0.0, 0.10, 0.10), Vector3d(0.0, 0.10, 0.00), n, density, radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(0.0, -0.10, 0.10), Vector3d(0.0, -0.10, 0.00), n, density, radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(-0.10, 0, 0.10), Vector3d(-0.10, 0, 0.00), n, density, radius, young_mod, poisson, mu);
 
     // Create joints and connect appropriately
     soft_robots->createJoint(0, -1);
@@ -64,9 +64,8 @@ void get_robot_description(int argc, char** argv,
     // Add floor contact
     double delta = 5e-4;
     double nu = 5e-3;
-    double mu = 0.4;
     double floor_z = -0.10;
-    forces->addForce(make_shared<floorContactForce>(soft_robots, delta, nu, mu, floor_z));
+    forces->addForce(make_shared<floorContactForce>(soft_robots, delta, nu, floor_z));
 
     string logfile_base = "log_files/spider";
     int logging_period = 20;
