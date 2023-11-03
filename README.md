@@ -29,13 +29,14 @@ Based on the [Discrete Elastic Rods](https://www.cs.columbia.edu/cg/pdfs/143-rod
 If you'd like DisMech to support a new feature, feel free create an issue and we'll add it to the list here.
 
 #### High priority
-- [ ] Add per-limb friction coefficient logic.
+- [ ] Add per-limb friction coefficient logic. PR [#5](https://github.com/StructuresComp/dismech-rods/pull/5)
 - [ ] Add active entanglement example code.
 - [ ] Add limb self-contact option.
 - [ ] Add contact logic for joints.
-- [ ] Possibly replace floor contact force (currently uses IMC) with modified mass method. 
+- [ ] Add URDF functionality for instantiating robot.
 
 #### Low priority
+- [ ] Possibly replace floor contact force (currently uses IMC) with modified mass method. 
 - [ ] Add detailed documentation for all examples.
 - [ ] Add more code examples for initializing limbs and joints.
 - [ ] Add time varying boundary condition logic.
@@ -70,13 +71,21 @@ For other operating systems you should be able to modify the commands below appr
     sudo make install
     ```
     
-- [Flexible Collision Library (fcl)](https://github.com/flexible-collision-library/fcl)
-  - The fcl library is used to perform both broadphase and narrowphase collision detection with each discrete rod represented as a chain of cylinders.
-  - Install fcl from source using the following commands:
+- [Flexible Collision Library (FCL)](https://github.com/flexible-collision-library/fcl)
+  - The FCL library is used to perform both broadphase and narrowphase collision detection with each discrete rod represented as a chain of cylinders.
+  - FCL depends on both Eigen (instructions above) and [libccd](https://github.com/danfis/libccd). Install [libccd](https://github.com/danfis/libccd) with the following commands:
+     ```bash
+    git clone https://github.com/danfis/libccd
+    cd libccd/src
+    make -j4
+    sudo make install
+     ```
+  - Next, install FCL from source using the following commands:
     ```bash
     git clone https://github.com/flexible-collision-library/fcl
     cd fcl && mkdir build && cd build
     cmake ..
+    make -j4
     sudo make install
     ```
 - [SymEngine](https://github.com/symengine/symengine)
