@@ -11,6 +11,7 @@
 #include "rod_mechanics/external_forces/gravityForce.h"
 #include "rod_mechanics/external_forces/floorContactForce.h"
 #include "rod_mechanics/external_forces/uniformConstantForce.h"
+#include "rod_mechanics/external_forces/nonUniformConstantForce.h"
 #include "rod_mechanics/external_forces/contactForce.h"
 
 #include "utils/utils.h"

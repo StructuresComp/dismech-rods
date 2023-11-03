@@ -46,7 +46,6 @@ void softRobots::lockEdge(int limb_idx, int edge_idx) {
     limb->setThetaBoundaryCondition(0.0, edge_idx);
 }
 
-
 void softRobots::applyInitialVelocities(int limb_idx, const vector<Vector3d> &velocities) {
     shared_ptr<elasticRod> limb = limbs[limb_idx];
     if (limb->nv != velocities.size()) {
