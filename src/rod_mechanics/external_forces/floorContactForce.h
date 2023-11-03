@@ -15,6 +15,7 @@ public:
 
     void computeForce(double dt) override;
     void computeForceAndJacobian(double dt) override;
+    // No need
     void updateMu(double mu);
 
     double min_dist;

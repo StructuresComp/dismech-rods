@@ -140,7 +140,7 @@ void contactForce::prepContactInput() {
     }
 }
 
-
+// TODO change friction coefficent here
 void contactForce::prepFrictionInput(double dt) {
     auto limb1 = soft_robots->limbs[idx5];
     auto limb2 = soft_robots->limbs[idx6];

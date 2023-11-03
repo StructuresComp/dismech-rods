@@ -1,9 +1,9 @@
 #include "elasticRod.h"
 
 elasticRod::elasticRod(int limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
-                       double rho, double rod_radius, double youngs_modulus, double poisson_ratio) :
+                       double rho, double rod_radius, double youngs_modulus, double poisson_ratio, double mu) :
                        limb_idx(limb_idx), ndof(num_nodes*4-1), nv(num_nodes), ne(num_nodes-1), rho(rho),
-                       rod_radius(rod_radius), youngM(youngs_modulus), poisson_ratio(poisson_ratio)
+                       rod_radius(rod_radius), youngM(youngs_modulus), poisson_ratio(poisson_ratio), mu(mu)
 {
     Vector3d dir = (end - start) / (num_nodes - 1);
     for (int i = 0; i < num_nodes; i++)
@@ -18,10 +18,10 @@ elasticRod::elasticRod(int limb_idx, const Vector3d& start, const Vector3d& end,
 
 
 elasticRod::elasticRod(int limb_idx, const vector<Vector3d>& nodes, double rho, double rod_radius,
-                       double youngs_modulus, double poisson_ratio) :
+                       double youngs_modulus, double poisson_ratio, double mu) :
                        limb_idx(limb_idx), ndof(nodes.size()*4-1), nv(nodes.size()), ne(nodes.size()-1),
                        all_nodes(nodes), rho(rho), rod_radius(rod_radius),
-                       youngM(youngs_modulus), poisson_ratio(poisson_ratio)
+                       youngM(youngs_modulus), poisson_ratio(poisson_ratio), mu(mu)
 {
     rod_length = 0;
     for (int i = 1; i < nv; i++)  {
