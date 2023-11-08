@@ -7,6 +7,7 @@ disMech
 simDER
 
 run_example.sh
+run.sh
 run_SML_robot.sh
 custom_bot/SML_Robots/
 
