@@ -2,14 +2,27 @@
 
 <div style="text-align: center;">
 <table>
-   <tr>
-      <td align="center">  <img src="media/spider_incline.gif" width="500"> <br>
-            <em> Spider robot dropped onto an incline </em>
+  <tr>
+    <td align="center">  <img src="media/dismech-logo.jpg" width="250">  <br>
+      <em>Logo </em>
       </td>
+    <td align="center">  <img src="media/spider_incline.gif" width="500">  <br>
+      <em>Spider robot dropped onto an incline </em>
+    </td>
+
+
+  </tr>
+
+
+
+   <tr>
       <td align="center" rowspan="2">
         <img src="media/active_entanglement_cropped.gif" width="250"/> <br>
         <em> Active entanglement gripper </em>
      </td>
+      <td align="center">  <img src="media/helix.gif" width="500"> <br>
+            <em> Helix oscillating under gravity </em>
+      </td>
    </tr>
    <tr>
       <td align="center"> <img src="media/real2sim.gif" width="500">  <br>
