@@ -5,7 +5,9 @@
 #include "eigenIncludes.h"
 #include "elasticRod.h"
 #include "elasticJoint.h"
-#include "controllers/rodOpenLoopFileKappabarSetter.h"
+
+// Include Controller
+#include "controllers/baseController.h"
 
 
 class softRobots
@@ -27,11 +29,11 @@ public:
 
     void setup();
 
-    void addController(const shared_ptr<rodController>& controller);
+    void addController(const shared_ptr<baseController>& controller);
 
     vector<shared_ptr<elasticRod>> limbs;
     vector<shared_ptr<elasticJoint>> joints;
-    vector<shared_ptr<rodController>> controllers;
+    vector<shared_ptr<baseController>> controllers;
 
 private:
     int num_limbs = 0;

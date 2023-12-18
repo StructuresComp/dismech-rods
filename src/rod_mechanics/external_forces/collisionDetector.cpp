@@ -124,8 +124,10 @@ void collisionDetector::broadPhaseCollisionDetection() {
         for (size_t j = i+1; j < soft_robots->limbs.size(); j++) {
             auto m2 = collision_managers[j];
 
+//            cout << "here" << endl;
             // Check collisions between different limbs
             m1->collide(m2, &collision_data, fcl::DefaultCollisionFunction);
+//            cout << "here1" << endl;
 
             vector<fcl::Contactf> contacts;
             collision_data.result.getContacts(contacts);

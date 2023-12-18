@@ -193,7 +193,7 @@ void backwardEuler::updateSystemForNextTimeStep() {
     prepSystemForIteration();
 
     for (const auto& controller : controllers) {
-        controller->updateTimestep(dt);
+        controller->updateTimeStep(dt);
     }
 
     for (const auto& limb : limbs) {

@@ -96,8 +96,9 @@ add_executable(disMech
         src/simulation_environments/headlessDERSimulationEnvironment.cpp
         src/simulation_environments/openglDERSimulationEnvironment.cpp
 
-        src/controllers/rodController.cpp
-        src/controllers/rodOpenLoopFileKappabarSetter.cpp
+        src/controllers/baseController.cpp
+        src/controllers/openLoopUniformKappaBarController.cpp
+        src/controllers/activeEntanglementController.cpp
 
         src/utils/utils.cpp
         )

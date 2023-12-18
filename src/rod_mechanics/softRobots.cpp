@@ -66,6 +66,6 @@ void softRobots::setup() {
 }
 
 
-void softRobots::addController(const shared_ptr<rodController>& controller) {
+void softRobots::addController(const shared_ptr<baseController>& controller) {
     controllers.emplace_back(controller);
 }
