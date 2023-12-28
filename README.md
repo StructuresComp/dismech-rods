@@ -86,10 +86,11 @@ For other operating systems you should be able to modify the commands below appr
     
 - [Flexible Collision Library (FCL)](https://github.com/flexible-collision-library/fcl)
   - The FCL library is used to perform both broadphase and narrowphase collision detection with each discrete rod represented as a chain of cylinders.
-  - FCL depends on both Eigen (instructions above) and [libccd](https://github.com/danfis/libccd). Install [libccd](https://github.com/danfis/libccd) with the following commands:
+  - FCL depends on both Eigen (instructions above) and [libccd](https://github.com/danfis/libccd). Install [libccd](https://github.com/danfis/libccd) with the following commands, making sure to build shared libraries:
      ```bash
     git clone https://github.com/danfis/libccd
-    cd libccd/src
+    cd libccd
+    cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON ..
     make -j4
     sudo make install
      ```
