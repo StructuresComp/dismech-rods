@@ -7,11 +7,11 @@
  * TODO: ADD MORE EFFICIENT COLLISION DETECTION
  */
 
-// Floor friction defaults to the friction coefficient of the limb
+// Floor friction defaults to the friction coefficient of the limb if floor mu is not specified
 floorContactForce::floorContactForce(const shared_ptr<softRobots>& soft_robots, double floor_delta,
-                                     double floor_slipTol, double floor_z) :
+                                     double floor_slipTol, double floor_z, double floor_mu) :
                                      baseForce(soft_robots), delta(floor_delta), slipTol(floor_slipTol),
-                                     floor_z(floor_z)
+                                     floor_z(floor_z), floor_mu(floor_mu)
 {
     K1 = 15 / delta;
     K2 = 15 / slipTol;
@@ -71,7 +71,7 @@ void floorContactForce::computeForce(double dt) {
             stepper->addForce(ind, f, limb_idx);
 
             // Apply friction force, get mu from limb
-            double mu = limb->mu;
+            double mu = (floor_mu < 0) ? limb->mu : floor_mu;
             curr_node = limb->getVertex(i)(seq(0, 1));
             pre_node = limb->getPreVertex(i)(seq(0, 1));
             computeFriction(curr_node, pre_node, f, mu, dt);
@@ -116,7 +116,7 @@ void floorContactForce::computeForceAndJacobian(double dt) {
             stepper->addJacobian(ind, ind, J, limb_idx);
 
             // Friction forces, get mu from limb
-            double mu = limb->mu;
+            double mu = (floor_mu < 0) ? limb->mu : floor_mu;
             curr_node = limb->getVertex(i)(seq(0, 1));
             pre_node = limb->getPreVertex(i)(seq(0, 1));
             computeFriction(curr_node, pre_node, f, mu, dt);
