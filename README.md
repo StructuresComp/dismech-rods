@@ -2,14 +2,27 @@
 
 <div style="text-align: center;">
 <table>
-   <tr>
-      <td align="center">  <img src="media/spider_incline.gif" width="500"> <br>
-            <em> Spider robot dropped onto an incline </em>
+  <tr>
+    <td align="center">  <img src="media/dismech-logo.jpg" width="250">  <br>
+      <em>Logo </em>
       </td>
+    <td align="center">  <img src="media/spider_incline.gif" width="500">  <br>
+      <em>Spider robot dropped onto an incline </em>
+    </td>
+
+
+  </tr>
+
+
+
+   <tr>
       <td align="center" rowspan="2">
         <img src="media/active_entanglement_cropped.gif" width="250"/> <br>
         <em> Active entanglement gripper </em>
      </td>
+      <td align="center">  <img src="media/helix.gif" width="500"> <br>
+            <em> Helix oscillating under gravity </em>
+      </td>
    </tr>
    <tr>
       <td align="center"> <img src="media/real2sim.gif" width="500">  <br>
@@ -29,13 +42,14 @@ Based on the [Discrete Elastic Rods](https://www.cs.columbia.edu/cg/pdfs/143-rod
 If you'd like DisMech to support a new feature, feel free create an issue and we'll add it to the list here.
 
 #### High priority
-- [ ] Add per-limb friction coefficient logic.
+- [ ] Add per-limb friction coefficient logic. PR [#5](https://github.com/StructuresComp/dismech-rods/pull/5)
 - [ ] Add active entanglement example code.
 - [ ] Add limb self-contact option.
 - [ ] Add contact logic for joints.
-- [ ] Possibly replace floor contact force (currently uses IMC) with modified mass method. 
+- [ ] Add URDF functionality for instantiating robot.
 
 #### Low priority
+- [ ] Possibly replace floor contact force (currently uses IMC) with modified mass method. 
 - [ ] Add detailed documentation for all examples.
 - [ ] Add more code examples for initializing limbs and joints.
 - [ ] Add time varying boundary condition logic.
@@ -70,13 +84,22 @@ For other operating systems you should be able to modify the commands below appr
     sudo make install
     ```
     
-- [Flexible Collision Library (fcl)](https://github.com/flexible-collision-library/fcl)
-  - The fcl library is used to perform both broadphase and narrowphase collision detection with each discrete rod represented as a chain of cylinders.
-  - Install fcl from source using the following commands:
+- [Flexible Collision Library (FCL)](https://github.com/flexible-collision-library/fcl)
+  - The FCL library is used to perform both broadphase and narrowphase collision detection with each discrete rod represented as a chain of cylinders.
+  - FCL depends on both Eigen (instructions above) and [libccd](https://github.com/danfis/libccd). Install [libccd](https://github.com/danfis/libccd) with the following commands, making sure to build shared libraries:
+     ```bash
+    git clone https://github.com/danfis/libccd
+    cd libccd
+    cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON ..
+    make -j4
+    sudo make install
+     ```
+  - Next, install FCL from source using the following commands:
     ```bash
     git clone https://github.com/flexible-collision-library/fcl
     cd fcl && mkdir build && cd build
     cmake ..
+    make -j4
     sudo make install
     ```
 - [SymEngine](https://github.com/symengine/symengine)
@@ -182,6 +205,19 @@ Detailed parameter explanations:
   $$|| \mathbf f || < || \mathbf f_0 || * \textrm{ftol}$$
 - `adaptive_time_stepping` - Turns on adaptive time stepping which halves the time step size if failure to converge after set number of iterations. Set to 0 to disable.
 
+***
+### Citation
+If our work has helped your research, please cite the following paper.
+```
+@misc{choi2023dismech,
+      title={DisMech: A Discrete Differential Geometry-based Physical Simulator for Soft Robots and Structures}, 
+      author={Andrew Choi and Ran Jing and Andrew Sabelhaus and Mohammad Khalid Jawed},
+      year={2023},
+      eprint={2311.18126},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO}
+}
+```
 
 ***
 ### Acknowledgements
