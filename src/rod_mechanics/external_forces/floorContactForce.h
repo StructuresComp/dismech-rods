@@ -10,7 +10,7 @@ class floorContactForce : public baseForce
 {
 public:
     floorContactForce(const shared_ptr<softRobots>& soft_robots, double floor_delta,
-                      double floor_slipTol, double floor_z, double floor_mu=-1.0);
+                      double floor_slipTol, double floor_z, double floor_mu=0.0);
     ~floorContactForce() override;
 
     void computeForce(double dt) override;

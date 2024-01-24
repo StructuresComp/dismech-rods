@@ -70,13 +70,15 @@ void floorContactForce::computeForce(double dt) {
 
             stepper->addForce(ind, f, limb_idx);
 
-            // Apply friction force, get mu from limb
-            double mu = (floor_mu < 0) ? limb->mu : floor_mu;
-            curr_node = limb->getVertex(i)(seq(0, 1));
-            pre_node = limb->getPreVertex(i)(seq(0, 1));
-            computeFriction(curr_node, pre_node, f, mu, dt);
-            stepper->addForce(4*i, ffr(0), limb_idx);
-            stepper->addForce(4*i+1, ffr(1), limb_idx);
+            double mu = max(floor_mu, limb->mu);
+
+            if (mu != 0) {
+                curr_node = limb->getVertex(i)(seq(0, 1));
+                pre_node = limb->getPreVertex(i)(seq(0, 1));
+                computeFriction(curr_node, pre_node, f, mu, dt);
+                stepper->addForce(4*i, ffr(0), limb_idx);
+                stepper->addForce(4*i+1, ffr(1), limb_idx);
+            }
 
             num_contacts++;
         }
@@ -115,39 +117,41 @@ void floorContactForce::computeForceAndJacobian(double dt) {
             stepper->addForce(ind, f, limb_idx);
             stepper->addJacobian(ind, ind, J, limb_idx);
 
-            // Friction forces, get mu from limb
-            double mu = (floor_mu < 0) ? limb->mu : floor_mu;
-            curr_node = limb->getVertex(i)(seq(0, 1));
-            pre_node = limb->getPreVertex(i)(seq(0, 1));
-            computeFriction(curr_node, pre_node, f, mu, dt);
+            double mu = max(floor_mu, limb->mu);
 
-            if (fric_jaco_type == 0) continue;
+            if (mu != 0.0) {
+                curr_node = limb->getVertex(i)(seq(0, 1));
+                pre_node = limb->getPreVertex(i)(seq(0, 1));
+                computeFriction(curr_node, pre_node, f, mu, dt);
 
-            stepper->addForce(4*i, ffr(0), limb_idx);
-            stepper->addForce(4*i+1, ffr(1), limb_idx);
+                if (fric_jaco_type == 0) continue;
 
-            // Friction jacobian
-            prepFrictionJacobianInput(curr_node, pre_node, f, mu, dt);
+                stepper->addForce(4*i, ffr(0), limb_idx);
+                stepper->addForce(4*i+1, ffr(1), limb_idx);
 
-            if (fric_jaco_type == 1) {
-                sym_eqs->floor_friction_partials_gamma1_dfr_dx_func.call(friction_partials_dfr_dx.data(), fric_jacobian_input.data());
-                sym_eqs->floor_friction_partials_gamma1_dfr_dfn_func.call(friction_partials_dfr_dfn.data(), fric_jacobian_input.data());
+                // Friction jacobian
+                prepFrictionJacobianInput(curr_node, pre_node, f, mu, dt);
+
+                if (fric_jaco_type == 1) {
+                    sym_eqs->floor_friction_partials_gamma1_dfr_dx_func.call(friction_partials_dfr_dx.data(), fric_jacobian_input.data());
+                    sym_eqs->floor_friction_partials_gamma1_dfr_dfn_func.call(friction_partials_dfr_dfn.data(), fric_jacobian_input.data());
+                }
+                else {
+                    sym_eqs->floor_friction_partials_dfr_dx_func.call(friction_partials_dfr_dx.data(), fric_jacobian_input.data());
+                    sym_eqs->floor_friction_partials_dfr_dfn_func.call(friction_partials_dfr_dfn.data(), fric_jacobian_input.data());
+                }
+
+                // dfrx/dx
+                stepper->addJacobian(4*i, 4*i, friction_partials_dfr_dx(0, 0), limb_idx);
+                stepper->addJacobian(4*i, 4*i+1, friction_partials_dfr_dx(0, 1), limb_idx);
+                // dfry/dy
+                stepper->addJacobian(4*i+1, 4*i, friction_partials_dfr_dx(1, 0), limb_idx);
+                stepper->addJacobian(4*i+1, 4*i+1, friction_partials_dfr_dx(1, 1), limb_idx);
+                // dfrx/dfn * dfn/dz
+                stepper->addJacobian(4*i+2, 4*i, friction_partials_dfr_dfn(0) * J, limb_idx);
+                // dfry/dfn * dfn/dz
+                stepper->addJacobian(4*i+2, 4*i+1, friction_partials_dfr_dfn(1) * J, limb_idx);
             }
-            else {
-                sym_eqs->floor_friction_partials_dfr_dx_func.call(friction_partials_dfr_dx.data(), fric_jacobian_input.data());
-                sym_eqs->floor_friction_partials_dfr_dfn_func.call(friction_partials_dfr_dfn.data(), fric_jacobian_input.data());
-            }
-
-            // dfrx/dx
-            stepper->addJacobian(4*i, 4*i, friction_partials_dfr_dx(0, 0), limb_idx);
-            stepper->addJacobian(4*i, 4*i+1, friction_partials_dfr_dx(0, 1), limb_idx);
-            // dfry/dy
-            stepper->addJacobian(4*i+1, 4*i, friction_partials_dfr_dx(1, 0), limb_idx);
-            stepper->addJacobian(4*i+1, 4*i+1, friction_partials_dfr_dx(1, 1), limb_idx);
-            // dfrx/dfn * dfn/dz
-            stepper->addJacobian(4*i+2, 4*i, friction_partials_dfr_dfn(0) * J, limb_idx);
-            // dfry/dfn * dfn/dz
-            stepper->addJacobian(4*i+2, 4*i+1, friction_partials_dfr_dfn(1) * J, limb_idx);
 
             num_contacts++;
         }

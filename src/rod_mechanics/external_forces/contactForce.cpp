@@ -4,7 +4,7 @@
 
 contactForce::contactForce(const shared_ptr<softRobots>& soft_robots, double col_limit,
                            double delta, double k_scaler, bool friction, double nu, bool self_contact) :
-                           baseForce(soft_robots), delta(delta), scaler(m_k_scaler),
+                           baseForce(soft_robots), delta(delta), k_scaler(k_scaler),
                            nu(nu), friction(friction)
                            {
 
@@ -18,7 +18,6 @@ contactForce::contactForce(const shared_ptr<softRobots>& soft_robots, double col
     e2p_input[9] = K1;
     e2e_input[12] = K1;
 
-    // friction_input[36] = mu;
     friction_input[38] = K2;
 
     sym_eqs = make_unique<symbolicEquations>();

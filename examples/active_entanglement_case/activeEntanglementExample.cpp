@@ -27,6 +27,7 @@ void get_robot_description(int argc, char** argv,
     double young_mod = 3e5;
     double density = 1200;
     double poisson = 0.5;
+    double mu = 0.5;
 
     int num_fingers = 5;
     double dist = 0.015;
@@ -42,7 +43,7 @@ void get_robot_description(int argc, char** argv,
         double y = R * sin(t);
 
 
-        soft_robots->addLimb(Vector3d(x, y, 0.0), Vector3d(x, y, -0.3), n, density, radius, young_mod, poisson);
+        soft_robots->addLimb(Vector3d(x, y, 0.0), Vector3d(x, y, -0.3), n, density, radius, young_mod, poisson, mu);
         soft_robots->lockEdge(i, 0);
     }
 
@@ -58,17 +59,17 @@ void get_robot_description(int argc, char** argv,
     double col_limit = 1e-3;
     double delta = 5e-4;
     double k_scaler = 1e5;
-    double mu = 0.4;
     double nu = 1e-3;
+    bool friction = false;  // for friction, reduce time step to 1 ms
     bool self_contact = true;
-    forces->addForce(make_shared<contactForce>(soft_robots, col_limit, delta, k_scaler, mu, nu, self_contact));
+    forces->addForce(make_shared<contactForce>(soft_robots, col_limit, delta, k_scaler, friction, nu, self_contact));
 
     // Add custom active entanglement controller
     double start_time = 0.0;
     double end_time = 10.0;
     soft_robots->addController(make_shared<activeEntanglementController>(soft_robots, start_time, end_time));
 
-//    string logfile_base = "log_files/active_entanglement";
-//    int logging_period = 5;
-//    logger = make_shared<rodNodeLogger>(logfile_base, logging_output_file, logging_period);
+    string logfile_base = "log_files/active_entanglement";
+    int logging_period = 5;
+    logger = make_shared<rodNodeLogger>(logfile_base, logging_output_file, logging_period);
 }

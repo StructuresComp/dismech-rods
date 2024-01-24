@@ -28,6 +28,7 @@ void get_robot_description(int argc, char** argv,
     double density = 1180;
     double poisson = 0.5;
     double mu = 0.4;
+
     // Create the limbs
     soft_robots->addLimb(Vector3d(0, 0, 0.20), Vector3d(0, 0.00, 0.10), n, density, radius, young_mod, poisson, mu);
     soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0.10, 0, 0.10), n, density, radius, young_mod, poisson, mu);
