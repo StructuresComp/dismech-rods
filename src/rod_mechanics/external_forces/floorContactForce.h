@@ -10,12 +10,11 @@ class floorContactForce : public baseForce
 {
 public:
     floorContactForce(const shared_ptr<softRobots>& soft_robots, double floor_delta,
-                      double floor_slipTol, double mu, double floor_z);
+                      double floor_slipTol, double floor_z, double floor_mu=-1.0);
     ~floorContactForce() override;
 
     void computeForce(double dt) override;
     void computeForceAndJacobian(double dt) override;
-    void updateMu(double mu);
 
     double min_dist;
     int num_contacts;
@@ -24,8 +23,8 @@ public:
     void reset_slip_tol();
 
 private:
-    void computeFriction(const Vector2d& curr_node, const Vector2d& pre_node, double fn, double dt);
-    void prepFrictionJacobianInput(const Vector2d& curr_node, const Vector2d& pre_node, double fn, double dt);
+    void computeFriction(const Vector2d& curr_node, const Vector2d& pre_node, double fn, double mu, double dt);
+    void prepFrictionJacobianInput(const Vector2d& curr_node, const Vector2d& pre_node, double fn, double mu, double dt);
 
     shared_ptr<symbolicEquations> sym_eqs;
     Vector<double, 2> contact_input;
@@ -35,7 +34,7 @@ private:
     Vector<double, 2> ffr;
     int fric_jaco_type;
     double contact_stiffness;
-    double mu;
+    double floor_mu;
     double delta;
     double slipTol;
     double orig_slip_tol;

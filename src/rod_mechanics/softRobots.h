@@ -17,9 +17,9 @@ public:
     ~softRobots();
 
     void addLimb(const Vector3d& start, const Vector3d& end, int num_nodes,
-                 double rho, double rod_radius, double youngs_modulus, double poisson_ratio);
+                 double rho, double rod_radius, double youngs_modulus, double poisson_ratio, double mu=0.0);
     void addLimb(const vector<Vector3d>& nodes, double rho, double rod_radius,
-                 double youngs_modulus, double poisson_ratio);
+                 double youngs_modulus, double poisson_ratio, double mu=0.0);
 
     void createJoint(int limb_idx, int node_idx);
     void addToJoint(int joint_idx, int limb_idx, int node_idx);

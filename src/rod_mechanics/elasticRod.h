@@ -8,9 +8,9 @@ class elasticRod
     // NOTE: probably could move more stuff to private
     public:
     elasticRod(int limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
-               double rho, double rod_radius, double youngs_modulus, double poisson_ratio);
+               double rho, double rod_radius, double youngs_modulus, double poisson_ratio, double mu);
     elasticRod(int limb_idx, const vector<Vector3d>& nodes, double rho, double rod_radius,
-               double youngs_modulus, double poisson_ratio);
+               double youngs_modulus, double poisson_ratio, double mu);
     ~elasticRod();
 
     void setVertexBoundaryCondition(Vector3d position, int k);
@@ -45,7 +45,8 @@ class elasticRod
     double rod_radius;           // cross-sectional radius of the rod
     double cross_sectional_area; // cross-sectional area of the rod
     double dm; // mass per segment
-
+    double mu; // friction coefficient
+    
     // Total length
     double rod_length;
 

@@ -1,10 +1,11 @@
 #include "contactForce.h"
 #include "time_steppers/baseTimeStepper.h"
 
+
 contactForce::contactForce(const shared_ptr<softRobots>& soft_robots, double col_limit,
-                           double delta, double k_scaler, double mu, double nu, bool self_contact) :
-                           baseForce(soft_robots), delta(delta), k_scaler(k_scaler),
-                           mu(mu), nu(nu), friction(mu > 0.0)
+                           double delta, double k_scaler, bool friction, double nu, bool self_contact) :
+                           baseForce(soft_robots), delta(delta), scaler(m_k_scaler),
+                           nu(nu), friction(friction)
                            {
 
     col_detector = make_unique<collisionDetector>(soft_robots, col_limit, delta, self_contact);
@@ -17,7 +18,7 @@ contactForce::contactForce(const shared_ptr<softRobots>& soft_robots, double col
     e2p_input[9] = K1;
     e2e_input[12] = K1;
 
-    friction_input[36] = mu;
+    // friction_input[36] = mu;
     friction_input[38] = K2;
 
     sym_eqs = make_unique<symbolicEquations>();
@@ -104,7 +105,8 @@ void contactForce::setupContactVariables(const Vector<int, 8>& contact_id) {
     auto limb2 = soft_robots->limbs[idx6];
 
     surface_limit = limb1->rod_radius + limb2->rod_radius;
-
+    // Let mu be the max of the two mu's of the two limbs
+    mu = max(limb1->mu, limb2->mu); 
     x1s = limb1->getVertex(idx1);
     x1e = limb1->getVertex(idx3);
     x2s = limb2->getVertex(idx2);
@@ -140,7 +142,7 @@ void contactForce::prepContactInput() {
     }
 }
 
-
+// TODO change friction coefficent here
 void contactForce::prepFrictionInput(double dt) {
     auto limb1 = soft_robots->limbs[idx5];
     auto limb2 = soft_robots->limbs[idx6];
@@ -154,6 +156,7 @@ void contactForce::prepFrictionInput(double dt) {
     friction_input.segment<3>(18) = x2s0;
     friction_input.segment<3>(21) = x2e0;
     friction_input.segment<12>(24) = contact_gradient;
+    friction_input[36] = mu;
     friction_input[37] = dt;
 }
 

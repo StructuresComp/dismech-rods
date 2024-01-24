@@ -4,6 +4,14 @@ build/
 cmake-build-debug/
 
 disMech
+simDER
+
+run_SML_robot.sh
+run_example.sh
+compile_build.sh
+run.sh
+custom_bot/SML_Robots/
+
 datafiles/
 option.txt
 robotDescription.cpp

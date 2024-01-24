@@ -7,16 +7,16 @@ softRobots::~softRobots() = default;
 
 
 void softRobots::addLimb(const Vector3d& start, const Vector3d& end, int num_nodes,
-                        double rho, double rod_radius, double youngs_modulus, double poisson_ratio) {
+                        double rho, double rod_radius, double youngs_modulus, double poisson_ratio, double mu) {
     limbs.push_back(make_shared<elasticRod>(num_limbs, start, end, num_nodes, rho,
-                                            rod_radius, youngs_modulus, poisson_ratio));
+                                            rod_radius, youngs_modulus, poisson_ratio, mu));
     num_limbs++;
 }
 
 
 void softRobots::addLimb(const vector<Eigen::Vector3d> &nodes, double rho, double rod_radius, double youngs_modulus,
-                        double poisson_ratio) {
-    limbs.push_back(make_shared<elasticRod>(num_limbs, nodes, rho, rod_radius, youngs_modulus, poisson_ratio));
+                        double poisson_ratio, double mu) {
+    limbs.push_back(make_shared<elasticRod>(num_limbs, nodes, rho, rod_radius, youngs_modulus, poisson_ratio, mu));
     num_limbs++;
 }
 
@@ -45,7 +45,6 @@ void softRobots::lockEdge(int limb_idx, int edge_idx) {
     limb->setVertexBoundaryCondition(limb->getVertex(edge_idx+1), edge_idx+1);
     limb->setThetaBoundaryCondition(0.0, edge_idx);
 }
-
 
 void softRobots::applyInitialVelocities(int limb_idx, const vector<Vector3d> &velocities) {
     shared_ptr<elasticRod> limb = limbs[limb_idx];

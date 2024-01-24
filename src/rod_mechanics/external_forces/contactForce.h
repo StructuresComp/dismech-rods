@@ -13,7 +13,8 @@ class contactForce : public baseForce
 {
 public:
     contactForce(const shared_ptr<softRobots>& soft_robots,
-                 double col_limit, double delta, double k_scaler, double mu, double nu, bool self_contact);
+                 double col_limit, double delta, double k_scaler, bool friction, double nu, bool self_contact);
+
 
 //    void updateContactStiffness();
     void computeForce(double dt) override;
