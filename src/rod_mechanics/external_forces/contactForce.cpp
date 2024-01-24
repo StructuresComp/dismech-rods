@@ -1,13 +1,13 @@
 #include "contactForce.h"
 #include "time_steppers/baseTimeStepper.h"
 
-contactForce::contactForce(const shared_ptr<softRobots>& m_soft_robots, double m_col_limit,
-                           double m_delta, double m_k_scaler, double m_mu, double m_nu) :
-                           baseForce(m_soft_robots), delta(m_delta), k_scaler(m_k_scaler),
-                           mu(m_mu), nu(m_nu), friction(m_mu > 0.0)
+contactForce::contactForce(const shared_ptr<softRobots>& soft_robots, double col_limit,
+                           double delta, double k_scaler, double mu, double nu, bool self_contact) :
+                           baseForce(soft_robots), delta(delta), k_scaler(k_scaler),
+                           mu(mu), nu(nu), friction(mu > 0.0)
                            {
 
-    col_detector = make_unique<collisionDetector>(m_soft_robots, m_col_limit, m_delta);
+    col_detector = make_unique<collisionDetector>(soft_robots, col_limit, delta, self_contact);
 
     K1 = 15 / delta;
     K2 = 15 / nu;

@@ -10,9 +10,10 @@
 
 
 
-collisionDetector::collisionDetector(const shared_ptr<softRobots> &m_soft_robots, double m_col_limit, double m_delta) :
-                                    soft_robots(m_soft_robots), delta(m_delta), col_limit(m_col_limit),
-                                    a(0.0, 0.0, 1.0), num_collisions(0) {
+collisionDetector::collisionDetector(const shared_ptr<softRobots> &soft_robots, double col_limit,
+                                     double delta, bool self_contact) :
+                                    soft_robots(soft_robots), delta(delta), col_limit(col_limit),
+                                    self_contact(self_contact), a(0.0, 0.0, 1.0), num_collisions(0) {
     int index = 0;
     // First setup the limb edge ids. This has to be done
     // first otherwise memory locations may get rewritten
@@ -124,10 +125,8 @@ void collisionDetector::broadPhaseCollisionDetection() {
         for (size_t j = i+1; j < soft_robots->limbs.size(); j++) {
             auto m2 = collision_managers[j];
 
-//            cout << "here" << endl;
             // Check collisions between different limbs
             m1->collide(m2, &collision_data, fcl::DefaultCollisionFunction);
-//            cout << "here1" << endl;
 
             vector<fcl::Contactf> contacts;
             collision_data.result.getContacts(contacts);
@@ -139,7 +138,9 @@ void collisionDetector::broadPhaseCollisionDetection() {
             num_collisions += collision_data.result.numContacts();
         }
     }
-    // TODO: add option for self-contact
+
+    if (!self_contact) return;
+
     for (size_t i = 0; i < soft_robots->limbs.size(); i++) {
         auto m = collision_managers[i];
 

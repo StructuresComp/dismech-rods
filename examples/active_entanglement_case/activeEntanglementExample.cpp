@@ -16,7 +16,7 @@ void get_robot_description(int argc, char** argv,
                            shared_ptr<worldLogger>& logger,
                            simParams& sim_params) {
 
-    sim_params.dt = 1e-3;
+    sim_params.dt = 2.5e-3;
     sim_params.sim_time = 15;
     sim_params.dtol = 1e-2;
     sim_params.render_scale = 3.0;
@@ -60,7 +60,8 @@ void get_robot_description(int argc, char** argv,
     double k_scaler = 1e5;
     double mu = 0.4;
     double nu = 1e-3;
-    forces->addForce(make_shared<contactForce>(soft_robots, col_limit, delta, k_scaler, mu, nu));
+    bool self_contact = true;
+    forces->addForce(make_shared<contactForce>(soft_robots, col_limit, delta, k_scaler, mu, nu, self_contact));
 
     // Add custom active entanglement controller
     double start_time = 0.0;

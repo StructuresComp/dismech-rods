@@ -11,7 +11,8 @@
 class collisionDetector
 {
 public:
-    explicit collisionDetector(const shared_ptr<softRobots>& m_soft_robots, double m_col_limit, double m_delta);
+    explicit collisionDetector(const shared_ptr<softRobots>& soft_robots, double col_limit,
+                               double delta, bool self_contact);
     struct limb_edge_info {
         limb_edge_info(int limb_id, int edge_id):
                        limb_id(limb_id), edge_id(edge_id)
@@ -38,6 +39,7 @@ public:
 private:
     double delta;
     double col_limit;
+    bool self_contact;
     shared_ptr<softRobots> soft_robots;
 
     vector<vector<limb_edge_info>> limb_edge_ids;
