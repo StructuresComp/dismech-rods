@@ -28,7 +28,6 @@ class elasticRod
     Vector3d getVelocity(int k);
     Vector3d getTangent(int k);
     double getTheta(int k);
-    void updatePhis(double phi1, double phi2);
 
     // Elastic stiffness values
     double poisson_ratio;
@@ -50,13 +49,7 @@ class elasticRod
     
     // Total length
     double rod_length;
-    // Bending curvature angle phi (from the end to the tip of the limb, for each edge: phi_e = phi/ne)
-    double phi1;
-    double phi2;
-    bool actuated;
 
-    // PI
-    const double PI =  3.14159265358979323846264;
     // Edge length
     VectorXd edge_len;
     // curvature binormal
@@ -136,7 +129,6 @@ private:
     void computeSpaceParallel();
     void computeMaterialDirector();
     void computeKappa();
-    void computeAngle2KappaBar();
     void computeTwistBar();
     void computeEdgeLen();
     void getRefTwist();

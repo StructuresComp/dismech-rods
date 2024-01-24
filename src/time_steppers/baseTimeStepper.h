@@ -5,7 +5,7 @@
 #include "robotDescription.h"
 #include "rod_mechanics/softRobots.h"
 #include "rod_mechanics/forceContainer.h"
-#include "controllers/rodController.h"
+#include "controllers/baseController.h"
 
 
 class baseTimeStepper : public enable_shared_from_this<baseTimeStepper>
@@ -47,7 +47,7 @@ protected:
 
     vector<shared_ptr<elasticRod>>& limbs;
     vector<shared_ptr<elasticJoint>>& joints;
-    vector<shared_ptr<rodController>>& controllers;
+    vector<shared_ptr<baseController>>& controllers;
     shared_ptr<forceContainer> forces;
 };
 

@@ -48,7 +48,7 @@ double forwardEuler::stepForwardInTime() {
 
 void forwardEuler::updateSystemForNextTimeStep() {
     for (const auto& controller : controllers) {
-        controller->updateTimestep(dt);
+        controller->updateTimeStep(dt);
     }
     // Update x0 and u
     for (const auto& limb : limbs) {

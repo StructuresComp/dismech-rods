@@ -1,17 +1,17 @@
-#include "rodController.h"
+#include "baseController.h"
 
 
-rodController::rodController(const vector<shared_ptr<elasticRod>>& limbs) :
+baseController::baseController(const vector<shared_ptr<elasticRod>>& limbs) :
                              limbs(limbs), num_actuators(limbs.size()), current_time(0)
 {
 }
 
 
-rodController::~rodController() = default;
+baseController::~baseController() = default;
 
 
 // but we can also implement the timestepping here, for others to override if desired.
-void rodController::updateTimestep(double dt)
+void baseController::updateTimeStep(double dt)
 {
     current_time += dt;
 }

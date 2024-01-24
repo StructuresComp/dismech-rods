@@ -13,11 +13,15 @@
 #include "rod_mechanics/external_forces/uniformConstantForce.h"
 #include "rod_mechanics/external_forces/contactForce.h"
 
-#include "utils/utils.h"
+// include controllers
+#include "controllers/openLoopUniformKappaBarController.h"
+#include "controllers/activeEntanglementController.h"
 
 // different type of loggers
 #include "logging/rodNodeLogger.h"
 #include "logging/velocityLogger.h"
+
+#include "utils/utils.h"
 
 
 typedef enum {FORWARD_EULER,

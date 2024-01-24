@@ -107,11 +107,6 @@ void elasticRod::setup()
     computeKappa();
     kappa_bar = kappa;
 
-    // params for control via kappa_bar
-    phi1 = 0;
-    phi2 = 0;
-    actuated = false;
-
     // Reference twist
     ref_twist_old = VectorXd::Zero(ne);
     getRefTwist();
@@ -447,31 +442,6 @@ void elasticRod::computeKappa()
     }
 }
 
-void elasticRod::updatePhis(double new_phi1, double new_phi2)
-{
-    phi1 = new_phi1;
-    phi2 = new_phi2;
-    actuated = true;
-}
-
-void elasticRod::computeAngle2KappaBar()
-{
-    if (!actuated) return;
-    actuated = false;
-    // We know the tangent, m1, m2. Compute kappa using them
-    Vector3d t0, t1;
-    Vector3d m1e, m2e, m1f, m2f;
-    double k;
-
-    double angle1, angle2;
-
-    for (int i = 1; i < ne; i++) {
-        angle1 = phi1 / ne * (PI / 180);
-        angle2 = phi2 / ne * (PI / 180);
-        kappa_bar(i, 0) = 2 * tan(angle1 / 2);
-        kappa_bar(i, 1) = 2 * tan(angle2 / 2);
-    }
-}
 
 void elasticRod::getRefTwist()
 {
@@ -564,8 +534,6 @@ void elasticRod::prepareForIteration()
     getRefTwist();
     computeMaterialDirector();
     computeEdgeLen();
-    // KappaBar will be updated by the controller
-    computeAngle2KappaBar();
     computeKappa();
 }
 

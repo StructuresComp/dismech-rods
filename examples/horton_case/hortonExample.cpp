@@ -21,8 +21,7 @@ void get_robot_description(int argc, char** argv,
     sim_params.show_mat_frames = true;
     sim_params.enable_2d_sim = true;
     sim_params.adaptive_time_stepping = 20;
-    sim_params.nis = IMPLICIT_MIDPOINT;
-    
+
     int n = 15;
     double radius = 0.015;
     double young_mod = 5e5;
@@ -61,5 +60,5 @@ void get_robot_description(int argc, char** argv,
 
     // Add kappa_bar controller
     string phi_ctrl_file_path = "src/controllers/openloop_control_trajectories/horton_controller.csv";
-    soft_robots->addController(make_shared<rodOpenLoopFileKappabarSetter>(soft_robots, phi_ctrl_file_path));
+    soft_robots->addController(make_shared<openLoopUniformKappaBarController>(soft_robots, phi_ctrl_file_path));
 }

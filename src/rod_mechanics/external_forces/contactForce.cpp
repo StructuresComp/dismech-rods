@@ -1,14 +1,14 @@
 #include "contactForce.h"
 #include "time_steppers/baseTimeStepper.h"
 
-//Use Friction boolean flag to set whether friction is used or not 
-contactForce::contactForce(const shared_ptr<softRobots>& m_soft_robots, double m_col_limit,
-                           double m_delta, double m_k_scaler, bool friction, double m_nu) :
-                           baseForce(m_soft_robots), delta(m_delta), k_scaler(m_k_scaler),
-                           nu(m_nu), friction(friction)
+
+contactForce::contactForce(const shared_ptr<softRobots>& soft_robots, double col_limit,
+                           double delta, double k_scaler, bool friction, double nu, bool self_contact) :
+                           baseForce(soft_robots), delta(delta), scaler(m_k_scaler),
+                           nu(nu), friction(friction)
                            {
 
-    col_detector = make_unique<collisionDetector>(m_soft_robots, m_col_limit, m_delta);
+    col_detector = make_unique<collisionDetector>(soft_robots, col_limit, delta, self_contact);
 
     K1 = 15 / delta;
     K2 = 15 / nu;

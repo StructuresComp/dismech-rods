@@ -58,7 +58,7 @@ double verletPosition::stepForwardInTime() {
 
 void verletPosition::updateSystemForNextTimeStep() {
     for (const auto& controller : controllers) {
-        controller->updateTimestep(dt);
+        controller->updateTimeStep(dt);
     }
     // Update x0
     for (const auto& limb : limbs) {

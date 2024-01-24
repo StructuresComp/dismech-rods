@@ -1,10 +1,10 @@
-#include "rodOpenLoopFileKappabarSetter.h"
+#include "openLoopUniformKappaBarController.h"
 #include "rod_mechanics/softRobots.h"
 #include <fstream>
 
 
-rodOpenLoopFileKappabarSetter::rodOpenLoopFileKappabarSetter(const shared_ptr<softRobots>& soft_robots, string filepath) :
-                                                             rodController(soft_robots->limbs)
+openLoopUniformKappaBarController::openLoopUniformKappaBarController(const shared_ptr<softRobots>& soft_robots, string filepath) :
+                                                                     baseController(soft_robots->limbs)
 {
     // to-do: validate number of columns of file vs. numAct.
     // if (numAct != m_periods.size())
@@ -31,10 +31,10 @@ rodOpenLoopFileKappabarSetter::rodOpenLoopFileKappabarSetter(const shared_ptr<so
 }
 
 
-rodOpenLoopFileKappabarSetter::~rodOpenLoopFileKappabarSetter() = default;
+openLoopUniformKappaBarController::~openLoopUniformKappaBarController() = default;
 
 
-void rodOpenLoopFileKappabarSetter::parseActuationFile(string csv_path)
+void openLoopUniformKappaBarController::parseActuationFile(string csv_path)
 {
     // open the file and check if it worked
     ifstream csv_file(csv_path);
@@ -84,10 +84,10 @@ void rodOpenLoopFileKappabarSetter::parseActuationFile(string csv_path)
 }
 
 // override the base class implementation to include PWMs
-void rodOpenLoopFileKappabarSetter::updateTimestep(double dt)
+void openLoopUniformKappaBarController::updateTimeStep(double dt)
 {
     // call the base class to update current_time
-    rodController::updateTimestep(dt);
+    baseController::updateTimeStep(dt);
     // Find the corresponding timepoint in the list.
     // The actuation file is written by hand so it's probably pretty short, iterating through isn't too inefficient
     int idx = 0;
@@ -96,7 +96,7 @@ void rodOpenLoopFileKappabarSetter::updateTimestep(double dt)
     {
         idx++;
     }
-    // the above actually gives us index+1, since we did a bit of manuevering to prevent array out of bounds.
+    // the above actually gives us index+1, since we did a bit of maneuvering to prevent array out of bounds.
     idx--;
     // Timepoint check during the gait: are we at the next row of the actuation file?
     if (idx > prev_time_pt_idx)
@@ -116,14 +116,23 @@ void rodOpenLoopFileKappabarSetter::updateTimestep(double dt)
 }
 
 // Implementation of the controller.
-void rodOpenLoopFileKappabarSetter::updatePhies()
+void openLoopUniformKappaBarController::updatePhies()
 {
     int idx1, idx2;
+    double angle1, angle2;
     // Result should be same length as number of actuators
     for (int limb_idx = 0; limb_idx < num_actuators; limb_idx++)
     {
+        auto limb = limbs[limb_idx];
         idx1 = 2 * limb_idx;
         idx2 = 2 * limb_idx + 1;
-        limbs[limb_idx]->updatePhis(desired_phi_list[idx1], desired_phi_list[idx2]);
+
+        angle1 = desired_phi_list[idx1] / limb->ne * (M_PI / 180);
+        angle2 = desired_phi_list[idx2] / limb->ne * (M_PI / 180);
+
+        for (int i = 1; i < limb->ne; i++) {
+            limb->kappa_bar(i, 0) = 2 * tan(angle1 / 2);
+            limb->kappa_bar(i, 1) = 2 * tan(angle2 / 2);
+        }
     }
 }
