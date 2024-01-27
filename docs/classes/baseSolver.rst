@@ -1,0 +1,4 @@
+baseSolver
+==========
+.. doxygenclass:: baseSolver
+   :members:

@@ -1,0 +1,4 @@
+backwardEuler
+=============
+.. doxygenclass:: backwardEuler
+   :members:
