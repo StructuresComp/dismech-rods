@@ -33,4 +33,4 @@ This folder contains all files related to documentation using Doxygen+Breathe+Sp
 
 ### Adding comments to the code for effective documentation:
 - The commenting format for documenting code using Doxygen can be found here: [Documenting the code: Special comment blocks](https://www.doxygen.nl/manual/docblocks.html)
-- If you are using vscode, you can simply add an extension for doxygen "". Once you add it, now wherever you want to add comments just type `/**` and press the Enter key. It will autogenerate a comment block which you can populate according to your needs.
+- If you are using vscode, you can simply add an extension for doxygen "Doxygen Documentation Generator". Once you install it, now wherever you want to add comments just type `/**` and press the Enter key. It will autogenerate a comment block which you can populate according to your needs.
