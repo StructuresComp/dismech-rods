@@ -4,6 +4,8 @@ This folder contains all files related to documentation using Doxygen+Breathe+Sp
 - Create className.rst file in docs/classes directory
 - Add the following lines of code to the file:
   ```bash
+  className
+  =========
   .. doxygenclass:: className
    :members:
   ```
@@ -14,9 +16,11 @@ This folder contains all files related to documentation using Doxygen+Breathe+Sp
 
  ### Instructions on how to document a new file:
 - Create fileName.rst file in docs/files directory
-- Add the following lines of code to the file:
+- Add the following lines of code to the file: (for eg. we are adding a .h file, .cpp file is added in the same way)
   ```bash
-  .. doxygenfile:: fileName.h // (along with extension .h or .cpp, etc.)
+  fileName
+  ========
+  .. doxygenfile:: fileName.h
   ```
 - Add this file to the list of displayed files in the file 'index.rst' in docs/files directory, by adding the fileName (without extension) to the end of the list.
   ```bash
