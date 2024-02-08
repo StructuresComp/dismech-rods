@@ -128,3 +128,9 @@ target_link_libraries(disMech PRIVATE
 if (OpenMP_CXX_FOUND)
     target_link_libraries(disMech PUBLIC OpenMP::OpenMP_CXX)
 endif ()
+
+set(CREATE_DOC_FLAG "true") # make this flag true if you want to generate documentation
+
+if(CREATE_DOC_FLAG)
+    add_subdirectory("docs")
+endif()
