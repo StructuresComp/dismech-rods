@@ -128,3 +128,10 @@ target_link_libraries(disMech PRIVATE
 if (OpenMP_CXX_FOUND)
     target_link_libraries(disMech PUBLIC OpenMP::OpenMP_CXX)
 endif ()
+
+# Run with -DCREATE_DOCS=ON only when documentation needs to be updated.
+# The build directory maaaaaaay have to be recompiled.
+option(CREATE_DOCS 0)
+if(CREATE_DOCS)
+    add_subdirectory("docs")
+endif()
