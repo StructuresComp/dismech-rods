@@ -5,40 +5,41 @@ elasticRod::elasticRod(int limb_idx, const Vector3d& start, const Vector3d& end,
                        limb_idx(limb_idx), ndof(num_nodes*4-1), nv(num_nodes), ne(num_nodes-1), rho(rho),
                        rod_radius(rod_radius), youngM(youngs_modulus), poisson_ratio(poisson_ratio), mu(mu)
 {
+    vector<Vector3d> nodes;
     Vector3d dir = (end - start) / (num_nodes - 1);
     for (int i = 0; i < num_nodes; i++)
     {
-        all_nodes.emplace_back(start + i * dir);
+        nodes.emplace_back(start + i * dir);
     }
 
     rod_length = (end - start).norm();
 
-    setup();
+    setup(nodes);
 }
 
 
 elasticRod::elasticRod(int limb_idx, const vector<Vector3d>& nodes, double rho, double rod_radius,
                        double youngs_modulus, double poisson_ratio, double mu) :
                        limb_idx(limb_idx), ndof(nodes.size()*4-1), nv(nodes.size()), ne(nodes.size()-1),
-                       all_nodes(nodes), rho(rho), rod_radius(rod_radius),
-                       youngM(youngs_modulus), poisson_ratio(poisson_ratio), mu(mu)
+                       rho(rho), rod_radius(rod_radius), youngM(youngs_modulus),
+                       poisson_ratio(poisson_ratio), mu(mu)
 {
     rod_length = 0;
     for (int i = 1; i < nv; i++)  {
-        rod_length += (all_nodes[i] - all_nodes[i-1]).norm();
+        rod_length += (nodes[i] - nodes[i-1]).norm();
     }
 
-    setup();
+    setup(nodes);
 }
 
-void elasticRod::setup()
+void elasticRod::setup(const vector<Vector3d>& nodes)
 {
     x = VectorXd::Zero(ndof);
     for (int i = 0; i < nv; i++)
     {
-        x(4 * i) = all_nodes[i](0);
-        x(4 * i + 1) = all_nodes[i](1);
-        x(4 * i + 2) = all_nodes[i](2);
+        x(4 * i) = nodes[i](0);
+        x(4 * i + 1) = nodes[i](1);
+        x(4 * i + 2) = nodes[i](2);
         if (i < nv - 1)
         {
             x(4 * i + 3) = 0;
@@ -52,17 +53,14 @@ void elasticRod::setup()
     // We will start off with an unconstrained system
     ncons = 0;
     uncons = ndof;
-    unique_dof = ndof;
     isConstrained = new int[ndof];
     isDOFJoint = new int[ndof];
     isNodeJoint = new int[nv];
     isEdgeJoint = new int[ne];
-    DOFoffsets = new int[ndof];
     for (int i = 0; i < ndof; i++)
     {
         isConstrained[i] = 0;
         isDOFJoint[i] = 0;
-        DOFoffsets[i] = 0;
     }
     for (int i = 0; i < nv; i++)
     {
@@ -128,17 +126,10 @@ void elasticRod::setup()
     ref_twist_old = ref_twist;
 }
 
-void elasticRod::addJoint(int node_num, bool remove_dof, int joint_node, int joint_limb)
+void elasticRod::addJoint(int node_num, bool attach_to_joint, int joint_node, int joint_limb)
 {
-    if (remove_dof)
+    if (attach_to_joint)
     {
-        unique_dof -= 3;
-        //        uncons -= 3;
-        for (int i = 4 * node_num + 3; i < ndof; i++)
-        {
-            DOFoffsets[i] -= 3;
-        }
-
         isDOFJoint[4 * node_num] = 1;
         isDOFJoint[4 * node_num + 1] = 1;
         isDOFJoint[4 * node_num + 2] = 1;
@@ -242,7 +233,6 @@ elasticRod::~elasticRod()
     delete[] isDOFJoint;
     delete[] isNodeJoint;
     delete[] isEdgeJoint;
-    delete[] DOFoffsets;
 }
 
 int elasticRod::getIfConstrained(int k) const
@@ -252,6 +242,7 @@ int elasticRod::getIfConstrained(int k) const
 
 void elasticRod::setMass()
 {
+    double dm;
     mass_array = VectorXd::Zero(ndof);
 
     for (int i = 0; i < nv; i++)
@@ -279,7 +270,7 @@ void elasticRod::setMass()
 
 void elasticRod::setReferenceLength()
 {
-    // This function is only run once at sim initilization
+    // This function is only run once at sim initialization.
     ref_len = VectorXd(ne);
     for (int i = 0; i < ne; i++)
     {
