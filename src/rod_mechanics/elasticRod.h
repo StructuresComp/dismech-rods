@@ -46,7 +46,7 @@ class elasticRod
 
     /**
      * @brief Updates all necessary discrete values and frames for edges
-     * in preparation of next time step.
+     * in preparation of next timestep.
      *
      * @details Updates discrete tangents, reference frames, material frames,
      * reference twists, edge lengths, and curvatures.
@@ -76,7 +76,7 @@ class elasticRod
      * especially when friction is involved.
      *
      * @param weight The weight of the velocity update shown above.
-     * @param dt The time step.
+     * @param dt The timestep.
      */
     void updateGuess(double weight, double dt);
 
@@ -93,7 +93,7 @@ class elasticRod
     int limb_idx;
 
     /**
-     * @brief Get the a (3,) position vector of the kth node from current time step.
+     * @brief Get the a (3,) position vector of the kth node from current timestep.
      *
      * @param k Index of the node.
      *
@@ -102,7 +102,7 @@ class elasticRod
     Vector3d getVertex(int k);
 
     /**
-     * @brief Get the a (3,) position vector of the kth node from previous time step.
+     * @brief Get the a (3,) position vector of the kth node from previous timestep.
      *
      * @param k Index of the node.
      *
@@ -111,7 +111,7 @@ class elasticRod
     Vector3d getPreVertex(int k);
 
     /**
-     * @brief Get the a (3,) velocity vector of the kth node from current time step.
+     * @brief Get the a (3,) velocity vector of the kth node from current timestep.
      *
      * @param k Index of the node.
      *
@@ -219,14 +219,14 @@ class elasticRod
     int uncons;
 
     /**
-     * @brief DOF vector from previous time step.
+     * @brief DOF vector from the previous timestep.
      *
      * @details Vector of size (ndof, 1).
      */
     VectorXd x0;
 
     /**
-     * @brief DOF vector during and after time step.
+     * @brief DOF vector during and after the current timestep.
      *
      * @details Vector of size (ndof, 1).
      */
@@ -240,14 +240,14 @@ class elasticRod
     VectorXd x_ls;
 
     /**
-     * @brief Velocity vector from previous time step.
+     * @brief Velocity vector from the previous timestep.
      *
      * @details Vector of size (ndof, 1).
      */
     VectorXd u0;
 
     /**
-     * @brief Velocity vector during and after time step.
+     * @brief Velocity vector during and after the current timestep.
      *
      * @details Vector of size (ndof, 1).
      */
@@ -283,7 +283,7 @@ class elasticRod
     /**
      * @brief Curvature binormals of each discrete edge.
      *
-     * @details Computed during every iteration / time step to compute
+     * @details Computed during every iteration / timestep to compute
      * the discrete curvatures necessary to compute bending energy.
      *
      * @see Computed in computeKappa().
@@ -291,7 +291,7 @@ class elasticRod
     MatrixXd kb;
 
     /**
-     * @brief d1 axes of the reference frame during current iteration / time step.
+     * @brief d1 axes of the reference frame during current iteration / timestep.
      *
      * @details Matrix of size (ne, 3).
      *
@@ -301,7 +301,7 @@ class elasticRod
     MatrixXd d1;
 
     /**
-     * @brief d2 axes of the reference frame during current iteration / time step.
+     * @brief d2 axes of the reference frame during current iteration / timestep.
      *
      * @details Matrix of size (ne, 3).
      *
@@ -311,23 +311,23 @@ class elasticRod
     MatrixXd d2;
 
     /**
-     * @brief d1 axes of the reference frame from last time step.
+     * @brief d1 axes of the reference frame from last timestep.
      *
-     * @details Matrix of size (ne, 3). Updated by time stepper classes when completing a time step.
+     * @details Matrix of size (ne, 3). Updated by time stepper classes when completing a timestep.
      *
      * @see Used in computeTimeParallel().
      */
     MatrixXd d1_old;
 
     /**
-     * @brief d2 axes of the reference frame from last time step.
+     * @brief d2 axes of the reference frame from last timestep.
      *
-     * @details Matrix of size (ne, 3). Updated by time stepper classes when completing a time step.
+     * @details Matrix of size (ne, 3). Updated by time stepper classes when completing a timestep.
      */
     MatrixXd d2_old;
 
     /**
-     * @brief m1 axes of the material frame during current iteration / time step.
+     * @brief m1 axes of the material frame during current iteration / timestep.
      *
      * @details Matrix of size (ne, 3).
      *
@@ -337,7 +337,7 @@ class elasticRod
     MatrixXd m1;
 
     /**
-     * @brief m2 axes of the material frame during current iteration / time step.
+     * @brief m2 axes of the material frame during current iteration / timestep.
      *
      * @details Matrix of size (ne, 3).
      *
@@ -347,7 +347,7 @@ class elasticRod
     MatrixXd m2;
 
     /**
-     * @brief Edge tangents during the current iteration / time step.
+     * @brief Edge tangents during the current iteration / timestep.
      *
      * @details Matrix of size (ne, 3).
      *
@@ -357,7 +357,7 @@ class elasticRod
     MatrixXd tangent;
 
     /**
-     * @brief Edge tangents from the previous time step.
+     * @brief Edge tangents from the previous timestep.
      *
      * @details Matrix of size (ne, 3).
      *
@@ -366,7 +366,7 @@ class elasticRod
     MatrixXd tangent_old;
 
     /**
-     * @brief Reference twists during the current iteration / time step.
+     * @brief Reference twists during the current iteration / timestep.
      *
      * @details Vector of size (ne, 1).
      *
@@ -376,7 +376,7 @@ class elasticRod
     VectorXd ref_twist;
 
     /**
-     * @brief Reference twists from the previous time step.
+     * @brief Reference twists from the previous timestep.
      *
      * @details Vector of size (ne, 1).
      */
