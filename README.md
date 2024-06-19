@@ -42,8 +42,12 @@ Based on the [Discrete Elastic Rods](https://www.cs.columbia.edu/cg/pdfs/143-rod
 If you'd like DisMech to support a new feature, feel free create an issue and we'll add it to the list here.
 
 #### High priority
+- [ ] Improve robustness of friction.
+- [ ] Add a more sophisticated renderer.
 - [ ] Add contact logic for joints.
 - [ ] Add URDF functionality for instantiating robot.
+- [ ] Add shell functionality.
+- [ ] Add knot tying case.
 
 #### Low priority
 - [ ] Possibly replace floor contact force (currently uses IMC) with modified mass method. 
@@ -51,7 +55,6 @@ If you'd like DisMech to support a new feature, feel free create an issue and we
 - [ ] Add more code examples for initializing limbs and joints.
 - [ ] Add time varying boundary condition logic.
 - [ ] Add more controller types.
-- [ ] Add shell functionality.
 
 ### COMPLETED
 - [x] Add per-limb friction coefficient logic. PR [#5](https://github.com/StructuresComp/dismech-rods/pull/5)
