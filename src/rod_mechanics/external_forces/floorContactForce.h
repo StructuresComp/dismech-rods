@@ -17,6 +17,7 @@ public:
     void computeForceAndJacobian(double dt) override;
 
     double min_dist;
+    double floor_z;
     int num_contacts;
 
     void change_slip_tol(double scale);
@@ -40,6 +41,5 @@ private:
     double orig_slip_tol;
     double K1;
     double K2;
-    double floor_z;
 };
 #endif

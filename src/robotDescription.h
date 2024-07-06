@@ -30,13 +30,20 @@ typedef enum {FORWARD_EULER,
               IMPLICIT_MIDPOINT}
               numerical_integration_scheme;
 
+typedef enum {HEADLESS,
+              OPENGL,
+              MAGNUM}
+              renderer_type;
+
 
 struct simParams {
     double sim_time = 10;                              // Total time for simulation [s]
     double dt = 1e-3;                                  // Time step size [s]
-    bool render = true;                                // Live OpenGL rendering
-    bool show_mat_frames = false;                      // Render material frames
+    renderer_type renderer = OPENGL;                   // Renderer type
+    bool show_mat_frames = false;                      // Render material frames (only for OpenGL)
     double render_scale = 1.0;                         // Rendering scale
+    int render_every = 1;                              // Rendering period (only for Magnum)
+    string render_record_path;                         // Rendering frames recording path (only for Magnum)
     double dtol = 1e-2;                                // Dynamics tolerance [m/s]*
     double ftol = 1e-4;                                // Force tolerance*
     int max_iter = 500;                                // Maximum iterations for a time step

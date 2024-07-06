@@ -138,3 +138,16 @@ double world::getCurrentTime() const
 {
     return curr_time;
 }
+
+
+bool world::floorExists()
+{
+    return forces->ff != nullptr;
+}
+
+double world::getFloorZ()
+{
+    if (forces->ff)
+        return forces->ff->floor_z;
+    throw std::runtime_error("Floor does not exist.");
+}
