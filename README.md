@@ -26,7 +26,7 @@
    </tr>
    <tr>
       <td align="center"> <img src="media/real2sim.gif" width="500">  <br>
-           <em> Real2Sim soft manipulator modelling </em>
+           <em> Real2Sim soft manipulator modelling </em>  
       </td>
    </tr>
 </table>
