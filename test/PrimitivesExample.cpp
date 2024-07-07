@@ -40,8 +40,8 @@ private:
 PrimitivesExample::PrimitivesExample(const Arguments &arguments) :
         Platform::Application{arguments, Configuration{}
                 .setTitle("Magnum Primitives Example")} {
-//    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
-//    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
 //    _mesh = MeshTools::compile(Primitives::cubeSolid());
     auto data = Primitives::cylinderSolid(100, 30, 5.0);
 
@@ -81,21 +81,36 @@ void PrimitivesExample::mousePressEvent(MouseEvent& event) {
 }
 
 void PrimitivesExample::mouseReleaseEvent(MouseEvent& event) {
-    _color = Color3::fromHsv({_color.hue() + 50.0_degf, 1.0f, 1.0f});
+//    _color = Color3::fromHsv({_color.hue() + 50.0_degf, 1.0f, 1.0f});
 
     event.setAccepted();
     redraw();
 }
 
 void PrimitivesExample::mouseMoveEvent(MouseMoveEvent& event) {
-    if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+//    if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+    Vector2 delta;
 
-    Vector2 delta = 3.0f*Vector2{event.relativePosition()}/Vector2{windowSize()};
+    if (event.buttons() & MouseMoveEvent::Button::Left) {
+        delta = 3.0f*Vector2{event.relativePosition()}/Vector2{windowSize()};
+        _transformation =
+                Matrix4::rotationX(Rad{delta.y()})*
+                _transformation*
+                Matrix4::rotationY(Rad{delta.x()});
+    }
+    else if (event.buttons() & MouseMoveEvent::Button::Middle) {
+        delta = 3.0f*Vector2{event.relativePosition()}/Vector2{windowSize()};
+        Matrix4 translationX = Matrix4::translation({delta.x(), 0.0f, 0.0f});
+        Matrix4 translationY = Matrix4::translation({0.0f, delta.y(), 0.0f});
+        _projection =
+                _projection * translationX * translationY;
+    }
+    else {
+        return;
+    }
 
-    _transformation =
-        Matrix4::rotationX(Rad{delta.y()})*
-        _transformation*
-        Matrix4::rotationY(Rad{delta.x()});
+    _color = Color3::fromHsv({_color.hue(), 1.0f, 1.0f});
+
 
     event.setAccepted();
     redraw();
