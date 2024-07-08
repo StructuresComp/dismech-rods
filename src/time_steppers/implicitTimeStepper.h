@@ -26,7 +26,9 @@ public:
 
     void prepSystemForIteration() override;
     virtual double newtonMethod(double dt) = 0;
-    virtual void lineSearch(double dt) = 0;
+    // virtual void lineSearch(double dt) = 0;
+    virtual void lineSearch_gs(double dt) = 0;
+    virtual void lineSearch_wolfe(double dt) = 0;
 
     // Utility variables for PARDISO solver.
     // Need to keep track of non-zero elements
@@ -51,6 +53,7 @@ protected:
 
     template<solverType solver_type>
     void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2);
+    int line_search_type;
 
 private:
     shared_ptr<implicitTimeStepper> shared_from_this();
