@@ -64,6 +64,7 @@ namespace Examples {
     class MouseInteractionExample : public Platform::Application {
     public:
         explicit MouseInteractionExample(const Arguments &arguments);
+        GL::Mesh _cylinder{NoCreate};
 
     private:
         Float depthAt(const Vector2i &windowPosition);
@@ -84,7 +85,6 @@ namespace Examples {
         Shaders::FlatGL3D _flatShader{NoCreate};
         GL::Mesh _mesh{NoCreate}, _grid{NoCreate};
 
-        GL::Mesh _cylinder{NoCreate};
         Shaders::PhongGL _shader{NoCreate};
 
         Scene3D _scene;
@@ -385,6 +385,10 @@ namespace Examples {
 
 //MAGNUM_APPLICATION_MAIN(Magnum::Examples::MouseInteractionExample)
 
-int main() {
-
+int main(int argc, char *argv[]) {
+//    Magnum::Platform::Application app = Magnum::Examples::MouseInteractionExample({argc, argv});
+    Magnum::Examples::MouseInteractionExample app({argc, argv});
+    while (true) {
+        app.mainLoopIteration();
+    }
 }
