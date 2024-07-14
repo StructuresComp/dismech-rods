@@ -132,9 +132,12 @@ For other operating systems you should be able to modify the commands below appr
     # This runs an installer, simply follow the instructions.
     sudo sh ./l_onemkl_p_2022.0.2.136.sh
     ```
-  - Add the following to your .bashrc. Change the directory accordingly if your MKL version is different.
+  - Add one of the following to your .bashrc so that cmake can find the MKL library. Change the directory accordingly if your MKL version is different. 
+   Note that older versions require setting `MKLROOT` while newer versions require `MKL_DIR`.
+   You can find out which one from the cmake error message.
     ```bash
-    export MKLROOT=/opt/intel/oneapi/mkl/2022.0.2
+    export MKLROOT=/opt/intel/oneapi/mkl/2022.0.2   # for older versions
+    export MKL_DIR=/opt/intel/oneapi/mkl/2024.2     # for newer versions
     ```
 
 - [OpenGL / GLUT](https://www.opengl.org/)
