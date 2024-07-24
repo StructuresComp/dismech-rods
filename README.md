@@ -215,7 +215,7 @@ Detailed parameter explanations:
 ### Citation
 If our work has helped your research, please cite the following paper.
 ```
-@ARTICLE{choi2023dismech,
+@article{choi2023dismech,
     author={Choi, Andrew and Jing, Ran and Sabelhaus, Andrew P. and Jawed, Mohammad Khalid},
     journal={IEEE Robotics and Automation Letters}, 
     title={DisMech: A Discrete Differential Geometry-Based Physical Simulator for Soft Robots and Structures}, 
@@ -224,6 +224,31 @@ If our work has helped your research, please cite the following paper.
     number={4},
     pages={3483-3490},
     doi={10.1109/LRA.2024.3365292}
+}
+
+@article{choi2021imc,
+    author = {Choi, Andrew and Tong, Dezhong and Jawed, Mohammad K. and Joo, Jungseock},
+    title = "{Implicit Contact Model for Discrete Elastic Rods in Knot Tying}",
+    journal = {Journal of Applied Mechanics},
+    volume = {88},
+    number = {5},
+    year = {2021},
+    month = {03},
+    issn = {0021-8936},
+    doi = {10.1115/1.4050238},
+    url = {https://doi.org/10.1115/1.4050238},
+}
+
+@article{tong2022imc,
+    author = {Dezhong Tong and Andrew Choi and Jungseock Joo and M. Khalid Jawed},
+    title = {A fully implicit method for robust frictional contact handling in elastic rods},
+    journal = {Extreme Mechanics Letters},
+    volume = {58},
+    pages = {101924},
+    year = {2023},
+    issn = {2352-4316},
+    doi = {https://doi.org/10.1016/j.eml.2022.101924},
+    url = {https://www.sciencedirect.com/science/article/pii/S2352431622002000},
 }
 ```
 
