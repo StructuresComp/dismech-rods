@@ -3,7 +3,12 @@ project(TriangleExample)
 
 set(MAGNUM_WITH_SDL2APPLICATION ON)
 
-find_package(Corrade REQUIRED Main)
+set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES /usr/local/lib ${CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES})
+set(CMAKE_PREFIX_PATH /usr/local ${CMAKE_PREFIX_PATH})
+set(CMAKE_LIBRARY_PATH /usr/local/lib ${CMAKE_LIBRARY_PATH})
+
+
+find_package(Corrade REQUIRED Main PluginManager Utility)
 find_package(Magnum REQUIRED
     GL
     MeshTools
@@ -18,6 +23,8 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 add_executable(magnum-primitives PrimitivesExample.cpp)
 target_link_libraries(magnum-primitives PRIVATE
     Corrade::Main
+    Corrade::PluginManager
+    Corrade::Utility
     Magnum::Application
     Magnum::GL
     Magnum::Magnum
@@ -29,6 +36,8 @@ target_link_libraries(magnum-primitives PRIVATE
 add_executable(magnum-mouseinteraction MouseInteractionExample.cpp)
 target_link_libraries(magnum-mouseinteraction PRIVATE
     Corrade::Main
+    Corrade::PluginManager
+    Corrade::Utility
     Magnum::Application
     Magnum::GL
     Magnum::Magnum

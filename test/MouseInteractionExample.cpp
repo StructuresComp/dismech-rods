@@ -81,6 +81,8 @@ namespace Examples {
 
         void drawEvent() override;
 
+        void tickEvent() override;
+
         Shaders::VertexColorGL3D _vertexColorShader{NoCreate};
         Shaders::FlatGL3D _flatShader{NoCreate};
         GL::Mesh _mesh{NoCreate}, _grid{NoCreate};
@@ -91,6 +93,8 @@ namespace Examples {
         SceneGraph::DrawableGroup3D _drawables;
         Object3D *_cameraObject;
         SceneGraph::Camera3D *_camera;
+
+        Object3D *cylinder;
 
         Float _lastDepth;
         Vector2i _lastPosition{-1};
@@ -219,7 +223,7 @@ namespace Examples {
         auto cyl = Primitives::capsule3DSolid(10, 1, 20, 5.0);
         cyl = MeshTools::transform3D(cyl, Matrix4::scaling({0.3f, 0.3f, 0.3f}));
         _cylinder = MeshTools::compile(cyl);
-        auto cylinder = new Object3D{&_scene};
+        cylinder = new Object3D{&_scene};
 //        (*cylinder)
 //                .rotateX(90.0_degf)
 //                .scale(Vector3{8.0f});
@@ -237,6 +241,8 @@ namespace Examples {
 
         /* Initialize initial depth to the value at scene center */
         _lastDepth = ((_camera->projectionMatrix() * _camera->cameraMatrix()).transformPoint({}).z() + 1.0f) * 0.5f;
+
+        setSwapInterval(10);
     }
 
     Float MouseInteractionExample::depthAt(const Vector2i &windowPosition) {
@@ -325,6 +331,9 @@ namespace Examples {
             _rotationPoint = _translationPoint;
             _lastDepth = depth;
         }
+
+//        (*cylinder).translate(Vector3{1.0f, 0.0f, 0.0f}); // Move the cylinder by 1 unit along the x-axis
+        redraw();
     }
 
     void MouseInteractionExample::mouseMoveEvent(MouseMoveEvent &event) {
@@ -378,7 +387,22 @@ namespace Examples {
         _camera->draw(_drawables);
 
         swapBuffers();
+
     }
+
+    void MouseInteractionExample::tickEvent() {
+        static int i = 0;
+        if (i % 2 == 0) {
+            (*cylinder).translate(Vector3{1.0f, 0.0f, 0.0f}); // Move the cylinder by 1 unit along the x-axis
+        }
+        else {
+            (*cylinder).translate(Vector3{-1.0f, 0.0f, 0.0f}); // Move the cylinder by 1 unit along the x-axis
+        }
+        i++;
+
+        redraw();
+    }
+
 
 }
 }
@@ -388,7 +412,6 @@ namespace Examples {
 int main(int argc, char *argv[]) {
 //    Magnum::Platform::Application app = Magnum::Examples::MouseInteractionExample({argc, argv});
     Magnum::Examples::MouseInteractionExample app({argc, argv});
-    while (true) {
-        app.mainLoopIteration();
-    }
+
+    return app.exec();
 }
