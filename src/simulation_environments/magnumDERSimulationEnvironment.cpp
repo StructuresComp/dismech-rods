@@ -61,7 +61,7 @@ magnumRenderer::magnumRenderer(const shared_ptr<world>& m_world, const simParams
 
     _lastDepth = ((_camera->projectionMatrix() * _camera->cameraMatrix()).transformPoint({}).z() + 1.0f) * 0.5f;
 
-    setSwapInterval(10);
+//    setSwapInterval(10);
 }
 
 Float magnumRenderer::depthAt(const Vector2i &windowPosition) {
@@ -192,7 +192,31 @@ void magnumRenderer::tickEvent() {
 }
 
 void magnumRenderer::runSimulation() {
-    exec();
+    while (w_p->simulationRunning()) {
+//        try {
+//            w_p->updateTimeStep();
+//        }
+//        catch (std::runtime_error &excep) {
+//            if (verbosity >= 1) {
+//          main loop logic      std::cout << "Caught a runtime_error when trying to world->updateTimeStep: " << excep.what()
+//                          << std::endl;
+//                std::cout << "Attempting clean shutdown..." << std::endl;
+//            }
+//            cleanShutdown(logger_p, is_logging);
+//        }
+
+
+//        drawEvent();
+//
+//        tickEvent();
+        mainLoopIteration();
+
+//        if (is_logging) {
+//            logger_p->logWorldData();
+//        }
+
+    }
+//    exec();
 }
 
 VertexColorDrawable::VertexColorDrawable(Object3D &object, Shaders::VertexColorGL3D &shader, GL::Mesh &mesh,
