@@ -3,6 +3,7 @@
 #include "logging/worldLogger.h"
 #include "simulation_environments/headlessDERSimulationEnvironment.h"
 #include "simulation_environments/openglDERSimulationEnvironment.h"
+#include "simulation_environments/magnumDERSimulationEnvironment.h"
 #include "robotDescription.h"
 #include "global_const.h"
 
@@ -31,11 +32,16 @@ int main(int argc,char *argv[])
     verbosity = sim_params.debug_verbosity;
 
     unique_ptr<derSimulationEnvironment> env;
-    if (sim_params.render) {
-        env = make_unique<openglDERSimulationEnvironment>(my_world, sim_params, logger, argc, argv);
-    }
-    else {
-        env = make_unique<headlessDERSimulationEnvironment>(my_world, sim_params, logger);
+    switch(sim_params.renderer) {
+        case HEADLESS:
+            env = make_unique<headlessDERSimulationEnvironment>(my_world, sim_params, logger);
+            break;
+        case OPENGL:
+            env = make_unique<openglDERSimulationEnvironment>(my_world, sim_params, logger, argc, argv);
+            break;
+        case MAGNUM:
+            env = make_unique<Magnum::magnumRenderer>(my_world, sim_params, logger, argc, argv);
+            break;
     }
 
     env->runSimulation();

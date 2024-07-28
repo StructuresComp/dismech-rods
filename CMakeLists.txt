@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.11)
 project(dismech-rods)
 
 set(CMAKE_CXX_STANDARD 17)
-# set(CMAKE_BUILD_TYPE Release)
-# set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_CXX_FLAGS "-O3 -DNDEBUG -Wno-deprecated-declarations")
 include(CheckCXXCompilerFlag)
@@ -14,12 +12,13 @@ endif()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../")
 
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-
+set(MAGNUM_WITH_SDL2APPLICATION ON)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 # Per https://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html eigen should be used
 # with MKL LAPACK only with lp64 set. The default may be ILP64, which we don't want.
 set(MKL_INTERFACE_FULL intel_lp64)
+
 
 add_definitions(-DEIGEN_USE_MKL_ALL)
 
@@ -33,6 +32,15 @@ find_package(Threads REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
 find_package(OpenMP)
 find_package(FCL REQUIRED)
+find_package(Corrade REQUIRED Main PluginManager Utility)
+find_package(Magnum REQUIRED
+        GL
+        MeshTools
+        Primitives
+        Shaders
+        Trade
+        Sdl2Application
+        SceneGraph)
 
 if (${HAVE_SYMENGINE_LLVM})
     message(STATUS "Testing SymEngine LLVM & SBML support - found")
@@ -110,6 +118,7 @@ else()
             src/simulation_environments/derSimulationEnvironment.cpp
             src/simulation_environments/headlessDERSimulationEnvironment.cpp
             src/simulation_environments/openglDERSimulationEnvironment.cpp
+            src/simulation_environments/magnumDERSimulationEnvironment.cpp
 
             src/controllers/baseController.cpp
             src/controllers/openLoopUniformKappaBarController.cpp
@@ -138,6 +147,17 @@ else()
             m
             ${SYMENGINE_LIBRARIES}
             fcl
+
+            Corrade::Main
+            Corrade::PluginManager
+            Corrade::Utility
+            Magnum::Application
+            Magnum::GL
+            Magnum::Magnum
+            Magnum::MeshTools
+            Magnum::Primitives
+            Magnum::SceneGraph
+            Magnum::Shaders
     )
 
     if (OpenMP_CXX_FOUND)
