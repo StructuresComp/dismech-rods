@@ -44,6 +44,7 @@ struct simParams {
     int cmd_line_per = 1;                              // Command line sim info output period
     bool enable_2d_sim = false;                        // Lock z and theta DOFs
     bool line_search = true;                           // Enable line search method
+    int line_search_type = 0;
     numerical_integration_scheme nis = BACKWARD_EULER; // Numerical integration scheme*
     int debug_verbosity = 1;                           // Prints certain debug statements
 };

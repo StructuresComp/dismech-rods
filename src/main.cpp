@@ -24,20 +24,24 @@ int main(int argc,char *argv[])
     simParams sim_params;  // TODO: make sure this is correct
     shared_ptr<worldLogger> logger = nullptr;
 
+    // read the description of the robot and create it
     get_robot_description(argc, argv, soft_robots, forces, logger, sim_params);
 
+    // create the world for the robot to interact with
     my_world = make_shared<world>(soft_robots, forces, sim_params);
 
     verbosity = sim_params.debug_verbosity;
 
     unique_ptr<derSimulationEnvironment> env;
+
+    // create the simulation world
     if (sim_params.render) {
         env = make_unique<openglDERSimulationEnvironment>(my_world, sim_params, logger, argc, argv);
     }
     else {
         env = make_unique<headlessDERSimulationEnvironment>(my_world, sim_params, logger);
     }
-
+    // run simulation
     env->runSimulation();
 
     exit(0);
