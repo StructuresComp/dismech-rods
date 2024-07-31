@@ -1,5 +1,5 @@
 #include "magnumDERSimulationEnvironment.h"
-#include <iostream>
+#include "eigenIncludes.h"
 
 namespace Magnum {
 
@@ -177,33 +177,65 @@ void magnumRenderer::drawEvent() {
     _camera->draw(_drawables);
 
     swapBuffers();
-}
-
-void magnumRenderer::tickEvent() {
-    static int i = 0;
-    if (i % 2 == 0) {
-        (*cylinder).translate(Vector3{1.0f, 0.0f, 0.0f});
-    } else {
-        (*cylinder).translate(Vector3{-1.0f, 0.0f, 0.0f});
-    }
-    i++;
 
     redraw();
 }
 
+//void magnumRenderer::tickEvent() {
+//    static int i = 0;
+//    if (i % 2 == 0) {
+//        (*cylinder).translate(Vector3{1.0f, 0.0f, 0.0f});
+//    } else {
+//        (*cylinder).translate(Vector3{-1.0f, 0.0f, 0.0f});
+//    }
+//    i++;
+//
+//    redraw();
+//}
+
 void magnumRenderer::runSimulation() {
     while (w_p->simulationRunning()) {
-//        try {
-//            w_p->updateTimeStep();
-//        }
-//        catch (std::runtime_error &excep) {
-//            if (verbosity >= 1) {
-//          main loop logic      std::cout << "Caught a runtime_error when trying to world->updateTimeStep: " << excep.what()
-//                          << std::endl;
-//                std::cout << "Attempting clean shutdown..." << std::endl;
-//            }
-//            cleanShutdown(logger_p, is_logging);
-//        }
+        try {
+            w_p->updateTimeStep();
+        }
+        catch (std::runtime_error &excep) {
+            if (verbosity >= 1) {
+                std::cout << "Caught a runtime_error when trying to world->updateTimeStep: " << excep.what() << std::endl;
+                std::cout << "Attempting clean shutdown..." << std::endl;
+            }
+            cleanShutdown(logger_p, is_logging);
+        }
+
+        int limb_idx = 0;
+        for (const auto &limb: w_p->soft_robots->limbs) {
+            for (int i = 0; i < limb->ne; i++) {
+                if (limb->isEdgeJoint[i] == 0) {
+                    auto top = limb->getVertex(i+1);
+                    auto bot = limb->getVertex(i);
+                    Eigen::Vector3d center_line_eigen = top - bot;
+                    Eigen::Vector3d center_pos_eigen = (top + bot) * 0.5;
+
+                    Magnum::Vector3 center_line(center_line_eigen.x(), center_line_eigen.y(), center_line_eigen.z());
+                    Magnum::Vector3 center_pos(center_pos_eigen.x(), center_pos_eigen.y(), center_pos_eigen.z());
+
+                    float height = center_line.length();
+                    Magnum::Vector3 axis = center_line.normalized() ;
+
+                    Matrix4 translation = Matrix4::translation(center_pos);
+//                    Matrix4 scaling = Matrix4::scaling ...
+                    Matrix4 rotation = Matrix4::rotation(Math::angle(Vector3::zAxis(), axis),
+                                                         Math::cross(Vector3::zAxis(), axis));
+
+                    auto tf = translation * rotation;
+
+                    cylinder->setTransformation(tf);
+
+                }
+                break;
+            }
+            limb_idx++;
+            break;
+        }
 
 
 //        drawEvent();

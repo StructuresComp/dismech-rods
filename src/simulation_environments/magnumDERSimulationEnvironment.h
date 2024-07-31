@@ -51,7 +51,7 @@ private:
     void mouseMoveEvent(MouseMoveEvent &event) override;
     void mouseScrollEvent(MouseScrollEvent &event) override;
     void drawEvent() override;
-    void tickEvent() override;
+//    void tickEvent() override;
 
     Shaders::VertexColorGL3D _vertexColorShader{NoCreate};
     Shaders::FlatGL3D _flatShader{NoCreate};
