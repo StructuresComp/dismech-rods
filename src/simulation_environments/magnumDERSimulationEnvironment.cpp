@@ -44,11 +44,17 @@ magnumRenderer::magnumRenderer(const shared_ptr<world>& m_world, const simParams
     (*grid).rotateX(90.0_degf).scale(Vector3{8.0f});
     new FlatDrawable{*grid, _flatShader, _grid, _drawables};
 
-    auto cyl = Primitives::capsule3DSolid(10, 1, 20, 5.0);
+    auto cyl = Primitives::capsule3DSolid(5, 5, 5, 1.0);
     cyl = MeshTools::transform3D(cyl, Matrix4::scaling({0.3f, 0.3f, 0.3f}));
     _cylinder = MeshTools::compile(cyl);
     cylinder = new Object3D{&_scene};
-    new CylinderDrawable{*cylinder, _shader, _cylinder, _drawables};
+//    new CylinderDrawable{*cylinder, _shader, _cylinder, _drawables};
+
+    // TODO(asjchoi) set the number of edges here dynamically
+    for (int i = 0; i < 200; i++) {
+        edges.emplace_back(std::make_unique<Object3D>(&_scene));
+        cylinderDrawables.emplace_back(std::make_unique<CylinderDrawable>(*cylinder, _shader, _cylinder, _drawables));
+    }
 
     _cameraObject = new Object3D{&_scene};
     (*_cameraObject)
@@ -60,8 +66,6 @@ magnumRenderer::magnumRenderer(const shared_ptr<world>& m_world, const simParams
         45.0_degf, Vector2{windowSize()}.aspectRatio(), 0.01f, 100.0f));
 
     _lastDepth = ((_camera->projectionMatrix() * _camera->cameraMatrix()).transformPoint({}).z() + 1.0f) * 0.5f;
-
-//    setSwapInterval(10);
 }
 
 Float magnumRenderer::depthAt(const Vector2i &windowPosition) {
@@ -206,12 +210,33 @@ void magnumRenderer::runSimulation() {
             cleanShutdown(logger_p, is_logging);
         }
 
+//        Eigen::Vector3d top = w_p->soft_robots->limbs[0]->getVertex(190);
+//        Eigen::Vector3d bot = w_p->soft_robots->limbs[0]->getVertex(189);
+//        Eigen::Vector3d center_line_eigen = top - bot;
+//        Eigen::Vector3d center_pos_eigen = (top + bot) * 0.5;
+//
+//        Magnum::Vector3 center_line(center_line_eigen.x(), center_line_eigen.y(), center_line_eigen.z());
+//        Magnum::Vector3 center_pos(center_pos_eigen.x(), center_pos_eigen.y(), center_pos_eigen.z());
+//
+//        float height = center_line.length();
+//        Magnum::Vector3 axis = center_line.normalized() ;
+//
+//        Matrix4 translation = Matrix4::translation(center_pos);
+//        Matrix4 rotation = Matrix4::rotation(Math::angle(Vector3::zAxis(), axis),
+//                                             Math::cross(Vector3::zAxis(), axis).normalized());
+//
+//        auto tf = translation * rotation * Matrix4::scaling(Vector3{0.1f, 0.1f, height});
+//
+//        cylinder->setTransformation(tf);
+//
+//        std::cout << center_line_eigen << std::endl;
+
         int limb_idx = 0;
         for (const auto &limb: w_p->soft_robots->limbs) {
             for (int i = 0; i < limb->ne; i++) {
                 if (limb->isEdgeJoint[i] == 0) {
-                    auto top = limb->getVertex(i+1);
-                    auto bot = limb->getVertex(i);
+                    Eigen::Vector3d top = limb->getVertex(i+1);
+                    Eigen::Vector3d bot = limb->getVertex(i);
                     Eigen::Vector3d center_line_eigen = top - bot;
                     Eigen::Vector3d center_pos_eigen = (top + bot) * 0.5;
 
@@ -222,33 +247,21 @@ void magnumRenderer::runSimulation() {
                     Magnum::Vector3 axis = center_line.normalized() ;
 
                     Matrix4 translation = Matrix4::translation(center_pos);
-//                    Matrix4 scaling = Matrix4::scaling ...
                     Matrix4 rotation = Matrix4::rotation(Math::angle(Vector3::zAxis(), axis),
-                                                         Math::cross(Vector3::zAxis(), axis));
+                                                         Math::cross(Vector3::zAxis(), axis).normalized());
 
-                    auto tf = translation * rotation;
+                    Matrix4 tf = translation * rotation * Matrix4::scaling(Vector3{0.1f, 0.1f, height});
 
-                    cylinder->setTransformation(tf);
+                    edges[i]->setTransformation(tf);
+
+                    std::cout << center_line_eigen << std::endl;
 
                 }
-                break;
             }
             limb_idx++;
-            break;
         }
-
-
-//        drawEvent();
-//
-//        tickEvent();
         mainLoopIteration();
-
-//        if (is_logging) {
-//            logger_p->logWorldData();
-//        }
-
     }
-//    exec();
 }
 
 VertexColorDrawable::VertexColorDrawable(Object3D &object, Shaders::VertexColorGL3D &shader, GL::Mesh &mesh,
@@ -288,11 +301,3 @@ void CylinderDrawable::draw(const Matrix4 &transformation, SceneGraph::Camera3D 
 }
 
 } // namespace Magnum
-//MAGNUM_APPLICATION_MAIN(Magnum::Examples::magnumRenderer)
-
-//int main(int argc, char *argv[]) {
-////    Magnum::Platform::Application app = Magnum::Examples::magnumRenderer({argc, argv});
-//    Magnum::Examples::magnumRenderer app({argc, argv});
-//
-//    return app.exec();
-//}

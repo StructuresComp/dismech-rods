@@ -33,6 +33,19 @@ using namespace Math::Literals;
 using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
 using Scene3D = SceneGraph::Scene<SceneGraph::MatrixTransformation3D>;
 
+class CylinderDrawable : public SceneGraph::Drawable3D {
+public:
+    explicit CylinderDrawable(Object3D &object, Shaders::PhongGL &shader, GL::Mesh &mesh,
+                              SceneGraph::DrawableGroup3D &drawables);
+
+    void draw(const Matrix4 &transformation, SceneGraph::Camera3D &camera) override;
+
+private:
+    Shaders::PhongGL &_shader;
+    GL::Mesh &_mesh;
+    Color3 _color;
+};
+
 class magnumRenderer : public Platform::Application, public derSimulationEnvironment {
 public:
     explicit magnumRenderer(const shared_ptr<world>& m_world, const simParams& sim_params,
@@ -64,6 +77,9 @@ private:
     SceneGraph::Camera3D *_camera;
     Object3D *cylinder;
 
+    std::vector<std::unique_ptr<CylinderDrawable>> cylinderDrawables;
+    std::vector<std::unique_ptr<Object3D>> edges;
+
     Float _lastDepth;
     Vector2i _lastPosition{-1};
     Vector3 _rotationPoint, _translationPoint;
@@ -93,18 +109,6 @@ private:
     GL::Mesh &_mesh;
 };
 
-class CylinderDrawable : public SceneGraph::Drawable3D {
-public:
-    explicit CylinderDrawable(Object3D &object, Shaders::PhongGL &shader, GL::Mesh &mesh,
-                              SceneGraph::DrawableGroup3D &drawables);
-
-    void draw(const Matrix4 &transformation, SceneGraph::Camera3D &camera) override;
-
-private:
-    Shaders::PhongGL &_shader;
-    GL::Mesh &_mesh;
-    Color3 _color;
-};
 
 } // namespace Magnum
 
