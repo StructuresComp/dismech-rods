@@ -110,6 +110,19 @@ private:
 };
 
 
+class CoordinateFrame : public SceneGraph::Drawable3D {
+public:
+    explicit CoordinateFrame(Object3D &object, Shaders::VertexColorGL3D &shader,
+                             SceneGraph::DrawableGroup3D &drawables);
+
+    void draw(const Matrix4 &transformation, SceneGraph::Camera3D &camera) override;
+
+private:
+    Shaders::VertexColorGL3D _shader;
+    GL::Mesh &_mesh;
+};
+
+
 } // namespace Magnum
 
 #endif // MAGNUMRENDERER_H

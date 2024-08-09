@@ -44,16 +44,20 @@ magnumRenderer::magnumRenderer(const shared_ptr<world>& m_world, const simParams
     (*grid).rotateX(90.0_degf).scale(Vector3{8.0f});
     new FlatDrawable{*grid, _flatShader, _grid, _drawables};
 
-    auto cyl = Primitives::capsule3DSolid(5, 5, 5, 1.0);
-    cyl = MeshTools::transform3D(cyl, Matrix4::scaling({0.3f, 0.3f, 0.3f}));
-    _cylinder = MeshTools::compile(cyl);
-    cylinder = new Object3D{&_scene};
+    auto coordinate_frame = new Object3D{&_scene};
+    new CoordinateFrame{*coordinate_frame, _vertexColorShader, _drawables};
+
 //    new CylinderDrawable{*cylinder, _shader, _cylinder, _drawables};
 
     // TODO(asjchoi) set the number of edges here dynamically
+    auto cyl = Primitives::capsule3DSolid(5, 5, 5, 1.0);
     for (int i = 0; i < 200; i++) {
+        cyl = Primitives::capsule3DSolid(5, 5, 5, 1.0);
+//        cyl = MeshTools::transform3D(cyl, Matrix4::scaling({0.3f, 0.3f, 0.3f}));
+        _cylinder = MeshTools::compile(cyl);
+//        cylinder = new Object3D{&_scene};
         edges.emplace_back(std::make_unique<Object3D>(&_scene));
-        cylinderDrawables.emplace_back(std::make_unique<CylinderDrawable>(*cylinder, _shader, _cylinder, _drawables));
+        cylinderDrawables.emplace_back(std::make_unique<CylinderDrawable>(*edges[i], _shader, _cylinder, _drawables));
     }
 
     _cameraObject = new Object3D{&_scene};
@@ -250,17 +254,17 @@ void magnumRenderer::runSimulation() {
                     Matrix4 rotation = Matrix4::rotation(Math::angle(Vector3::zAxis(), axis),
                                                          Math::cross(Vector3::zAxis(), axis).normalized());
 
-                    Matrix4 tf = translation * rotation * Matrix4::scaling(Vector3{0.1f, 0.1f, height});
+                    Matrix4 tf = translation * rotation * Matrix4::scaling(Vector3{0.1f, 0.1f, 0.1f});
 
                     edges[i]->setTransformation(tf);
-
-                    std::cout << center_line_eigen << std::endl;
-
                 }
             }
             limb_idx++;
         }
         mainLoopIteration();
+
+        // periodically report to the command line.
+        cmdlineOutputHelper();
     }
 }
 
@@ -298,6 +302,40 @@ void CylinderDrawable::draw(const Matrix4 &transformation, SceneGraph::Camera3D 
         .setNormalMatrix(transformation.normalMatrix())
         .setProjectionMatrix(camera.projectionMatrix())
         .draw(_mesh);
+}
+
+CoordinateFrame::CoordinateFrame(Object3D &object, Shaders::VertexColorGL3D &shader,
+                                 SceneGraph::DrawableGroup3D &drawables) : SceneGraph::Drawable3D{object, &drawables},
+                                                                           _shader(shader) {
+     struct Vertex {
+        Vector3 position;
+        Color3 color;
+    };
+
+    const Vertex vertices[] = {
+        // X axis (Red)
+        {{0.0f, 0.0f, 0.0f}, 0xff0000_rgbf},
+        {{1.0f, 0.0f, 0.0f}, 0xff0000_rgbf},
+        // Y axis (Green)
+        {{0.0f, 0.0f, 0.0f}, 0x00ff00_rgbf},
+        {{0.0f, 1.0f, 0.0f}, 0x00ff00_rgbf},
+        // Z axis (Blue)
+        {{0.0f, 0.0f, 0.0f}, 0x0000ff_rgbf},
+        {{0.0f, 0.0f, 1.0f}, 0x0000ff_rgbf},
+    };
+
+    GL::Buffer vertexBuffer;
+    vertexBuffer.setData(vertices);
+
+    _mesh.setPrimitive(MeshPrimitive::Lines)
+         .setCount(6)
+         .addVertexBuffer(std::move(vertexBuffer), 0, Shaders::VertexColor3D::Position{}, Shaders::VertexColor3D::Color3{});
+}
+
+void CoordinateFrame::draw(const Matrix4 &transformation, SceneGraph::Camera3D &camera) {
+    _shader
+            .setTransformationProjectionMatrix(camera.projectionMatrix() * transformation)
+            .draw(_mesh);
 }
 
 } // namespace Magnum
