@@ -43,7 +43,6 @@ If you'd like DisMech to support a new feature, feel free create an issue and we
 
 #### High priority
 - [ ] Improve robustness of friction.
-- [ ] Add a more sophisticated renderer.
 - [ ] Add contact logic for joints.
 - [ ] Add URDF functionality for instantiating robot.
 - [ ] Add shell functionality.
@@ -57,6 +56,7 @@ If you'd like DisMech to support a new feature, feel free create an issue and we
 - [ ] Add more controller types.
 
 ### COMPLETED
+- [x] Add a more sophisticated renderer. PR [#12]()
 - [x] Add per-limb friction coefficient logic. PR [#5](https://github.com/StructuresComp/dismech-rods/pull/5)
 - [x] Add active entanglement example code.
 - [x] Add limb self-contact option.
@@ -141,12 +141,42 @@ For other operating systems you should be able to modify the commands below appr
     ```
 
 - [OpenGL / GLUT](https://www.opengl.org/)
-  - OpenGL / GLUT is used for rendering the knot through a simple graphic.
+  - OpenGL / GLUT is used for barebones rendering through simple line graphics.
   - Simply install through apt package manager:
     - **Ubuntu**: `sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev`
     - **macOS**: `sudo port install freeglut pkgconfig` (Note: `pkgconfig` is necessary to avoid finding system GLUT instead of `freeglut`.)
 
 - Lapack (*included in MKL*)
+
+### Optional Dependencies
+
+The default renderer used in DisMech is simply an isometric view of lines depicting rod centerlines using a barebones implementation based on OpenGL. 
+For users wishing to have more advanced rendering with camera pose manipulation via the mouse, they can install and build with the Magnum Engine.
+Below is an example rendering.
+
+<div align="center"> <img src="media/magnum.gif" width="500"> </div> 
+
+- [Magnum Engine](https://magnum.graphics/)
+  - Before downloading magnum, users must first build and install Magnum's utility library [Corrade](https://magnum.graphics/corrade/). 
+    Install instructions for various platforms can be found [here](https://doc.magnum.graphics/corrade/building-corrade.html).
+  - After installing Corrade, install instructions for Magnum can similarly be found [here](https://doc.magnum.graphics/magnum/building.html).
+  - Finally, Magnum allows users to save each rendered frame as a png file which can be used to create videos such as `ffmpeg`. 
+  For this feature, we must download and build [magnum-plugins](https://doc.magnum.graphics/magnum/building-plugins.html#building-plugins-manual) as follows.
+     ```bash
+    sudo apt-get install libpng-dev  # a dependency of magnum-plugins' PngImageConverter
+    git clone https://github.com/mosra/magnum-plugins
+    cd magnum-plugins && mkdir build && cd build
+    cmake -DWITH_PNGIMAGECONVERTER=ON ..
+    make -j$(nproc)
+    sudo make install
+    ```
+  - Once Corrade and Magnum are properly installed, users can build DisMech with the following additional cmake build flag:
+    ```bash
+    mkdir build && cd build
+    cmake -DWITH_MAGNUM=ON ..
+    make -j$(nproc)
+    ```
+  - For those wishing to customize the rendering settings, users can take a look and adjust the source code in `magnumDERSimulationEnvironment.cpp` accordingly.
 
 ***
 
@@ -161,7 +191,7 @@ For example, using the cantilever beam example:
 cp examples/cantilever_case/cantileverExample.cpp robotDescription.cpp
 mkdir build && cd build
 cmake ..
-make -j4
+make -j$(nproc)
 cd ..
 ```
 Afterwards, simply run the simulation using the `dismech.sh` script.
@@ -182,8 +212,12 @@ In addition, many numerical parameters can be set through the `simParams` struct
 struct simParams {
   double sim_time = 10;                              //    Total time for simulation [s]
   double dt = 1e-3;                                  //    Time step size [s]
-  bool render = true;                                //    Live OpenGL rendering
-  bool show_mat_frames = false;                      //    Render material frames
+  renderer_type renderer = OPENGL;                   // *  Renderer type
+  int render_every = 1;                              //    Rendering period
+                                                     //        Currently only for Magnum. TODO for OpenGL support.
+  string render_record_path;                         //    Rendering frames recording path (only for Magnum). 
+                                                     //        Does not record if render_record_path is an empty string.
+  bool show_mat_frames = false;                      //    Render material frames (only for OpenGL)
   double render_scale = 1.0;                         //    Rendering scale
   double dtol = 1e-2;                                // *^ Dynamics tolerance [m/s]
   double ftol = 1e-4;                                // *^ Force tolerance
@@ -198,6 +232,11 @@ struct simParams {
 ```
 
 Detailed parameter explanations:
+
+- `renderer_type` - Determines the renderer. Currently, available options are
+  - `HEADLESS`: No rendering. Fastest and best for rapid data generation.
+  - `OPENGL`: Fixed isometric view rendering. Renders centerlines of rods as simple lines. Relatively low computational overhead. Recommended for general use and debugging.
+  - `MAGNUM`: Camera pose manipulation via mouse. Renders rod and environment with 3D meshes and shading. Higher computational overhead. Recommended only for creating videos.
 
 - `numerical_integration_scheme` - Determines the numerical integration scheme. Currently, available options are 
   - `FORWARD_EULER`: https://en.wikipedia.org/wiki/Euler_method

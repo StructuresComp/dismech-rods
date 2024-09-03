@@ -36,6 +36,8 @@ public:
     bool simulationRunning() const;
     int getTimeStep() const;
     void printSimData();
+    bool floorExists();
+    double getFloorZ();
 
     shared_ptr<softRobots> soft_robots;
 

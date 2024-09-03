@@ -2,19 +2,17 @@ cmake_minimum_required(VERSION 3.11)
 project(dismech-rods)
 
 set(CMAKE_CXX_STANDARD 17)
-# set(CMAKE_BUILD_TYPE Release)
-# set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_CXX_FLAGS "-O3 -DNDEBUG -Wno-deprecated-declarations")
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
-if(COMPILER_SUPPORTS_MARCH_NATIVE)
+if (COMPILER_SUPPORTS_MARCH_NATIVE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
-endif()
+endif ()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../")
 
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-
+set(MAGNUM_WITH_SDL2APPLICATION ON)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 # Per https://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html eigen should be used
@@ -34,6 +32,24 @@ find_package(Eigen3 3.4 REQUIRED)
 find_package(OpenMP)
 find_package(FCL REQUIRED)
 
+# Run with -DWITH_MAGNUM=ON to build with Magnum library.
+option(WITH_MAGNUM OFF)
+if (WITH_MAGNUM)
+    add_definitions(-DWITH_MAGNUM)
+    find_package(Corrade REQUIRED Main PluginManager Utility)
+    find_package(Magnum REQUIRED
+            GL
+            MeshTools
+            Primitives
+            Shaders
+            Trade
+            Sdl2Application
+            SceneGraph)
+    find_package(MagnumPlugins REQUIRED PngImageConverter)
+else ()
+    message(STATUS "Building with Magnum disabled")
+endif ()
+
 if (${HAVE_SYMENGINE_LLVM})
     message(STATUS "Testing SymEngine LLVM & SBML support - found")
 else ()
@@ -49,7 +65,6 @@ include_directories(${SYMENGINE_INCLUDE_DIRS}
 
 link_directories(${MKL_LIBRARY_DIR})
 
-
 # Run with cmake --fresh -DCREATE_DOCS=ON .. only when documentation needs to be updated.
 
 # If docs change and you want to preview the updates in index.html, you'll need to rm -rf * and
@@ -61,9 +76,9 @@ link_directories(${MKL_LIBRARY_DIR})
 # Probably a good idea to split the documentation cmake process into its own directory later.
 option(CREATE_DOCS OFF)
 
-if(CREATE_DOCS)
+if (CREATE_DOCS)
     add_subdirectory("docs")
-else()
+else ()
     add_executable(disMech
             src/main.cpp
             src/world.cpp
@@ -116,7 +131,13 @@ else()
             src/controllers/activeEntanglementController.cpp
 
             src/utils/utils.cpp
-            )
+            src/simulation_environments/magnumDERSimulationEnvironment.cpp
+    )
+    if (WITH_MAGNUM)
+        target_sources(disMech PRIVATE
+                src/simulation_environments/magnumDERSimulationEnvironment.cpp
+        )
+    endif ()
 
     target_include_directories(disMech PRIVATE
             src
@@ -139,8 +160,23 @@ else()
             ${SYMENGINE_LIBRARIES}
             fcl
     )
+    if (WITH_MAGNUM)
+        target_link_libraries(disMech PRIVATE
+                Corrade::Main
+                Corrade::PluginManager
+                Corrade::Utility
+                Magnum::Application
+                Magnum::GL
+                Magnum::Magnum
+                Magnum::MeshTools
+                Magnum::Primitives
+                Magnum::SceneGraph
+                Magnum::Shaders
+        )
+        target_link_libraries(disMech PRIVATE MagnumPlugins::PngImageConverter)
+    endif ()
 
     if (OpenMP_CXX_FOUND)
         target_link_libraries(disMech PUBLIC OpenMP::OpenMP_CXX)
     endif ()
-endif()
+endif ()

@@ -30,7 +30,7 @@ class openglDERSimulationEnvironment : public derSimulationEnvironment
     /**
      * Start the simulation!
      */
-    void runSimulation();
+    void runSimulation() override;
     static bool show_mat_frames;
     static double render_scale;
 
