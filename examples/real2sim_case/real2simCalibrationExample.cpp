@@ -13,15 +13,17 @@ void get_robot_description(int argc, char** argv,
                            const shared_ptr<softRobots>& soft_robots,
                            const shared_ptr<forceContainer>& forces,
                            shared_ptr<worldLogger>& logger,
-                           simParams& sim_params) {
+                           simParams& sim_params,
+                           renderParams& render_params) {
 
     sim_params.dt = 1e-2;
     sim_params.sim_time = 3;
     sim_params.dtol = 1e-3;
-    sim_params.render_scale = 3.5;
-    sim_params.show_mat_frames = true;
     sim_params.enable_2d_sim = true;
     sim_params.adaptive_time_stepping = 10;
+
+    render_params.render_scale = 3.5;
+    render_params.show_mat_frames = true;
 
     int n = 25;
     double radius = 0.01;
@@ -52,7 +54,7 @@ void get_robot_description(int argc, char** argv,
 
     // Add kappa_bar controller
     string phi_ctrl_file_path = "src/controllers/openloop_control_trajectories/real2sim_controller.csv";
-    soft_robots->addController(make_shared<rodOpenLoopFileKappabarSetter>(soft_robots, phi_ctrl_file_path));
+    soft_robots->addController(make_shared<openLoopUniformKappaBarController>(soft_robots, phi_ctrl_file_path));
 
     // Set logger to record nodes
     string logfile_base = "log_files/real2sim";

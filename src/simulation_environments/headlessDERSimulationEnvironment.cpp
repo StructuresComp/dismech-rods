@@ -2,9 +2,9 @@
 
 
 headlessDERSimulationEnvironment::headlessDERSimulationEnvironment(const shared_ptr<world>& m_world,
-                                                                   const simParams& sim_params,
+                                                                   const renderParams& render_params,
                                                                    const shared_ptr<worldLogger>& logger) :
-	                                                               derSimulationEnvironment(m_world, sim_params, logger)
+	                                                               derSimulationEnvironment(m_world, render_params, logger)
 {
 }
 

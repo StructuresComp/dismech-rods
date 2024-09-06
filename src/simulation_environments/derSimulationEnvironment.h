@@ -27,7 +27,7 @@ class derSimulationEnvironment
     // max time until self-destruct
     // frequency of reporting to command line (per "VERBOSITY")
 
-    derSimulationEnvironment(const shared_ptr<world>& m_world, const simParams& sim_params,
+    derSimulationEnvironment(const shared_ptr<world>& m_world, const renderParams& render_params,
                              const shared_ptr<worldLogger>& logger);
     virtual ~derSimulationEnvironment();
 

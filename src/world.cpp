@@ -13,12 +13,12 @@ world::world(const shared_ptr<softRobots>& soft_robots,
     forces->addForce(make_shared<elasticTwistingForce>(soft_robots));
 
     // Declare inertial force. Should be avoided for explicit methods
-    if (sim_params.nis != FORWARD_EULER && sim_params.nis != VERLET_POSITION) {
+    if (sim_params.integrator != FORWARD_EULER && sim_params.integrator != VERLET_POSITION) {
         forces->addForce(make_shared<inertialForce>(soft_robots));
     }
 
     // Set up the time stepper
-    switch(sim_params.nis) {
+    switch(sim_params.integrator) {
         case FORWARD_EULER:
             stepper = make_shared<forwardEuler>(soft_robots, forces, sim_params);
             break;

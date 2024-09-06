@@ -1,9 +1,9 @@
 #include "derSimulationEnvironment.h"
 
 
-derSimulationEnvironment::derSimulationEnvironment(const shared_ptr<world>& m_world, const simParams& sim_params,
+derSimulationEnvironment::derSimulationEnvironment(const shared_ptr<world>& m_world, const renderParams& render_params,
                                                    const shared_ptr<worldLogger>& logger) :
-                                                   w_p(m_world), cmdline_per(sim_params.cmd_line_per),
+                                                   w_p(m_world), cmdline_per(render_params.cmd_line_per),
                                                    logger_p(logger), is_logging(logger!=nullptr)
 {
     if (is_logging) {

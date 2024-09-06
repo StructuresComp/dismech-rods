@@ -13,16 +13,18 @@ void get_robot_description(int argc, char** argv,
                            const shared_ptr<softRobots>& soft_robots,
                            const shared_ptr<forceContainer>& forces,
                            shared_ptr<worldLogger>& logger,
-                           simParams& sim_params) {
+                           simParams& sim_params,
+                           renderParams& render_params) {
 
     sim_params.dt = 5e-3;
     sim_params.sim_time = 1.0;
     sim_params.dtol = 1e-3;
-    sim_params.render = false;
     sim_params.enable_2d_sim = true;
     sim_params.adaptive_time_stepping = 10;
-    sim_params.cmd_line_per = 0;
-    sim_params.nis = IMPLICIT_MIDPOINT;
+    sim_params.integrator = IMPLICIT_MIDPOINT;
+
+    render_params.cmd_line_per = 0;
+    render_params.renderer = HEADLESS;
 
     // Create cylinder
     int n = 26;

@@ -14,16 +14,16 @@ extern "C" void keyHandler(unsigned char key, int x, int y) {
 
 
 openglDERSimulationEnvironment::openglDERSimulationEnvironment(const shared_ptr<world>& m_world,
-                                                               const simParams& sim_params,
+                                                               const renderParams& render_params,
                                                                const shared_ptr<worldLogger>& logger,
                                                                int argc, char **argv) :
-                                                               derSimulationEnvironment(m_world, sim_params, logger),
+                                                               derSimulationEnvironment(m_world, render_params, logger),
                                                                argc_main(argc), argv_main(argv) {
 
     opengl_world = m_world;
-    opengl_cmdline_per = sim_params.cmd_line_per;
-    render_scale = sim_params.render_scale;
-    show_mat_frames = sim_params.show_mat_frames;
+    opengl_cmdline_per = render_params.cmd_line_per;
+    render_scale = render_params.render_scale;
+    show_mat_frames = render_params.show_mat_frames;
     opengl_is_logging = logger != nullptr;
     opengl_logger = logger;
 

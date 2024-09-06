@@ -13,15 +13,17 @@ void get_robot_description(int argc, char** argv,
                            const shared_ptr<softRobots>& soft_robots,
                            const shared_ptr<forceContainer>& forces,
                            shared_ptr<worldLogger>& logger,
-                           simParams& sim_params) {
+                           simParams& sim_params,
+                           renderParams& render_params) {
 
     sim_params.dt = 1e-4;
     sim_params.sim_time = 11.6;
     sim_params.dtol = 1e-3;
-    sim_params.render_scale = 3.5;
-    sim_params.show_mat_frames = true;
     sim_params.enable_2d_sim = true;
     sim_params.adaptive_time_stepping = 10;
+
+    render_params.render_scale = 3.5;
+    render_params.show_mat_frames = true;
 
     int n = 25;
     double radius = 0.01;

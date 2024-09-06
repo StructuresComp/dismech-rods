@@ -24,26 +24,27 @@ int main(int argc,char *argv[])
 {
     shared_ptr<softRobots> soft_robots = make_shared<softRobots>();
     shared_ptr<forceContainer> forces = make_shared<forceContainer>();
-    simParams sim_params;  // TODO: make sure this is correct
+    simParams sim_params;
+    renderParams render_params;
     shared_ptr<worldLogger> logger = nullptr;
 
-    get_robot_description(argc, argv, soft_robots, forces, logger, sim_params);
+    get_robot_description(argc, argv, soft_robots, forces, logger, sim_params, render_params);
 
     my_world = make_shared<world>(soft_robots, forces, sim_params);
 
-    verbosity = sim_params.debug_verbosity;
+    verbosity = render_params.debug_verbosity;
 
     unique_ptr<derSimulationEnvironment> env;
-    switch(sim_params.renderer) {
+    switch(render_params.renderer) {
         case HEADLESS:
-            env = make_unique<headlessDERSimulationEnvironment>(my_world, sim_params, logger);
+            env = make_unique<headlessDERSimulationEnvironment>(my_world, render_params, logger);
             break;
         case OPENGL:
-            env = make_unique<openglDERSimulationEnvironment>(my_world, sim_params, logger, argc, argv);
+            env = make_unique<openglDERSimulationEnvironment>(my_world, render_params, logger, argc, argv);
             break;
 #ifdef WITH_MAGNUM
         case MAGNUM:
-            env = make_unique<Magnum::magnumDERSimulationEnvironment>(my_world, sim_params, logger, argc, argv);
+            env = make_unique<Magnum::magnumDERSimulationEnvironment>(my_world, render_params, logger, argc, argv);
             break;
 #endif
         default:

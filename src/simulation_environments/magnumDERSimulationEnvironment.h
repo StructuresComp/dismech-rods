@@ -85,7 +85,7 @@ private:
 
 class magnumDERSimulationEnvironment : public Platform::Application, public derSimulationEnvironment {
 public:
-    explicit magnumDERSimulationEnvironment(const shared_ptr<world>& m_world, const simParams& sim_params,
+    explicit magnumDERSimulationEnvironment(const shared_ptr<world>& m_world, const renderParams& render_params,
                    const shared_ptr<worldLogger>& logger, int argc, char **argv);
 
     void runSimulation() override;
@@ -95,7 +95,7 @@ private:
     Vector3 unproject(const Vector2i &windowPosition, Float depth) const;
 
     float render_scale;
-    int render_every;
+    int render_per;
     string render_record_path;
 
     void keyPressEvent(KeyEvent &event) override;

@@ -18,7 +18,7 @@ static int opengl_cmdline_per = 0;
 class openglDERSimulationEnvironment : public derSimulationEnvironment
 {
     public:
-    openglDERSimulationEnvironment(const shared_ptr<world>& m_world, const simParams& sim_params,
+    openglDERSimulationEnvironment(const shared_ptr<world>& m_world, const renderParams& render_params,
                                    const shared_ptr<worldLogger>& logger, int argc, char **argv);
     ~openglDERSimulationEnvironment() override;
 

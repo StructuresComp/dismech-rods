@@ -13,13 +13,15 @@ void get_robot_description(int argc, char** argv,
                            const shared_ptr<softRobots>& soft_robots,
                            const shared_ptr<forceContainer>& forces,
                            shared_ptr<worldLogger>& logger,
-                           simParams& sim_params) {
+                           simParams& sim_params,
+                           renderParams& render_params) {
 
     sim_params.dt = 5e-3;
     sim_params.sim_time = 10;
     sim_params.dtol = 1e-3;
-    sim_params.render_scale = 5.0;
-    sim_params.nis = IMPLICIT_MIDPOINT;
+    sim_params.integrator = IMPLICIT_MIDPOINT;
+
+    render_params.render_scale = 5.0;
 
     // Read vertices describing helical shape
     vector<Vector3d> vertices;

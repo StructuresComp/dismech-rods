@@ -11,10 +11,12 @@
 namespace Magnum {
 
 
-magnumDERSimulationEnvironment::magnumDERSimulationEnvironment(const shared_ptr<world>& m_world, const simParams& sim_params,
-                               const shared_ptr<worldLogger>& logger, int argc, char **argv)
+magnumDERSimulationEnvironment::magnumDERSimulationEnvironment(const shared_ptr<world>& m_world,
+                                                               const renderParams& render_params,
+                                                               const shared_ptr<worldLogger>& logger,
+                                                               int argc, char **argv)
                                : Platform::Application({argc, argv}, NoCreate),
-                                 derSimulationEnvironment(m_world, sim_params, logger) {
+                                 derSimulationEnvironment(m_world, render_params, logger) {
     const Vector2 dpi_scaling = this->dpiScaling({});
     Configuration conf;
     conf.setTitle("DisMech")
@@ -29,9 +31,9 @@ magnumDERSimulationEnvironment::magnumDERSimulationEnvironment(const shared_ptr<
     GL::Renderer::setClearColor(0xFAF9F6_rgbf);
 
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
-    render_scale = (float)sim_params.render_scale;
-    render_every = sim_params.render_every;
-    render_record_path = sim_params.render_record_path;
+    render_scale = (float)render_params.render_scale;
+    render_per = render_params.render_per;
+    render_record_path = render_params.render_record_path;
 
     // Render a floor if necessary. If not, turn on face culling for improved speed.
     if (w_p->floorExists()) {
@@ -275,7 +277,7 @@ void magnumDERSimulationEnvironment::runSimulation() {
         // Output info to cmdline
         cmdlineOutputHelper();
 
-        if (curr_iter % render_every != 0)
+        if (curr_iter % render_per != 0)
             continue;
 
         capsule_drawables.clear();

@@ -56,7 +56,7 @@ If you'd like DisMech to support a new feature, feel free create an issue and we
 - [ ] Add more controller types.
 
 ### COMPLETED
-- [x] Add a more sophisticated renderer. PR [#12]()
+- [x] Add a more sophisticated renderer. PR [#12](https://github.com/StructuresComp/dismech-rods/pull/12)
 - [x] Add per-limb friction coefficient logic. PR [#5](https://github.com/StructuresComp/dismech-rods/pull/5)
 - [x] Add active entanglement example code.
 - [x] Add limb self-contact option.
@@ -205,40 +205,41 @@ If you want to run another example, simply replace the `robotDescription.cpp` fi
 ### Creating Custom Simulation Environments
 In case you want to create a custom simulation environment, take a look at the provided examples on how to do so.
 
-Simulation parameters such as defining the soft structure(s) / robot(s), boundary conditions, forces, and logging are done solely in `robotDescription.cpp` so that large recompiles do not take place.
+Model and environment parameters such as defining the soft structure(s) / robot(s), boundary conditions, forces, and logging are done solely in `robotDescription.cpp` to avoid large recompile times.
 
-In addition, many numerical parameters can be set through the `simParams` struct shown below with default values and descriptions. Note that parameters with a `*` have additional explanations below. Parameters with a `^` only apply when an implicit numerical integration scheme is chosen and are otherwise ignored.
+In addition, various simulation and rendering parameters can be set through the `simParams` and `renderParams` structs, respectively. Both are shown below with default values and brief descriptions. For in-depth descriptions, please take a look at documentation in `robotDescription.h`.
+Note that parameters with a `*` have additional explanations below. Parameters with a `^` only apply when an implicit numerical integration scheme is chosen and are otherwise ignored.
 ```c++
 struct simParams {
   double sim_time = 10;                              //    Total time for simulation [s]
   double dt = 1e-3;                                  //    Time step size [s]
-  renderer_type renderer = OPENGL;                   // *  Renderer type
-  int render_every = 1;                              //    Rendering period
-                                                     //        Currently only for Magnum. TODO for OpenGL support.
-  string render_record_path;                         //    Rendering frames recording path (only for Magnum). 
-                                                     //        Does not record if render_record_path is an empty string.
-  bool show_mat_frames = false;                      //    Render material frames (only for OpenGL)
-  double render_scale = 1.0;                         //    Rendering scale
+  integratorMethod integrator = BACKWARD_EULER;      // *  Numerical integration scheme 
   double dtol = 1e-2;                                // *^ Dynamics tolerance [m/s]
   double ftol = 1e-4;                                // *^ Force tolerance
   int max_iter = 500;                                // ^  Maximum iterations for a time step
-  int adaptive_time_stepping = 0;                    // *^ Adaptive time stepping
-  int cmd_line_per = 1;                              //    Command line sim info output period
-  bool enable_2d_sim = false;                        //    Lock z and theta DOFs
   bool line_search = true;                           // ^  Enable line search method
-  numerical_integration_scheme nis = BACKWARD_EULER; // *  Numerical integration scheme 
-  int debug_verbosity = 1;                           //    Prints certain debug statements 
+  int adaptive_time_stepping = 0;                    // *^ Adaptive time stepping
+  bool enable_2d_sim = false;                        //    Lock z and theta DOFs
+};
+
+struct renderParams {
+  renderEngine renderer = OPENGL;                    // *  Renderer type
+  double render_scale = 1.0;                         //    Rendering scale
+  int cmd_line_per = 1;                              //    Command line sim info output period
+  int render_per = 1;                                //    Rendering period (only for Magnum)
+  string render_record_path;                         //    Rendering frames recording path (only for Magnum). 
+  bool show_mat_frames = false;                      //    Render material frames (only for OpenGL)
 };
 ```
 
 Detailed parameter explanations:
 
-- `renderer_type` - Determines the renderer. Currently, available options are
+- `renderer` - Determines the renderer. Currently, available options are
   - `HEADLESS`: No rendering. Fastest and best for rapid data generation.
   - `OPENGL`: Fixed isometric view rendering. Renders centerlines of rods as simple lines. Relatively low computational overhead. Recommended for general use and debugging.
   - `MAGNUM`: Camera pose manipulation via mouse. Renders rod and environment with 3D meshes and shading. Higher computational overhead. Recommended only for creating videos.
 
-- `numerical_integration_scheme` - Determines the numerical integration scheme. Currently, available options are 
+- `integrator` - Determines the numerical integration scheme. Currently, available options are 
   - `FORWARD_EULER`: https://en.wikipedia.org/wiki/Euler_method
   - `VERLET_POSITION`: https://en.wikipedia.org/wiki/Verlet_integration
   - `BACKWARD_EULER`: https://en.wikipedia.org/wiki/Backward_Euler_method
