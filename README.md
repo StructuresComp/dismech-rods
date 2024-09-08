@@ -244,11 +244,15 @@ Detailed parameter explanations:
   - `VERLET_POSITION`: https://en.wikipedia.org/wiki/Verlet_integration
   - `BACKWARD_EULER`: https://en.wikipedia.org/wiki/Backward_Euler_method
   - `IMPLICIT_MIDPOINT`: https://en.wikipedia.org/wiki/Midpoint_method
-- `dtol` - A dynamics tolerance. Considers Newton's method to converge if the infinity norm of the DOF update divided by time step size for Cartesian positions is less than `dtol`: 
-  $$\frac{|| \Delta \mathbf q ||_{\infty}} {\Delta t} < \textrm{dtol}$$
+- `dtol` - A dynamics tolerance. Considers Newton's method to converge if the infinity norm of the DOF update at iter $n$ divided by time step size for Cartesian positions is less than `dtol`:
+  
+  $$\dfrac{|| \\Delta \mathbf q^{(n)} ||_{\infty}} {\Delta t} < \textrm{dtol}$$
+  
   Note that we ignore $\theta$ DOFs due to difference in scaling.
-- `ftol` - A force tolerance. Considers Newton's method to converge if the cumulative force norm becomes less than the starting force norm * `ftol`.
-  $$|| \mathbf f || < || \mathbf f_0 || * \textrm{ftol}$$
+- `ftol` - A force tolerance. Considers Newton's method to converge if the cumulative force norm at iteration $n$ becomes less than the starting force norm times `ftol`:
+  
+  $${||\mathbf{f^{(n)}}||} < {||\mathbf f^{(0)}||} \cdot \textrm{ftol}$$
+
 - `adaptive_time_stepping` - Turns on adaptive time stepping which halves the time step size if failure to converge after set number of iterations. Set to 0 to disable.
 
 ***
