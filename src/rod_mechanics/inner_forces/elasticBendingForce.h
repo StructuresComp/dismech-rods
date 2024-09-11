@@ -23,7 +23,7 @@ private:
     double norm_e, norm_f;
     double norm2_e, norm2_f;
     double D2kappa1Dthetae2, D2kappa1Dthetaf2, D2kappa2Dthetae2, D2kappa2Dthetaf2;
-    
+
     Vector3d t0, t1;
     Vector3d te, tf;
     Vector3d d1e, d1f, d2e, d2f;
@@ -65,7 +65,7 @@ private:
     Matrix3d D2kappa2Df2;
     Matrix3d D2kappa2DeDf;
     Matrix3d D2kappa2DfDe;
-        
+
     void crossMat(const Vector3d &a,Matrix3d &b);
 };
 

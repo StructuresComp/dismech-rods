@@ -84,8 +84,8 @@ magnumDERSimulationEnvironment::magnumDERSimulationEnvironment(const shared_ptr<
         .rotateX(-15.0_degf)
         .rotateY(30.0_degf);
     camera = std::make_unique<SceneGraph::Camera3D>(*camera_object);
-    camera->setProjectionMatrix(Matrix4::perspectiveProjection(45.0_degf, 
-                                                               Vector2{windowSize()}.aspectRatio(), 
+    camera->setProjectionMatrix(Matrix4::perspectiveProjection(45.0_degf,
+                                                               Vector2{windowSize()}.aspectRatio(),
                                                                0.01f, 100.0f));
 
     last_depth = ((camera->projectionMatrix() * camera->cameraMatrix()).transformPoint({}).z() + 1.0f) * 0.5f;

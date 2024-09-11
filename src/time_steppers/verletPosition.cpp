@@ -83,4 +83,3 @@ void verletPosition::updateSystemForNextTimeStep() {
         joint->ref_twist_old = joint->ref_twist;
     }
 }
-

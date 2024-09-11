@@ -15,7 +15,7 @@ void get_robot_description(int argc, char** argv,
                            shared_ptr<worldLogger>& logger,
                            simParams& sim_params,
                            renderParams& render_params) {
-    
+
     sim_params.dt = 2.5e-4;
     sim_params.sim_time = 5;
     sim_params.show_mat_frames = true;

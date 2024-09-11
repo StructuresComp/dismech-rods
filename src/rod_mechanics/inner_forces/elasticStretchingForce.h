@@ -23,9 +23,9 @@ private:
     Matrix3d M0;
     Matrix<double,1,3> v;
     Matrix<double,7,7> Jss;
-    
+
     double EA;
-    int ind, ind1, ind2;	
+    int ind, ind1, ind2;
 };
 
 #endif

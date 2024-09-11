@@ -7,4 +7,3 @@ enum solverType {
 };
 
 #endif
-

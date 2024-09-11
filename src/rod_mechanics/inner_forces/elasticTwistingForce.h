@@ -42,7 +42,7 @@ private:
     Matrix<double,11,11> Jtt;
     shared_ptr<MatrixXd> gradTwist;
     double GJ;
-    
+
     void crossMat(const Vector3d &a,Matrix3d &b);
 };
 

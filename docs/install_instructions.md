@@ -22,7 +22,7 @@ For other operating systems you should be able to modify the commands below appr
     cmake ..
     sudo make install
     ```
-    
+
 - [Flexible Collision Library (FCL)](https://github.com/flexible-collision-library/fcl)
   - The FCL library is used to perform both broadphase and narrowphase collision detection with each discrete rod represented as a chain of cylinders.
   - FCL depends on both Eigen (instructions above) and [libccd](https://github.com/danfis/libccd). Install [libccd](https://github.com/danfis/libccd) with the following commands, making sure to build shared libraries:
@@ -125,19 +125,19 @@ struct simParams {
   int cmd_line_per = 1;                              //    Command line sim info output period
   bool enable_2d_sim = false;                        //    Lock z and theta DOFs
   bool line_search = true;                           // ^  Enable line search method
-  numerical_integration_scheme nis = BACKWARD_EULER; // *  Numerical integration scheme 
-  int debug_verbosity = 1;                           //    Prints certain debug statements 
+  numerical_integration_scheme nis = BACKWARD_EULER; // *  Numerical integration scheme
+  int debug_verbosity = 1;                           //    Prints certain debug statements
 };
 ```
 
 Detailed parameter explanations:
 
-- `numerical_integration_scheme` - Determines the numerical integration scheme. Currently, available options are 
+- `numerical_integration_scheme` - Determines the numerical integration scheme. Currently, available options are
   - `FORWARD_EULER`: https://en.wikipedia.org/wiki/Euler_method
   - `VERLET_POSITION`: https://en.wikipedia.org/wiki/Verlet_integration
   - `BACKWARD_EULER`: https://en.wikipedia.org/wiki/Backward_Euler_method
   - `IMPLICIT_MIDPOINT`: https://en.wikipedia.org/wiki/Midpoint_method
-- `dtol` - A dynamics tolerance. Considers Newton's method to converge if the infinity norm of the DOF update divided by time step size for Cartesian positions is less than `dtol`: 
+- `dtol` - A dynamics tolerance. Considers Newton's method to converge if the infinity norm of the DOF update divided by time step size for Cartesian positions is less than `dtol`:
   $$\frac{|| \Delta \mathbf q ||_{\infty}} {\Delta t} < \textrm{dtol}$$
   Note that we ignore $\theta$ DOFs due to difference in scaling.
 - `ftol` - A force tolerance. Considers Newton's method to converge if the cumulative force norm becomes less than the starting force norm * `ftol`.

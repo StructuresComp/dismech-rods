@@ -49,7 +49,7 @@ If you'd like DisMech to support a new feature, feel free create an issue and we
 - [ ] Add knot tying case.
 
 #### Low priority
-- [ ] Possibly replace floor contact force (currently uses IMC) with modified mass method. 
+- [ ] Possibly replace floor contact force (currently uses IMC) with modified mass method.
 - [ ] Add detailed documentation for all examples.
 - [ ] Add more code examples for initializing limbs and joints.
 - [ ] Add time varying boundary condition logic.
@@ -86,7 +86,7 @@ For other operating systems you should be able to modify the commands below appr
     cmake ..
     sudo make install
     ```
-    
+
 - [Flexible Collision Library (FCL)](https://github.com/flexible-collision-library/fcl)
   - The FCL library is used to perform both broadphase and narrowphase collision detection with each discrete rod represented as a chain of cylinders.
   - FCL depends on both Eigen (instructions above) and [libccd](https://github.com/danfis/libccd). Install [libccd](https://github.com/danfis/libccd) with the following commands, making sure to build shared libraries:
@@ -132,7 +132,7 @@ For other operating systems you should be able to modify the commands below appr
     # This runs an installer, simply follow the instructions.
     sudo sh ./l_onemkl_p_2022.0.2.136.sh
     ```
-  - Add one of the following to your .bashrc so that cmake can find the MKL library. Change the directory accordingly if your MKL version is different. 
+  - Add one of the following to your .bashrc so that cmake can find the MKL library. Change the directory accordingly if your MKL version is different.
    Note that older versions require setting `MKLROOT` while newer versions require `MKL_DIR`.
    You can find out which one from the cmake error message.
     ```bash
@@ -150,17 +150,17 @@ For other operating systems you should be able to modify the commands below appr
 
 ### Optional Dependencies
 
-The default renderer used in DisMech is simply an isometric view of lines depicting rod centerlines using a barebones implementation based on OpenGL. 
+The default renderer used in DisMech is simply an isometric view of lines depicting rod centerlines using a barebones implementation based on OpenGL.
 For users wishing to have more advanced rendering with camera pose manipulation via the mouse, they can install and build with the Magnum Engine.
 Below is an example rendering.
 
-<div align="center"> <img src="media/magnum.gif" width="500"> </div> 
+<div align="center"> <img src="media/magnum.gif" width="500"> </div>
 
 - [Magnum Engine](https://magnum.graphics/)
-  - Before downloading magnum, users must first build and install Magnum's utility library [Corrade](https://magnum.graphics/corrade/). 
+  - Before downloading magnum, users must first build and install Magnum's utility library [Corrade](https://magnum.graphics/corrade/).
     Install instructions for various platforms can be found [here](https://doc.magnum.graphics/corrade/building-corrade.html).
   - After installing Corrade, install instructions for Magnum can similarly be found [here](https://doc.magnum.graphics/magnum/building.html).
-  - Finally, Magnum allows users to save each rendered frame as a png file which can be used to create videos such as `ffmpeg`. 
+  - Finally, Magnum allows users to save each rendered frame as a png file which can be used to create videos such as `ffmpeg`.
   For this feature, we must download and build [magnum-plugins](https://doc.magnum.graphics/magnum/building-plugins.html#building-plugins-manual) as follows.
      ```bash
     sudo apt-get install libpng-dev  # a dependency of magnum-plugins' PngImageConverter
@@ -211,15 +211,15 @@ In addition, various simulation and rendering parameters can be set through the 
 Note that parameters with a `*` have additional explanations below. Parameters with a `^` only apply when an implicit numerical integration scheme is chosen and are otherwise ignored.
 ```c++
 struct simParams {
-    
+
   struct maxIterations {
-      int num_iters = 500;                       //   Number of iters to attempt solve 
+      int num_iters = 500;                       //   Number of iters to attempt solve
       bool terminate_at_max = true;              //   Whether to terminate after num_iters
   };
-  
+
   double sim_time = 10;                          //    Total time for simulation [s]
   double dt = 1e-3;                              //    Time step size [s]
-  integratorMethod integrator = BACKWARD_EULER;  // *  Numerical integration scheme 
+  integratorMethod integrator = BACKWARD_EULER;  // *  Numerical integration scheme
   double dtol = 1e-2;                            // *^ Dynamics tolerance [m/s]
   double ftol = 1e-4;                            // *^ Force tolerance
   maxIterations max_iter;                        // ^  Maximum iterations for a time step
@@ -233,7 +233,7 @@ struct renderParams {
   double render_scale = 1.0;                     //    Rendering scale
   int cmd_line_per = 1;                          //    Command line sim info output period
   int render_per = 1;                            //    Rendering period (only for Magnum)
-  string render_record_path;                     //    Rendering frames recording path (only for Magnum). 
+  string render_record_path;                     //    Rendering frames recording path (only for Magnum).
   bool show_mat_frames = false;                  //    Render material frames (only for OpenGL)
 };
 ```
@@ -245,18 +245,18 @@ Detailed parameter explanations:
   - `OPENGL`: Fixed isometric view rendering. Renders centerlines of rods as simple lines. Relatively low computational overhead. Recommended for general use and debugging.
   - `MAGNUM`: Camera pose manipulation via mouse. Renders rod and environment with 3D meshes and shading. Higher computational overhead. Recommended only for creating videos.
 
-- `integrator` - Determines the numerical integration scheme. Currently, available options are 
+- `integrator` - Determines the numerical integration scheme. Currently, available options are
   - `FORWARD_EULER`: https://en.wikipedia.org/wiki/Euler_method
   - `VERLET_POSITION`: https://en.wikipedia.org/wiki/Verlet_integration
   - `BACKWARD_EULER`: https://en.wikipedia.org/wiki/Backward_Euler_method
   - `IMPLICIT_MIDPOINT`: https://en.wikipedia.org/wiki/Midpoint_method
 - `dtol` - A dynamics tolerance. Considers Newton's method to converge if the infinity norm of the DOF update at iter $n$ divided by time step size for Cartesian positions is less than `dtol`:
-  
+
   $$\dfrac{|| \Delta \mathbf q^{(n)} ||_{\infty}} {\Delta t} < \textrm{dtol}$$
-  
+
   Note that we ignore $\theta$ DOFs due to difference in scaling.
 - `ftol` - A force tolerance. Considers Newton's method to converge if the cumulative force norm at iteration $n$ becomes less than the starting force norm times `ftol`:
-  
+
   $${||\mathbf{f^{(n)}}||} < {||\mathbf f^{(0)}||} \cdot \textrm{ftol}$$
 
 - `adaptive_time_stepping` - Turns on adaptive time stepping which halves the time step size if failure to converge after set number of iterations. Set to 0 to disable.
@@ -267,8 +267,8 @@ If our work has helped your research, please cite the following paper.
 ```
 @article{choi2023dismech,
     author={Choi, Andrew and Jing, Ran and Sabelhaus, Andrew P. and Jawed, Mohammad Khalid},
-    journal={IEEE Robotics and Automation Letters}, 
-    title={DisMech: A Discrete Differential Geometry-Based Physical Simulator for Soft Robots and Structures}, 
+    journal={IEEE Robotics and Automation Letters},
+    title={DisMech: A Discrete Differential Geometry-Based Physical Simulator for Soft Robots and Structures},
     year={2024},
     volume={9},
     number={4},

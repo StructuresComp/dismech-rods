@@ -479,4 +479,3 @@ void elasticJoint::setMass() {
         mass += 0.5 * ref_len(i) * curr_limb->cross_sectional_area * curr_limb->rho;
     }
 }
-

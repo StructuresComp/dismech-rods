@@ -8,7 +8,7 @@ This folder contains all docs related files. This in addition to the .readthedoc
 Sphinx doesn’t have the ability to extract API documentation from C++ headers; this needs to be supplied using doxygen. Download and install it from the [official site](https://www.doxygen.nl/download.html). There are binaries for Windows, Linux (Ubuntu), and MacOS, alongside source which you can build yourself.
 
 #### Sphinx
-Sphinx can be installed by following the simple instructions from the [official site](https://www.sphinx-doc.org/en/master/usage/installation.html). Sphinx is written in Python, so you need to have python installed. You can simply install Sphinx through pip using 
+Sphinx can be installed by following the simple instructions from the [official site](https://www.sphinx-doc.org/en/master/usage/installation.html). Sphinx is written in Python, so you need to have python installed. You can simply install Sphinx through pip using
   ```bash
   pip install -U sphinx
   ```

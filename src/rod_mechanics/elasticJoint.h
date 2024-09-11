@@ -65,8 +65,8 @@ public:
     void updateRods();
 
     /**
-     * @brief A helper function to store miscellaneous info when the joint is updated. 
-     * 
+     * @brief A helper function to store miscellaneous info when the joint is updated.
+     *
      * @param node_num The id of the node that is being replaced by the joint node.
      * @param limb_idx The limb id of the replaced node.
      * @param remove_dof Whether the node is being attached to a preexisting joint.
@@ -84,22 +84,22 @@ public:
      * @brief The position of the joint node from the previous timestep.
      */
     Vector3d x0;
-    
+
     /**
      * @brief The position of the joint node during and after the current timestep.
      */
     Vector3d x;
-    
+
     /**
-     * @brief Position vector used to save state during line search. 
+     * @brief Position vector used to save state during line search.
      */
     Vector3d x_ls;
-    
+
     /**
      * @brief Velocity vector from the previous timestep.
      */
     Vector3d u0;
-    
+
     /**
      * @brief Velocity vector during and after the current timestep.
      */

@@ -178,4 +178,3 @@ void implicitTimeStepper::prepSystemForIteration() {
     baseTimeStepper::prepSystemForIteration();
     implicitTimeStepper::setZero();
 }
-
