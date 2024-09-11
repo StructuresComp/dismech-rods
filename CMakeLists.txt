@@ -131,7 +131,6 @@ else ()
             src/controllers/activeEntanglementController.cpp
 
             src/utils/utils.cpp
-            src/simulation_environments/magnumDERSimulationEnvironment.cpp
     )
     if (WITH_MAGNUM)
         target_sources(disMech PRIVATE
