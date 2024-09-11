@@ -9,6 +9,12 @@ extern ofstream logging_output_file;  // defined in main.cpp
  * custom external forces, and loggers in the function below.
  */
 
+
+// When true, enables smoother simulation that sacrifices accuracy for speed.
+// When false, enables stiffer simulation that sacrifices speed for accuracy.
+bool SIM_FAST = true;
+
+
 void get_robot_description(int argc, char** argv,
                            const shared_ptr<softRobots>& soft_robots,
                            const shared_ptr<forceContainer>& forces,
@@ -16,13 +22,28 @@ void get_robot_description(int argc, char** argv,
                            simParams& sim_params,
                            renderParams& render_params) {
 
-    sim_params.dt = 1e-3;
     sim_params.sim_time = 2;
     sim_params.ftol = 1e-3;
-    sim_params.adaptive_time_stepping = 7;
 
-    render_params.render_scale = 3.0;
+    render_params.render_scale = 5.0;
     render_params.show_mat_frames = true;
+
+    double delta;
+    double nu;
+
+    if (SIM_FAST) {
+        sim_params.dt = 2.5e-3;
+        sim_params.max_iter.num_iters = 15;
+        sim_params.max_iter.terminate_at_max = false;
+        delta = 5e-3;
+        nu = 1e-2;
+    }
+    else {
+        sim_params.dt = 1e-3;
+        sim_params.adaptive_time_stepping = 7;
+        delta = 5e-4;
+        nu = 5e-3;
+    }
 
     int n = 25;
     double radius = 5e-3;
@@ -37,10 +58,10 @@ void get_robot_description(int argc, char** argv,
     soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0, 0.10, 0.10), n, density, radius, young_mod, poisson, mu);
     soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0, -0.10, 0.10), n, density, radius, young_mod, poisson, mu);
     soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(-0.10, 0, 0.10), n, density, radius, young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(0.10, 0, 0.10), Vector3d(0.10, 0, 0.00), n, density, radius, young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(0.0, 0.10, 0.10), Vector3d(0.0, 0.10, 0.00), n, density, radius, young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(0.0, -0.10, 0.10), Vector3d(0.0, -0.10, 0.00), n, density, radius, young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(-0.10, 0, 0.10), Vector3d(-0.10, 0, 0.00), n, density, radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(0.10, 0, 0.10), Vector3d(0.10, 0, 0), n, density, radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(0, 0.10, 0.10), Vector3d(0, 0.10, 0), n, density, radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(0, -0.10, 0.10), Vector3d(0, -0.10, 0), n, density, radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(-0.10, 0, 0.10), Vector3d(-0.10, 0, 0), n, density, radius, young_mod, poisson, mu);
 
     // Create joints and connect appropriately
     soft_robots->createJoint(0, -1);
@@ -65,8 +86,6 @@ void get_robot_description(int argc, char** argv,
     forces->addForce(make_shared<gravityForce>(soft_robots, gravity_vec));
 
     // Add floor contact
-    double delta = 5e-4;
-    double nu = 5e-3;
     double floor_z = -0.10;
     forces->addForce(make_shared<floorContactForce>(soft_robots, delta, nu, floor_z));
 
