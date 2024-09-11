@@ -43,6 +43,7 @@ protected:
     double ftol;
     double dtol;
     int max_iter;
+    bool terminate_at_max;
     bool line_search;
     double orig_dt;
     bool adaptive_time_stepping;

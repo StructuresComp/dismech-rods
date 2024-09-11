@@ -211,24 +211,30 @@ In addition, various simulation and rendering parameters can be set through the 
 Note that parameters with a `*` have additional explanations below. Parameters with a `^` only apply when an implicit numerical integration scheme is chosen and are otherwise ignored.
 ```c++
 struct simParams {
-  double sim_time = 10;                              //    Total time for simulation [s]
-  double dt = 1e-3;                                  //    Time step size [s]
-  integratorMethod integrator = BACKWARD_EULER;      // *  Numerical integration scheme 
-  double dtol = 1e-2;                                // *^ Dynamics tolerance [m/s]
-  double ftol = 1e-4;                                // *^ Force tolerance
-  int max_iter = 500;                                // ^  Maximum iterations for a time step
-  bool line_search = true;                           // ^  Enable line search method
-  int adaptive_time_stepping = 0;                    // *^ Adaptive time stepping
-  bool enable_2d_sim = false;                        //    Lock z and theta DOFs
+    
+  struct maxIterations {
+      int num_iters = 500;                       //   Number of iters to attempt solve 
+      bool terminate_at_max = true;              //   Whether to terminate after num_iters
+  };
+  
+  double sim_time = 10;                          //    Total time for simulation [s]
+  double dt = 1e-3;                              //    Time step size [s]
+  integratorMethod integrator = BACKWARD_EULER;  // *  Numerical integration scheme 
+  double dtol = 1e-2;                            // *^ Dynamics tolerance [m/s]
+  double ftol = 1e-4;                            // *^ Force tolerance
+  maxIterations max_iter;                        // ^  Maximum iterations for a time step
+  bool line_search = true;                       // ^  Enable line search method
+  int adaptive_time_stepping = 0;                // *^ Adaptive time stepping
+  bool enable_2d_sim = false;                    //    Lock z and theta DOFs
 };
 
 struct renderParams {
-  renderEngine renderer = OPENGL;                    // *  Renderer type
-  double render_scale = 1.0;                         //    Rendering scale
-  int cmd_line_per = 1;                              //    Command line sim info output period
-  int render_per = 1;                                //    Rendering period (only for Magnum)
-  string render_record_path;                         //    Rendering frames recording path (only for Magnum). 
-  bool show_mat_frames = false;                      //    Render material frames (only for OpenGL)
+  renderEngine renderer = OPENGL;                // *  Renderer type
+  double render_scale = 1.0;                     //    Rendering scale
+  int cmd_line_per = 1;                          //    Command line sim info output period
+  int render_per = 1;                            //    Rendering period (only for Magnum)
+  string render_record_path;                     //    Rendering frames recording path (only for Magnum). 
+  bool show_mat_frames = false;                  //    Render material frames (only for OpenGL)
 };
 ```
 
@@ -246,7 +252,7 @@ Detailed parameter explanations:
   - `IMPLICIT_MIDPOINT`: https://en.wikipedia.org/wiki/Midpoint_method
 - `dtol` - A dynamics tolerance. Considers Newton's method to converge if the infinity norm of the DOF update at iter $n$ divided by time step size for Cartesian positions is less than `dtol`:
   
-  $$\dfrac{|| \\Delta \mathbf q^{(n)} ||_{\infty}} {\Delta t} < \textrm{dtol}$$
+  $$\dfrac{|| \Delta \mathbf q^{(n)} ||_{\infty}} {\Delta t} < \textrm{dtol}$$
   
   Note that we ignore $\theta$ DOFs due to difference in scaling.
 - `ftol` - A force tolerance. Considers Newton's method to converge if the cumulative force norm at iteration $n$ becomes less than the starting force norm times `ftol`:

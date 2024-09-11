@@ -92,10 +92,14 @@ struct simParams {
      * @brief Maximum number of iterations for a time step.
      *
      * Only used if an implicit integration scheme is used.
-     * Will stop the simulation if Newton's method fails to converge before max_iter
-     * number of iterations.
      */
-    int max_iter = 500;
+     struct maxIterations {
+         // The number of iterations to attempt Newton's method without converging.
+         int num_iters = 500;
+         // Whether to terminate at the end of num_iters, or continue to the next time step.
+         bool terminate_at_max = true;
+     };
+     maxIterations max_iter;
 
     /**
      * @brief Whether to enable line search.

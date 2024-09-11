@@ -9,7 +9,9 @@ implicitTimeStepper::implicitTimeStepper(const shared_ptr<softRobots>& soft_robo
                                          const simParams& sim_params,
                                          solverType solver_type) :
                                          baseTimeStepper(soft_robots, forces, sim_params),
-                                         ftol(sim_params.ftol), dtol(sim_params.dtol), max_iter(sim_params.max_iter),
+                                         ftol(sim_params.ftol), dtol(sim_params.dtol
+                                         ), max_iter(sim_params.max_iter.num_iters),
+                                         terminate_at_max(sim_params.max_iter.terminate_at_max),
                                          line_search(sim_params.line_search), orig_dt(sim_params.dt),
                                          adaptive_time_stepping_threshold(sim_params.adaptive_time_stepping),
                                          adaptive_time_stepping(sim_params.adaptive_time_stepping != 0),
