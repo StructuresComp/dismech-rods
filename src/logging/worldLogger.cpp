@@ -255,32 +255,22 @@ std::string worldLogger::getTimeDateFolderPath()
 // delete the log we created.
 void worldLogger::pruneEmptyLog()
 {
-    // debugging
-    if( verbosity >= 1 ){
-        std::cout << "Checking if the log file " << m_fileName << " is empty..." << std::endl;
-    }
+    std::cout << "Checking if the log file " << m_fileName << " is empty..." << std::endl;
     // TO-DO: pass this in as a parameter!
     int min_useful_samples = 50;
     // if(countLinesInLog() == num_lines_header){
     if( (countLinesInLog() - num_lines_header) < min_useful_samples){
-        if( verbosity >= 1 ){
-            std::cout << "Log file was (almost) empty, removing..." << std::endl;
-        }
+        std::cout << "Log file was (almost) empty, removing..." << std::endl;
         int unsuccessful = remove(m_fileName.c_str());
-        if( verbosity >= 1 ){
-            if( unsuccessful ){
-                std::cout << "Error removing file!" << std::endl;
-            }
-            else
-            {
-                std::cout << "File removal successful. Exiting now." << std::endl;
-            }
-
+        if( unsuccessful ){
+            std::cout << "Error removing file!" << std::endl;
+        }
+        else
+        {
+            std::cout << "File removal successful. Exiting now." << std::endl;
         }
     }
     else{
-        if( verbosity >= 1 ){
-            std::cout << "Log file contained data, not removing. Exiting now." << std::endl;
-        }
+        std::cout << "Log file contained data, not removing. Exiting now." << std::endl;
     }
 }

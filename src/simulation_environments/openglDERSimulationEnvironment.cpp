@@ -186,11 +186,9 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
             opengl_world->updateTimeStep(); // update time step
         }
         catch (std::runtime_error &excep) {
-            if (verbosity >= 1) {
-                std::cout << "Caught a runtime_error when trying to world->updateTimeStep: " << excep.what()
-                          << std::endl;
-                std::cout << "Attempting clean shutdown..." << std::endl;
-            }
+            std::cout << "Caught a runtime_error when trying to world->updateTimeStep: " << excep.what()
+                      << std::endl;
+            std::cout << "Attempting clean shutdown..." << std::endl;
             // superclass has the method
             cleanShutdown(opengl_logger, opengl_is_logging);
             // ugly to return here, but that's life
@@ -219,10 +217,7 @@ void openglDERSimulationEnvironment::derOpenGLDisplay(void) {
 
 // Simply start up openGL.
 void openglDERSimulationEnvironment::runSimulation() {
-    // let our users know to expect a GUI
-    if (verbosity >= 1) {
-        std::cout << "Using a graphical simulation environment. Opening an openGL window..." << std::endl;
-    }
+    std::cout << "Using a graphical simulation environment. Opening an openGL window..." << std::endl;
     // First, setup the openGL window
     initGL();
     // then start up openGL.

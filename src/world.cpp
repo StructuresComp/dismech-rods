@@ -104,7 +104,7 @@ bool world::simulationRunning() const {
         return true;
     else
     {
-        if (verbosity) cout << "Completed simulation." << endl;
+        cout << "Completed simulation." << endl;
         return false;
     }
 }

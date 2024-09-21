@@ -196,7 +196,7 @@ struct renderParams {
      */
     bool show_mat_frames = false;
 
-    int debug_verbosity = 1;  // currently, not used extensively
+    int debug_verbosity = 1;  // currently not used
 };
 
 

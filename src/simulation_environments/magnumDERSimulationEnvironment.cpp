@@ -267,10 +267,8 @@ void magnumDERSimulationEnvironment::runSimulation() {
             w_p->updateTimeStep();
         }
         catch (std::runtime_error &excep) {
-            if (verbosity >= 1) {
-                std::cout << "Caught a runtime_error when trying to world->updateTimeStep: " << excep.what() << std::endl;
-                std::cout << "Attempting clean shutdown..." << std::endl;
-            }
+            std::cout << "Caught a runtime_error when trying to world->updateTimeStep: " << excep.what() << std::endl;
+            std::cout << "Attempting clean shutdown..." << std::endl;
             cleanShutdown(logger_p, is_logging);
         }
 

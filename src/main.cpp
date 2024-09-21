@@ -7,11 +7,9 @@
 #include "simulation_environments/magnumDERSimulationEnvironment.h"
 #endif
 #include "robotDescription.h"
-#include "global_const.h"
 
 
 shared_ptr<world> my_world;
-int verbosity;
 
 // Hack: main creates the output file for logging
 ofstream logging_output_file;
@@ -31,8 +29,6 @@ int main(int argc,char *argv[])
     get_robot_description(argc, argv, soft_robots, forces, logger, sim_params, render_params);
 
     my_world = make_shared<world>(soft_robots, forces, sim_params);
-
-    verbosity = render_params.debug_verbosity;
 
     unique_ptr<derSimulationEnvironment> env;
     switch(render_params.renderer) {

@@ -14,7 +14,6 @@
 // Only operating on a DER world.
 class world;
 // Some constants used throughout this program
-#include "global_const.h"
 #include "filesystem_finder.hpp"
 #include "eigenIncludes.h"
 

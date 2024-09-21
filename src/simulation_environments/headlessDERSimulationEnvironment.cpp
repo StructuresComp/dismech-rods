@@ -16,9 +16,7 @@ headlessDERSimulationEnvironment::~headlessDERSimulationEnvironment() = default;
 void headlessDERSimulationEnvironment::runSimulation()
 {
 	// let our users know not to expect a GUI
-	if(verbosity >= 1){
-		std::cout << "Using a headless simulation environment. Reporting back at an interval of " << cmdline_per << " msec." << std::endl;
-	}
+    std::cout << "Using a headless simulation environment. Reporting back at an interval of " << cmdline_per << " msec." << std::endl;
 	// Before the simulation starts: log the x0 state.
 	if(is_logging){
 		logger_p->logWorldData();
@@ -31,10 +29,8 @@ void headlessDERSimulationEnvironment::runSimulation()
 			w_p->updateTimeStep(); // update time step
 		}
 		catch(std::runtime_error& excep){
-			if(verbosity >= 1){
-				std::cout << "Caught a runtime_error when trying to world->updateTimeStep: " << excep.what() << std::endl;
-				std::cout << "Attempting clean shutdown..." << std::endl;
-			}
+            std::cout << "Caught a runtime_error when trying to world->updateTimeStep: " << excep.what() << std::endl;
+            std::cout << "Attempting clean shutdown..." << std::endl;
 			// superclass has the method
 			cleanShutdown();
 			// ugly to return here, but that's life
