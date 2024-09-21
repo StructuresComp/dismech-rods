@@ -18,10 +18,10 @@ void get_robot_description(int argc, char** argv,
 
     sim_params.dt = 2.5e-4;
     sim_params.sim_time = 5;
-    sim_params.show_mat_frames = true;
     sim_params.enable_2d_sim = true;
     sim_params.adaptive_time_stepping = 20;
 
+    render_params.show_mat_frames = true;
     render_params.render_scale = 3.5;
 
     int n = 15;

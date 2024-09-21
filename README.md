@@ -198,7 +198,16 @@ Afterwards, simply run the simulation using the `dismech.sh` script.
 ```bash
 ./dismech.sh
 ```
+Modifications to the examples can be made easily by changing the parameters shown below.
 If you want to run another example, simply replace the `robotDescription.cpp` file and recompile.
+Users can also simply build all examples from the start. To do so, run the following:
+```bash
+mkdir build && cd build
+cmake -DCREATE_EXAMPLES=on ..
+make -j$(nproc)
+cd ..
+./examples/spider_case/spiderExample  # make sure to run from the main directory as some examples use relative paths
+```
 
 ***
 

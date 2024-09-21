@@ -54,7 +54,7 @@ void get_robot_description(int argc, char** argv,
 
     // Add kappa_bar controller
     string phi_ctrl_file_path = "src/controllers/openloop_control_trajectories/solved_phis.csv";
-    soft_robots->addController(make_shared<rodOpenLoopFileKappabarSetter>(soft_robots, phi_ctrl_file_path));
+    soft_robots->addController(make_shared<openLoopUniformKappaBarController>(soft_robots, phi_ctrl_file_path));
 
     // Set logger to record nodes
     string logfile_base = "log_files/real2sim";

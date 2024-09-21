@@ -63,7 +63,113 @@ include_directories(${SYMENGINE_INCLUDE_DIRS}
         ${GLUT_INCLUDE_DIRS}
         MKL::MKL)
 
+set(SOURCES
+        src/world.cpp
+
+        src/rod_mechanics/baseForce.cpp
+        src/rod_mechanics/elasticRod.cpp
+        src/rod_mechanics/elasticJoint.cpp
+        src/rod_mechanics/softRobots.cpp
+
+        src/rod_mechanics/forceContainer.cpp
+
+        src/rod_mechanics/inner_forces/inertialForce.cpp
+        src/rod_mechanics/inner_forces/elasticStretchingForce.cpp
+        src/rod_mechanics/inner_forces/elasticBendingForce.cpp
+        src/rod_mechanics/inner_forces/elasticTwistingForce.cpp
+
+        src/rod_mechanics/external_forces/gravityForce.cpp
+        src/rod_mechanics/external_forces/dampingForce.cpp
+        src/rod_mechanics/external_forces/floorContactForce.cpp
+        src/rod_mechanics/external_forces/symbolicEquations.cpp
+        src/rod_mechanics/external_forces/uniformConstantForce.cpp
+        src/rod_mechanics/external_forces/collisionDetector.cpp
+        src/rod_mechanics/external_forces/contactForce.cpp
+
+        src/time_steppers/baseTimeStepper.cpp
+
+        src/time_steppers/explicitTimeStepper.cpp
+        src/time_steppers/forwardEuler.cpp
+        src/time_steppers/verletPosition.cpp
+
+        src/time_steppers/implicitTimeStepper.cpp
+        src/time_steppers/backwardEuler.cpp
+        src/time_steppers/implicitMidpoint.cpp
+
+        src/solvers/baseSolver.cpp
+        src/solvers/pardisoSolver.cpp
+        src/solvers/dgbsvSolver.cpp
+
+        src/logging/worldLogger.cpp
+        src/logging/rodNodeLogger.cpp
+        src/logging/velocityLogger.cpp
+
+        src/simulation_environments/derSimulationEnvironment.cpp
+        src/simulation_environments/headlessDERSimulationEnvironment.cpp
+        src/simulation_environments/openglDERSimulationEnvironment.cpp
+
+        src/controllers/baseController.cpp
+        src/controllers/openLoopUniformKappaBarController.cpp
+        src/controllers/activeEntanglementController.cpp
+
+        src/utils/utils.cpp
+)
+
+if (WITH_MAGNUM)
+    set(SOURCES ${SOURCES}
+            src/simulation_environments/magnumDERSimulationEnvironment.cpp
+    )
+endif ()
+
+set(LINK_LIBRARIES
+        ${OPENGL_LIBRARIES}
+        ${GLUT_LIBRARIES}
+        MKL::MKL
+        Eigen3::Eigen
+        ${LAPACK_LIBRARIES}
+        ${BLAS_LIBRARIES}
+        lapack
+        stdc++fs
+        Threads::Threads
+        m
+        ${SYMENGINE_LIBRARIES}
+        fcl
+)
+
+if (WITH_MAGNUM)
+    set(LINK_LIBRARIES ${LINK_LIBRARIES}
+            Corrade::Main
+            Corrade::PluginManager
+            Corrade::Utility
+            Magnum::Application
+            Magnum::GL
+            Magnum::Magnum
+            Magnum::MeshTools
+            Magnum::Primitives
+            Magnum::SceneGraph
+            Magnum::Shaders
+            MagnumPlugins::PngImageConverter
+    )
+endif ()
+
+if (OpenMP_CXX_FOUND)
+    set (LINK_LIBRARIES ${LINK_LIBRARIES}
+            OpenMP::OpenMP_CXX
+    )
+endif ()
+
 link_directories(${MKL_LIBRARY_DIR})
+
+add_library(common_sources STATIC ${SOURCES})
+
+target_include_directories(common_sources PUBLIC
+        src
+)
+
+target_link_libraries(common_sources PUBLIC
+        ${LINK_LIBRARIES}
+)
+
 
 # Run with cmake --fresh -DCREATE_DOCS=ON .. only when documentation needs to be updated.
 
@@ -74,108 +180,50 @@ link_directories(${MKL_LIBRARY_DIR})
 # If wanting to rebuild source code, will have to cmake --fresh .. again.
 
 # Probably a good idea to split the documentation cmake process into its own directory later.
-option(CREATE_DOCS OFF)
+#option(CREATE_DOCS OFF)
+#
+#if (CREATE_DOCS)
+#    add_subdirectory("docs")
+#endif ()
 
-if (CREATE_DOCS)
-    add_subdirectory("docs")
-else ()
-    add_executable(disMech
-            src/main.cpp
-            src/world.cpp
-            robotDescription.cpp
+add_executable(disMech
+        src/main.cpp
+        robotDescription.cpp
+)
 
-            src/rod_mechanics/baseForce.cpp
-            src/rod_mechanics/elasticRod.cpp
-            src/rod_mechanics/elasticJoint.cpp
-            src/rod_mechanics/softRobots.cpp
+target_link_libraries(disMech PRIVATE
+        common_sources
+)
 
-            src/rod_mechanics/forceContainer.cpp
 
-            src/rod_mechanics/inner_forces/inertialForce.cpp
-            src/rod_mechanics/inner_forces/elasticStretchingForce.cpp
-            src/rod_mechanics/inner_forces/elasticBendingForce.cpp
-            src/rod_mechanics/inner_forces/elasticTwistingForce.cpp
+option(CREATE_EXAMPLES OFF)
 
-            src/rod_mechanics/external_forces/gravityForce.cpp
-            src/rod_mechanics/external_forces/dampingForce.cpp
-            src/rod_mechanics/external_forces/floorContactForce.cpp
-            src/rod_mechanics/external_forces/symbolicEquations.cpp
-            src/rod_mechanics/external_forces/uniformConstantForce.cpp
-            src/rod_mechanics/external_forces/collisionDetector.cpp
-            src/rod_mechanics/external_forces/contactForce.cpp
+set(EXAMPLES
+        examples/active_entanglement_case/activeEntanglementExample.cpp
+        examples/cantilever_case/cantileverExample.cpp
+        examples/friction_case/frictionExample.cpp
+        examples/helix_case/helixExample.cpp
+        examples/horton_case/hortonExample.cpp
+        examples/real2sim_case/real2simExample.cpp
+        examples/spider_case/spiderExample.cpp
+)
+if (CREATE_EXAMPLES)
+    # Loop through each example file and create a build target
+    foreach(EXAMPLE ${EXAMPLES})
+        get_filename_component(EXAMPLE_NAME ${EXAMPLE} NAME_WE)
+        get_filename_component(EXAMPLE_DIR ${EXAMPLE} DIRECTORY)
 
-            src/time_steppers/baseTimeStepper.cpp
-
-            src/time_steppers/explicitTimeStepper.cpp
-            src/time_steppers/forwardEuler.cpp
-            src/time_steppers/verletPosition.cpp
-
-            src/time_steppers/implicitTimeStepper.cpp
-            src/time_steppers/backwardEuler.cpp
-            src/time_steppers/implicitMidpoint.cpp
-
-            src/solvers/baseSolver.cpp
-            src/solvers/pardisoSolver.cpp
-            src/solvers/dgbsvSolver.cpp
-
-            src/logging/worldLogger.cpp
-            src/logging/rodNodeLogger.cpp
-            src/logging/velocityLogger.cpp
-
-            src/simulation_environments/derSimulationEnvironment.cpp
-            src/simulation_environments/headlessDERSimulationEnvironment.cpp
-            src/simulation_environments/openglDERSimulationEnvironment.cpp
-
-            src/controllers/baseController.cpp
-            src/controllers/openLoopUniformKappaBarController.cpp
-            src/controllers/activeEntanglementController.cpp
-
-            src/utils/utils.cpp
-    )
-    if (WITH_MAGNUM)
-        target_sources(disMech PRIVATE
-                src/simulation_environments/magnumDERSimulationEnvironment.cpp
+        add_executable(${EXAMPLE_NAME}
+                src/main.cpp
+                ${EXAMPLE}
         )
-    endif ()
 
-    target_include_directories(disMech PRIVATE
-            src
-    )
-
-    target_link_libraries(disMech PRIVATE
-            ${OPENGL_LIBRARIES}
-            ${GLUT_LIBRARIES}
-            MKL::MKL
-            Eigen3::Eigen
-            ${LAPACK_LIBRARIES}
-            ${BLAS_LIBRARIES}
-
-            lapack
-
-            # gfortran
-            stdc++fs
-            Threads::Threads
-            m
-            ${SYMENGINE_LIBRARIES}
-            fcl
-    )
-    if (WITH_MAGNUM)
-        target_link_libraries(disMech PRIVATE
-                Corrade::Main
-                Corrade::PluginManager
-                Corrade::Utility
-                Magnum::Application
-                Magnum::GL
-                Magnum::Magnum
-                Magnum::MeshTools
-                Magnum::Primitives
-                Magnum::SceneGraph
-                Magnum::Shaders
+        set_target_properties(${EXAMPLE_NAME} PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/${EXAMPLE_DIR}
         )
-        target_link_libraries(disMech PRIVATE MagnumPlugins::PngImageConverter)
-    endif ()
 
-    if (OpenMP_CXX_FOUND)
-        target_link_libraries(disMech PUBLIC OpenMP::OpenMP_CXX)
-    endif ()
+        target_link_libraries(${EXAMPLE_NAME} PRIVATE
+            common_sources
+        )
+    endforeach()
 endif ()
