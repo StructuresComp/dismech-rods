@@ -27,6 +27,7 @@ int main(int argc,char *argv[])
     shared_ptr<worldLogger> logger = nullptr;
 
     get_robot_description(argc, argv, soft_robots, forces, logger, sim_params, render_params);
+    soft_robots->setup();
 
     my_world = make_shared<world>(soft_robots, forces, sim_params);
 

@@ -38,9 +38,6 @@ void get_robot_description(int argc, char** argv,
     soft_robots->createJoint(0, -1);
     soft_robots->addToJoint(0, 1, 0);
 
-    // This has to be called after all joints are declared
-    soft_robots->setup();
-
     // Fix one end
     soft_robots->lockEdge(0, 0);
 

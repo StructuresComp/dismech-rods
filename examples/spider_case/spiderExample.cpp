@@ -78,9 +78,6 @@ void get_robot_description(int argc, char** argv,
     soft_robots->createJoint(4, -1);
     soft_robots->addToJoint(4, 8, 0);
 
-    // This has to be called after all joints are declared
-    soft_robots->setup();
-
     // Add gravity with a slight x-axis perturbation
     Vector3d gravity_vec(1.0, 0.0, -9.8);
     forces->addForce(make_shared<gravityForce>(soft_robots, gravity_vec));
