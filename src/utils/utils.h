@@ -1,7 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "eigenIncludes.h"
+#include "globalDefinitions.h"
 #include <fstream>
 
 string convert_float_to_scientific_str(double d);

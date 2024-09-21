@@ -1,7 +1,7 @@
 #ifndef BASEFORCE_H
 #define BASEFORCE_H
 
-#include "eigenIncludes.h"
+#include "globalDefinitions.h"
 #include "softRobots.h"
 
 class baseTimeStepper;

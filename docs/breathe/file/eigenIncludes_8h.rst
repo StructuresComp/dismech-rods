@@ -1,4 +1,4 @@
-File eigenIncludes.h
+File globalDefinitions.h
 ====================
 
-.. doxygenfile:: eigenIncludes.h
+.. doxygenfile:: globalDefinitions.h

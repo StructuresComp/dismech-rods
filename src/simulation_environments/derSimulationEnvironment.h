@@ -12,8 +12,7 @@
 #define DER_SIMULATION_ENVIRONMENT_H
 
 // We'll need access to the world, and to Eigen classes.
-#include "robotDescription.h"
-#include "eigenIncludes.h"
+#include "globalDefinitions.h"
 #include "world.h"
 // The logging framework is separate from world.
 #include "logging/worldLogger.h"

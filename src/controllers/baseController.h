@@ -1,7 +1,7 @@
 #ifndef BASE_CONTROLLER_H
 #define BASE_CONTROLLER_H
 
-#include "eigenIncludes.h"
+#include "globalDefinitions.h"
 
 class elasticRod;
 

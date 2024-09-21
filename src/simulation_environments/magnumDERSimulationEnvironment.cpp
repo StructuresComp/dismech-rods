@@ -1,5 +1,5 @@
 #include "magnumDERSimulationEnvironment.h"
-#include "eigenIncludes.h"
+#include "globalDefinitions.h"
 
 
 /*

@@ -2,7 +2,7 @@
 #define SOFTROBOTS_H
 
 
-#include "eigenIncludes.h"
+#include "globalDefinitions.h"
 #include "elasticRod.h"
 #include "elasticJoint.h"
 

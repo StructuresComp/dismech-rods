@@ -207,7 +207,7 @@ In case you want to create a custom simulation environment, take a look at the p
 
 Model and environment parameters such as defining the soft structure(s) / robot(s), boundary conditions, forces, and logging are done solely in `robotDescription.cpp` to avoid large recompile times.
 
-In addition, various simulation and rendering parameters can be set through the `simParams` and `renderParams` structs, respectively. Both are shown below with default values and brief descriptions. For in-depth descriptions, please take a look at documentation in `robotDescription.h`.
+In addition, various simulation and rendering parameters can be set through the `simParams` and `renderParams` structs, respectively. Both are shown below with default values and brief descriptions. For in-depth descriptions, please take a look at documentation in `globalDefinitions.h`.
 Note that parameters with a `*` have additional explanations below. Parameters with a `^` only apply when an implicit numerical integration scheme is chosen and are otherwise ignored.
 ```c++
 struct simParams {

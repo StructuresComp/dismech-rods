@@ -15,7 +15,7 @@
 class world;
 // Some constants used throughout this program
 #include "filesystem_finder.hpp"
-#include "eigenIncludes.h"
+#include "globalDefinitions.h"
 
 // the C++ standard library
 #include <fstream> // for writing to a file

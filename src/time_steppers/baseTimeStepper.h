@@ -1,8 +1,7 @@
 #ifndef BASETIMESTEPPER_H
 #define BASETIMESTEPPER_H
 
-#include "eigenIncludes.h"
-#include "robotDescription.h"
+#include "globalDefinitions.h"
 #include "rod_mechanics/softRobots.h"
 #include "rod_mechanics/forceContainer.h"
 #include "controllers/baseController.h"

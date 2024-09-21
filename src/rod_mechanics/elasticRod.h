@@ -1,7 +1,7 @@
 #ifndef ELASTICROD_H
 #define ELASTICROD_H
 
-#include "eigenIncludes.h"
+#include "globalDefinitions.h"
 
 class elasticRod
 {

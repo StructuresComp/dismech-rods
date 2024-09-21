@@ -1,4 +1,4 @@
-#include "eigenIncludes.h"
+#include "globalDefinitions.h"
 #include "world.h"
 #include "logging/worldLogger.h"
 #include "simulation_environments/headlessDERSimulationEnvironment.h"
