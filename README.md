@@ -177,10 +177,31 @@ Below is an example rendering.
     make -j$(nproc)
     ```
   - For those wishing to customize the rendering settings, users can take a look and adjust the source code in `magnumDERSimulationEnvironment.cpp` accordingly.
+- [Pybind11](https://github.com/pybind/pybind11)
+  - DisMech also offers Python bindings via pybind11. Users can either install by source or via `pip install pybind11`.
+  Afterward, the bindings can be built as follows:
+    ```bash
+    mkdir build && cd build
+    cmake -DWITH_PYBIND=on ..
+    make -j$(nproc)
+    cd ..
+    pip install -e .  # this will install py_dismech
+    ```
+  - Note that when building with older versions of `MKL` with Python, it may be possible to run into the following [static linkage bug](https://bugs.launchpad.net/ubuntu/+source/intel-mkl/+bug/1947626).
+  Users can either upgrade their `MKL` version or specify their `LD_PRELOAD` explicitly to include the following .so files.
+    ```bash
+    export LD_PRELOAD=$MKL_LIB/libmkl_def.so.2:\
+                      $MKL_LIB/libmkl_avx2.so.2:\
+                      $MKL_LIB/libmkl_core.so.2:\
+                      $MKL_LIB/libmkl_intel_lp64.so.2:\
+                      $MKL_LIB/libmkl_intel_thread.so.2:\
+                      /usr/lib/x86_64-linux-gnu/libiomp5.so
+     ```
+  - All available bindings can be seen in `app.cpp`. Users can expect heavy development for expanding the python bindings as time goes on.
 
 ***
 
-### Running Examples
+### Running Examples in C++
 DisMech is setup so that simulation environments can be instantiated using a single cpp file called `robotDescription.cpp`.
 
 Several example of working DisMech simulations can be seen in the `examples/` directory.
@@ -214,6 +235,12 @@ in `/examples`, their Jacobian matrices are small enough that any amount of para
 simulation. Therefore, it is recommended to set `OMP_NUM_THREADS=1` (`dismech.sh` does this as automatically) and see if parallelization is worth it
 for larger systems through profiling.
 
+### Running Examples in Python
+
+Python versions of certain examples can be found in `py_examples/`. To run, simply run the provided scripts:
+```bash
+OMP_NUM_THREADS=1 python py_examples/spider_case/spiderExample.py
+```
 ***
 
 ### Creating Custom Simulation Environments
