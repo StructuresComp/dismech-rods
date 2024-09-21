@@ -186,14 +186,19 @@ target_link_libraries(common_sources PUBLIC
 #    add_subdirectory("docs")
 #endif ()
 
-add_executable(disMech
-        src/main.cpp
-        robotDescription.cpp
-)
+if (EXISTS ${CMAKE_SOURCE_DIR}/robotDescription.cpp)
+    add_executable(disMech
+            src/main.cpp
+            robotDescription.cpp
+    )
 
-target_link_libraries(disMech PRIVATE
-        common_sources
-)
+    target_link_libraries(disMech PRIVATE
+            common_sources
+    )
+else()
+    message(WARNING "No robotDescription.cpp found. No executable will be created.")
+endif()
+
 
 
 option(CREATE_EXAMPLES OFF)
