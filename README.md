@@ -206,8 +206,13 @@ mkdir build && cd build
 cmake -DCREATE_EXAMPLES=on ..
 make -j$(nproc)
 cd ..
-./examples/spider_case/spiderExample  # make sure to run from the main directory as some examples use relative paths
+# Make sure to run from the main directory as some examples use relative paths
+OMP_NUM_THREADS=1 ./examples/spider_case/spiderExample
 ```
+The Pardiso solver can be parallelized by setting the env variable `OMP_NUM_THREADS > 1`. For all the systems defined
+in `/examples`, their Jacobian matrices are small enough that any amount of parallelization actually slows down the
+simulation. Therefore, it is recommended to set `OMP_NUM_THREADS=1` (`dismech.sh` does this as automatically) and see if parallelization is worth it
+for larger systems through profiling.
 
 ***
 
