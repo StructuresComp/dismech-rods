@@ -48,7 +48,7 @@ double backwardEuler::newtonMethod(double dt) {
 
         // Solve equations of motion
         integrator();
-        if (line_search) lineSearch_gs(dt);
+        if (line_search) lineSearch(dt);
 
         // Apply Newton update
         double curr_dx;
@@ -91,7 +91,7 @@ double backwardEuler::newtonMethod(double dt) {
 }
 
 
-void backwardEuler::lineSearch_gs(double dt) {
+void backwardEuler::lineSearch(double dt) {
     // store current x
     for (auto& limb : limbs) {
         limb->x_ls = limb->x;
@@ -101,121 +101,92 @@ void backwardEuler::lineSearch_gs(double dt) {
     }
     // Initialize an interval for optimal learning rate alpha
     double amax = 2;
-    double amin = 1e-3;
-//    double amin = 1e-5;
+    double amin = 1e-3;    
     double al = 0;
     double au = 1;
-
     double a = 1;
 
     //compute the slope initially
     double q0 = 0.5 * pow(Force.norm(), 2);
     double dq0 = -(Force.transpose() * Jacobian * DX)(0);
 
-    bool success = false;
-    double m2 = 0.9;
-    double m1 = 0.1;
-    int iter_l = 0;
-    alpha = a;
-    while (!success) {
-        int limb_idx = 0;
-        for (auto& joint : joints) {
-            joint->x = joint->x_ls;
-        }
-        for (auto& limb : limbs) {
-            limb->x= limb->x_ls;
-            limb->updateNewtonX(dx, offsets[limb_idx], a);
-            limb_idx++;
-        }
-        prepSystemForIteration();
+    if (line_search_type == GOLDSTEIN){
+        bool success = false;
+        double m2 = 0.9;
+        double m1 = 0.1;
 
-        // Compute the forces
-        forces->computeForces(dt);
-
-        double q = 0.5 * pow(Force.norm(), 2);
-
-        double slope = (q - q0) / a;
-
-        if (slope >= m2 * dq0 && slope <= m1 * dq0) {
-            success = true;
-        }
-        else {
-            if (slope < m2 * dq0) {
-                al = a;
+        int iter_l = 0;
+        while (!success){            
+            int limb_idx = 0;
+            for (auto& joint : joints) {
+                joint->x = joint->x_ls;
+            }
+            
+            for (auto& limb : limbs) {
+                limb->x= limb->x_ls;
+                limb->updateNewtonX(dx, offsets[limb_idx], a);
+                limb_idx++;
+            }
+            prepSystemForIteration();
+            
+            // Compute the forces
+            forces->computeForces(dt);
+            double q = 0.5 * pow(Force.norm(), 2);
+            double slope = (q - q0) / a;
+            
+            if (slope >= m2 * dq0 && slope <= m1 * dq0) {
+                success = true;
             }
             else {
-                au = a;
+                if (slope < m2 * dq0) {
+                    al = a;
+                }
+                else {
+                    au = a;
+                }
+                if (au < amax) {
+                    a = 0.5 * (al + au);
+                }
+                else {
+                    a = 10 * a;
+                }
             }
-
-            if (au < amax) {
-                a = 0.5 * (al + au);
-            }
-            else {
-                a = 10 * a;
-            }
-        }
-        if (a > amax || a < amin) {
-            break;
-        }
-//        if (iter_l > 100) {
-//            break;
-//        }
-//        iter_l++;
-    }
-    for (auto& limb : limbs) {
-        limb->x = limb->x_ls;
-    }
-    for (auto& joint : joints) {
-        joint->x = joint->x_ls;
-    }
-    alpha = a;
-}
-
-
-void backwardEuler::lineSearch_wolfe(double dt) {
-    // store current x
-    for (auto& limb : limbs) {
-        limb->x_ls = limb->x;
-    }
-    for (auto& joint : joints) {
-        joint->x_ls = joint->x;
-    }
-    double c1 = 1e-4;
-    double c2 = 0.9;
-
-    //compute the slope initially
-    double q0 = 0.5 * pow(Force.norm(), 2);
-    double dq0 = -(Force.transpose() * Jacobian * DX)(0);
-    double a = 1;
-    alpha = a;
-    for (int i = 0; i < 10; i++)
-    {
-        int limb_idx = 0;
-        for (auto& joint : joints) {
-            joint->x = joint->x_ls;
-        }
-        for (auto& limb : limbs) {
-            limb->x= limb->x_ls;
-            limb->updateNewtonX(dx, offsets[limb_idx], a);
-            limb_idx++;
-        }
-        prepSystemForIteration();
-        // Compute the forces
-        forces->computeForcesAndJacobian(dt);
-        
-        double q = 0.5 * pow(Force.norm(), 2);
-
-        if (q <= q0 + c1 * alpha * dq0){
-            double dq = -(Force.transpose() * Jacobian * DX)(0);
-            if (dq >= c2 * dq0)
-            {
+            if (a > amax || a < amin) {
                 break;
             }
         }
-        a /= 2.0;
-
     }
-
+    else{
+        double c1 = 1e-4;
+        double c2 = 0.9;
+    
+        for (int i = 0; i < 10; i++)
+        {
+            int limb_idx = 0;
+            for (auto& joint : joints) {
+                joint->x = joint->x_ls;
+            }
+            for (auto& limb : limbs) {
+                limb->x= limb->x_ls;
+                limb->updateNewtonX(dx, offsets[limb_idx], a);
+                limb_idx++;
+            }
+            prepSystemForIteration();
+            // Compute the forces
+            forces->computeForcesAndJacobian(dt);
+            double q = 0.5 * pow(Force.norm(), 2);
+            
+            if (q <= q0 + c1 * alpha * dq0){
+                double dq = -(Force.transpose() * Jacobian * DX)(0);
+                if (dq >= c2 * dq0)
+                {
+                    break;
+                }
+            }
+            a /= 2.0;
+        }
+    }
+    
     for (auto& limb : limbs) {
         limb->x = limb->x_ls;
     }
@@ -224,6 +195,60 @@ void backwardEuler::lineSearch_wolfe(double dt) {
     }
     alpha = a;
 }
+
+
+// void backwardEuler::lineSearch_wolfe(double dt) {
+//     // store current x
+//     for (auto& limb : limbs) {
+//         limb->x_ls = limb->x;
+//     }
+//     for (auto& joint : joints) {
+//         joint->x_ls = joint->x;
+//     }
+//     double c1 = 1e-4;
+//     double c2 = 0.9;
+
+//     //compute the slope initially
+//     double q0 = 0.5 * pow(Force.norm(), 2);
+//     double dq0 = -(Force.transpose() * Jacobian * DX)(0);
+//     double a = 1;
+//     alpha = a;
+//     for (int i = 0; i < 10; i++)
+//     {
+//         int limb_idx = 0;
+//         for (auto& joint : joints) {
+//             joint->x = joint->x_ls;
+//         }
+//         for (auto& limb : limbs) {
+//             limb->x= limb->x_ls;
+//             limb->updateNewtonX(dx, offsets[limb_idx], a);
+//             limb_idx++;
+//         }
+//         prepSystemForIteration();
+//         // Compute the forces
+//         forces->computeForcesAndJacobian(dt);
+        
+//         double q = 0.5 * pow(Force.norm(), 2);
+
+//         if (q <= q0 + c1 * alpha * dq0){
+//             double dq = -(Force.transpose() * Jacobian * DX)(0);
+//             if (dq >= c2 * dq0)
+//             {
+//                 break;
+//             }
+//         }
+//         a /= 2.0;
+
+//     }
+
+//     for (auto& limb : limbs) {
+//         limb->x = limb->x_ls;
+//     }
+//     for (auto& joint : joints) {
+//         joint->x = joint->x_ls;
+//     }
+//     alpha = a;
+// }
 
 
 

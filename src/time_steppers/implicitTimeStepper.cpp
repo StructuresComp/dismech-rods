@@ -18,7 +18,7 @@ implicitTimeStepper::implicitTimeStepper(const shared_ptr<softRobots>& soft_robo
                                          solver_type(solver_type)
 {
     Jacobian = MatrixXd::Zero(freeDOF, freeDOF);
-    line_search_type = (sim_params.line_search_type == Golden)? Golden:Wolfe;
+    line_search_type = sim_params.ls;
 }
 
 

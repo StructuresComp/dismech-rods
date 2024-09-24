@@ -27,8 +27,8 @@ public:
     void prepSystemForIteration() override;
     virtual double newtonMethod(double dt) = 0;
     // virtual void lineSearch(double dt) = 0;
-    virtual void lineSearch_gs(double dt) = 0;
-    virtual void lineSearch_wolfe(double dt) = 0;
+    virtual void lineSearch(double dt) = 0;
+    // virtual void lineSearch_wolfe(double dt) = 0;
 
     // Utility variables for PARDISO solver.
     // Need to keep track of non-zero elements
