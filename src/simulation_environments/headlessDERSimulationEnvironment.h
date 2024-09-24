@@ -12,6 +12,7 @@ class headlessDERSimulationEnvironment : public derSimulationEnvironment
                                      const shared_ptr<worldLogger>& logger);
     ~headlessDERSimulationEnvironment() override;
 
+    void stepSimulation() override;
     void runSimulation() override;
 };
 

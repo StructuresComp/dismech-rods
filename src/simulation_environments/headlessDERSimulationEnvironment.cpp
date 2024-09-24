@@ -12,36 +12,26 @@ headlessDERSimulationEnvironment::headlessDERSimulationEnvironment(const shared_
 headlessDERSimulationEnvironment::~headlessDERSimulationEnvironment() = default;
 
 
-// Loop while world has yet to reach its final time.
-void headlessDERSimulationEnvironment::runSimulation()
-{
-	// let our users know not to expect a GUI
-    std::cout << "Using a headless simulation environment. Reporting back at an interval of " << cmdline_per << " msec." << std::endl;
-	// Before the simulation starts: log the x0 state.
-	if(is_logging){
-		logger_p->logWorldData();
-	}
-	// loop until done. The world knows its max time.
-	while ( w_p->simulationRunning() > 0)
-	{
-		// catch convergence errors
-		try {
-			w_p->updateTimeStep(); // update time step
-		}
-		catch(std::runtime_error& excep){
-            std::cout << "Caught a runtime_error when trying to world->updateTimeStep: " << excep.what() << std::endl;
-            std::cout << "Attempting clean shutdown..." << std::endl;
-			// superclass has the method
-			cleanShutdown();
-			// ugly to return here, but that's life
-			return;
-		}
+void headlessDERSimulationEnvironment::stepSimulation() {
+    try {
+        w_p->updateTimeStep();
+    }
+    catch(std::runtime_error& excep){
+        std::cout << "Caught a runtime_error when trying to world->updateTimeStep: " << excep.what() << std::endl;
+        std::cout << "Attempting clean shutdown..." << std::endl;
+        cleanShutdown();
+        return;
+    }
 
-		// log if specified.
-		if(is_logging){
-			logger_p->logWorldData();
-		}
-		// periodically report to the command line.
-		cmdlineOutputHelper();
-	}
+    if(is_logging){
+        logger_p->logWorldData();
+    }
+
+    cmdlineOutputHelper();
+}
+
+void headlessDERSimulationEnvironment::runSimulation() {
+	while (w_p->simulationRunning()) {
+        stepSimulation();
+    }
 }

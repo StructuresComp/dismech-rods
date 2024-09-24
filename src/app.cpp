@@ -71,8 +71,17 @@ public:
                 throw std::runtime_error("Unknown renderer type provided.");
         }
     }
+    bool simulationCompleted() {
+        return !my_world->simulationRunning();
+    }
 
-    void run() {
+    void stepSimulation() {
+        if (env) {
+            env->stepSimulation();
+        }
+    }
+
+    void runSimulation() {
         if (env) {
             env->runSimulation();
         }
@@ -94,7 +103,9 @@ PYBIND11_MODULE(py_dismech, m) {
             // Call the original function
             self.initialize(argc, argv.data());
         })
-        .def("run", &simulationManager::run)
+        .def("simulation_completed", &simulationManager::simulationCompleted)
+        .def("step_simulation", &simulationManager::stepSimulation)
+        .def("run_simulation", &simulationManager::runSimulation)
         .def_readwrite("soft_robots", &simulationManager::soft_robots)
         .def_readwrite("forces", &simulationManager::forces)
         .def_readwrite("sim_params", &simulationManager::sim_params)

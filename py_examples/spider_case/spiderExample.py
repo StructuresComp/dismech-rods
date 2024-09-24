@@ -27,6 +27,7 @@ sim_params.ftol = 1e-3
 
 render_params.render_scale = 5.0
 render_params.show_mat_frames = True
+render_params.renderer = py_dismech.OPENGL
 
 if SIM_FAST:
     sim_params.dt = 2.5e-3
@@ -85,4 +86,5 @@ add_force(floor_contact_force)
 
 # Initialize and run the simulation
 sim_manager.initialize(sys.argv)
-sim_manager.run()
+while not sim_manager.simulation_completed():
+    sim_manager.step_simulation()
