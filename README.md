@@ -41,8 +41,10 @@ Based on the [Discrete Elastic Rods](https://www.cs.columbia.edu/cg/pdfs/143-rod
 ### TODO
 If you'd like DisMech to support a new feature, feel free create an issue and we'll add it to the list here.
 
+#### Ongoing
+- [ ] Expand Python bindings. PR [#13](https://github.com/StructuresComp/dismech-rods/pull/13)
+
 #### High priority
-- [ ] Migrate API to Python via pybind11
 - [ ] Add extension control via natural length manipulation.
 - [ ] Add shell functionality.
 - [ ] Improve robustness of friction.
