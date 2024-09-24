@@ -7,10 +7,6 @@
 #include "rod_mechanics/forceContainer.h"
 #include "controllers/baseController.h"
 
-enum LineSearchType {
-    Golden,
-    Wolfe
-};
 
 class baseTimeStepper : public enable_shared_from_this<baseTimeStepper>
 {

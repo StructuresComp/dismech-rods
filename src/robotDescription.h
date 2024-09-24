@@ -30,6 +30,11 @@ typedef enum {FORWARD_EULER,
               IMPLICIT_MIDPOINT}
               numerical_integration_scheme;
 
+typedef enum {
+    GOLDSTEIN,
+    WOLFE
+} LineSearchType;
+
 
 struct simParams {
     double sim_time = 10;                              // Total time for simulation [s]
@@ -46,6 +51,8 @@ struct simParams {
     bool line_search = true;                           // Enable line search method
     int line_search_type = 0;
     numerical_integration_scheme nis = BACKWARD_EULER; // Numerical integration scheme*
+    LineSearchType ls = WOLFE;
+
     int debug_verbosity = 1;                           // Prints certain debug statements
 };
 

@@ -15,8 +15,7 @@ public:
     void updateSystemForNextTimeStep() override;
 
     double newtonMethod(double dt) override;
-    void lineSearch_gs(double dt) override;
-    void lineSearch_wolfe(double dt) override;
+    void lineSearch(double dt) override;
     
     double stepForwardInTime() override;
 
