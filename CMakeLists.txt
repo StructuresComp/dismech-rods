@@ -50,6 +50,14 @@ else ()
     message(STATUS "Building with Magnum disabled")
 endif ()
 
+option(WITH_PYBIND OFF)
+if (WITH_PYBIND)
+    find_package(pybind11 REQUIRED)
+else ()
+    message(STATUS "Building with pybind disabled")
+endif ()
+
+
 if (${HAVE_SYMENGINE_LLVM})
     message(STATUS "Testing SymEngine LLVM & SBML support - found")
 else ()
@@ -199,6 +207,18 @@ else()
     message(WARNING "No robotDescription.cpp found. No executable will be created.")
 endif()
 
+if (WITH_PYBIND)
+    pybind11_add_module(py_dismech
+            src/app.cpp
+    )
+    target_link_libraries(py_dismech PRIVATE
+            common_sources
+    )
+
+    set_target_properties(py_dismech PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/py_dismech"
+)
+endif()
 
 
 option(CREATE_EXAMPLES OFF)
