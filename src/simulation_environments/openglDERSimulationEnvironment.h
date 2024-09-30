@@ -22,22 +22,12 @@ class openglDERSimulationEnvironment : public derSimulationEnvironment
                                    const shared_ptr<worldLogger>& logger, int argc, char **argv);
     ~openglDERSimulationEnvironment() override;
 
-    /**
-     * Setup function, called SEPARATELY.
-     */
-    // void setup();
-
-    /**
-     * Start the simulation!
-     */
     void runSimulation() override;
+    void stepSimulation() override;
     static bool show_mat_frames;
     static double render_scale;
 
     protected:
-
-    // helper that initializes the OpenGL window
-    void initGL();
 
     // OpenGL calls this function to timestep the simulation and update the window.
     // GLUT is in C. A static method works here: uses openglWorld_p and openglWorldLogger_p.

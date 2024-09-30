@@ -53,4 +53,5 @@ add_force(gravity_force)
 
 # Initialize and run the simulation
 sim_manager.initialize(sys.argv)
-sim_manager.run()
+while not sim_manager.simulation_completed():
+    sim_manager.step_simulation()

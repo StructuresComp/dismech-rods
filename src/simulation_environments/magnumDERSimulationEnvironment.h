@@ -88,6 +88,7 @@ public:
     explicit magnumDERSimulationEnvironment(const shared_ptr<world>& m_world, const renderParams& render_params,
                    const shared_ptr<worldLogger>& logger, int argc, char **argv);
 
+    void stepSimulation() override;
     void runSimulation() override;
 
 private:
@@ -126,6 +127,10 @@ private:
     std::vector<std::unique_ptr<Object3D>> edges;
     std::vector<std::unique_ptr<CapsuleDrawable>> capsule_drawables;
     std::vector<std::unique_ptr<SceneGraph::Drawable3D>> misc_drawables;
+
+    PluginManager::Manager<Trade::AbstractImageConverter> manager;
+    Containers::Pointer<Trade::AbstractImageConverter> converter;
+    bool record_frames;
 
     Float last_depth;
     Vector2i last_position{-1};

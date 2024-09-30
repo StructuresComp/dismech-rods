@@ -40,6 +40,9 @@ class derSimulationEnvironment
      */
     virtual void runSimulation() = 0;
 
+    // Step the simulation one time step.
+    virtual void stepSimulation() = 0;
+
     protected:
 
     // A helper, to make the command line output (via cmdline_per) general to all simulation environments.

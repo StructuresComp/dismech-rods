@@ -89,6 +89,15 @@ magnumDERSimulationEnvironment::magnumDERSimulationEnvironment(const shared_ptr<
                                                                0.01f, 100.0f));
 
     last_depth = ((camera->projectionMatrix() * camera->cameraMatrix()).transformPoint({}).z() + 1.0f) * 0.5f;
+
+    record_frames = !render_record_path.empty();
+    if (record_frames) {
+        // Initialize the PNG image converter
+        converter = manager.loadAndInstantiate("PngImageConverter");
+        if (!converter) {
+            Error{} << "Cannot load the PngImageConverter plugin.";
+        }
+    }
 }
 
 Float magnumDERSimulationEnvironment::depthAt(const Vector2i &windowPosition) {
@@ -246,81 +255,72 @@ void magnumDERSimulationEnvironment::renderEdge(Eigen::Vector3d top_vertex,
     edges.back()->setTransformation(tf);
 }
 
+void magnumDERSimulationEnvironment::stepSimulation() {
+    static int curr_iter = -1;
+    try {
+        w_p->updateTimeStep();
+        curr_iter++;
+    }
+    catch (std::runtime_error &excep) {
+        std::cout << "Caught a runtime_error when trying to world->updateTimeStep: " << excep.what() << std::endl;
+        std::cout << "Attempting clean shutdown..." << std::endl;
+        cleanShutdown(logger_p, is_logging);
+    }
 
-void magnumDERSimulationEnvironment::runSimulation() {
-    int curr_iter = -1;
+    // Output info to cmdline
+    cmdlineOutputHelper();
 
-    PluginManager::Manager<Trade::AbstractImageConverter> manager;
-    Containers::Pointer<Trade::AbstractImageConverter> converter;
-    bool record_frames = !render_record_path.empty();
-    if (record_frames) {
-        // Initialize the PNG image converter
-        converter = manager.loadAndInstantiate("PngImageConverter");
-        if (!converter) {
-            Error{} << "Cannot load the PngImageConverter plugin.";
+    if (curr_iter % render_per != 0)
+        return;
+
+    capsule_drawables.clear();
+    edges.clear();
+
+    for (const auto &limb: w_p->soft_robots->limbs) {
+        float radius = limb->rod_radius;
+        for (int i = 0; i < limb->ne; i++) {
+            if (limb->isEdgeJoint[i] != 0) {
+                continue;
+            }
+            renderEdge(limb->getVertex(i+1),
+                       limb->getVertex(i),
+                       radius,
+                       Color3::fromHsv({210.0_degf, 0.75f, 1.0f}));
         }
     }
 
+    int n, l;
+    for (const auto &joint : w_p->soft_robots->joints) {
+        for (int i = 0; i < joint->ne; i++) {
+            n = joint->connected_nodes[i].first;
+            l = joint->connected_nodes[i].second;
+
+            renderEdge(w_p->soft_robots->limbs[l]->getVertex(n),
+                       joint->x,
+                       w_p->soft_robots->limbs[l]->rod_radius,
+                       Color3::fromHsv({240.0_degf, 0.75f, 1.0f}));
+        }
+    }
+    // Perform Magnum simulation loop
+    mainLoopIteration();
+
+    if (record_frames) {
+        // Capture the frame
+        Image2D image = GL::defaultFramebuffer.read(GL::defaultFramebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+
+        std::ostringstream filename;
+        filename << render_record_path << "frame_" << std::setw(5) << std::setfill('0') << curr_iter << ".png";
+
+        // Convert and save the image as a PNG file
+        if (!converter->convertToFile(image, filename.str())) {
+            Error{} << "Failed to save the image";
+        }
+    }
+}
+
+void magnumDERSimulationEnvironment::runSimulation() {
     while (w_p->simulationRunning()) {
-        curr_iter++;
-        try {
-            w_p->updateTimeStep();
-        }
-        catch (std::runtime_error &excep) {
-            std::cout << "Caught a runtime_error when trying to world->updateTimeStep: " << excep.what() << std::endl;
-            std::cout << "Attempting clean shutdown..." << std::endl;
-            cleanShutdown(logger_p, is_logging);
-        }
-
-        // Output info to cmdline
-        cmdlineOutputHelper();
-
-        if (curr_iter % render_per != 0)
-            continue;
-
-        capsule_drawables.clear();
-        edges.clear();
-
-        for (const auto &limb: w_p->soft_robots->limbs) {
-            float radius = limb->rod_radius;
-            for (int i = 0; i < limb->ne; i++) {
-                if (limb->isEdgeJoint[i] != 0) {
-                    continue;
-                }
-                renderEdge(limb->getVertex(i+1),
-                           limb->getVertex(i),
-                           radius,
-                           Color3::fromHsv({210.0_degf, 0.75f, 1.0f}));
-            }
-        }
-
-        int n, l;
-        for (const auto &joint : w_p->soft_robots->joints) {
-            for (int i = 0; i < joint->ne; i++) {
-                n = joint->connected_nodes[i].first;
-                l = joint->connected_nodes[i].second;
-
-                renderEdge(w_p->soft_robots->limbs[l]->getVertex(n),
-                           joint->x,
-                           w_p->soft_robots->limbs[l]->rod_radius,
-                           Color3::fromHsv({240.0_degf, 0.75f, 1.0f}));
-            }
-        }
-        // Perform Magnum simulation loop
-        mainLoopIteration();
-
-        if (record_frames) {
-            // Capture the frame
-            Image2D image = GL::defaultFramebuffer.read(GL::defaultFramebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-
-            std::ostringstream filename;
-            filename << render_record_path << "frame_" << std::setw(5) << std::setfill('0') << curr_iter << ".png";
-
-            // Convert and save the image as a PNG file
-            if (!converter->convertToFile(image, filename.str())) {
-                Error{} << "Failed to save the image";
-            }
-        }
+        stepSimulation();
     }
 }
 
