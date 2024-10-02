@@ -106,10 +106,10 @@ PYBIND11_MODULE(py_dismech, m) {
         .def("simulation_completed", &simulationManager::simulationCompleted)
         .def("step_simulation", &simulationManager::stepSimulation)
         .def("run_simulation", &simulationManager::runSimulation)
-        .def_readwrite("soft_robots", &simulationManager::soft_robots)
-        .def_readwrite("forces", &simulationManager::forces)
-        .def_readwrite("sim_params", &simulationManager::sim_params)
-        .def_readwrite("render_params", &simulationManager::render_params)
+        .def_readonly("soft_robots", &simulationManager::soft_robots)
+        .def_readonly("forces", &simulationManager::forces)
+        .def_readonly("sim_params", &simulationManager::sim_params)
+        .def_readonly("render_params", &simulationManager::render_params)
         .def_readwrite("logger", &simulationManager::logger);
 
     py::class_<softRobots, std::shared_ptr<softRobots>>(m, "SoftRobots")
@@ -131,9 +131,16 @@ PYBIND11_MODULE(py_dismech, m) {
         .def("applyInitialVelocities", &softRobots::applyInitialVelocities, py::arg("limb_idx"), py::arg("velocities"))
         .def("setup", &softRobots::setup)
         .def("addController", &softRobots::addController, py::arg("controller"))
-        .def_readwrite("limbs", &softRobots::limbs)
-        .def_readwrite("joints", &softRobots::joints)
-        .def_readwrite("controllers", &softRobots::controllers);
+        .def_readonly("limbs", &softRobots::limbs, py::return_value_policy::reference_internal)
+        .def_readonly("joints", &softRobots::joints);
+
+    py::class_<elasticRod, std::shared_ptr<elasticRod>>(m, "ElasticRod")
+        .def("get_vertex_pos", &elasticRod::getVertex)
+        .def("get_vertex_vel", &elasticRod::getVelocity)
+        .def("get_edge_theta", &elasticRod::getTheta)
+        .def("freeVertexBoundaryCondition", &elasticRod::freeVertexBoundaryCondition)
+        .def("setVertexBoundaryCondition", &elasticRod::setVertexBoundaryCondition)
+        .def("setThetaBoundaryCondition", &elasticRod::setThetaBoundaryCondition);
 
     // ====================================== Enum Definitions ============================================
     py::enum_<integratorMethod>(m, "IntegratorMethod")
