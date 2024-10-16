@@ -225,4 +225,8 @@ PYBIND11_MODULE(py_dismech, m) {
         .def(py::init<const std::shared_ptr<softRobots>&, double, double, double, double>(),
             py::arg("soft_robots"), py::arg("floor_delta"), py::arg("floor_slipTol"),
             py::arg("floor_z"), py::arg("floor_mu") = 0.0);
+    
+    py::class_<dampingForce, std::shared_ptr<dampingForce>, baseForce>(m, "DampingForce")
+        .def(py::init<const std::shared_ptr<softRobots>&, double>(),
+            py::arg("soft_robots"), py::arg("damping"));
 }
