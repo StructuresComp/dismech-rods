@@ -88,8 +88,40 @@ public:
     }
 };
 
+class PythonKappaBarController : public baseController
+{
+public:
+    typedef std::function<py::list(double, std::vector<double> const &, std::vector<double> const &)> callback_t;
+    PythonKappaBarController(const shared_ptr<softRobots>& softRobots, callback_t callback, int limb)
+    : baseController(softRobots->limbs) , callback_(callback), limb_idx(limb) {}
+    ~PythonKappaBarController() {}
+
+    void updateTimeStep(double dt) override {
+        baseController::updateTimeStep(dt);
+        std::vector<double> x(num_actuators),dx(num_actuators);
+        // TODO: get state, 
+        py::list values = callback_(current_time,x,dx);
+        std::vector<double> values_d(values.size());
+        for (std::size_t idx=0;idx<values.size();idx++) {
+            values_d.at(idx) = values[idx].attr("__float__")().cast<float>();
+        }
+        auto limb = limbs[limb_idx];
+        for (int i = 1; i < limb->ne; i++) {
+            for(int n = 0; n<2;n++) {
+                limb->kappa_bar(i, n) = values_d.at(n);
+            }
+        }
+    }
+protected:
+    callback_t callback_;
+    int limb_idx;
+};
 
 PYBIND11_MODULE(py_dismech, m) {
+    py::class_<baseController, std::shared_ptr<baseController>>(m, "baseController");
+
+    py::class_<PythonKappaBarController, baseController, std::shared_ptr<PythonKappaBarController>>(m, "PythonKappaBarController")
+        .def(py::init<const shared_ptr<softRobots>&, PythonKappaBarController::callback_t, int>());
     // Wrapper class for accessing dismech data and logic via pybind
     py::class_<simulationManager>(m, "SimulationManager")
         .def(py::init<>())
