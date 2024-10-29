@@ -12,12 +12,12 @@ from functools import partial
 
 sim_manager = py_dismech.SimulationManager()
 
-soft_robots = sim_manager.soft_robots
-sim_params = sim_manager.sim_params
-render_params = sim_manager.render_params
-create_joint = sim_manager.soft_robots.createJoint
-add_to_joint = sim_manager.soft_robots.addToJoint
-add_force = sim_manager.forces.addForce
+soft_robots = sim_manager.soft_robots # soft robot class
+sim_params = sim_manager.sim_params # simulation parameters
+render_params = sim_manager.render_params # render paramters
+create_joint = sim_manager.soft_robots.createJoint # function
+add_to_joint = sim_manager.soft_robots.addToJoint # function
+add_force = sim_manager.forces.addForce # external force
 
 ############################
 
@@ -26,11 +26,14 @@ sim_params.sim_time = 10
 sim_params.dtol = 1e-3
 sim_params.integrator = py_dismech.IMPLICIT_MIDPOINT
 
-render_params.render_scale = 5.0
-render_params.render_per = 5
+render_params.render_scale = 1.0
+render_params.render_per = 10
 
 # Read vertices describing helical shape from a file
 vertices = np.loadtxt(Path(__file__).parents[2] / 'examples/helix_case/helix_configuration.txt')
+
+vertices = np.zeros((101, 3))
+vertices[:, 2] = np.linspace(0, 1, 101)
 
 # Create the helix limb with custom configuration
 radius = 5e-3
@@ -51,7 +54,14 @@ soft_robots.lockEdge(0, 0)
 gravity_force = py_dismech.GravityForce(soft_robots, np.array([0.0, 0.0, -9.8]))
 add_force(gravity_force)
 
+
+
 # Initialize and run the simulation
 sim_manager.initialize(sys.argv)
+time = 0.0
 while not sim_manager.simulation_completed():
-    sim_manager.step_simulation()
+    # sim_manager.step_simulation()
+
+    input_dict = {"position" : np.array([[0, 0, time * 0.01, 0.0, 0.0], [0, 1, time * 0.01, 0.0, 0.0]])}
+    sim_manager.step_simulation(input_dict)
+    time += sim_params.dt

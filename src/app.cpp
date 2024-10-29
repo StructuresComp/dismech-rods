@@ -81,11 +81,35 @@ public:
         }
     }
 
+    // add the step function with the input variables
+    void stepSimulation(py::dict input_dict) {
+        for (auto item : input_dict) {
+            std::string key = py::str(item.first);
+            Eigen::MatrixXd values = item.second.cast<Eigen::MatrixXd>();
+
+            if (values.cols() == 1){
+                values.transposeInPlace();
+            }
+            if (key == "position"){
+                soft_robots->applyPositionBC(values);
+            } else if (key == "twist") {
+                soft_robots->applyTwistBC(values);
+            } else if (key == "curvature") {
+                soft_robots->applyCurvatureBC(values);
+            }
+        }
+        if (env) {
+            env->stepSimulation();
+        }
+    }
+
+
     void runSimulation() {
         if (env) {
             env->runSimulation();
         }
     }
+    
 };
 
 
@@ -104,7 +128,8 @@ PYBIND11_MODULE(py_dismech, m) {
             self.initialize(argc, argv.data());
         })
         .def("simulation_completed", &simulationManager::simulationCompleted)
-        .def("step_simulation", &simulationManager::stepSimulation)
+        .def("step_simulation", py::overload_cast<>(&simulationManager::stepSimulation))
+        .def("step_simulation", py::overload_cast<py::dict>(&simulationManager::stepSimulation))
         .def("run_simulation", &simulationManager::runSimulation)
         .def_readwrite("soft_robots", &simulationManager::soft_robots)
         .def_readwrite("forces", &simulationManager::forces)
