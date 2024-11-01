@@ -57,67 +57,47 @@ void softRobots::applyInitialVelocities(int limb_idx, const vector<Vector3d> &ve
     }
 }
 
-void softRobots::applyPositionBC(const MatrixXd &positions) {
-    // Positions: the first col is limb_idx, second col is node_idx, third col is x, fourth col is y, fifth col is z 
-    if (positions.cols() != 5) {
-        throw runtime_error("The positions matrix should have 5 columns!");
-    }
-
-    for (int i = 0; i < positions.rows(); i++) {
-        int limb_idx = positions(i, 0);
-        int node_idx = positions(i, 1);
+void softRobots::applyPositionBC(const Matrix<double, Dynamic, 5>  &delta_pos) {
+    // delta_pos: the first col is limb_idx, second col is node_idx, third col is dx, fourth col is dy, fifth col is dz
+    for (int i = 0; i < delta_pos.rows(); i++) {
+        int limb_idx = delta_pos(i, 0);
+        int node_idx = delta_pos(i, 1);
         if (limb_idx >= limbs.size() || node_idx >= limbs[limb_idx]->nv) {
             throw runtime_error("Invalid limb_idx or node_idx given!");
         }
-        
-        Vector3d pos = positions.row(i).segment(2, 3).transpose();
-        limbs[limb_idx]->x.segment(4*node_idx, 3) += pos;
+
+        Vector3d dpos = delta_pos.row(i).segment(2, 3).transpose();
+        limbs[limb_idx]->x.segment(4*node_idx, 3) += dpos;
     }
 }
 
-void softRobots::applyTwistBC(const MatrixXd &twists) {
-    // Twists: the first col is limb_idx, second col is node_idx, third col is theta 
-    if (twists.cols() != 3) {
-        throw runtime_error("The twist input matrix should have 3 columns!");
-    }
-
-    for (int i = 0; i < twists.rows(); i++) {
-        // the first col is limb_idx, second col is node_idx, third col is x, fourth col is y, fifth col is z 
-        int limb_idx = twists(i, 0);
-        int edge_idx = twists(i, 1);
+void softRobots::applyTwistBC(const Matrix<double, Dynamic, 3> &delta_twist) {
+    // Twists: the first col is limb_idx, second col is node_idx, third col is dtheta
+    for (int i = 0; i < delta_twist.rows(); i++) {
+        int limb_idx = delta_twist(i, 0);
+        int edge_idx = delta_twist(i, 1);
         if (limb_idx >= limbs.size() || edge_idx >= limbs[limb_idx]->ne) {
             throw runtime_error("Invalid limb_idx or edge_idx given!");
         }
-        
-        double theta = twists(i, 2);
-        limbs[limb_idx]->x(4*edge_idx + 3) += theta;
+
+        double dtheta = delta_twist(i, 2);
+        limbs[limb_idx]->x(4*edge_idx + 3) += dtheta;
     }
 }
 
-void softRobots::applyCurvatureBC(const MatrixXd &Curvatures) {
-    // Curvatures: the first col is limb_idx, second col is node_idx, third col is cx, fourth col is cy, fifth col is cz 
-    if (Curvatures.cols() != 4) {
-        throw runtime_error("The twist input matrix should have 3 columns!");
-    }
-
-    for (int i = 0; i < Curvatures.rows(); i++) {
-        // the first col is limb_idx, second col is node_idx, third col is x, fourth col is y, fifth col is z 
-        int limb_idx = Curvatures(i, 0);
-        int node_idx = Curvatures(i, 1);
+void softRobots::applyCurvatureBC(const Matrix<double, Dynamic, 4> &delta_curvatures) {
+    // Curvatures: the first col is limb_idx, second col is node_idx, third col is cx, fourth col is cy, fifth col is cz
+    for (int i = 0; i < delta_curvatures.rows(); i++) {
+        int limb_idx = delta_curvatures(i, 0);
+        int node_idx = delta_curvatures(i, 1);
         if (limb_idx >= limbs.size() || node_idx >= limbs[limb_idx]->ne || node_idx < 1) {
             throw runtime_error("Invalid limb_idx or edge_idx given!");
         }
 
-        // get material frames   
-        // Vector3d curvature = Curvatures.row(i).segment(2, 3).transpose();
-        double cx = Curvatures(i, 2);
-        double cy = Curvatures(i, 3);
+        // get material frames
+        double cx = delta_curvatures(i, 2);
+        double cy = delta_curvatures(i, 3);
 
-        // Vector3d m1e = limbs[limb_idx]->m1.row(node_idx - 1);
-        // Vector3d m2e = limbs[limb_idx]->m2.row(node_idx - 1);
-        // Vector3d m1f = limbs[limb_idx]->m1.row(node_idx);
-        // Vector3d m2f = limbs[limb_idx]->m2.row(node_idx);
-        
         limbs[limb_idx]->kappa_bar(i, 0) += cx;
         limbs[limb_idx]->kappa_bar(i, 1) += cy;
     }

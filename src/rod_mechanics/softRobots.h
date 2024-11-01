@@ -26,9 +26,9 @@ public:
 
     void lockEdge(int limb_idx, int edge_idx);
     void applyInitialVelocities(int limb_idx, const vector<Vector3d>& velocities);
-    void applyPositionBC(const MatrixXd &positions);
-    void applyTwistBC(const MatrixXd &twists);
-    void applyCurvatureBC(const MatrixXd &Curvatures);
+    void applyPositionBC(const Matrix<double, Dynamic, 5> &delta_pos);
+    void applyTwistBC(const Matrix<double, Dynamic, 3> &delta_twist);
+    void applyCurvatureBC(const Matrix<double, Dynamic, 4> &delta_curvature);
 
     void setup();
 
