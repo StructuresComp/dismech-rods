@@ -14,7 +14,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../")
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 set(MAGNUM_WITH_SDL2APPLICATION ON)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
-set(CMAKE_PREFIX_PATH "/home/dezhongt/.local/lib/python3.10/site-packages/pybind11/share/cmake/pybind11")
 
 # Per https://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html eigen should be used
 # with MKL LAPACK only with lp64 set. The default may be ILP64, which we don't want.
