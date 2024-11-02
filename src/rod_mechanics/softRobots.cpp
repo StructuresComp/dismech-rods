@@ -86,7 +86,7 @@ void softRobots::applyTwistBC(const Matrix<double, Dynamic, 3> &delta_twist) {
 }
 
 void softRobots::applyCurvatureBC(const Matrix<double, Dynamic, 4> &delta_curvatures) {
-    // Curvatures: the first col is limb_idx, second col is node_idx, third col is cx, fourth col is cy, fifth col is cz
+    // delta_curvatures: the first col is limb_idx, second col is node_idx, third col is cx, fourth col is cy
     for (int i = 0; i < delta_curvatures.rows(); i++) {
         int limb_idx = delta_curvatures(i, 0);
         int node_idx = delta_curvatures(i, 1);
@@ -94,7 +94,6 @@ void softRobots::applyCurvatureBC(const Matrix<double, Dynamic, 4> &delta_curvat
             throw runtime_error("Invalid limb_idx or edge_idx given!");
         }
 
-        // get material frames
         double cx = delta_curvatures(i, 2);
         double cy = delta_curvatures(i, 3);
 
