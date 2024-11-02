@@ -71,6 +71,7 @@ If you'd like DisMech to support a new feature, feel free create an issue and we
 There are some dependencies required prior to compilation.
 Instructions for macOS and Ubuntu are similar (presented below).
 For other operating systems you should be able to modify the commands below appropriately.
+There is also a docker build available (Thanks to PR #15!), with more instructions in `docker/README.md`.
 
 - **macOS**: Because this uses the MKL, it's not certain to run on Apple silicone.
 - **macOS**: If you're running a mac, it's highly recommended you use a package manager like [MacPorts](https://www.macports.org/install.php) or [homebrew](https://brew.sh/). Instructions below are for MacPorts.
