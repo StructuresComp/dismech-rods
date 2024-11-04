@@ -15,10 +15,13 @@ public:
     void updateSystemForNextTimeStep() override;
 
     double newtonMethod(double dt) override;
-    void lineSearch(double dt) override;
-    
+    double lineSearch(double dt) override;
+
     double stepForwardInTime() override;
 
+private:
+    double goldSteinLineSearch(double dt);
+    double wolfeLineSearch(double dt);
 };
 
 

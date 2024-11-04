@@ -12,13 +12,12 @@ implicitTimeStepper::implicitTimeStepper(const shared_ptr<softRobots>& soft_robo
                                          ftol(sim_params.ftol), dtol(sim_params.dtol
                                          ), max_iter(sim_params.max_iter.num_iters),
                                          terminate_at_max(sim_params.max_iter.terminate_at_max),
-                                         line_search(sim_params.line_search), orig_dt(sim_params.dt),
+                                         line_search_type(sim_params.line_search), orig_dt(sim_params.dt),
                                          adaptive_time_stepping_threshold(sim_params.adaptive_time_stepping),
                                          adaptive_time_stepping(sim_params.adaptive_time_stepping != 0),
                                          solver_type(solver_type)
 {
     Jacobian = MatrixXd::Zero(freeDOF, freeDOF);
-    line_search_type = sim_params.ls;
 }
 
 

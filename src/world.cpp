@@ -6,6 +6,7 @@ world::world(const shared_ptr<softRobots>& soft_robots,
              const simParams& sim_params) :
              soft_robots(soft_robots), forces(forces),
              time_step(0), curr_time(0.0), total_time(sim_params.sim_time) {
+
     // Declare inner elastic forces. These should never be optional.
     forces->addForce(make_shared<elasticStretchingForce>(soft_robots));
     forces->addForce(make_shared<elasticBendingForce>(soft_robots));
