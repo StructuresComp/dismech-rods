@@ -31,6 +31,11 @@ typedef enum {HEADLESS,
               MAGNUM}
               renderEngine;
 
+typedef enum {NO_LS,
+              GOLDSTEIN,
+              WOLFE}
+              lineSearchType;
+
 
 /**
  * @brief Parameters for simulation.
@@ -98,12 +103,19 @@ struct simParams {
     maxIterations max_iter;
 
     /**
-     * @brief Whether to enable line search.
+     * @brief The algorithm to use for line search.
      *
      * Only used if an implicit integration scheme is used.
      * Enables line search during Newton's method to adaptively set the step size.
+     *
+     * Available options currently are
+     *  - NO_LS:       Don't conduct line search.
+     *  - GOLDSTEIN:   Line search with Goldstein condition.
+     *                 https://en.wikipedia.org/wiki/Backtracking_line_search
+     *  - WOLFE:       Line search with Wolfe condition
+     *                 https://en.wikipedia.org/wiki/Wolfe_conditions
      */
-    bool line_search = true;
+    lineSearchType line_search = GOLDSTEIN;
 
     /**
      * @brief Adaptive time stepping.

@@ -267,7 +267,7 @@ struct simParams {
   double dtol = 1e-2;                            // *^ Dynamics tolerance [m/s]
   double ftol = 1e-4;                            // *^ Force tolerance
   maxIterations max_iter;                        // ^  Maximum iterations for a time step
-  bool line_search = true;                       // ^  Enable line search method
+  lineSearchType line_search = GOLDSTEIN;        // *^ Specify line search algorithm
   int adaptive_time_stepping = 0;                // *^ Adaptive time stepping
   bool enable_2d_sim = false;                    //    Lock z and theta DOFs
 };
@@ -294,6 +294,10 @@ Detailed parameter explanations:
   - `VERLET_POSITION`: https://en.wikipedia.org/wiki/Verlet_integration
   - `BACKWARD_EULER`: https://en.wikipedia.org/wiki/Backward_Euler_method
   - `IMPLICIT_MIDPOINT`: https://en.wikipedia.org/wiki/Midpoint_method
+- `lineSearchType` - Determines the line search method. Currently, available options are
+  - `NO_LS`: Do not use line search.
+  - `GOLDSTEIN`: https://en.wikipedia.org/wiki/Backtracking_line_search
+  - `WOLFE`: https://en.wikipedia.org/wiki/Wolfe_conditions
 - `dtol` - A dynamics tolerance. Considers Newton's method to converge if the infinity norm of the DOF update at iter $n$ divided by time step size for Cartesian positions is less than `dtol`:
 
   $$\dfrac{|| \Delta \mathbf q^{(n)} ||_{\infty}} {\Delta t} < \textrm{dtol}$$

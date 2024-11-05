@@ -174,6 +174,12 @@ PYBIND11_MODULE(py_dismech, m) {
         .value("MAGNUM", MAGNUM)
         .export_values();
 
+    py::enum_<lineSearchType>(m, "LineSearchType")
+        .value("NO_LS", NO_LS)
+        .value("GOLDSTEIN", GOLDSTEIN)
+        .value("WOLFE", WOLFE)
+        .export_values();
+
     // ===================================== Struct Definitions ============================================
     py::class_<simParams::maxIterations>(m, "MaxIterations")
         .def(py::init<>())
