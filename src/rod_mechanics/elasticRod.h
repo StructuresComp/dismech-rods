@@ -149,7 +149,7 @@ class elasticRod
      *
      * @return The (ne, 1) vector of all the thetas.
      */
-     VectorXd getThetas();
+    VectorXd getThetas();
 
     /**
      * @brief Density [kg/m^3]

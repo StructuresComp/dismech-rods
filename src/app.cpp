@@ -159,11 +159,8 @@ PYBIND11_MODULE(py_dismech, m) {
         .def("applyInitialVelocities", &softRobots::applyInitialVelocities, py::arg("limb_idx"),
              py::arg("velocities"))
         .def("setup", &softRobots::setup)
-        .def("addController", &softRobots::addController, py::arg("controller"))
         .def_readonly("limbs", &softRobots::limbs, py::return_value_policy::reference_internal)
-        .def_readonly("joints", &softRobots::joints,
-                      py::return_value_policy::reference_internal)
-        .def_readonly("controllers", &softRobots::controllers);
+        .def_readonly("joints", &softRobots::joints, py::return_value_policy::reference_internal);
 
     py::class_<elasticRod, std::shared_ptr<elasticRod>>(m, "ElasticRod")
         .def("getVertexPos", &elasticRod::getVertex)
