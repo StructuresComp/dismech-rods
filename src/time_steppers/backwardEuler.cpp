@@ -34,6 +34,9 @@ double backwardEuler::newtonMethod(double dt) {
             continue;
         }
 
+
+        // cout <<"iter: "<<iter<<" "<<normf <<" "<<normf0 * ftol<< endl;
+
         // If sim can't converge, apply adaptive time stepping if enabled.
         if (adaptive_time_stepping && iter != 0 && iter % adaptive_time_stepping_threshold == 0) {
             dt *= 0.5;
@@ -44,9 +47,12 @@ double backwardEuler::newtonMethod(double dt) {
             continue;
         }
 
+        // cout << "adaptive time passed" << endl;
         // Solve equations of motion
         integrator();
+        // cout << "integrator passed" << endl;
         alpha = lineSearch(dt);
+        // cout << "line search passed" << endl;
 
         // Apply Newton update
         double curr_dx;
@@ -162,7 +168,7 @@ double backwardEuler::goldSteinLineSearch(double dt) {
                 a = 10 * a;
             }
         }
-        if (a > amax || a < amin) {
+        if (a > amax || a < amin || abs(al-au) < 1e-6) {
             break;
         }
     }

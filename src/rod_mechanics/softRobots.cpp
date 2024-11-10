@@ -40,18 +40,22 @@ void softRobots::addToJoint(int joint_idx, int limb_idx, int m_node_idx) {
 
 
 void softRobots::lockEdge(int limb_idx, int edge_idx) {
+    if (limb_idx >= limbs.size() || edge_idx >= limbs[limb_idx]->ne) {
+        throw runtime_error("Invalid limb_idx or edge_idx given!");
+    }
     shared_ptr<elasticRod> limb = limbs[limb_idx];
+    
     limb->setVertexBoundaryCondition(limb->getVertex(edge_idx), edge_idx);
     limb->setVertexBoundaryCondition(limb->getVertex(edge_idx+1), edge_idx+1);
     limb->setThetaBoundaryCondition(0.0, edge_idx);
 }
 
-void softRobots::lockNode(int limb_idx, int node_idx) {
-    shared_ptr<elasticRod> limb = limbs[limb_idx];
-    limb->setVertexBoundaryCondition(limb->getVertex(edge_idx), edge_idx);
-    limb->setVertexBoundaryCondition(limb->getVertex(edge_idx+1), edge_idx+1);
-    limb->setThetaBoundaryCondition(theta, edge_idx);
-}
+// void softRobots::lockNode(int limb_idx, int node_idx) {
+//     shared_ptr<elasticRod> limb = limbs[limb_idx];
+//     limb->setVertexBoundaryCondition(limb->getVertex(edge_idx), edge_idx);
+//     limb->setVertexBoundaryCondition(limb->getVertex(edge_idx+1), edge_idx+1);
+//     limb->setThetaBoundaryCondition(theta, edge_idx);
+// }
 
 void softRobots::applyInitialVelocities(int limb_idx, const vector<Vector3d> &velocities) {
     shared_ptr<elasticRod> limb = limbs[limb_idx];
@@ -64,9 +68,6 @@ void softRobots::applyInitialVelocities(int limb_idx, const vector<Vector3d> &ve
     }
 }
 
-<<<<<<< Updated upstream
-void softRobots::applyPositionBC(const Matrix<double, Dynamic, 5> &delta_pos) {
-=======
 void softRobots::applyPositionBC(const Matrix<double, Dynamic, 5>  &poses) {
     // poses: the first col is limb_idx, second col is node_idx, third col is dx, fourth col is dy, fifth col is dz
     for (int i = 0; i < poses.rows(); i++) {
@@ -82,7 +83,6 @@ void softRobots::applyPositionBC(const Matrix<double, Dynamic, 5>  &poses) {
 }
 
 void softRobots::applyDeltaPositionBC(const Matrix<double, Dynamic, 5>  &delta_pos) {
->>>>>>> Stashed changes
     // delta_pos: the first col is limb_idx, second col is node_idx, third col is dx, fourth col is dy, fifth col is dz
     for (int i = 0; i < delta_pos.rows(); i++) {
         int limb_idx = delta_pos(i, 0);
