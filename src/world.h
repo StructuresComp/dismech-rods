@@ -3,27 +3,25 @@
 
 #include "globalDefinitions.h"
 
-#include "rod_mechanics/softRobots.h"
 #include "rod_mechanics/forceContainer.h"
+#include "rod_mechanics/softRobots.h"
 
 // include inner force classes
-#include "rod_mechanics/inner_forces/inertialForce.h"
-#include "rod_mechanics/inner_forces/elasticStretchingForce.h"
 #include "rod_mechanics/inner_forces/elasticBendingForce.h"
+#include "rod_mechanics/inner_forces/elasticStretchingForce.h"
 #include "rod_mechanics/inner_forces/elasticTwistingForce.h"
+#include "rod_mechanics/inner_forces/inertialForce.h"
 
 // include time stepper
-#include "time_steppers/forwardEuler.h"
-#include "time_steppers/verletPosition.h"
 #include "time_steppers/backwardEuler.h"
+#include "time_steppers/forwardEuler.h"
 #include "time_steppers/implicitMidpoint.h"
-
+#include "time_steppers/verletPosition.h"
 
 class world
 {
-public:
-    world(const shared_ptr<softRobots>& soft_robots,
-          const shared_ptr<forceContainer>& forces,
+  public:
+    world(const shared_ptr<softRobots>& soft_robots, const shared_ptr<forceContainer>& forces,
           const simParams& sim_params);
     ~world();
     void updateTimeStep();
@@ -40,7 +38,7 @@ public:
 
     shared_ptr<softRobots> soft_robots;
 
-private:
+  private:
     shared_ptr<forceContainer> forces;
     shared_ptr<baseTimeStepper> stepper;
 

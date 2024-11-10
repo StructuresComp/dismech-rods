@@ -1,19 +1,15 @@
 #include "collisionDetector.h"
 
-
-
 /*
  * We'll do collision detection using floats rather than doubles since it is
  * broadphase collision detection + for efficiency purposes.
  * The actual distance computation will be done using doubles later.
  */
 
-
-
-collisionDetector::collisionDetector(const shared_ptr<softRobots> &soft_robots, double col_limit,
-                                     double delta, bool self_contact) :
-                                    soft_robots(soft_robots), delta(delta), col_limit(col_limit),
-                                    self_contact(self_contact), a(0.0, 0.0, 1.0), num_collisions(0) {
+collisionDetector::collisionDetector(const shared_ptr<softRobots>& soft_robots, double col_limit,
+                                     double delta, bool self_contact)
+    : soft_robots(soft_robots), delta(delta), col_limit(col_limit), self_contact(self_contact),
+      a(0.0, 0.0, 1.0), num_collisions(0) {
     int index = 0;
     // First setup the limb edge ids. This has to be done
     // first otherwise memory locations may get rewritten
@@ -32,9 +28,11 @@ collisionDetector::collisionDetector(const shared_ptr<softRobots> &soft_robots, 
         cylinders.emplace_back();
 
         for (int i = 0; i < limb->ne; i++) {
-            // Just init a random length. This will be updated later whenever we do broadphase detection
-            // Also notice that we add a distance buffer to the radius for proper IMC force computation
-            shared_ptr<fcl::Cylinderf> shape = make_shared<fcl::Cylinderf>(limb->rod_radius + 0.5 * col_limit, 1.0);
+            // Just init a random length. This will be updated later whenever we
+            // do broadphase detection Also notice that we add a distance buffer
+            // to the radius for proper IMC force computation
+            shared_ptr<fcl::Cylinderf> shape =
+                make_shared<fcl::Cylinderf>(limb->rod_radius + 0.5 * col_limit, 1.0);
 
             // For each cylinder, set limb and node ids
             shape->setUserData(&(limb_edge_ids[index][i]));
@@ -54,7 +52,6 @@ collisionDetector::collisionDetector(const shared_ptr<softRobots> &soft_robots, 
     contact_ids.reserve(conservative_guess);
 }
 
-
 void collisionDetector::prepCylinders() {
     int index = 0;
     Eigen::Vector3f dist_vec;
@@ -64,15 +61,17 @@ void collisionDetector::prepCylinders() {
         for (int i = 0; i < limb->ne; i++) {
             edge = cylinders[index][i];
 
-            dist_vec = (limb->x.segment(4*(i+1), 3) - limb->x.segment(4*i, 3)).cast<float>();
+            dist_vec = (limb->x.segment(4 * (i + 1), 3) - limb->x.segment(4 * i, 3)).cast<float>();
             float dist = dist_vec.norm();
 
-            // Cast to derived class, so we can change cylinder length (from stretching)
-            shared_ptr<fcl::Cylinderf> x = (const shared_ptr<fcl::Cylinder<float>> &) edge->collisionGeometry();
+            // Cast to derived class, so we can change cylinder length (from
+            // stretching)
+            shared_ptr<fcl::Cylinderf> x =
+                (const shared_ptr<fcl::Cylinder<float>>&)edge->collisionGeometry();
             x->lz = dist;
 
             // Set position of edge
-            center = (limb->x.segment(4*i, 3)).cast<float>()  + 0.5 * dist_vec;
+            center = (limb->x.segment(4 * i, 3)).cast<float>() + 0.5 * dist_vec;
             edge->setTranslation(center);
 
             // Set orientation of edge
@@ -84,8 +83,7 @@ void collisionDetector::prepCylinders() {
     }
 }
 
-
-void collisionDetector::getRotMat(Eigen::Vector3f &b) {
+void collisionDetector::getRotMat(Eigen::Vector3f& b) {
     rot_mat.setIdentity();
     if (a == b) {
         return;
@@ -101,13 +99,10 @@ void collisionDetector::getRotMat(Eigen::Vector3f &b) {
     double c = a.dot(b);
 
     Eigen::Matrix3f kmat;
-    kmat << 0, -v(2), v(1),
-            v(2), 0, -v(0),
-            -v(1), v(0), 0;
+    kmat << 0, -v(2), v(1), v(2), 0, -v(0), -v(1), v(0), 0;
 
     rot_mat += kmat + kmat * kmat * (1.0 / (1.0 + c));
 }
-
 
 void collisionDetector::broadPhaseCollisionDetection() {
     num_collisions = 0;
@@ -122,7 +117,7 @@ void collisionDetector::broadPhaseCollisionDetection() {
     collision_data.request.num_max_contacts = 1e10;  // arbitrarily large number
     for (size_t i = 0; i < soft_robots->limbs.size(); i++) {
         auto m1 = collision_managers[i];
-        for (size_t j = i+1; j < soft_robots->limbs.size(); j++) {
+        for (size_t j = i + 1; j < soft_robots->limbs.size(); j++) {
             auto m2 = collision_managers[j];
 
             // Check collisions between different limbs
@@ -139,7 +134,8 @@ void collisionDetector::broadPhaseCollisionDetection() {
         }
     }
 
-    if (!self_contact) return;
+    if (!self_contact)
+        return;
 
     for (size_t i = 0; i < soft_robots->limbs.size(); i++) {
         auto m = collision_managers[i];
@@ -165,7 +161,6 @@ void collisionDetector::broadPhaseCollisionDetection() {
     }
 }
 
-
 bool collisionDetector::fixBound(double& x) {
     if (x > 1) {
         x = 1;
@@ -178,15 +173,14 @@ bool collisionDetector::fixBound(double& x) {
     return false;
 }
 
-
 void collisionDetector::lumelskyMinDist(int& idx1, int& idx2, int& idx3, int& idx4, int& idx5,
                                         int& idx6, double& dist, ConstraintType& constraint_type) {
 
     Vector3d x1s = soft_robots->limbs[idx5]->getVertex(idx1);
-    Vector3d x1e = soft_robots->limbs[idx5]->getVertex(idx1+1);
+    Vector3d x1e = soft_robots->limbs[idx5]->getVertex(idx1 + 1);
 
     Vector3d x2s = soft_robots->limbs[idx6]->getVertex(idx2);
-    Vector3d x2e = soft_robots->limbs[idx6]->getVertex(idx2+1);
+    Vector3d x2e = soft_robots->limbs[idx6]->getVertex(idx2 + 1);
 
     Vector3d e1 = x1e - x1s;
     Vector3d e2 = x2e - x2s;
@@ -216,7 +210,7 @@ void collisionDetector::lumelskyMinDist(int& idx1, int& idx2, int& idx3, int& id
     fixBound(t);
 
     // Constraint type classification
-    if ((t == 0 || t == 1) && (uf == 0 || uf == 1)) // p2p
+    if ((t == 0 || t == 1) && (uf == 0 || uf == 1))  // p2p
     {
         if (t == 0) {
             idx3 = idx1 + 1;
@@ -234,7 +228,7 @@ void collisionDetector::lumelskyMinDist(int& idx1, int& idx2, int& idx3, int& id
         };
         constraint_type = PointToPoint;
     }
-    else if (t == 0 || t == 1 || uf == 0 || uf == 1) //p2e
+    else if (t == 0 || t == 1 || uf == 0 || uf == 1)  // p2e
     {
         if (t == 0) {
             int temp = idx1;
@@ -269,16 +263,13 @@ void collisionDetector::lumelskyMinDist(int& idx1, int& idx2, int& idx3, int& id
         }
         constraint_type = PointToEdge;
     }
-    else
-    {
+    else {
         idx3 = idx1 + 1;
         idx4 = idx2 + 1;
         constraint_type = EdgeToEdge;
     }
     dist = (e1 * t - e2 * uf - e12).norm();
 }
-
-
 
 void collisionDetector::narrowPhaseCollisionDetection() {
     num_collisions = 0;
@@ -301,7 +292,8 @@ void collisionDetector::narrowPhaseCollisionDetection() {
         lumelskyMinDist(idx1, idx2, idx3, idx4, idx5, idx6, curr_dist, constraint_type);
 
         // Maybe we'll store this later
-        double centerline_to_centerline_dist = soft_robots->limbs[idx5]->rod_radius + soft_robots->limbs[idx6]->rod_radius;
+        double centerline_to_centerline_dist =
+            soft_robots->limbs[idx5]->rod_radius + soft_robots->limbs[idx6]->rod_radius;
         double contact_limit = centerline_to_centerline_dist + delta;
         double numerical_limit = centerline_to_centerline_dist - delta;
 
@@ -310,8 +302,7 @@ void collisionDetector::narrowPhaseCollisionDetection() {
         }
 
         if (curr_dist < contact_limit) {
-            contact_ids.emplace_back(idx1, idx2, idx3, idx4, idx5, idx6,
-                                     constraint_type,
+            contact_ids.emplace_back(idx1, idx2, idx3, idx4, idx5, idx6, constraint_type,
                                      (curr_dist > numerical_limit) ? NonPenetrated : Penetrated);
             num_collisions++;
         }

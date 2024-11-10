@@ -17,11 +17,11 @@
 // The logging framework is separate from world.
 #include "logging/worldLogger.h"
 
-// Abstract class: stores the world and optionally the logger to use for that world.
+// Abstract class: stores the world and optionally the logger to use for that
+// world.
 class derSimulationEnvironment
 {
-    public:
-
+  public:
     // TO-DO: add here...
     // max time until self-destruct
     // frequency of reporting to command line (per "VERBOSITY")
@@ -31,7 +31,8 @@ class derSimulationEnvironment
     virtual ~derSimulationEnvironment();
 
     /**
-     * Setup function, called SEPARATELY, as needed according to specific environment
+     * Setup function, called SEPARATELY, as needed according to specific
+     * environment
      */
     // virtual void setup() = 0;
 
@@ -43,22 +44,22 @@ class derSimulationEnvironment
     // Step the simulation one time step.
     virtual void stepSimulation() = 0;
 
-    protected:
-
-    // A helper, to make the command line output (via cmdline_per) general to all simulation environments.
-    // Note, must be called manually in a child's runSimulation!
-    // and annoyingly enough, to make compatible with GLUT's C implementation, need to have a
-    // static method that takes in the world, etc. to output.
+  protected:
+    // A helper, to make the command line output (via cmdline_per) general to
+    // all simulation environments. Note, must be called manually in a child's
+    // runSimulation! and annoyingly enough, to make compatible with GLUT's C
+    // implementation, need to have a static method that takes in the world,
+    // etc. to output.
     static void cmdlineOutputHelper(const shared_ptr<world>& s_world_p, int s_cmdline_per);
     // the non-static version will call the static one with our local variables.
     void cmdlineOutputHelper();
 
     // Helper to deal with clean shutdowns. Subclasses can override if desired,
     // but doing it in the superclass gives a basic example
-    // similarly, because of openGL, we need a static version here that takes in a pointer to the logger.
+    // similarly, because of openGL, we need a static version here that takes in
+    // a pointer to the logger.
     static void cleanShutdown(shared_ptr<worldLogger> s_logger_p, bool s_is_logging);
     void cleanShutdown();
-
 
     // Locals, see constructor for info
     shared_ptr<world> w_p = nullptr;

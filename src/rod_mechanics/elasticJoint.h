@@ -7,15 +7,16 @@
 class elasticJoint
 {
     // NOTE: probably could move more stuff to private
-public:
+  public:
     /**
      * @brief Constructor for initializing an elastic joint.
      *
-     * @param node The node on the elastic rod that will be converted to a joint.
+     * @param node The node on the elastic rod that will be converted to a
+     * joint.
      * @param limb_idx The limb id of the rod.
      * @param limbs Container of limbs.
      */
-    elasticJoint(int node, int limb_idx, const vector<shared_ptr<elasticRod>> &limbs);
+    elasticJoint(int node, int limb_idx, const vector<shared_ptr<elasticRod>>& limbs);
 
     /**
      * @brief The node id of the joint.
@@ -39,7 +40,8 @@ public:
      * "replaced" with the joint node. Therefore, we assume that nodes
      * that are connected to a joint have positional overlap.
      *
-     * @param node_num The id of the node that is being replaced by the joint node.
+     * @param node_num The id of the node that is being replaced by the joint
+     * node.
      * @param limb_idx The limb id of the replaced node.
      */
     void addToJoint(int node_num, int limb_idx);
@@ -65,13 +67,15 @@ public:
     void updateRods();
 
     /**
-     * @brief A helper function to store miscellaneous info when the joint is updated.
+     * @brief A helper function to store miscellaneous info when the joint is
+     * updated.
      *
-     * @param node_num The id of the node that is being replaced by the joint node.
+     * @param node_num The id of the node that is being replaced by the joint
+     * node.
      * @param limb_idx The limb id of the replaced node.
-     * @param remove_dof Whether the node is being attached to a preexisting joint.
-     * For example, this value should only be False for the very first node being
-     * converted to a joint node at initialization.
+     * @param remove_dof Whether the node is being attached to a preexisting
+     * joint. For example, this value should only be False for the very first
+     * node being converted to a joint node at initialization.
      */
     void updateConnectedNodes(int node_num, int limb_idx, bool remove_dof);
 
@@ -86,7 +90,8 @@ public:
     Vector3d x0;
 
     /**
-     * @brief The position of the joint node during and after the current timestep.
+     * @brief The position of the joint node during and after the current
+     * timestep.
      */
     Vector3d x;
 
@@ -206,9 +211,9 @@ public:
     void prepareForIteration();
     void setup();
 
-private:
-
-    // TODO: perhaps move these to util.h later? The logic is largely repeated in elasticRod.h
+  private:
+    // TODO: perhaps move these to util.h later? The logic is largely repeated
+    // in elasticRod.h
     void setMass();
     void setReferenceLength();
     void getRefTwist();
@@ -219,10 +224,10 @@ private:
     void computeTangent();
     void createReferenceDirectors();
     void computeMaterialDirectors();
-    static void rotateAxisAngle(Vector3d &v,const Vector3d &z,const double &theta);
-    static void parallelTransport(const Vector3d &d1_1,const Vector3d &t1, const Vector3d &t2, Vector3d &d1_2);
-    static double signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n);
+    static void rotateAxisAngle(Vector3d& v, const Vector3d& z, const double& theta);
+    static void parallelTransport(const Vector3d& d1_1, const Vector3d& t1, const Vector3d& t2,
+                                  Vector3d& d1_2);
+    static double signedAngle(const Vector3d& u, const Vector3d& v, const Vector3d& n);
 };
-
 
 #endif

@@ -1,7 +1,7 @@
 #include "robotDescription.h"
 
-
 extern ofstream logging_output_file;  // defined in main.cpp
+
 /*
  * Dynamic Cantilever Example
  *
@@ -9,11 +9,9 @@ extern ofstream logging_output_file;  // defined in main.cpp
  * custom external forces, and loggers in the function below.
  */
 
-void get_robot_description(int argc, char** argv,
-                           const shared_ptr<softRobots>& soft_robots,
+void get_robot_description(int argc, char** argv, const shared_ptr<softRobots>& soft_robots,
                            const shared_ptr<forceContainer>& forces,
-                           shared_ptr<worldLogger>& logger,
-                           simParams& sim_params,
+                           shared_ptr<worldLogger>& logger, simParams& sim_params,
                            renderParams& render_params) {
 
     sim_params.dt = 5e-2;
@@ -31,7 +29,8 @@ void get_robot_description(int argc, char** argv,
     double poisson = 0.5;
 
     // Create a beam along the x-y plane
-    soft_robots->addLimb(Vector3d(0.0, 0.0, 0.0), Vector3d(1.0, 0.0, 0.0), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(0.0, 0.0, 0.0), Vector3d(1.0, 0.0, 0.0), n, density, radius,
+                         young_mod, poisson);
 
     // Fix one end
     soft_robots->lockEdge(0, 0);

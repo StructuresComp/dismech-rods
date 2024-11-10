@@ -5,15 +5,13 @@
 
 class forwardEuler : public explicitTimeStepper
 {
-public:
+  public:
     forwardEuler(const shared_ptr<softRobots>& soft_robots,
-                 const shared_ptr<forceContainer>& forces,
-                 const simParams& sim_params);
+                 const shared_ptr<forceContainer>& forces, const simParams& sim_params);
     ~forwardEuler() override;
 
     double stepForwardInTime() override;
     void updateSystemForNextTimeStep() override;
 };
-
 
 #endif

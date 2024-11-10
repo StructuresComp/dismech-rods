@@ -1,18 +1,16 @@
 #ifndef BASETIMESTEPPER_H
 #define BASETIMESTEPPER_H
 
-#include "globalDefinitions.h"
-#include "rod_mechanics/softRobots.h"
-#include "rod_mechanics/forceContainer.h"
 #include "controllers/baseController.h"
-
+#include "globalDefinitions.h"
+#include "rod_mechanics/forceContainer.h"
+#include "rod_mechanics/softRobots.h"
 
 class baseTimeStepper : public enable_shared_from_this<baseTimeStepper>
 {
-public:
+  public:
     baseTimeStepper(const shared_ptr<softRobots>& m_soft_robots,
-                    const shared_ptr<forceContainer>& m_forces,
-                    const simParams& sim_params);
+                    const shared_ptr<forceContainer>& m_forces, const simParams& sim_params);
     virtual ~baseTimeStepper();
 
     void addForce(int ind, double p, int limb_idx);
@@ -37,8 +35,7 @@ public:
     vector<int> offsets;
     int iter = 0;
 
-
-protected:
+  protected:
     int mappedInd, mappedInd1, mappedInd2;
     int offset;
     double dt;

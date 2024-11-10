@@ -6,12 +6,13 @@
 class elasticRod
 {
     // NOTE: probably could move more stuff to private
-    public:
+  public:
     /**
-     * @brief Constructor for initializing a straight rod as defined by a start and end point.
+     * @brief Constructor for initializing a straight rod as defined by a start
+     * and end point.
      *
-     * @param limb_idx The limb id of the rod. Should be a +1 increment of the previous rod.
-     *                 Other inputs will lead to undefined behavior.
+     * @param limb_idx The limb id of the rod. Should be a +1 increment of the
+     * previous rod. Other inputs will lead to undefined behavior.
      * @param start The start point of the rod.
      * @param end The end point of the rod.
      * @param num_nodes The number of nodes the rod will be discretized to.
@@ -21,14 +22,15 @@ class elasticRod
      * @param poisson_ratio Poisson's ratio of the rod.
      * @param mu Friction coefficient of the rod.
      */
-    elasticRod(int limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
-               double rho, double rod_radius, double youngs_modulus, double poisson_ratio, double mu);
+    elasticRod(int limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes, double rho,
+               double rod_radius, double youngs_modulus, double poisson_ratio, double mu);
 
     /**
-     * @brief Constructor for initializing an arbitrarily shaped rod as by a list of nodes.
+     * @brief Constructor for initializing an arbitrarily shaped rod as by a
+     * list of nodes.
      *
-     * @param limb_idx The limb id of the rod. Should be a +1 increment of the previous rod.
-     *                 Other inputs will lead to undefined behavior.
+     * @param limb_idx The limb id of the rod. Should be a +1 increment of the
+     * previous rod. Other inputs will lead to undefined behavior.
      * @param nodes A list of consecutive nodes of the rod.
      * @param rho Density of the rod [kg/m^3].
      * @param rod_radius Radius of the rod [m].
@@ -63,7 +65,7 @@ class elasticRod
      *
      * @return The max non-theta dx update.
      */
-    double updateNewtonX(double *dx, int offset, double alpha=1.0);
+    double updateNewtonX(double* dx, int offset, double alpha = 1.0);
 
     /**
      * @brief Updates the current guess at the start of a Newton loop.
@@ -93,7 +95,8 @@ class elasticRod
     int limb_idx;
 
     /**
-     * @brief Get the a (3,) position vector of the kth node from current timestep.
+     * @brief Get the a (3,) position vector of the kth node from current
+     * timestep.
      *
      * @param k Index of the node.
      *
@@ -102,7 +105,8 @@ class elasticRod
     Vector3d getVertex(int k);
 
     /**
-     * @brief Get the a (3,) position vector of the kth node from previous timestep.
+     * @brief Get the a (3,) position vector of the kth node from previous
+     * timestep.
      *
      * @param k Index of the node.
      *
@@ -111,7 +115,8 @@ class elasticRod
     Vector3d getPreVertex(int k);
 
     /**
-     * @brief Get the a (3,) velocity vector of the kth node from current timestep.
+     * @brief Get the a (3,) velocity vector of the kth node from current
+     * timestep.
      *
      * @param k Index of the node.
      *
@@ -291,7 +296,8 @@ class elasticRod
     MatrixXd kb;
 
     /**
-     * @brief d1 axes of the reference frame during current iteration / timestep.
+     * @brief d1 axes of the reference frame during current iteration /
+     * timestep.
      *
      * @details Matrix of size (ne, 3).
      *
@@ -301,7 +307,8 @@ class elasticRod
     MatrixXd d1;
 
     /**
-     * @brief d2 axes of the reference frame during current iteration / timestep.
+     * @brief d2 axes of the reference frame during current iteration /
+     * timestep.
      *
      * @details Matrix of size (ne, 3).
      *
@@ -313,7 +320,8 @@ class elasticRod
     /**
      * @brief d1 axes of the reference frame from last timestep.
      *
-     * @details Matrix of size (ne, 3). Updated by time stepper classes when completing a timestep.
+     * @details Matrix of size (ne, 3). Updated by time stepper classes when
+     * completing a timestep.
      *
      * @see Used in computeTimeParallel().
      */
@@ -322,7 +330,8 @@ class elasticRod
     /**
      * @brief d2 axes of the reference frame from last timestep.
      *
-     * @details Matrix of size (ne, 3). Updated by time stepper classes when completing a timestep.
+     * @details Matrix of size (ne, 3). Updated by time stepper classes when
+     * completing a timestep.
      */
     MatrixXd d2_old;
 
@@ -405,18 +414,21 @@ class elasticRod
      * @brief Discrete curvatures of the inner nodes.
      *
      * @details Matrix of size (nv, 2). Note that the first and outer values
-     * are not used since curvatures only apply to nodes with two edges attached.
+     * are not used since curvatures only apply to nodes with two edges
+     * attached.
      *
      * @see Updated in computeKappa().
      */
     MatrixXd kappa;
 
     /**
-     * @brief Discrete curvatures of the inner nodes in the resting configuration.
+     * @brief Discrete curvatures of the inner nodes in the resting
+     * configuration.
      *
      * @details Matrix of size (nv, 2). Note that the first and outer values
-     * are not used since curvatures only apply to nodes with two edges attached.
-     * Is assumed to the curvatures computed from the initial starting configuration.
+     * are not used since curvatures only apply to nodes with two edges
+     * attached. Is assumed to the curvatures computed from the initial starting
+     * configuration.
      */
     MatrixXd kappa_bar;
 
@@ -425,7 +437,7 @@ class elasticRod
      *
      * @details Size of ndof. Value of 1 if constrained and 0 if unconstrained.
      */
-    int *isConstrained;
+    int* isConstrained;
 
     /**
      * @brief Getter function for seeing if a certain DOF is constrained.
@@ -440,25 +452,26 @@ class elasticRod
      * @brief Array that maps unconstrained to full indices.
      *
      * @details Size of uncons. Maps unconstrained DOF (by array location)
-     * to their respective index in x vector. The index of the mapping is stored.
+     * to their respective index in x vector. The index of the mapping is
+     * stored.
      *
      * @see Gets updated in updateMap() and in setup().
      * @see The inverse mapping is fullToUnconsMap.
      */
-    int *unconstrainedMap;
+    int* unconstrainedMap;
 
     /**
      * @brief Array that maps full to unconstrained indices.
      *
      * @details Size of ndof. Maps all DOF from x vector (by array location) to
-     * their respective in unconstrained vector. The index of the mapping is stored.
-     * If a certain DOF is constrained, then the value at that array location
-     * is undefined.
+     * their respective in unconstrained vector. The index of the mapping is
+     * stored. If a certain DOF is constrained, then the value at that array
+     * location is undefined.
      *
      * @see Gets updated in updateMap() and in setup().
      * @see The inverse mapping is unconstrainedMap.
      */
-    int *fullToUnconsMap;
+    int* fullToUnconsMap;
 
     /**
      * @brief Updates the constraint map according to current values of
@@ -471,7 +484,8 @@ class elasticRod
      */
     void updateMap();
 
-    // TODO: perhaps split this up into a createJoint() and attachToJoint() functions.
+    // TODO: perhaps split this up into a createJoint() and attachToJoint()
+    // functions.
     /**
      * @brief Converts a node on the rod to a joint node.
      *
@@ -510,7 +524,7 @@ class elasticRod
      *
      * @see Updated in addJoint().
      */
-    int *isDOFJoint;
+    int* isDOFJoint;
 
     /**
      * @brief Array indicating whether or not a certain node is a joint node.
@@ -519,7 +533,7 @@ class elasticRod
      *
      * @see Updated in addJoint().
      */
-    int *isNodeJoint;
+    int* isNodeJoint;
 
     /**
      * @brief Array indicating whether or not a certain edge is adjacent
@@ -529,7 +543,7 @@ class elasticRod
      *
      * @see Updated in addJoint().
      */
-    int *isEdgeJoint;
+    int* isEdgeJoint;
 
     /**
      * @brief Vector of joint node and limb ids.
@@ -550,10 +564,11 @@ class elasticRod
     Vector3d getTangent(int k);
     double getTheta(int k);
 
-private:
+  private:
     void setupMap();
 
-    // TODO: perhaps move these to util.h later as most can be defined as staticmethods?
+    // TODO: perhaps move these to util.h later as most can be defined as
+    // staticmethods?
     void setup(const vector<Vector3d>& nodes);
     void computeElasticStiffness();
     void setMass();
@@ -566,9 +581,10 @@ private:
     void computeTwistBar();
     void computeEdgeLen();
     void getRefTwist();
-    static void parallelTransport(const Vector3d &d1_1,const Vector3d &t1,const Vector3d &t2,Vector3d &d1_2);
-    static void rotateAxisAngle(Vector3d &v, const Vector3d &z, const double &theta);
-    static double signedAngle(const Vector3d &u, const Vector3d &v, const Vector3d &n);
+    static void parallelTransport(const Vector3d& d1_1, const Vector3d& t1, const Vector3d& t2,
+                                  Vector3d& d1_2);
+    static void rotateAxisAngle(Vector3d& v, const Vector3d& z, const double& theta);
+    static double signedAngle(const Vector3d& u, const Vector3d& v, const Vector3d& n);
 };
 
 #endif

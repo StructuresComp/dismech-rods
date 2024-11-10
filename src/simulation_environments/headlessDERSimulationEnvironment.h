@@ -6,9 +6,9 @@
 
 class headlessDERSimulationEnvironment : public derSimulationEnvironment
 {
-    public:
-
-    headlessDERSimulationEnvironment(const shared_ptr<world>& m_world, const renderParams& render_params,
+  public:
+    headlessDERSimulationEnvironment(const shared_ptr<world>& m_world,
+                                     const renderParams& render_params,
                                      const shared_ptr<worldLogger>& logger);
     ~headlessDERSimulationEnvironment() override;
 
@@ -16,4 +16,4 @@ class headlessDERSimulationEnvironment : public derSimulationEnvironment
     void runSimulation() override;
 };
 
-#endif // HEADLESS_DER_SIMULATION_ENVIRONMENT_H
+#endif  // HEADLESS_DER_SIMULATION_ENVIRONMENT_H

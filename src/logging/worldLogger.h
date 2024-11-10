@@ -18,29 +18,32 @@ class world;
 #include "globalDefinitions.h"
 
 // the C++ standard library
-#include <fstream> // for writing to a file
+#include <fstream>  // for writing to a file
 
 // Abstract class: although we'll do a constructor to set the
 // path prefix variable, children have to define what to log and how.
 class worldLogger
 {
-    public:
-
+  public:
     /**
      * Constructor for a worldLogger.
      * @param fileNamePrefix a string to prepend to the file name
-     * @param logfile_base the base folder for the logs (actual folder will be organized by year, month, day)
+     * @param logfile_base the base folder for the logs (actual folder will be
+     * organized by year, month, day)
      * @param df ref to an ofstream to use to write to the data file
-     * @param per integer, period to write to log file (only once per this many samples)
+     * @param per integer, period to write to log file (only once per this many
+     * samples)
      */
     worldLogger(std::string fileNamePrefix, std::string logfile_base, std::ofstream& df, int per);
-    worldLogger(std::string fileNamePrefix, std::string file_name_suffix, std::string logfile_base, std::ofstream& df, int per);
+    worldLogger(std::string fileNamePrefix, std::string file_name_suffix, std::string logfile_base,
+                std::ofstream& df, int per);
     ~worldLogger();
 
     /**
      * Setup function, separate from constructor, for various tasks
-     * that are prevented from taking place before construction, e.g. init-ing the log file.
-     * Note, calls a secondary (abstract) function for the children to do whatever else they'd need
+     * that are prevented from taking place before construction, e.g. init-ing
+     * the log file. Note, calls a secondary (abstract) function for the
+     * children to do whatever else they'd need
      */
     void setup();
 
@@ -58,8 +61,7 @@ class worldLogger
      */
     void pruneEmptyLog();
 
-    protected:
-
+  protected:
     /**
      * A helper for initializing the file, so that we can get
      * dynamic binding to functions in the classes which inherit from this.
@@ -74,7 +76,8 @@ class worldLogger
 
     // Function for header for this logger.
     // must be defined by subclasses.
-    // May need knowledge of the world (example, how many vertices -> number of columns.)
+    // May need knowledge of the world (example, how many vertices -> number of
+    // columns.)
     virtual std::string getLogHeader() = 0;
 
     // Function for data to be returned by this logger.
@@ -84,7 +87,8 @@ class worldLogger
     virtual std::string getLogData() = 0;
 
     // helper for detecting empty log files (and pruning them).
-    // one way is to count the number of lines in the file and match it against the number of lines in the header
+    // one way is to count the number of lines in the file and match it against
+    // the number of lines in the header
     int countLinesInLog();
     int num_lines_header;
 
@@ -100,12 +104,12 @@ class worldLogger
     // and the final filename will have the minute and seconds attached.
     std::string getTimeDateFolderPath();
 
-    // A file stream reference. Here, empty constructor, will be replaced in constructor.
+    // A file stream reference. Here, empty constructor, will be replaced in
+    // constructor.
     std::ofstream& m_dataFile;
 
     // and an update period. This many samples in between writes to log file.
     int period;
-
 };
 
 #endif

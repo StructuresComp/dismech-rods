@@ -7,13 +7,13 @@ class elasticRod;
 
 class baseController
 {
-public:
+  public:
     explicit baseController(const vector<shared_ptr<elasticRod>>& limbs);
     ~baseController();
 
     virtual void updateTimeStep(double dt);
 
-protected:
+  protected:
     vector<shared_ptr<elasticRod>> limbs;
     int num_actuators;
     double current_time;

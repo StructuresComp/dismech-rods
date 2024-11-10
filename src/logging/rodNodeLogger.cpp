@@ -1,20 +1,16 @@
 #include "rodNodeLogger.h"
 
-#include <utility>
 #include "world.h"
+#include <utility>
 
-
-rodNodeLogger::rodNodeLogger(std::string logfile_base, std::ofstream &df, int per) :
-                             worldLogger("node", std::move(logfile_base), df, per)
-{
+rodNodeLogger::rodNodeLogger(std::string logfile_base, std::ofstream& df, int per)
+    : worldLogger("node", std::move(logfile_base), df, per) {
 }
 
-
-rodNodeLogger::rodNodeLogger(std::string logfile_base, std::string logfile_suffix, std::ofstream &df, int per) :
-        worldLogger("node", std::move(logfile_suffix), std::move(logfile_base), df, per)
-{
+rodNodeLogger::rodNodeLogger(std::string logfile_base, std::string logfile_suffix,
+                             std::ofstream& df, int per)
+    : worldLogger("node", std::move(logfile_suffix), std::move(logfile_base), df, per) {
 }
-
 
 rodNodeLogger::~rodNodeLogger() = default;
 

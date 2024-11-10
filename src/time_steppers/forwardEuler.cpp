@@ -1,26 +1,23 @@
 #include "forwardEuler.h"
 
-
 forwardEuler::forwardEuler(const shared_ptr<softRobots>& soft_robots,
-                               const shared_ptr<forceContainer>& forces,
-                               const simParams& sim_params) :
-                               explicitTimeStepper(soft_robots, forces, sim_params)
-{
+                           const shared_ptr<forceContainer>& forces, const simParams& sim_params)
+    : explicitTimeStepper(soft_robots, forces, sim_params) {
 }
-
 
 forwardEuler::~forwardEuler() = default;
 
-
 double forwardEuler::stepForwardInTime() {
     // Perform collision detection if contact is enabled
-    if (forces->cf) forces->cf->broadPhaseCollisionDetection();
+    if (forces->cf)
+        forces->cf->broadPhaseCollisionDetection();
 
     // Compute forces using current x and u
     prepSystemForIteration();
     forces->computeForces(dt);
 
-    // Could perhaps explore a vectorized solution for this later but too complicated for now.
+    // Could perhaps explore a vectorized solution for this later but too
+    // complicated for now.
     int counter = 0;
     double acceleration;
     int limb_num = 0;
@@ -33,7 +30,8 @@ double forwardEuler::stepForwardInTime() {
 
                 // Position update
                 // q_t+dt = ((f * dt / m) + u_t) * dt + x0
-                limb->x[local_counter] = ((acceleration * dt) + limb->u[local_counter]) * dt + limb->x0[local_counter];
+                limb->x[local_counter] =
+                    ((acceleration * dt) + limb->u[local_counter]) * dt + limb->x0[local_counter];
 
                 counter++;
             }
@@ -44,7 +42,6 @@ double forwardEuler::stepForwardInTime() {
     updateSystemForNextTimeStep();
     return dt;
 }
-
 
 void forwardEuler::updateSystemForNextTimeStep() {
     for (const auto& controller : controllers) {

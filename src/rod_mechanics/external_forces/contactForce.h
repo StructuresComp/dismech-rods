@@ -2,21 +2,19 @@
 #define CONTACT_FORCE_H
 
 #include "rod_mechanics/baseForce.h"
+#include "rod_mechanics/external_forces/collisionDetector.h"
 #include "rod_mechanics/external_forces/contactEnums.h"
 #include "rod_mechanics/external_forces/symbolicEquations.h"
-#include "rod_mechanics/external_forces/collisionDetector.h"
-
 
 class baseTimeStepper;
 
 class contactForce : public baseForce
 {
-public:
-    contactForce(const shared_ptr<softRobots>& soft_robots,
-                 double col_limit, double delta, double k_scaler, bool friction, double nu, bool self_contact);
+  public:
+    contactForce(const shared_ptr<softRobots>& soft_robots, double col_limit, double delta,
+                 double k_scaler, bool friction, double nu, bool self_contact);
 
-
-//    void updateContactStiffness();
+    //    void updateContactStiffness();
     void computeForce(double dt) override;
     void computeForceAndJacobian(double dt) override;
     void broadPhaseCollisionDetection() const;
@@ -27,7 +25,7 @@ public:
 
     unique_ptr<collisionDetector> col_detector;
 
-private:
+  private:
     unique_ptr<symbolicEquations> sym_eqs;
 
     double K1;

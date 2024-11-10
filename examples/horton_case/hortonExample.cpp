@@ -1,7 +1,7 @@
 #include "robotDescription.h"
 
-
 extern ofstream logging_output_file;  // defined in main.cpp
+
 /*
  * 2D Horton Robot Example
  *
@@ -9,11 +9,9 @@ extern ofstream logging_output_file;  // defined in main.cpp
  * custom external forces, and loggers in the function below.
  */
 
-void get_robot_description(int argc, char** argv,
-                           const shared_ptr<softRobots>& soft_robots,
+void get_robot_description(int argc, char** argv, const shared_ptr<softRobots>& soft_robots,
                            const shared_ptr<forceContainer>& forces,
-                           shared_ptr<worldLogger>& logger,
-                           simParams& sim_params,
+                           shared_ptr<worldLogger>& logger, simParams& sim_params,
                            renderParams& render_params) {
 
     sim_params.dt = 2.5e-4;
@@ -32,11 +30,16 @@ void get_robot_description(int argc, char** argv,
     double mu = 0.4;
 
     // Create the limbs
-    soft_robots->addLimb(Vector3d(-0.10, 0.00, 0.00), Vector3d(-0.10, 0.00, 0.10), n, density, radius, young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(0.00, 0.00, 0.00), Vector3d(0.00, 0.00, 0.10), n, density, radius, young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(0.10, 0.00, 0.00), Vector3d(0.10, 0.00, 0.10), n, density, radius, young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(-0.10, 0.00, 0.10), Vector3d(0.00, 0.00, 0.10), n, density, radius, young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(0.10, 0.00, 0.10), Vector3d(0.00, 0.00, 0.10), n, density, radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(-0.10, 0.00, 0.00), Vector3d(-0.10, 0.00, 0.10), n, density,
+                         radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(0.00, 0.00, 0.00), Vector3d(0.00, 0.00, 0.10), n, density, radius,
+                         young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(0.10, 0.00, 0.00), Vector3d(0.10, 0.00, 0.10), n, density, radius,
+                         young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(-0.10, 0.00, 0.10), Vector3d(0.00, 0.00, 0.10), n, density,
+                         radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(0.10, 0.00, 0.10), Vector3d(0.00, 0.00, 0.10), n, density, radius,
+                         young_mod, poisson, mu);
 
     // Create joints and connect appropriately
     soft_robots->createJoint(0, -1);
@@ -58,6 +61,8 @@ void get_robot_description(int argc, char** argv,
     forces->addForce(make_shared<floorContactForce>(soft_robots, delta, nu, floor_z));
 
     // Add kappa_bar controller
-    string phi_ctrl_file_path = "src/controllers/openloop_control_trajectories/horton_controller.csv";
-    soft_robots->addController(make_shared<openLoopUniformKappaBarController>(soft_robots, phi_ctrl_file_path));
+    string phi_ctrl_file_path =
+        "src/controllers/openloop_control_trajectories/horton_controller.csv";
+    soft_robots->addController(
+        make_shared<openLoopUniformKappaBarController>(soft_robots, phi_ctrl_file_path));
 }

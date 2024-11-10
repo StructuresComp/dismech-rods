@@ -2,18 +2,16 @@
 #define IMPLICITTIMESTEPPER_H
 
 #include "baseTimeStepper.h"
-#include "solvers/solverTypes.h"
 #include "mkl_types.h"
+#include "solvers/solverTypes.h"
 
 class baseSolver;
 
-
 class implicitTimeStepper : public baseTimeStepper
 {
-public:
+  public:
     implicitTimeStepper(const shared_ptr<softRobots>& soft_robots,
-                        const shared_ptr<forceContainer>& forces,
-                        const simParams& sim_params,
+                        const shared_ptr<forceContainer>& forces, const simParams& sim_params,
                         solverType solver_type);
     ~implicitTimeStepper() override;
 
@@ -36,10 +34,10 @@ public:
     vector<pair<int, int>> non_zero_elements;
 
     // For dgbsv solver
-    double *dgbsv_jacobian;
+    double* dgbsv_jacobian;
     int kl, ku, num_rows;
 
-protected:
+  protected:
     double ftol;
     double dtol;
     int max_iter;
@@ -49,15 +47,14 @@ protected:
     int adaptive_time_stepping_threshold;
     lineSearchType line_search_type;
 
-    template<solverType solver_type>
+    template <solverType solver_type>
     void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2);
 
-private:
+  private:
     shared_ptr<implicitTimeStepper> shared_from_this();
     unique_ptr<baseSolver> solver;
     solverType solver_type;
     int dgbsv_jacobian_len;
 };
-
 
 #endif

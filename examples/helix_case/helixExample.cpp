@@ -1,7 +1,7 @@
 #include "robotDescription.h"
 
-
 extern ofstream logging_output_file;  // defined in main.cpp
+
 /*
  * Helix Under Gravity Example
  *
@@ -9,11 +9,9 @@ extern ofstream logging_output_file;  // defined in main.cpp
  * custom external forces, and loggers in the function below.
  */
 
-void get_robot_description(int argc, char** argv,
-                           const shared_ptr<softRobots>& soft_robots,
+void get_robot_description(int argc, char** argv, const shared_ptr<softRobots>& soft_robots,
                            const shared_ptr<forceContainer>& forces,
-                           shared_ptr<worldLogger>& logger,
-                           simParams& sim_params,
+                           shared_ptr<worldLogger>& logger, simParams& sim_params,
                            renderParams& render_params) {
 
     sim_params.dt = 5e-3;

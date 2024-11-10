@@ -1,23 +1,18 @@
 #include "explicitTimeStepper.h"
 
-
 explicitTimeStepper::explicitTimeStepper(const shared_ptr<softRobots>& soft_robots,
                                          const shared_ptr<forceContainer>& forces,
-                                         const simParams& sim_params) :
-                                         baseTimeStepper(soft_robots, forces, sim_params)
-{
+                                         const simParams& sim_params)
+    : baseTimeStepper(soft_robots, forces, sim_params) {
     constructInverseMassVector();
 }
 
 explicitTimeStepper::~explicitTimeStepper() = default;
 
-
-void explicitTimeStepper::prepSystemForIteration()
-{
+void explicitTimeStepper::prepSystemForIteration() {
     baseTimeStepper::prepSystemForIteration();
     baseTimeStepper::setZero();
 }
-
 
 void explicitTimeStepper::constructInverseMassVector() {
     int total_dof = 0;
@@ -35,14 +30,19 @@ void explicitTimeStepper::constructInverseMassVector() {
         int j_node = joint->joint_node;
         int j_limb = joint->joint_limb;
         double inv_mass = 1 / joint->mass;
-        inverse_masses[j_limb][4*j_node] = inv_mass;
-        inverse_masses[j_limb][4*j_node+1] = inv_mass;
-        inverse_masses[j_limb][4*j_node+2] = inv_mass;
+        inverse_masses[j_limb][4 * j_node] = inv_mass;
+        inverse_masses[j_limb][4 * j_node + 1] = inv_mass;
+        inverse_masses[j_limb][4 * j_node + 2] = inv_mass;
     }
 }
 
 // We simply define these to make sure derived classes are not abstract classes
 // Perhaps a better way to design this later
-void explicitTimeStepper::integrator() {}
-void explicitTimeStepper::addJacobian(int ind1, int ind2, double p, int limb_indx) {}
-void explicitTimeStepper::addJacobian(int ind1, int ind2, double p, int limb_indx1, int limb_idx2) {}
+void explicitTimeStepper::integrator() {
+}
+
+void explicitTimeStepper::addJacobian(int ind1, int ind2, double p, int limb_indx) {
+}
+
+void explicitTimeStepper::addJacobian(int ind1, int ind2, double p, int limb_indx1, int limb_idx2) {
+}

@@ -1,8 +1,8 @@
 #include "robotDescription.h"
 #include <math.h>
 
-
 extern ofstream logging_output_file;  // defined in main.cpp
+
 /*
  * Dynamic Cantilever Example
  *
@@ -10,11 +10,9 @@ extern ofstream logging_output_file;  // defined in main.cpp
  * custom external forces, and loggers in the function below.
  */
 
-void get_robot_description(int argc, char** argv,
-                           const shared_ptr<softRobots>& soft_robots,
+void get_robot_description(int argc, char** argv, const shared_ptr<softRobots>& soft_robots,
                            const shared_ptr<forceContainer>& forces,
-                           shared_ptr<worldLogger>& logger,
-                           simParams& sim_params,
+                           shared_ptr<worldLogger>& logger, simParams& sim_params,
                            renderParams& render_params) {
 
     sim_params.dt = 2.5e-3;
@@ -44,8 +42,8 @@ void get_robot_description(int argc, char** argv,
         double x = R - R * cos(t);
         double y = R * sin(t);
 
-
-        soft_robots->addLimb(Vector3d(x, y, 0.0), Vector3d(x, y, -0.3), n, density, radius, young_mod, poisson, mu);
+        soft_robots->addLimb(Vector3d(x, y, 0.0), Vector3d(x, y, -0.3), n, density, radius,
+                             young_mod, poisson, mu);
         soft_robots->lockEdge(i, 0);
     }
 
@@ -64,12 +62,14 @@ void get_robot_description(int argc, char** argv,
     double nu = 1e-3;
     bool friction = false;  // for friction, reduce time step to 1 ms
     bool self_contact = true;
-    forces->addForce(make_shared<contactForce>(soft_robots, col_limit, delta, k_scaler, friction, nu, self_contact));
+    forces->addForce(make_shared<contactForce>(soft_robots, col_limit, delta, k_scaler, friction,
+                                               nu, self_contact));
 
     // Add custom active entanglement controller
     double start_time = 0.0;
     double end_time = 10.0;
-    soft_robots->addController(make_shared<activeEntanglementController>(soft_robots, start_time, end_time));
+    soft_robots->addController(
+        make_shared<activeEntanglementController>(soft_robots, start_time, end_time));
 
     string logfile_base = "log_files/active_entanglement";
     int logging_period = 5;

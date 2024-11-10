@@ -3,7 +3,8 @@
 
 #include "derSimulationEnvironment.h"
 
-// handler for keyboard interrupts in the OpenGL window. No need to be object-oriented here.
+// handler for keyboard interrupts in the OpenGL window. No need to be
+// object-oriented here.
 extern "C" void keyHandler(unsigned char key, int x, int y);
 
 // Since GLUT is in C, we need global pointers to the world and logger.
@@ -17,9 +18,10 @@ static int opengl_cmdline_per = 0;
 
 class openglDERSimulationEnvironment : public derSimulationEnvironment
 {
-    public:
-    openglDERSimulationEnvironment(const shared_ptr<world>& m_world, const renderParams& render_params,
-                                   const shared_ptr<worldLogger>& logger, int argc, char **argv);
+  public:
+    openglDERSimulationEnvironment(const shared_ptr<world>& m_world,
+                                   const renderParams& render_params,
+                                   const shared_ptr<worldLogger>& logger, int argc, char** argv);
     ~openglDERSimulationEnvironment() override;
 
     void runSimulation() override;
@@ -27,19 +29,18 @@ class openglDERSimulationEnvironment : public derSimulationEnvironment
     static bool show_mat_frames;
     static double render_scale;
 
-    protected:
-
-    // OpenGL calls this function to timestep the simulation and update the window.
-    // GLUT is in C. A static method works here: uses openglWorld_p and openglWorldLogger_p.
-    // What this MEANS is that if multiple instances of this environment are created, they'll all
-    // operate on the MOST RECENT world that was created. Ugly, but won't cause segfaults at least.
-    // Just don't do multiple GLUT displays at the same time!!!
+  protected:
+    // OpenGL calls this function to timestep the simulation and update the
+    // window. GLUT is in C. A static method works here: uses openglWorld_p and
+    // openglWorldLogger_p. What this MEANS is that if multiple instances of
+    // this environment are created, they'll all operate on the MOST RECENT
+    // world that was created. Ugly, but won't cause segfaults at least. Just
+    // don't do multiple GLUT displays at the same time!!!
     static void derOpenGLDisplay();
 
     // Initializing GLUT requires the command-line arguments from main.
     int argc_main;
-    char **argv_main;
-
+    char** argv_main;
 };
 
-#endif // OPENGL_DER_SIMULATION_ENVIRONMENT_H
+#endif  // OPENGL_DER_SIMULATION_ENVIRONMENT_H

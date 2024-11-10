@@ -3,13 +3,14 @@
 
 #include "worldLogger.h"
 
-
-class velocityLogger : public worldLogger {
-public:
+class velocityLogger : public worldLogger
+{
+  public:
     velocityLogger(string logfile_base, ofstream& df, int per);
     velocityLogger(string logfile_base, string logfile_suffix, ofstream& df, int per);
     ~velocityLogger();
-private:
+
+  private:
     string getLogHeader() override;
     string getLogData() override;
 };

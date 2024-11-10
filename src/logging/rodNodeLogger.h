@@ -3,16 +3,16 @@
 
 #include "worldLogger.h"
 
-
-class rodNodeLogger : public worldLogger {
-public:
+class rodNodeLogger : public worldLogger
+{
+  public:
     rodNodeLogger(string logfile_base, ofstream& df, int per);
     rodNodeLogger(string logfile_base, string logfile_suffix, ofstream& df, int per);
     ~rodNodeLogger();
-private:
+
+  private:
     string getLogHeader() override;
     string getLogData() override;
 };
-
 
 #endif

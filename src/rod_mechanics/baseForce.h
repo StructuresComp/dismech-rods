@@ -8,7 +8,7 @@ class baseTimeStepper;
 
 class baseForce
 {
-public:
+  public:
     baseForce(const shared_ptr<softRobots>& m_soft_robots);
     virtual ~baseForce() = 0;
 
@@ -17,7 +17,7 @@ public:
 
     void setTimeStepper(shared_ptr<baseTimeStepper> m_stepper);
 
-protected:
+  protected:
     shared_ptr<softRobots> soft_robots;
     shared_ptr<baseTimeStepper> stepper = nullptr;
 };

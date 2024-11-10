@@ -1,28 +1,21 @@
 #include "velocityLogger.h"
 
-#include <utility>
 #include "world.h"
+#include <utility>
 
-
-velocityLogger::velocityLogger(string logfile_base, ofstream& df, int per) :
-                               worldLogger("velocities", std::move(logfile_base), df, per)
-{
+velocityLogger::velocityLogger(string logfile_base, ofstream& df, int per)
+    : worldLogger("velocities", std::move(logfile_base), df, per) {
 }
 
-
-velocityLogger::velocityLogger(string logfile_base, string logfile_suffix, ofstream& df, int per) :
-        worldLogger("velocities", std::move(logfile_suffix), std::move(logfile_base), df, per)
-{
+velocityLogger::velocityLogger(string logfile_base, string logfile_suffix, ofstream& df, int per)
+    : worldLogger("velocities", std::move(logfile_suffix), std::move(logfile_base), df, per) {
 }
-
 
 velocityLogger::~velocityLogger() = default;
-
 
 string velocityLogger::getLogHeader() {
     return "";
 }
-
 
 string velocityLogger::getLogData() {
     ostringstream log_data;

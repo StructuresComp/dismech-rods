@@ -1,13 +1,12 @@
 #include "backwardEuler.h"
 
 backwardEuler::backwardEuler(const shared_ptr<softRobots>& soft_robots,
-                             const shared_ptr<forceContainer>& forces,
-                             const simParams& sim_params, solverType solver_type) :
-                             implicitTimeStepper(soft_robots, forces, sim_params, solver_type)
-{}
+                             const shared_ptr<forceContainer>& forces, const simParams& sim_params,
+                             solverType solver_type)
+    : implicitTimeStepper(soft_robots, forces, sim_params, solver_type) {
+}
 
 backwardEuler::~backwardEuler() = default;
-
 
 double backwardEuler::newtonMethod(double dt) {
     double normf;
@@ -88,9 +87,8 @@ double backwardEuler::newtonMethod(double dt) {
     return dt;
 }
 
-
 double backwardEuler::lineSearch(double dt) {
-    switch(line_search_type) {
+    switch (line_search_type) {
         case NO_LS:
             return 1.0;
         case GOLDSTEIN:
@@ -101,7 +99,6 @@ double backwardEuler::lineSearch(double dt) {
             throw invalid_argument("Invalid line search type");
     }
 }
-
 
 double backwardEuler::goldSteinLineSearch(double dt) {
     // store current x
@@ -122,19 +119,19 @@ double backwardEuler::goldSteinLineSearch(double dt) {
     // Initial step size
     double a = 1;
 
-    //compute the slope initially
+    // compute the slope initially
     double q0 = 0.5 * pow(Force.norm(), 2);
     double dq0 = -(Force.transpose() * Jacobian * DX)(0);
 
     bool success = false;
-    while (!success){
+    while (!success) {
         int limb_idx = 0;
         for (auto& joint : joints) {
             joint->x = joint->x_ls;
         }
 
         for (auto& limb : limbs) {
-            limb->x= limb->x_ls;
+            limb->x = limb->x_ls;
             limb->updateNewtonX(dx, offsets[limb_idx], a);
             limb_idx++;
         }
@@ -176,7 +173,6 @@ double backwardEuler::goldSteinLineSearch(double dt) {
     return a;
 }
 
-
 double backwardEuler::wolfeLineSearch(double dt) {
     // store current x
     for (auto& limb : limbs) {
@@ -193,18 +189,17 @@ double backwardEuler::wolfeLineSearch(double dt) {
     // Initial step size
     double a = 1;
 
-    //compute the slope initially
+    // compute the slope initially
     double q0 = 0.5 * pow(Force.norm(), 2);
     double dq0 = -(Force.transpose() * Jacobian * DX)(0);
 
-    for (int i = 0; i < 10; i++)
-    {
+    for (int i = 0; i < 10; i++) {
         int limb_idx = 0;
         for (auto& joint : joints) {
             joint->x = joint->x_ls;
         }
         for (auto& limb : limbs) {
-            limb->x= limb->x_ls;
+            limb->x = limb->x_ls;
             limb->updateNewtonX(dx, offsets[limb_idx], a);
             limb_idx++;
         }
@@ -214,11 +209,10 @@ double backwardEuler::wolfeLineSearch(double dt) {
         double q = 0.5 * pow(Force.norm(), 2);
 
         // Check Armijo condition
-        if (q <= q0 + c1 * a * dq0){
+        if (q <= q0 + c1 * a * dq0) {
             double dq = -(Force.transpose() * Jacobian * DX)(0);
             // Check curvature condition
-            if (dq >= c2 * dq0)
-            {
+            if (dq >= c2 * dq0) {
                 break;
             }
         }
@@ -234,15 +228,16 @@ double backwardEuler::wolfeLineSearch(double dt) {
     return a;
 }
 
-
 double backwardEuler::stepForwardInTime() {
     dt = orig_dt;
 
     // Newton Guess. Just use approximately last solution
-    for (const auto& limb : limbs) limb->updateGuess(0.01, dt);
+    for (const auto& limb : limbs)
+        limb->updateGuess(0.01, dt);
 
     // Perform collision detection if contact is enabled
-    if (forces->cf) forces->cf->broadPhaseCollisionDetection();
+    if (forces->cf)
+        forces->cf->broadPhaseCollisionDetection();
 
     dt = newtonMethod(dt);
 
@@ -257,7 +252,6 @@ double backwardEuler::stepForwardInTime() {
     updateSystemForNextTimeStep();
     return dt;
 }
-
 
 void backwardEuler::updateSystemForNextTimeStep() {
     prepSystemForIteration();

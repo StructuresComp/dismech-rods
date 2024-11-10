@@ -7,13 +7,13 @@ class baseTimeStepper;
 
 class inertialForce : public baseForce
 {
-public:
+  public:
     inertialForce(const shared_ptr<softRobots>& m_soft_robots);
     ~inertialForce() override;
     void computeForce(double dt) override;
     void computeForceAndJacobian(double dt) override;
 
-private:
+  private:
     double f, jac;
 };
 

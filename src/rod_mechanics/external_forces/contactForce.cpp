@@ -1,12 +1,10 @@
 #include "contactForce.h"
 #include "time_steppers/baseTimeStepper.h"
 
-
 contactForce::contactForce(const shared_ptr<softRobots>& soft_robots, double col_limit,
-                           double delta, double k_scaler, bool friction, double nu, bool self_contact) :
-                           baseForce(soft_robots), delta(delta), k_scaler(k_scaler),
-                           nu(nu), friction(friction)
-                           {
+                           double delta, double k_scaler, bool friction, double nu,
+                           bool self_contact)
+    : baseForce(soft_robots), delta(delta), k_scaler(k_scaler), nu(nu), friction(friction) {
 
     col_detector = make_unique<collisionDetector>(soft_robots, col_limit, delta, self_contact);
 
@@ -29,65 +27,61 @@ contactForce::contactForce(const shared_ptr<softRobots>& soft_robots, double col
     contact_stiffness = k_scaler;
 }
 
-
-//void contactForce::updateContactStiffness() {
-//    if (col_detector->candidate_set.size() == 0) return;
-//    double curr_max_force = -1;
-//    double curr_force;
-//    double fx, fy, fz;
-//    double ratio = 0.9;
-//    static bool initialized = false;
-//    set<int> nodes_to_check;
+// void contactForce::updateContactStiffness() {
+//     if (col_detector->candidate_set.size() == 0) return;
+//     double curr_max_force = -1;
+//     double curr_force;
+//     double fx, fy, fz;
+//     double ratio = 0.9;
+//     static bool initialized = false;
+//     set<int> nodes_to_check;
 //
-//    // Compute the maximum force that a node experiences.
-//    for (int i = 0; i < col_detector->candidate_set.size(); i++) {
-//        nodes_to_check.insert(col_detector->candidate_set[i][0]);
-//        nodes_to_check.insert(col_detector->candidate_set[i][0]+1);
-//        nodes_to_check.insert(col_detector->candidate_set[i][1]);
-//        nodes_to_check.insert(col_detector->candidate_set[i][1]+1);
-//    }
+//     // Compute the maximum force that a node experiences.
+//     for (int i = 0; i < col_detector->candidate_set.size(); i++) {
+//         nodes_to_check.insert(col_detector->candidate_set[i][0]);
+//         nodes_to_check.insert(col_detector->candidate_set[i][0]+1);
+//         nodes_to_check.insert(col_detector->candidate_set[i][1]);
+//         nodes_to_check.insert(col_detector->candidate_set[i][1]+1);
+//     }
 //
-//    for (auto i : nodes_to_check) {
-//        if (rod->getIfConstrained(4*i) == 0 &&
-//            rod->getIfConstrained(4*i+1) == 0 &&
-//            rod->getIfConstrained(4*i+2) == 0) {
-//            fx = stepper->getForce()[rod->fullToUnconsMap[4*i]];
-//            fy = stepper->getForce()[rod->fullToUnconsMap[4*i+1]];
-//            fz = stepper->getForce()[rod->fullToUnconsMap[4*i+2]];
-//        }
-//        else {
-//            continue;
-//        }
-//        curr_force = sqrt(pow(fx, 2) + pow(fy, 2) + pow(fz, 2));
-//        if (curr_force > curr_max_force) {
-//            curr_max_force = curr_force;
-//        }
-//    }
+//     for (auto i : nodes_to_check) {
+//         if (rod->getIfConstrained(4*i) == 0 &&
+//             rod->getIfConstrained(4*i+1) == 0 &&
+//             rod->getIfConstrained(4*i+2) == 0) {
+//             fx = stepper->getForce()[rod->fullToUnconsMap[4*i]];
+//             fy = stepper->getForce()[rod->fullToUnconsMap[4*i+1]];
+//             fz = stepper->getForce()[rod->fullToUnconsMap[4*i+2]];
+//         }
+//         else {
+//             continue;
+//         }
+//         curr_force = sqrt(pow(fx, 2) + pow(fy, 2) + pow(fz, 2));
+//         if (curr_force > curr_max_force) {
+//             curr_max_force = curr_force;
+//         }
+//     }
 //
-//    if (!initialized) {
-//        contact_stiffness = k_scaler * curr_max_force;
-//        initialized = true;
-//    }
-//    else {
-//        contact_stiffness = ratio * contact_stiffness + (1 - ratio) * k_scaler * curr_max_force;
-//    }
-//}
-
+//     if (!initialized) {
+//         contact_stiffness = k_scaler * curr_max_force;
+//         initialized = true;
+//     }
+//     else {
+//         contact_stiffness = ratio * contact_stiffness + (1 - ratio) *
+//         k_scaler * curr_max_force;
+//     }
+// }
 
 void contactForce::broadPhaseCollisionDetection() const {
     col_detector->broadPhaseCollisionDetection();
 }
 
-
 int contactForce::getNumCollisions() const {
     return col_detector->num_collisions;
 }
 
-
 double contactForce::getMinDist() const {
     return col_detector->min_dist;
 }
-
 
 void contactForce::setupContactVariables(const Vector<int, 8>& contact_id) {
     idx1 = contact_id(0);
@@ -116,23 +110,19 @@ void contactForce::setupContactVariables(const Vector<int, 8>& contact_id) {
     x2e0 = limb2->getPreVertex(idx4);
 }
 
-
 void contactForce::prepContactInput() {
-    if (constraint_type == PointToPoint)
-    {
+    if (constraint_type == PointToPoint) {
         p2p_input.segment<3>(0) = x1s;
         p2p_input.segment<3>(3) = x2s;
         p2p_input[7] = surface_limit;
     }
-    else if (constraint_type == PointToEdge)
-    {
+    else if (constraint_type == PointToEdge) {
         e2p_input.segment<3>(0) = x1s;
         e2p_input.segment<3>(3) = x1e;
         e2p_input.segment<3>(6) = x2s;
         e2p_input[10] = surface_limit;
     }
-    else if (constraint_type == EdgeToEdge)
-    {
+    else if (constraint_type == EdgeToEdge) {
         e2e_input.segment<3>(0) = x1s;
         e2e_input.segment<3>(3) = x1e;
         e2e_input.segment<3>(6) = x2s;
@@ -159,7 +149,6 @@ void contactForce::prepFrictionInput(double dt) {
     friction_input[37] = dt;
 }
 
-
 void contactForce::computeFriction(double dt) {
     Vector3d f1s = contact_gradient(seq(0, 2));
     Vector3d f1e = contact_gradient(seq(3, 5));
@@ -176,10 +165,14 @@ void contactForce::computeFriction(double dt) {
     double beta11 = f1s_n / fn;
     double beta21 = f2s_n / fn;
 
-    if (beta11 > 1) beta11 = 1;
-    if (beta11 < 0) beta11 = 0;
-    if (beta21 > 1) beta21 = 1;
-    if (beta21 < 0) beta21 = 0;
+    if (beta11 > 1)
+        beta11 = 1;
+    if (beta11 < 0)
+        beta11 = 0;
+    if (beta21 > 1)
+        beta21 = 1;
+    if (beta21 < 0)
+        beta21 = 0;
 
     double beta12 = 1 - beta11;
     double beta22 = 1 - beta21;
@@ -222,7 +215,6 @@ void contactForce::computeFriction(double dt) {
     friction_forces(seq(9, 11)) = -ffr_val * f2e_n;
 }
 
-
 void contactForce::computeForce(double dt) {
     static bool first_iter = true;
     col_detector->narrowPhaseCollisionDetection();
@@ -232,8 +224,7 @@ void contactForce::computeForce(double dt) {
         prepContactInput();
         contact_gradient.setZero();
 
-        if (constraint_type == PointToPoint)
-        {
+        if (constraint_type == PointToPoint) {
             if (contact_type == NonPenetrated) {
                 sym_eqs->E_p2p_gradient_func.call(p2p_gradient.data(), p2p_input.data());
             }
@@ -241,13 +232,13 @@ void contactForce::computeForce(double dt) {
                 sym_eqs->E_p2p_pen_gradient_func.call(p2p_gradient.data(), p2p_input.data());
             }
 
-            // insert gradient and hessian to contact gradient and contact hessian
+            // insert gradient and hessian to contact gradient and contact
+            // hessian
             contact_gradient(seq(0, 2)) = p2p_gradient(seq(0, 2));
             contact_gradient(seq(6, 8)) = p2p_gradient(seq(3, 5));
         }
 
-        else if (constraint_type == PointToEdge)
-        {
+        else if (constraint_type == PointToEdge) {
             if (contact_type == NonPenetrated) {
                 sym_eqs->E_e2p_gradient_func.call(e2p_gradient.data(), e2p_input.data());
             }
@@ -255,14 +246,14 @@ void contactForce::computeForce(double dt) {
                 sym_eqs->E_e2p_pen_gradient_func.call(e2p_gradient.data(), e2p_input.data());
             }
 
-            // insert gradient and hessian to contact gradient and contact hessian
+            // insert gradient and hessian to contact gradient and contact
+            // hessian
             contact_gradient(seq(0, 2)) = e2p_gradient(seq(0, 2));
             contact_gradient(seq(3, 5)) = e2p_gradient(seq(3, 5));
             contact_gradient(seq(6, 8)) = e2p_gradient(seq(6, 8));
         }
 
-        else if (constraint_type == EdgeToEdge)
-        {
+        else if (constraint_type == EdgeToEdge) {
             if (contact_type == NonPenetrated) {
                 sym_eqs->E_e2e_gradient_func.call(e2e_gradient.data(), e2e_input.data());
             }
@@ -291,7 +282,6 @@ void contactForce::computeForce(double dt) {
     }
 }
 
-
 void contactForce::computeForceAndJacobian(double dt) {
     static bool first_iter = true;
     col_detector->narrowPhaseCollisionDetection();
@@ -302,8 +292,7 @@ void contactForce::computeForceAndJacobian(double dt) {
         contact_gradient.setZero();
         contact_hessian.setZero();
 
-        if (constraint_type == PointToPoint)
-        {
+        if (constraint_type == PointToPoint) {
             if (contact_type == NonPenetrated) {
                 sym_eqs->E_p2p_gradient_func.call(p2p_gradient.data(), p2p_input.data());
                 sym_eqs->E_p2p_hessian_func.call(p2p_hessian.data(), p2p_input.data());
@@ -313,7 +302,8 @@ void contactForce::computeForceAndJacobian(double dt) {
                 sym_eqs->E_p2p_pen_hessian_func.call(p2p_hessian.data(), p2p_input.data());
             }
 
-            // insert gradient and hessian to contact gradient and contact hessian
+            // insert gradient and hessian to contact gradient and contact
+            // hessian
             contact_gradient(seq(0, 2)) = p2p_gradient(seq(0, 2));
             contact_gradient(seq(6, 8)) = p2p_gradient(seq(3, 5));
             contact_hessian.block<3, 3>(0, 0) = p2p_hessian.block<3, 3>(0, 0);
@@ -321,8 +311,7 @@ void contactForce::computeForceAndJacobian(double dt) {
             contact_hessian.block<3, 3>(6, 0) = p2p_hessian.block<3, 3>(3, 0);
             contact_hessian.block<3, 3>(6, 6) = p2p_hessian.block<3, 3>(3, 3);
         }
-        else if (constraint_type == PointToEdge)
-        {
+        else if (constraint_type == PointToEdge) {
             if (contact_type == NonPenetrated) {
                 sym_eqs->E_e2p_gradient_func.call(e2p_gradient.data(), e2p_input.data());
                 sym_eqs->E_e2p_hessian_func.call(e2p_hessian.data(), e2p_input.data());
@@ -332,14 +321,14 @@ void contactForce::computeForceAndJacobian(double dt) {
                 sym_eqs->E_e2p_pen_hessian_func.call(e2p_hessian.data(), e2p_input.data());
             }
 
-            // insert gradient and hessian to contact gradient and contact hessian
+            // insert gradient and hessian to contact gradient and contact
+            // hessian
             contact_gradient(seq(0, 2)) = e2p_gradient(seq(0, 2));
             contact_gradient(seq(3, 5)) = e2p_gradient(seq(3, 5));
             contact_gradient(seq(6, 8)) = e2p_gradient(seq(6, 8));
             contact_hessian.block<9, 9>(0, 0) = e2p_hessian;
         }
-        else if (constraint_type == EdgeToEdge)
-        {
+        else if (constraint_type == EdgeToEdge) {
             if (contact_type == NonPenetrated) {
                 sym_eqs->E_e2e_gradient_func.call(e2e_gradient.data(), e2e_input.data());
                 sym_eqs->E_e2e_hessian_func.call(e2e_hessian.data(), e2e_input.data());
@@ -361,14 +350,17 @@ void contactForce::computeForceAndJacobian(double dt) {
             computeFriction(dt);
 
             if (friction_type == Sliding) {
-                sym_eqs->friction_partials_dfr_dx_sliding_func.call(friction_partials_dfr_dx.data(), friction_input.data());
-                sym_eqs->friction_partials_dfr_dfc_sliding_func.call(friction_partials_dfr_dfc.data(), friction_input.data());
+                sym_eqs->friction_partials_dfr_dx_sliding_func.call(friction_partials_dfr_dx.data(),
+                                                                    friction_input.data());
+                sym_eqs->friction_partials_dfr_dfc_sliding_func.call(
+                    friction_partials_dfr_dfc.data(), friction_input.data());
             }
             else if (friction_type == Sticking) {
-                sym_eqs->friction_partials_dfr_dx_sticking_func.call(friction_partials_dfr_dx.data(), friction_input.data());
-                sym_eqs->friction_partials_dfr_dfc_sticking_func.call(friction_partials_dfr_dfc.data(), friction_input.data());
+                sym_eqs->friction_partials_dfr_dx_sticking_func.call(
+                    friction_partials_dfr_dx.data(), friction_input.data());
+                sym_eqs->friction_partials_dfr_dfc_sticking_func.call(
+                    friction_partials_dfr_dfc.data(), friction_input.data());
             }
-
 
             if (constraint_type == PointToPoint) {
                 friction_partials_dfr_dfc.block<3, 12>(3, 0).setZero();
@@ -382,7 +374,8 @@ void contactForce::computeForceAndJacobian(double dt) {
                 friction_jacobian.setZero();
             }
             else {
-                friction_jacobian = friction_partials_dfr_dx + friction_partials_dfr_dfc.transpose() * contact_hessian;
+                friction_jacobian = friction_partials_dfr_dx +
+                                    friction_partials_dfr_dfc.transpose() * contact_hessian;
             }
 
             contact_gradient += friction_forces;
@@ -402,26 +395,39 @@ void contactForce::computeForceAndJacobian(double dt) {
                 // first row
                 stepper->addJacobian(4 * idx1 + i, 4 * idx1 + j, contact_hessian(j, i), idx5);
                 stepper->addJacobian(4 * idx1 + i, 4 * idx3 + j, contact_hessian(3 + j, i), idx5);
-                stepper->addJacobian(4 * idx1 + i, 4 * idx2 + j, contact_hessian(6 + j, i), idx5, idx6);
-                stepper->addJacobian(4 * idx1 + i, 4 * idx4 + j, contact_hessian(9 + j, i), idx5, idx6);
+                stepper->addJacobian(4 * idx1 + i, 4 * idx2 + j, contact_hessian(6 + j, i), idx5,
+                                     idx6);
+                stepper->addJacobian(4 * idx1 + i, 4 * idx4 + j, contact_hessian(9 + j, i), idx5,
+                                     idx6);
 
                 // second row
                 stepper->addJacobian(4 * idx3 + i, 4 * idx1 + j, contact_hessian(j, 3 + i), idx5);
-                stepper->addJacobian(4 * idx3 + i, 4 * idx3 + j, contact_hessian(3 + j, 3 + i), idx5);
-                stepper->addJacobian(4 * idx3 + i, 4 * idx2 + j, contact_hessian(6 + j, 3 + i), idx5, idx6);
-                stepper->addJacobian(4 * idx3 + i, 4 * idx4 + j, contact_hessian(9 + j, 3 + i), idx5, idx6);
+                stepper->addJacobian(4 * idx3 + i, 4 * idx3 + j, contact_hessian(3 + j, 3 + i),
+                                     idx5);
+                stepper->addJacobian(4 * idx3 + i, 4 * idx2 + j, contact_hessian(6 + j, 3 + i),
+                                     idx5, idx6);
+                stepper->addJacobian(4 * idx3 + i, 4 * idx4 + j, contact_hessian(9 + j, 3 + i),
+                                     idx5, idx6);
 
                 // third row
-                stepper->addJacobian(4 * idx2 + i, 4 * idx1 + j, contact_hessian(j, 6 + i), idx6, idx5);
-                stepper->addJacobian(4 * idx2 + i, 4 * idx3 + j, contact_hessian(3 + j, 6 + i), idx6, idx5);
-                stepper->addJacobian(4 * idx2 + i, 4 * idx2 + j, contact_hessian(6 + j, 6 + i), idx6);
-                stepper->addJacobian(4 * idx2 + i, 4 * idx4 + j, contact_hessian(9 + j, 6 + i), idx6);
+                stepper->addJacobian(4 * idx2 + i, 4 * idx1 + j, contact_hessian(j, 6 + i), idx6,
+                                     idx5);
+                stepper->addJacobian(4 * idx2 + i, 4 * idx3 + j, contact_hessian(3 + j, 6 + i),
+                                     idx6, idx5);
+                stepper->addJacobian(4 * idx2 + i, 4 * idx2 + j, contact_hessian(6 + j, 6 + i),
+                                     idx6);
+                stepper->addJacobian(4 * idx2 + i, 4 * idx4 + j, contact_hessian(9 + j, 6 + i),
+                                     idx6);
 
                 // forth row
-                stepper->addJacobian(4 * idx4 + i, 4 * idx1 + j, contact_hessian(j, 9 + i), idx6, idx5);
-                stepper->addJacobian(4 * idx4 + i, 4 * idx3 + j, contact_hessian(3 + j, 9 + i), idx6, idx5);
-                stepper->addJacobian(4 * idx4 + i, 4 * idx2 + j, contact_hessian(6 + j, 9 + i), idx6);
-                stepper->addJacobian(4 * idx4 + i, 4 * idx4 + j, contact_hessian(9 + j, 9 + i), idx6);
+                stepper->addJacobian(4 * idx4 + i, 4 * idx1 + j, contact_hessian(j, 9 + i), idx6,
+                                     idx5);
+                stepper->addJacobian(4 * idx4 + i, 4 * idx3 + j, contact_hessian(3 + j, 9 + i),
+                                     idx6, idx5);
+                stepper->addJacobian(4 * idx4 + i, 4 * idx2 + j, contact_hessian(6 + j, 9 + i),
+                                     idx6);
+                stepper->addJacobian(4 * idx4 + i, 4 * idx4 + j, contact_hessian(9 + j, 9 + i),
+                                     idx6);
             }
         }
         first_iter = false;

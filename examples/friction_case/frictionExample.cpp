@@ -1,7 +1,7 @@
 #include "robotDescription.h"
 
-
 extern ofstream logging_output_file;  // defined in main.cpp
+
 /*
  * Axial Friction Example
  *
@@ -9,11 +9,9 @@ extern ofstream logging_output_file;  // defined in main.cpp
  * custom external forces, and loggers in the function below.
  */
 
-void get_robot_description(int argc, char** argv,
-                           const shared_ptr<softRobots>& soft_robots,
+void get_robot_description(int argc, char** argv, const shared_ptr<softRobots>& soft_robots,
                            const shared_ptr<forceContainer>& forces,
-                           shared_ptr<worldLogger>& logger,
-                           simParams& sim_params,
+                           shared_ptr<worldLogger>& logger, simParams& sim_params,
                            renderParams& render_params) {
 
     sim_params.dt = 5e-3;
@@ -33,7 +31,8 @@ void get_robot_description(int argc, char** argv,
     double density = 509.2985;
     double poisson = 0.5;
     double mu = 0.4;
-    soft_robots->addLimb(Vector3d(0.0, 0.00, 0.025), Vector3d(1.0, 0.00, 0.025), n, density, radius, young_mod, poisson, mu);
+    soft_robots->addLimb(Vector3d(0.0, 0.00, 0.025), Vector3d(1.0, 0.00, 0.025), n, density, radius,
+                         young_mod, poisson, mu);
 
     // Add gravity
     Vector3d gravity_vec(0.0, 0.0, -9.8);
@@ -63,5 +62,6 @@ void get_robot_description(int argc, char** argv,
     // Set logger to record velocities
     string logfile_base = "log_files/friction_case";
     int logging_period = 1;
-    logger = make_shared<velocityLogger>(logfile_base, force_value, logging_output_file, logging_period);
+    logger =
+        make_shared<velocityLogger>(logfile_base, force_value, logging_output_file, logging_period);
 }

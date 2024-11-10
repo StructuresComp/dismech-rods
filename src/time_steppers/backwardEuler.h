@@ -5,10 +5,9 @@
 
 class backwardEuler : public implicitTimeStepper
 {
-public:
+  public:
     backwardEuler(const shared_ptr<softRobots>& soft_robots,
-                  const shared_ptr<forceContainer>& forces,
-                  const simParams& sim_params,
+                  const shared_ptr<forceContainer>& forces, const simParams& sim_params,
                   solverType solver_type);
     ~backwardEuler() override;
 
@@ -19,10 +18,9 @@ public:
 
     double stepForwardInTime() override;
 
-private:
+  private:
     double goldSteinLineSearch(double dt);
     double wolfeLineSearch(double dt);
 };
-
 
 #endif

@@ -1,20 +1,19 @@
 #ifndef SYMBOLICEQUATIONS_H
 #define SYMBOLICEQUATIONS_H
 
-#include <symengine/llvm_double.h>
 #include "globalDefinitions.h"
+#include <symengine/llvm_double.h>
 
 using namespace SymEngine;
 
-
 class symbolicEquations
 {
-public:
+  public:
     symbolicEquations();
 
     void generateContactPotentialPiecewiseFunctions();
     void generateFrictionJacobianPiecewiseFunctions();
-//    void generateFloorContactForce();
+    //    void generateFloorContactForce();
     void generateFloorFrictionJacobianFunctions();
 
     LLVMDoubleVisitor E_p2p_gradient_func;
@@ -41,14 +40,14 @@ public:
     LLVMDoubleVisitor floor_friction_partials_gamma1_dfr_dx_func;
     LLVMDoubleVisitor floor_friction_partials_gamma1_dfr_dfn_func;
 
-private:
+  private:
     bool symbolic_cse;
     int opt_level;
 
     // Helper functions for symbolic differentiation process
-    static void subtract_matrix(const DenseMatrix &A, const DenseMatrix &B, DenseMatrix &C);
-    static void get_norm(const DenseMatrix &num, RCP<const Basic> &C);
-    static void convert_to_unit_vector(const DenseMatrix &num, DenseMatrix &C);
+    static void subtract_matrix(const DenseMatrix& A, const DenseMatrix& B, DenseMatrix& C);
+    static void get_norm(const DenseMatrix& num, RCP<const Basic>& C);
+    static void convert_to_unit_vector(const DenseMatrix& num, DenseMatrix& C);
 
     RCP<const Basic> x1s_x;
     RCP<const Basic> x1s_y;

@@ -1,30 +1,32 @@
 #ifndef COLLISION_DETECTOR_H
 #define COLLISION_DETECTOR_H
 
-#include <fcl/narrowphase/collision.h>
-#include <fcl/broadphase/default_broadphase_callbacks.h>
-#include <fcl/broadphase/broadphase_dynamic_AABB_tree.h>
-#include "rod_mechanics/softRobots.h"
 #include "rod_mechanics/external_forces/contactEnums.h"
-
+#include "rod_mechanics/softRobots.h"
+#include <fcl/broadphase/broadphase_dynamic_AABB_tree.h>
+#include <fcl/broadphase/default_broadphase_callbacks.h>
+#include <fcl/narrowphase/collision.h>
 
 class collisionDetector
 {
-public:
+  public:
     explicit collisionDetector(const shared_ptr<softRobots>& soft_robots, double col_limit,
                                double delta, bool self_contact);
-    struct limb_edge_info {
-        limb_edge_info(int limb_id, int edge_id):
-                       limb_id(limb_id), edge_id(edge_id)
-        {}
+
+    struct limb_edge_info
+    {
+        limb_edge_info(int limb_id, int edge_id) : limb_id(limb_id), edge_id(edge_id) {
+        }
+
         int limb_id;
         int edge_id;
     };
 
-    struct contact_pair {
-        contact_pair(limb_edge_info* c1, limb_edge_info* c2) :
-                     c1(c1), c2(c2)
-        {}
+    struct contact_pair
+    {
+        contact_pair(limb_edge_info* c1, limb_edge_info* c2) : c1(c1), c2(c2) {
+        }
+
         limb_edge_info* c1;
         limb_edge_info* c2;
     };
@@ -36,7 +38,7 @@ public:
     void narrowPhaseCollisionDetection();
     vector<Eigen::Vector<int, 8>> contact_ids;
 
-private:
+  private:
     double delta;
     double col_limit;
     bool self_contact;
@@ -52,9 +54,8 @@ private:
     vector<fcl::BroadPhaseCollisionManagerf*> collision_managers;
 
     static bool fixBound(double& x);
-    void lumelskyMinDist(int& idx1, int& idx2, int& idx3, int& idx4, int& idx5,
-                          int& idx6, double& dist, ConstraintType& constraint_type);
+    void lumelskyMinDist(int& idx1, int& idx2, int& idx3, int& idx4, int& idx5, int& idx6,
+                         double& dist, ConstraintType& constraint_type);
 };
-
 
 #endif

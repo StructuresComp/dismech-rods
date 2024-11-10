@@ -1,7 +1,7 @@
 #include "robotDescription.h"
 
-
 extern ofstream logging_output_file;  // defined in main.cpp
+
 /*
  * Real2Sim Example
  *
@@ -9,11 +9,9 @@ extern ofstream logging_output_file;  // defined in main.cpp
  * custom external forces, and loggers in the function below.
  */
 
-void get_robot_description(int argc, char** argv,
-                           const shared_ptr<softRobots>& soft_robots,
+void get_robot_description(int argc, char** argv, const shared_ptr<softRobots>& soft_robots,
                            const shared_ptr<forceContainer>& forces,
-                           shared_ptr<worldLogger>& logger,
-                           simParams& sim_params,
+                           shared_ptr<worldLogger>& logger, simParams& sim_params,
                            renderParams& render_params) {
 
     sim_params.dt = 1e-4;
@@ -32,8 +30,10 @@ void get_robot_description(int argc, char** argv,
     double poisson = 0.5;
 
     // Create two appendages
-    soft_robots->addLimb(Vector3d(0.0, 0.0, 0.0), Vector3d(0.075, 0.0, 0.0), n, density, radius, young_mod, poisson);
-    soft_robots->addLimb(Vector3d(0.075, 0.0, 0.0), Vector3d(0.15, 0.0, 0.0), n, density, radius, young_mod, poisson);
+    soft_robots->addLimb(Vector3d(0.0, 0.0, 0.0), Vector3d(0.075, 0.0, 0.0), n, density, radius,
+                         young_mod, poisson);
+    soft_robots->addLimb(Vector3d(0.075, 0.0, 0.0), Vector3d(0.15, 0.0, 0.0), n, density, radius,
+                         young_mod, poisson);
 
     soft_robots->createJoint(0, -1);
     soft_robots->addToJoint(0, 1, 0);
@@ -51,7 +51,8 @@ void get_robot_description(int argc, char** argv,
 
     // Add kappa_bar controller
     string phi_ctrl_file_path = "src/controllers/openloop_control_trajectories/solved_phis.csv";
-    soft_robots->addController(make_shared<openLoopUniformKappaBarController>(soft_robots, phi_ctrl_file_path));
+    soft_robots->addController(
+        make_shared<openLoopUniformKappaBarController>(soft_robots, phi_ctrl_file_path));
 
     // Set logger to record nodes
     string logfile_base = "log_files/real2sim";

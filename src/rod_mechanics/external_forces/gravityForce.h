@@ -7,14 +7,14 @@ class baseTimeStepper;
 
 class gravityForce : public baseForce
 {
-public:
+  public:
     gravityForce(const shared_ptr<softRobots>& soft_robots, Vector3d g_vector);
     ~gravityForce() override;
 
     void computeForce(double dt) override;
     void computeForceAndJacobian(double dt) override;
 
-private:
+  private:
     Vector3d g_vector;
     void setGravity();
     vector<VectorXd> mass_gravities;

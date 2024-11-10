@@ -1,17 +1,13 @@
 #include "verletPosition.h"
 #include <ctime>
 
-
 verletPosition::verletPosition(const shared_ptr<softRobots>& soft_robots,
                                const shared_ptr<forceContainer>& forces,
-                               const simParams& sim_params) :
-                               explicitTimeStepper(soft_robots, forces, sim_params)
-{
+                               const simParams& sim_params)
+    : explicitTimeStepper(soft_robots, forces, sim_params) {
 }
 
-
 verletPosition::~verletPosition() = default;
-
 
 double verletPosition::stepForwardInTime() {
     // First position half step
@@ -21,7 +17,8 @@ double verletPosition::stepForwardInTime() {
     }
 
     // Perform collision detection if contact is enabled
-    if (forces->cf) forces->cf->broadPhaseCollisionDetection();
+    if (forces->cf)
+        forces->cf->broadPhaseCollisionDetection();
 
     // Evaluation of local accelerations
     // compute F(q_t+dt/2)
@@ -29,7 +26,8 @@ double verletPosition::stepForwardInTime() {
     prepSystemForIteration();
     forces->computeForces(0.5 * dt);
 
-    // Could perhaps explore a vectorized solution for this later but too complicated for now.
+    // Could perhaps explore a vectorized solution for this later but too
+    // complicated for now.
     int counter = 0;
     double acceleration;
     int limb_num = 0;
@@ -54,7 +52,6 @@ double verletPosition::stepForwardInTime() {
     updateSystemForNextTimeStep();
     return dt;
 }
-
 
 void verletPosition::updateSystemForNextTimeStep() {
     for (const auto& controller : controllers) {

@@ -7,7 +7,7 @@
 
 class forceContainer
 {
-public:
+  public:
     forceContainer();
     explicit forceContainer(const vector<shared_ptr<baseForce>>& m_forces);
     ~forceContainer();
@@ -22,7 +22,7 @@ public:
     shared_ptr<contactForce> cf;
     shared_ptr<floorContactForce> ff;
 
-private:
+  private:
     vector<shared_ptr<baseForce>> forces;
 };
 

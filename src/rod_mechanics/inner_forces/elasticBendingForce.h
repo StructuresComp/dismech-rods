@@ -7,13 +7,13 @@ class baseTimeStepper;
 
 class elasticBendingForce : public baseForce
 {
-public:
+  public:
     elasticBendingForce(const shared_ptr<softRobots>& m_soft_robots);
     ~elasticBendingForce() override;
     void computeForce(double dt) override;
     void computeForceAndJacobian(double dt) override;
 
-private:
+  private:
     void JacobianComputation();
 
     int ci;
@@ -66,7 +66,7 @@ private:
     Matrix3d D2kappa2DeDf;
     Matrix3d D2kappa2DfDe;
 
-    void crossMat(const Vector3d &a,Matrix3d &b);
+    void crossMat(const Vector3d& a, Matrix3d& b);
 };
 
 #endif

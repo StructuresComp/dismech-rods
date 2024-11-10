@@ -7,7 +7,7 @@ class baseTimeStepper;
 
 class uniformConstantForce : public baseForce
 {
-public:
+  public:
     uniformConstantForce(const shared_ptr<softRobots>& m_soft_robots);
     ~uniformConstantForce() override;
 
@@ -16,7 +16,7 @@ public:
     void computeForce(double dt) override;
     void computeForceAndJacobian(double dt) override;
 
-private:
+  private:
     vector<pair<int, Vector3d>> limb_force_pairs;
 };
 
