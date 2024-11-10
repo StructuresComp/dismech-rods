@@ -105,8 +105,14 @@ class elasticRod
     Vector3d getVertex(int k);
 
     /**
-     * @brief Get the a (3,) position vector of the kth node from previous
-     * timestep.
+     * @brief Get the (nv, 3) position matrix of all vertices.
+     *
+     * @return The (nv, 3) position matrix of all vertices.
+     */
+    MatrixX3d getVertices();
+
+    /**
+     * @brief Get the a (3,) position vector of the kth node from previous timestep.
      *
      * @param k Index of the node.
      *
@@ -123,6 +129,27 @@ class elasticRod
      * @return The (3,) velocity vector.
      */
     Vector3d getVelocity(int k);
+
+    /**
+     * @brief Get the (nv, 3) velocity matrix of all vertices.
+     *
+     * @return The (nv, 3) velocity matrix of all vertices.
+     */
+    MatrixX3d getVelocities();
+
+    /**
+     * @brief Get the theta of the kth edge from current timestep.
+     *
+     * @return The theta of the kth edge.
+     */
+    double getTheta(int k);
+
+    /**
+     * @brief Get all the thetas from current timestep.
+     *
+     * @return The (ne, 1) vector of all the thetas.
+     */
+     VectorXd getThetas();
 
     /**
      * @brief Density [kg/m^3]
@@ -562,7 +589,6 @@ class elasticRod
     void setThetaBoundaryCondition(double desired_theta, int k);
     void freeVertexBoundaryCondition(int k);
     Vector3d getTangent(int k);
-    double getTheta(int k);
 
   private:
     void setupMap();
