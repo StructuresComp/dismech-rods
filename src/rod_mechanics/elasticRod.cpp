@@ -294,6 +294,15 @@ Vector3d elasticRod::getVertex(int k)
     return x.segment<3>(4*k);
 }
 
+MatrixX3d elasticRod::getVertices() {
+    MatrixX3d vertices(nv, 3);
+
+    for (int i = 0; i < nv; i++) {
+        vertices.row(i) = x.segment<3>(4*i);
+    }
+    return vertices;
+}
+
 Vector3d elasticRod::getPreVertex(int k)
 {
     return x0.segment<3>(4*k);
@@ -304,6 +313,15 @@ Vector3d elasticRod::getVelocity(int k)
     return u.segment<3>(4*k);
 }
 
+MatrixX3d elasticRod::getVelocities() {
+    MatrixX3d velocities(nv, 3);
+
+    for (int i = 0; i < nv; i++) {
+        velocities.row(i) = u.segment<3>(4*i);
+    }
+    return velocities;
+}
+
 Vector3d elasticRod::getTangent(int k)
 {
     return tangent.row(k);
@@ -312,6 +330,15 @@ Vector3d elasticRod::getTangent(int k)
 double elasticRod::getTheta(int k)
 {
     return x(4 * k + 3);
+}
+
+VectorXd elasticRod::getThetas() {
+    VectorXd thetas(ne);
+
+    for (int i = 0; i < ne; i++) {
+        thetas(i) = x(4*i + 3);
+    }
+    return thetas;
 }
 
 void elasticRod::computeTimeParallel()

@@ -57,7 +57,7 @@ void softRobots::applyInitialVelocities(int limb_idx, const vector<Vector3d> &ve
     }
 }
 
-void softRobots::applyPositionBC(const Matrix<double, Dynamic, 5>  &delta_pos) {
+void softRobots::applyPositionBC(const Matrix<double, Dynamic, 5> &delta_pos) {
     // delta_pos: the first col is limb_idx, second col is node_idx, third col is dx, fourth col is dy, fifth col is dz
     for (int i = 0; i < delta_pos.rows(); i++) {
         int limb_idx = delta_pos(i, 0);
