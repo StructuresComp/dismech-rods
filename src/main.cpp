@@ -29,6 +29,7 @@ int main(int argc,char *argv[])
     get_robot_description(argc, argv, soft_robots, forces, logger, sim_params, render_params);
     soft_robots->setup();
 
+    // create the world for the robot to interact with
     my_world = make_shared<world>(soft_robots, forces, sim_params);
 
     unique_ptr<derSimulationEnvironment> env;
@@ -47,7 +48,7 @@ int main(int argc,char *argv[])
         default:
             throw std::runtime_error("Unknown renderer type provided.");
     }
-
+    // run simulation
     env->runSimulation();
 
     exit(0);

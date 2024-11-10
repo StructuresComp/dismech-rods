@@ -26,7 +26,7 @@ public:
 
     void prepSystemForIteration() override;
     virtual double newtonMethod(double dt) = 0;
-    virtual void lineSearch(double dt) = 0;
+    virtual double lineSearch(double dt) = 0;
 
     // Utility variables for PARDISO solver.
     // Need to keep track of non-zero elements
@@ -44,10 +44,10 @@ protected:
     double dtol;
     int max_iter;
     bool terminate_at_max;
-    bool line_search;
     double orig_dt;
     bool adaptive_time_stepping;
     int adaptive_time_stepping_threshold;
+    lineSearchType line_search_type;
 
     template<solverType solver_type>
     void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2);
