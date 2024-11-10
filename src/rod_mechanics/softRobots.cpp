@@ -46,6 +46,13 @@ void softRobots::lockEdge(int limb_idx, int edge_idx) {
     limb->setThetaBoundaryCondition(0.0, edge_idx);
 }
 
+void softRobots::lockNode(int limb_idx, int node_idx) {
+    shared_ptr<elasticRod> limb = limbs[limb_idx];
+    limb->setVertexBoundaryCondition(limb->getVertex(edge_idx), edge_idx);
+    limb->setVertexBoundaryCondition(limb->getVertex(edge_idx+1), edge_idx+1);
+    limb->setThetaBoundaryCondition(theta, edge_idx);
+}
+
 void softRobots::applyInitialVelocities(int limb_idx, const vector<Vector3d> &velocities) {
     shared_ptr<elasticRod> limb = limbs[limb_idx];
     if (limb->nv != velocities.size()) {
@@ -57,7 +64,25 @@ void softRobots::applyInitialVelocities(int limb_idx, const vector<Vector3d> &ve
     }
 }
 
+<<<<<<< Updated upstream
 void softRobots::applyPositionBC(const Matrix<double, Dynamic, 5> &delta_pos) {
+=======
+void softRobots::applyPositionBC(const Matrix<double, Dynamic, 5>  &poses) {
+    // poses: the first col is limb_idx, second col is node_idx, third col is dx, fourth col is dy, fifth col is dz
+    for (int i = 0; i < poses.rows(); i++) {
+        int limb_idx = poses(i, 0);
+        int node_idx = poses(i, 1);
+        if (limb_idx >= limbs.size() || node_idx >= limbs[limb_idx]->nv) {
+            throw runtime_error("Invalid limb_idx or node_idx given!");
+        }
+
+        Vector3d pos = poses.row(i).segment(2, 3).transpose();
+        limbs[limb_idx]->x.segment(4*node_idx, 3) = pos;
+    }
+}
+
+void softRobots::applyDeltaPositionBC(const Matrix<double, Dynamic, 5>  &delta_pos) {
+>>>>>>> Stashed changes
     // delta_pos: the first col is limb_idx, second col is node_idx, third col is dx, fourth col is dy, fifth col is dz
     for (int i = 0; i < delta_pos.rows(); i++) {
         int limb_idx = delta_pos(i, 0);
@@ -71,8 +96,22 @@ void softRobots::applyPositionBC(const Matrix<double, Dynamic, 5> &delta_pos) {
     }
 }
 
-void softRobots::applyTwistBC(const Matrix<double, Dynamic, 3> &delta_twist) {
-    // Twists: the first col is limb_idx, second col is node_idx, third col is dtheta
+void softRobots::applyTwistBC(const Matrix<double, Dynamic, 3> &twists) {
+    // twists: the first col is limb_idx, second col is node_idx, third col is dtheta
+    for (int i = 0; i < twists.rows(); i++) {
+        int limb_idx = twists(i, 0);
+        int edge_idx = twists(i, 1);
+        if (limb_idx >= limbs.size() || edge_idx >= limbs[limb_idx]->ne) {
+            throw runtime_error("Invalid limb_idx or edge_idx given!");
+        }
+
+        double theta = twists(i, 2);
+        limbs[limb_idx]->x(4*edge_idx + 3) = theta;
+    }
+}
+
+void softRobots::applyDeltaTwistBC(const Matrix<double, Dynamic, 3> &delta_twist) {
+    // delta_twist: the first col is limb_idx, second col is node_idx, third col is dtheta
     for (int i = 0; i < delta_twist.rows(); i++) {
         int limb_idx = delta_twist(i, 0);
         int edge_idx = delta_twist(i, 1);
@@ -85,12 +124,28 @@ void softRobots::applyTwistBC(const Matrix<double, Dynamic, 3> &delta_twist) {
     }
 }
 
-void softRobots::applyCurvatureBC(const Matrix<double, Dynamic, 4> &delta_curvatures) {
-<<<<<<< HEAD
-    // Curvatures: the first col is limb_idx, second col is node_idx, third col is cx, fourth col is cy, fifth col is cz
-=======
-    // delta_curvatures: the first col is limb_idx, second col is node_idx, third col is cx, fourth col is cy
->>>>>>> main
+
+void softRobots::applyCurvatureBC(const Matrix<double, Dynamic, 4> &curvatures) {
+    // curvatures: the first col is limb_idx, second col is node_idx, third col is cx, fourth col is cy, fifth col is cz
+    for (int i = 0; i < curvatures.rows(); i++) {
+        int limb_idx = curvatures(i, 0);
+        int node_idx = curvatures(i, 1);
+        if (limb_idx >= limbs.size() || node_idx >= limbs[limb_idx]->ne || node_idx < 1) {
+            throw runtime_error("Invalid limb_idx or edge_idx given!");
+        }
+
+        // get material frames
+        double cx = curvatures(i, 2);
+        double cy = curvatures(i, 3);
+
+        limbs[limb_idx]->kappa_bar(i, 0) = cx;
+        limbs[limb_idx]->kappa_bar(i, 1) = cy;
+    }
+}
+
+
+void softRobots::applyDeltaCurvatureBC(const Matrix<double, Dynamic, 4> &delta_curvatures) {
+    // delta_curvatures: the first col is limb_idx, second col is node_idx, third col is cx, fourth col is cy, fifth col is cz
     for (int i = 0; i < delta_curvatures.rows(); i++) {
         int limb_idx = delta_curvatures(i, 0);
         int node_idx = delta_curvatures(i, 1);
@@ -98,10 +153,6 @@ void softRobots::applyCurvatureBC(const Matrix<double, Dynamic, 4> &delta_curvat
             throw runtime_error("Invalid limb_idx or edge_idx given!");
         }
 
-<<<<<<< HEAD
-        // get material frames
-=======
->>>>>>> main
         double cx = delta_curvatures(i, 2);
         double cy = delta_curvatures(i, 3);
 

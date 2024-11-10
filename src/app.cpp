@@ -96,6 +96,14 @@ public:
                 soft_robots->applyTwistBC(values);
             } else if (key == "curvature") {
                 soft_robots->applyCurvatureBC(values);
+            } else if (key == "dposition") {
+                soft_robots->applyDeltaPositionBC(values);
+            } else if (key == "dtwist") {
+                soft_robots->applyDeltaTwistBC(values);
+            } else if (key == "dcurvature") {
+                soft_robots->applyDeltaCurvatureBC(values);
+            } else {
+                throw std::runtime_error("Invalid input key provided.");
             }
         }
         if (env) {
