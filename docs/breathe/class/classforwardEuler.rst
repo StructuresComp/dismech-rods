@@ -1,5 +1,5 @@
-Class forwardEuler
+Class ForwardEuler
 ==================
 
-.. doxygenclass:: forwardEuler
+.. doxygenclass:: ForwardEuler
    :members:

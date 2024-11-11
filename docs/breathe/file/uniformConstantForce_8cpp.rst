@@ -1,4 +1,4 @@
-File uniformConstantForce.cpp
+File UniformConstantForce.cpp
 =============================
 
-.. doxygenfile:: uniformConstantForce.cpp
+.. doxygenfile:: UniformConstantForce.cpp

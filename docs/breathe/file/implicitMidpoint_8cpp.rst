@@ -1,4 +1,4 @@
-File implicitMidpoint.cpp
+File ImplicitMidpoint.cpp
 =========================
 
-.. doxygenfile:: implicitMidpoint.cpp
+.. doxygenfile:: ImplicitMidpoint.cpp

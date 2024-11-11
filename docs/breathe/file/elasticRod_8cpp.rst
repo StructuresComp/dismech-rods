@@ -1,4 +1,4 @@
-File elasticRod.cpp
+File ElasticRod.cpp
 ===================
 
-.. doxygenfile:: elasticRod.cpp
+.. doxygenfile:: ElasticRod.cpp

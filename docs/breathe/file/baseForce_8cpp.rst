@@ -1,4 +1,4 @@
-File baseForce.cpp
+File BaseForce.cpp
 ==================
 
-.. doxygenfile:: baseForce.cpp
+.. doxygenfile:: BaseForce.cpp

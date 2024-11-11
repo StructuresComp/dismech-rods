@@ -1,5 +1,5 @@
-Class symbolicEquations
+Class SymbolicEquations
 =======================
 
-.. doxygenclass:: symbolicEquations
+.. doxygenclass:: SymbolicEquations
    :members:

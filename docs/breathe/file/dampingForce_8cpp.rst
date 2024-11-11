@@ -1,4 +1,4 @@
-File dampingForce.cpp
+File DampingForce.cpp
 =====================
 
-.. doxygenfile:: dampingForce.cpp
+.. doxygenfile:: DampingForce.cpp

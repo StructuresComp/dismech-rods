@@ -1,4 +1,4 @@
-File velocityLogger.cpp
+File VelocityLogger.cpp
 =======================
 
-.. doxygenfile:: velocityLogger.cpp
+.. doxygenfile:: VelocityLogger.cpp

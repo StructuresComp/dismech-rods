@@ -1,5 +1,5 @@
-Class inertialForce
+Class InertialForce
 ===================
 
-.. doxygenclass:: inertialForce
+.. doxygenclass:: InertialForce
    :members:

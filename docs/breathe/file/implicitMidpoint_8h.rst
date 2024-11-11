@@ -1,4 +1,4 @@
-File implicitMidpoint.h
+File ImplicitMidpoint.h
 =======================
 
-.. doxygenfile:: implicitMidpoint.h
+.. doxygenfile:: ImplicitMidpoint.h

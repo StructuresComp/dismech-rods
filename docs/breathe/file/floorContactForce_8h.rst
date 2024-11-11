@@ -1,4 +1,4 @@
-File floorContactForce.h
+File FloorContactForce.h
 ========================
 
-.. doxygenfile:: floorContactForce.h
+.. doxygenfile:: FloorContactForce.h

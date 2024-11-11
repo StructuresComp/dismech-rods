@@ -1,5 +1,5 @@
-Class rodNodeLogger
+Class PositionLogger
 ===================
 
-.. doxygenclass:: rodNodeLogger
+.. doxygenclass:: PositionLogger
    :members:

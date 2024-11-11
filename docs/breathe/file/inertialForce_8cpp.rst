@@ -1,4 +1,4 @@
-File inertialForce.cpp
+File InertialForce.cpp
 ======================
 
-.. doxygenfile:: inertialForce.cpp
+.. doxygenfile:: InertialForce.cpp

@@ -1,4 +1,4 @@
-File implicitTimeStepper.h
+File ImplicitTimeStepper.h
 ==========================
 
-.. doxygenfile:: implicitTimeStepper.h
+.. doxygenfile:: ImplicitTimeStepper.h

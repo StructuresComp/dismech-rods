@@ -1,5 +1,5 @@
-Class worldLogger
+Class BaseLogger
 =================
 
-.. doxygenclass:: worldLogger
+.. doxygenclass:: BaseLogger
    :members:

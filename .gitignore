@@ -17,7 +17,7 @@ option.txt
 robotDescription.cpp
 log_files/
 
-*Example
+*_exec
 *.so
 *.egg-info
 __pycache__

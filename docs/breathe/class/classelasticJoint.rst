@@ -1,5 +1,5 @@
-Class elasticJoint
+Class ElasticJoint
 ==================
 
-.. doxygenclass:: elasticJoint
+.. doxygenclass:: ElasticJoint
    :members:

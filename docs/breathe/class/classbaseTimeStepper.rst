@@ -1,5 +1,5 @@
-Class baseTimeStepper
+Class BaseTimeStepper
 =====================
 
-.. doxygenclass:: baseTimeStepper
+.. doxygenclass:: BaseTimeStepper
    :members:

@@ -1,4 +1,4 @@
-File world.cpp
+File World.cpp
 ==============
 
-.. doxygenfile:: world.cpp
+.. doxygenfile:: World.cpp

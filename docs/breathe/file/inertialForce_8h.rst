@@ -1,4 +1,4 @@
-File inertialForce.h
+File InertialForce.h
 ====================
 
-.. doxygenfile:: inertialForce.h
+.. doxygenfile:: InertialForce.h

@@ -1,4 +1,4 @@
-File elasticTwistingForce.h
+File ElasticTwistingForce.h
 ===========================
 
-.. doxygenfile:: elasticTwistingForce.h
+.. doxygenfile:: ElasticTwistingForce.h

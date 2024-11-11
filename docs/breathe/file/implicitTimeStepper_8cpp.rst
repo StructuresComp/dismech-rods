@@ -1,4 +1,4 @@
-File implicitTimeStepper.cpp
+File ImplicitTimeStepper.cpp
 ============================
 
-.. doxygenfile:: implicitTimeStepper.cpp
+.. doxygenfile:: ImplicitTimeStepper.cpp

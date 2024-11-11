@@ -1,4 +1,4 @@
-File floorContactForce.cpp
+File FloorContactForce.cpp
 ==========================
 
-.. doxygenfile:: floorContactForce.cpp
+.. doxygenfile:: FloorContactForce.cpp

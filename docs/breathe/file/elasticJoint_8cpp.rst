@@ -1,4 +1,4 @@
-File elasticJoint.cpp
+File ElasticJoint.cpp
 =====================
 
-.. doxygenfile:: elasticJoint.cpp
+.. doxygenfile:: ElasticJoint.cpp

@@ -1,4 +1,4 @@
-File contactForce.cpp
+File ContactForce.cpp
 =====================
 
-.. doxygenfile:: contactForce.cpp
+.. doxygenfile:: ContactForce.cpp

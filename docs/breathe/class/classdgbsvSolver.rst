@@ -1,5 +1,5 @@
-Class dgbsvSolver
+Class DGBSVSolver
 =================
 
-.. doxygenclass:: dgbsvSolver
+.. doxygenclass:: DGBSVSolver
    :members:

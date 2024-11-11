@@ -11,7 +11,8 @@ if (COMPILER_SUPPORTS_MARCH_NATIVE)
 endif ()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../")
 
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 set(MAGNUM_WITH_SDL2APPLICATION ON)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
@@ -65,67 +66,61 @@ else ()
     message(WARNING "${SYMENGINE_LLVM_ERROR_LOG}")
 endif ()
 
-include_directories(${SYMENGINE_INCLUDE_DIRS}
-        ${EIGEN_INCLUDE_DIRS}
-        ${OPENGL_INCLUDE_DIRS}
-        ${GLUT_INCLUDE_DIRS}
-        MKL::MKL)
-
 set(SOURCES
         src/world.cpp
 
-        src/rod_mechanics/baseForce.cpp
-        src/rod_mechanics/elasticRod.cpp
-        src/rod_mechanics/elasticJoint.cpp
-        src/rod_mechanics/softRobots.cpp
+        src/rod_mechanics/base_force.cpp
+        src/rod_mechanics/elastic_rod.cpp
+        src/rod_mechanics/elastic_joint.cpp
+        src/rod_mechanics/soft_robots.cpp
 
-        src/rod_mechanics/forceContainer.cpp
+        src/rod_mechanics/force_container.cpp
 
-        src/rod_mechanics/inner_forces/inertialForce.cpp
-        src/rod_mechanics/inner_forces/elasticStretchingForce.cpp
-        src/rod_mechanics/inner_forces/elasticBendingForce.cpp
-        src/rod_mechanics/inner_forces/elasticTwistingForce.cpp
+        src/rod_mechanics/inner_forces/inertial_force.cpp
+        src/rod_mechanics/inner_forces/elastic_stretching_force.cpp
+        src/rod_mechanics/inner_forces/elastic_bending_force.cpp
+        src/rod_mechanics/inner_forces/elastic_twisting_force.cpp
 
-        src/rod_mechanics/external_forces/gravityForce.cpp
-        src/rod_mechanics/external_forces/dampingForce.cpp
-        src/rod_mechanics/external_forces/floorContactForce.cpp
-        src/rod_mechanics/external_forces/symbolicEquations.cpp
-        src/rod_mechanics/external_forces/uniformConstantForce.cpp
-        src/rod_mechanics/external_forces/collisionDetector.cpp
-        src/rod_mechanics/external_forces/contactForce.cpp
+        src/rod_mechanics/external_forces/gravity_force.cpp
+        src/rod_mechanics/external_forces/damping_force.cpp
+        src/rod_mechanics/external_forces/floor_contact_force.cpp
+        src/rod_mechanics/external_forces/symbolic_equations.cpp
+        src/rod_mechanics/external_forces/uniform_constant_force.cpp
+        src/rod_mechanics/external_forces/collision_detector.cpp
+        src/rod_mechanics/external_forces/contact_force.cpp
 
-        src/time_steppers/baseTimeStepper.cpp
+        src/time_steppers/base_time_stepper.cpp
 
-        src/time_steppers/explicitTimeStepper.cpp
-        src/time_steppers/forwardEuler.cpp
-        src/time_steppers/verletPosition.cpp
+        src/time_steppers/explicit_time_stepper.cpp
+        src/time_steppers/forward_euler.cpp
+        src/time_steppers/verlet_position.cpp
 
-        src/time_steppers/implicitTimeStepper.cpp
-        src/time_steppers/backwardEuler.cpp
-        src/time_steppers/implicitMidpoint.cpp
+        src/time_steppers/implicit_time_stepper.cpp
+        src/time_steppers/backward_euler.cpp
+        src/time_steppers/implicit_midpoint.cpp
 
-        src/solvers/baseSolver.cpp
-        src/solvers/pardisoSolver.cpp
-        src/solvers/dgbsvSolver.cpp
+        src/solvers/base_solver.cpp
+        src/solvers/pardiso_solver.cpp
+        src/solvers/dgbsv_solver.cpp
 
-        src/logging/worldLogger.cpp
-        src/logging/rodNodeLogger.cpp
-        src/logging/velocityLogger.cpp
+        src/logging/base_logger.cpp
+        src/logging/position_logger.cpp
+        src/logging/velocity_logger.cpp
 
-        src/simulation_environments/derSimulationEnvironment.cpp
-        src/simulation_environments/headlessDERSimulationEnvironment.cpp
-        src/simulation_environments/openglDERSimulationEnvironment.cpp
+        src/simulation_environments/base_sim_env.cpp
+        src/simulation_environments/headless_sim_env.cpp
+        src/simulation_environments/opengl_sim_env.cpp
 
-        src/controllers/baseController.cpp
-        src/controllers/openLoopUniformKappaBarController.cpp
-        src/controllers/activeEntanglementController.cpp
+        src/controllers/base_controller.cpp
+        src/controllers/open_loop_uniform_kappa_bar_controller.cpp
+        src/controllers/active_entanglement_controller.cpp
 
         src/utils/utils.cpp
 )
 
 if (WITH_MAGNUM)
     set(SOURCES ${SOURCES}
-            src/simulation_environments/magnumDERSimulationEnvironment.cpp
+            src/simulation_environments/magnum_sim_env.cpp
     )
 endif ()
 
@@ -160,19 +155,29 @@ if (WITH_MAGNUM)
     )
 endif ()
 
+if (WITH_PYBIND)
+    set(LINK_LIBRARIES ${LINK_LIBRARIES}
+            pybind11::module
+    )
+endif ()
+
 if (OpenMP_CXX_FOUND)
     set (LINK_LIBRARIES ${LINK_LIBRARIES}
             OpenMP::OpenMP_CXX
     )
 endif ()
 
-link_directories(${MKL_LIBRARY_DIR})
-
 add_library(common_sources STATIC ${SOURCES})
 
 target_include_directories(common_sources PUBLIC
-        src
+        ${CMAKE_SOURCE_DIR}/src
 )
+
+target_include_directories(common_sources SYSTEM PRIVATE
+        Eigen3::Eigen
+        ${SYMENGINE_INCLUDE_DIRS}
+        ${OPENGL_INCLUDE_DIRS}
+        ${GLUT_INCLUDE_DIRS})
 
 target_link_libraries(common_sources PUBLIC
         ${LINK_LIBRARIES}
@@ -194,17 +199,17 @@ target_link_libraries(common_sources PUBLIC
 #    add_subdirectory("docs")
 #endif ()
 
-if (EXISTS ${CMAKE_SOURCE_DIR}/robotDescription.cpp)
+if (EXISTS ${CMAKE_SOURCE_DIR}/robot_description.cpp)
     add_executable(disMech
             src/main.cpp
-            robotDescription.cpp
+            robot_description.cpp
     )
 
     target_link_libraries(disMech PRIVATE
             common_sources
     )
 else()
-    message(WARNING "No robotDescription.cpp found. No executable will be created.")
+    message(WARNING "No robot_description.cpp found. No executable will be created.")
 endif()
 
 if (WITH_PYBIND)
@@ -216,21 +221,21 @@ if (WITH_PYBIND)
     )
 
     set_target_properties(py_dismech PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/py_dismech"
-)
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/py_dismech"
+    )
 endif()
 
 
 option(CREATE_EXAMPLES OFF)
 
 set(EXAMPLES
-        examples/active_entanglement_case/activeEntanglementExample.cpp
-        examples/cantilever_case/cantileverExample.cpp
-        examples/friction_case/frictionExample.cpp
-        examples/helix_case/helixExample.cpp
-        examples/horton_case/hortonExample.cpp
-        examples/real2sim_case/real2simExample.cpp
-        examples/spider_case/spiderExample.cpp
+        examples/active_entanglement_case/active_entanglement_example.cpp
+        examples/cantilever_case/cantilever_example.cpp
+        examples/friction_case/friction_example.cpp
+        examples/helix_case/helix_example.cpp
+        examples/horton_case/horton_example.cpp
+        examples/real2sim_case/real2sim_example.cpp
+        examples/spider_case/spider_example.cpp
 )
 if (CREATE_EXAMPLES)
     # Loop through each example file and create a build target
@@ -238,16 +243,18 @@ if (CREATE_EXAMPLES)
         get_filename_component(EXAMPLE_NAME ${EXAMPLE} NAME_WE)
         get_filename_component(EXAMPLE_DIR ${EXAMPLE} DIRECTORY)
 
-        add_executable(${EXAMPLE_NAME}
+        set(EXEC_NAME "${EXAMPLE_NAME}_exec")
+
+        add_executable(${EXEC_NAME}
                 src/main.cpp
                 ${EXAMPLE}
         )
 
-        set_target_properties(${EXAMPLE_NAME} PROPERTIES
+        set_target_properties(${EXEC_NAME} PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/${EXAMPLE_DIR}
         )
 
-        target_link_libraries(${EXAMPLE_NAME} PRIVATE
+        target_link_libraries(${EXEC_NAME} PRIVATE
             common_sources
         )
     endforeach()

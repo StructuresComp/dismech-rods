@@ -1,7 +1,7 @@
 #include "utils.h"
 #include <iomanip>  // std::setprecision
 
-string convert_float_to_scientific_str(double d) {
+string convertFloatToScientificStr(double d) {
     std::stringstream ss;
     ss << std::fixed << scientific << setprecision(2);  // I know the precision, so this is fine
     ss << d;
@@ -9,7 +9,7 @@ string convert_float_to_scientific_str(double d) {
 }
 
 template <class VecN>
-void load_txt(const string& filename, vector<VecN>& data) {
+void loadTxt(const string& filename, vector<VecN>& data) {
     fstream cin;
     cin.open(filename);
     if (cin.fail()) {
@@ -42,5 +42,5 @@ void load_txt(const string& filename, vector<VecN>& data) {
     }
 }
 
-template void load_txt<Vector3d>(const string& filename, vector<Vector3d>& data);
-template void load_txt<Vector4d>(const string& filename, vector<Vector4d>& data);
+template void loadTxt<Vector3d>(const string& filename, vector<Vector3d>& data);
+template void loadTxt<Vector4d>(const string& filename, vector<Vector4d>& data);

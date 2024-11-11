@@ -1,5 +1,5 @@
-Class floorContactForce
+Class FloorContactForce
 =======================
 
-.. doxygenclass:: floorContactForce
+.. doxygenclass:: FloorContactForce
    :members:

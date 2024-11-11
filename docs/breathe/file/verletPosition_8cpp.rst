@@ -1,4 +1,4 @@
-File verletPosition.cpp
+File VerletPosition.cpp
 =======================
 
-.. doxygenfile:: verletPosition.cpp
+.. doxygenfile:: VerletPosition.cpp

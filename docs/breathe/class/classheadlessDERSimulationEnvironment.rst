@@ -1,5 +1,5 @@
-Class headlessDERSimulationEnvironment
+Class HeadlessSimEnv
 ======================================
 
-.. doxygenclass:: headlessDERSimulationEnvironment
+.. doxygenclass:: HeadlessSimEnv
    :members:

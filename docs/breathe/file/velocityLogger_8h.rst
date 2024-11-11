@@ -1,4 +1,4 @@
-File velocityLogger.h
+File VelocityLogger.h
 =====================
 
-.. doxygenfile:: velocityLogger.h
+.. doxygenfile:: VelocityLogger.h

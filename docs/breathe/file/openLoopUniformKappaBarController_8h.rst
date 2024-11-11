@@ -1,4 +1,4 @@
-File openLoopUniformKappaBarController.h
+File OpenLoopUniformKappaBarController.h
 ========================================
 
-.. doxygenfile:: openLoopUniformKappaBarController.h
+.. doxygenfile:: OpenLoopUniformKappaBarController.h

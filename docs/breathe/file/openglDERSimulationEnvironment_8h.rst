@@ -1,4 +1,4 @@
-File openglDERSimulationEnvironment.h
+File OpenGLSimEnv.h
 =====================================
 
-.. doxygenfile:: openglDERSimulationEnvironment.h
+.. doxygenfile:: OpenGLSimEnv.h

@@ -1,5 +1,5 @@
-Class velocityLogger
+Class VelocityLogger
 ====================
 
-.. doxygenclass:: velocityLogger
+.. doxygenclass:: VelocityLogger
    :members:

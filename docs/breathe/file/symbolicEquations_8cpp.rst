@@ -1,4 +1,4 @@
-File symbolicEquations.cpp
+File SymbolicEquations.cpp
 ==========================
 
-.. doxygenfile:: symbolicEquations.cpp
+.. doxygenfile:: SymbolicEquations.cpp

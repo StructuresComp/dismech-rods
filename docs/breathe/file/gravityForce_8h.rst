@@ -1,4 +1,4 @@
-File gravityForce.h
+File GravityForce.h
 ===================
 
-.. doxygenfile:: gravityForce.h
+.. doxygenfile:: GravityForce.h

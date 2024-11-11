@@ -1,4 +1,4 @@
-File baseController.cpp
+File BaseController.cpp
 =======================
 
-.. doxygenfile:: baseController.cpp
+.. doxygenfile:: BaseController.cpp

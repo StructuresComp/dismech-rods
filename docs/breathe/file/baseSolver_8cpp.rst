@@ -1,4 +1,4 @@
-File baseSolver.cpp
+File BaseSolver.cpp
 ===================
 
-.. doxygenfile:: baseSolver.cpp
+.. doxygenfile:: BaseSolver.cpp

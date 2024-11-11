@@ -1,5 +1,5 @@
-Struct simParams
+Struct SimParams
 ================
 
-.. doxygenstruct:: simParams
+.. doxygenstruct:: SimParams
    :members:

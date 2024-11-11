@@ -1,5 +1,5 @@
-Class baseForce
+Class BaseForce
 ===============
 
-.. doxygenclass:: baseForce
+.. doxygenclass:: BaseForce
    :members:

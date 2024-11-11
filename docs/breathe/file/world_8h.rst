@@ -1,4 +1,4 @@
-File world.h
+File World.h
 ============
 
-.. doxygenfile:: world.h
+.. doxygenfile:: World.h

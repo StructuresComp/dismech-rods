@@ -1,5 +1,5 @@
-Class pardisoSolver
+Class PardisoSolver
 ===================
 
-.. doxygenclass:: pardisoSolver
+.. doxygenclass:: PardisoSolver
    :members:

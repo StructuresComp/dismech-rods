@@ -1,5 +1,5 @@
-Class derSimulationEnvironment
+Class BaseSimEnv
 ==============================
 
-.. doxygenclass:: derSimulationEnvironment
+.. doxygenclass:: BaseSimEnv
    :members:

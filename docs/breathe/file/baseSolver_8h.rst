@@ -1,4 +1,4 @@
-File baseSolver.h
+File BaseSolver.h
 =================
 
-.. doxygenfile:: baseSolver.h
+.. doxygenfile:: BaseSolver.h

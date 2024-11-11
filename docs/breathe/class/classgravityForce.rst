@@ -1,5 +1,5 @@
-Class gravityForce
+Class GravityForce
 ==================
 
-.. doxygenclass:: gravityForce
+.. doxygenclass:: GravityForce
    :members:

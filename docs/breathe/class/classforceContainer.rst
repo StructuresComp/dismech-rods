@@ -1,5 +1,5 @@
-Class forceContainer
+Class ForceContainer
 ====================
 
-.. doxygenclass:: forceContainer
+.. doxygenclass:: ForceContainer
    :members:

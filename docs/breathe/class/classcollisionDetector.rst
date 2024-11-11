@@ -1,5 +1,5 @@
-Class collisionDetector
+Class CollisionDetector
 =======================
 
-.. doxygenclass:: collisionDetector
+.. doxygenclass:: CollisionDetector
    :members:

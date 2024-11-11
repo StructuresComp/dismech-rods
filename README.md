@@ -186,7 +186,7 @@ Below is an example rendering.
     cmake -DWITH_MAGNUM=ON ..
     make -j$(nproc)
     ```
-  - For those wishing to customize the rendering settings, users can take a look and adjust the source code in `magnumDERSimulationEnvironment.cpp` accordingly.
+  - For those wishing to customize the rendering settings, users can take a look and adjust the source code in `MagnumSimEnv.cpp` accordingly.
 - [Pybind11](https://github.com/pybind/pybind11)
   - DisMech also offers Python bindings via pybind11. Users can either install by source or via `pip install pybind11`.
   Afterward, the bindings can be built as follows:
@@ -212,14 +212,15 @@ Below is an example rendering.
 ***
 
 ### Running Examples in C++
-DisMech is setup so that simulation environments can be instantiated using a single cpp file called `robotDescription.cpp`.
+DisMech is setup so that simulation environments can be instantiated using a single cpp file
+called `robot_description.cpp`.
 
 Several example of working DisMech simulations can be seen in the `examples/` directory.
 In order to run an example, copy the example cpp file into the main directory and then compile DisMech.
 For example, using the cantilever beam example:
 
 ```bash
-cp examples/cantilever_case/cantileverExample.cpp robotDescription.cpp
+cp examples/cantilever_case/cantilever_example.cpp robot_description.cpp
 mkdir build && cd build
 cmake ..
 make -j$(nproc)
@@ -230,7 +231,7 @@ Afterwards, simply run the simulation using the `dismech.sh` script.
 ./dismech.sh
 ```
 Modifications to the examples can be made easily by changing the parameters shown below.
-If you want to run another example, simply replace the `robotDescription.cpp` file and recompile.
+If you want to run another example, simply replace the `robot_description.cpp` file and recompile.
 Users can also simply build all examples from the start. To do so, run the following:
 ```bash
 mkdir build && cd build
@@ -238,7 +239,7 @@ cmake -DCREATE_EXAMPLES=on ..
 make -j$(nproc)
 cd ..
 # Make sure to run from the main directory as some examples use relative paths
-OMP_NUM_THREADS=1 ./examples/spider_case/spiderExample
+OMP_NUM_THREADS=1 ./examples/spider_case/spider_example_exec
 ```
 The Pardiso solver can be parallelized by setting the env variable `OMP_NUM_THREADS > 1`. For all the systems defined
 in `/examples`, their Jacobian matrices are small enough that any amount of parallelization actually slows down the
@@ -249,38 +250,40 @@ for larger systems through profiling.
 
 Python versions of certain examples can be found in `py_examples/`. To run, simply run the provided scripts:
 ```bash
-OMP_NUM_THREADS=1 python py_examples/spider_case/spiderExample.py
+OMP_NUM_THREADS=1 python py_examples/spider_case/spider_example.py
 ```
 ***
 
 ### Creating Custom Simulation Environments
 In case you want to create a custom simulation environment, take a look at the provided examples on how to do so.
 
-Model and environment parameters such as defining the soft structure(s) / robot(s), boundary conditions, forces, and logging are done solely in `robotDescription.cpp` to avoid large recompile times.
+Model and environment parameters such as defining the soft structure(s) / robot(s), boundary
+conditions, forces, and logging are done solely in `robot_description.cpp` to avoid large recompile times.
 
-In addition, various simulation and rendering parameters can be set through the `simParams` and `renderParams` structs, respectively. Both are shown below with default values and brief descriptions. For in-depth descriptions, please take a look at documentation in `globalDefinitions.h`.
+In addition, various simulation and rendering parameters can be set through the `SimParams` and
+`RenderParams` structs, respectively. Both are shown below with default values and brief descriptions. For in-depth descriptions, please take a look at documentation in `global_definitions.h`.
 Note that parameters with a `*` have additional explanations below. Parameters with a `^` only apply when an implicit numerical integration scheme is chosen and are otherwise ignored.
 ```c++
-struct simParams {
+struct SimParams {
 
-  struct maxIterations {
+  struct MaxIterations {
       int num_iters = 500;                       //   Number of iters to attempt solve
       bool terminate_at_max = true;              //   Whether to terminate after num_iters
   };
 
   double sim_time = 10;                          //    Total time for simulation [s]
   double dt = 1e-3;                              //    Time step size [s]
-  integratorMethod integrator = BACKWARD_EULER;  // *  Numerical integration scheme
+  IntegratorMethod integrator = BACKWARD_EULER;  // *  Numerical integration scheme
   double dtol = 1e-2;                            // *^ Dynamics tolerance [m/s]
   double ftol = 1e-4;                            // *^ Force tolerance
-  maxIterations max_iter;                        // ^  Maximum iterations for a time step
-  lineSearchType line_search = GOLDSTEIN;        // *^ Specify line search algorithm
+  MaxIterations max_iter;                        // ^  Maximum iterations for a time step
+  LineSearchType line_search = GOLDSTEIN;        // *^ Specify line search algorithm
   int adaptive_time_stepping = 0;                // *^ Adaptive time stepping
   bool enable_2d_sim = false;                    //    Lock z and theta DOFs
 };
 
-struct renderParams {
-  renderEngine renderer = OPENGL;                // *  Renderer type
+struct RenderParams {
+  RenderEngine renderer = OPENGL;                // *  Renderer type
   double render_scale = 1.0;                     //    Rendering scale
   int cmd_line_per = 1;                          //    Command line sim info output period
   int render_per = 1;                            //    Rendering period (only for Magnum)
@@ -301,7 +304,7 @@ Detailed parameter explanations:
   - `VERLET_POSITION`: https://en.wikipedia.org/wiki/Verlet_integration
   - `BACKWARD_EULER`: https://en.wikipedia.org/wiki/Backward_Euler_method
   - `IMPLICIT_MIDPOINT`: https://en.wikipedia.org/wiki/Midpoint_method
-- `lineSearchType` - Determines the line search method. Currently, available options are
+- `LineSearchType` - Determines the line search method. Currently, available options are
   - `NO_LS`: Do not use line search.
   - `GOLDSTEIN`: https://en.wikipedia.org/wiki/Backtracking_line_search
   - `WOLFE`: https://en.wikipedia.org/wiki/Wolfe_conditions

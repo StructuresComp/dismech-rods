@@ -1,4 +1,4 @@
-File elasticBendingForce.cpp
+File ElasticBendingForce.cpp
 ============================
 
-.. doxygenfile:: elasticBendingForce.cpp
+.. doxygenfile:: ElasticBendingForce.cpp

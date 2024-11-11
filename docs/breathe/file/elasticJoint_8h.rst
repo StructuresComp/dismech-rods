@@ -1,4 +1,4 @@
-File elasticJoint.h
+File ElasticJoint.h
 ===================
 
-.. doxygenfile:: elasticJoint.h
+.. doxygenfile:: ElasticJoint.h

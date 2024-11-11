@@ -1,5 +1,5 @@
-Class elasticTwistingForce
+Class ElasticTwistingForce
 ==========================
 
-.. doxygenclass:: elasticTwistingForce
+.. doxygenclass:: ElasticTwistingForce
    :members:

@@ -1,4 +1,4 @@
-File dgbsvSolver.cpp
+File DGBSVSolver.cpp
 ====================
 
-.. doxygenfile:: dgbsvSolver.cpp
+.. doxygenfile:: DGBSVSolver.cpp

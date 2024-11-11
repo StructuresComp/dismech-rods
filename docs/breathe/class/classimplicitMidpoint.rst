@@ -1,5 +1,5 @@
-Class implicitMidpoint
+Class ImplicitMidpoint
 ======================
 
-.. doxygenclass:: implicitMidpoint
+.. doxygenclass:: ImplicitMidpoint
    :members:

@@ -1,5 +1,5 @@
-Class contactForce
+Class ContactForce
 ==================
 
-.. doxygenclass:: contactForce
+.. doxygenclass:: ContactForce
    :members:

@@ -1,5 +1,5 @@
-Class elasticBendingForce
+Class ElasticBendingForce
 =========================
 
-.. doxygenclass:: elasticBendingForce
+.. doxygenclass:: ElasticBendingForce
    :members:

@@ -1,4 +1,4 @@
-File pardisoSolver.cpp
+File PardisoSolver.cpp
 ======================
 
-.. doxygenfile:: pardisoSolver.cpp
+.. doxygenfile:: PardisoSolver.cpp

@@ -1,4 +1,4 @@
-File rodNodeLogger.h
+File PositionLogger.h
 ====================
 
-.. doxygenfile:: rodNodeLogger.h
+.. doxygenfile:: PositionLogger.h

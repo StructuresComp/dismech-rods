@@ -1,5 +1,5 @@
-Class world
+Class World
 ===========
 
-.. doxygenclass:: world
+.. doxygenclass:: World
    :members:

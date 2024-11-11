@@ -1,4 +1,4 @@
-File elasticRod.h
+File ElasticRod.h
 =================
 
-.. doxygenfile:: elasticRod.h
+.. doxygenfile:: ElasticRod.h

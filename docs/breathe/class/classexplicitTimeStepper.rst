@@ -1,5 +1,5 @@
-Class explicitTimeStepper
+Class ExplicitTimeStepper
 =========================
 
-.. doxygenclass:: explicitTimeStepper
+.. doxygenclass:: ExplicitTimeStepper
    :members:

@@ -1,47 +1,45 @@
-#include "globalDefinitions.h"
-#include "logging/worldLogger.h"
-#include "simulation_environments/headlessDERSimulationEnvironment.h"
-#include "simulation_environments/openglDERSimulationEnvironment.h"
+#include "global_definitions.h"
+#include "logging/base_logger.h"
+#include "simulation_environments/headless_sim_env.h"
+#include "simulation_environments/opengl_sim_env.h"
 #include "world.h"
 #ifdef WITH_MAGNUM
-#include "simulation_environments/magnumDERSimulationEnvironment.h"
+#include "simulation_environments/magnum_sim_env.h"
 #endif
-#include "robotDescription.h"
+#include "robot_description.h"
 
-shared_ptr<world> my_world;
+shared_ptr<World> my_world;
 
 // Hack: main creates the output file for logging
 ofstream logging_output_file;
 
-double openglDERSimulationEnvironment::render_scale = 1.0;
-bool openglDERSimulationEnvironment::show_mat_frames = false;
+double OpenGLSimEnv::render_scale = 1.0;
+bool OpenGLSimEnv::show_mat_frames = false;
 
 int main(int argc, char* argv[]) {
-    shared_ptr<softRobots> soft_robots = make_shared<softRobots>();
-    shared_ptr<forceContainer> forces = make_shared<forceContainer>();
-    simParams sim_params;
-    renderParams render_params;
-    shared_ptr<worldLogger> logger = nullptr;
+    shared_ptr<SoftRobots> soft_robots = make_shared<SoftRobots>();
+    shared_ptr<ForceContainer> forces = make_shared<ForceContainer>();
+    SimParams sim_params;
+    RenderParams render_params;
+    shared_ptr<BaseLogger> logger = nullptr;
 
-    get_robot_description(argc, argv, soft_robots, forces, logger, sim_params, render_params);
+    getRobotDescription(argc, argv, soft_robots, forces, logger, sim_params, render_params);
     soft_robots->setup();
 
     // create the world for the robot to interact with
-    my_world = make_shared<world>(soft_robots, forces, sim_params);
+    my_world = make_shared<World>(soft_robots, forces, sim_params);
 
-    unique_ptr<derSimulationEnvironment> env;
+    unique_ptr<BaseSimEnv> env;
     switch (render_params.renderer) {
         case HEADLESS:
-            env = make_unique<headlessDERSimulationEnvironment>(my_world, render_params, logger);
+            env = make_unique<HeadlessSimEnv>(my_world, render_params, logger);
             break;
         case OPENGL:
-            env = make_unique<openglDERSimulationEnvironment>(my_world, render_params, logger, argc,
-                                                              argv);
+            env = make_unique<OpenGLSimEnv>(my_world, render_params, logger, argc, argv);
             break;
 #ifdef WITH_MAGNUM
         case MAGNUM:
-            env = make_unique<Magnum::magnumDERSimulationEnvironment>(my_world, render_params,
-                                                                      logger, argc, argv);
+            env = make_unique<Magnum::MagnumSimEnv>(my_world, render_params, logger, argc, argv);
             break;
 #endif
         default:

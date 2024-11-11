@@ -1,5 +1,5 @@
-Class activeEntanglementController
+Class ActiveEntanglementController
 ==================================
 
-.. doxygenclass:: activeEntanglementController
+.. doxygenclass:: ActiveEntanglementController
    :members:

@@ -1,5 +1,5 @@
-Class softRobots
+Class SoftRobots
 ================
 
-.. doxygenclass:: softRobots
+.. doxygenclass:: SoftRobots
    :members:

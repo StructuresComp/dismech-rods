@@ -1,4 +1,4 @@
-File activeEntanglementController.cpp
+File ActiveEntanglementController.cpp
 =====================================
 
-.. doxygenfile:: activeEntanglementController.cpp
+.. doxygenfile:: ActiveEntanglementController.cpp

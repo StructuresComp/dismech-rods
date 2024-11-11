@@ -1,5 +1,5 @@
-Class openglDERSimulationEnvironment
+Class OpenGLSimEnv
 ====================================
 
-.. doxygenclass:: openglDERSimulationEnvironment
+.. doxygenclass:: OpenGLSimEnv
    :members:

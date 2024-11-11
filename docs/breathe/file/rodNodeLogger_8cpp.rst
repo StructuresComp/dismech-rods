@@ -1,4 +1,4 @@
-File rodNodeLogger.cpp
+File PositionLogger.cpp
 ======================
 
-.. doxygenfile:: rodNodeLogger.cpp
+.. doxygenfile:: PositionLogger.cpp

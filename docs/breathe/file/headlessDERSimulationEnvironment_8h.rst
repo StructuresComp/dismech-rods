@@ -1,4 +1,4 @@
-File headlessDERSimulationEnvironment.h
+File HeadlessSimEnv.h
 =======================================
 
-.. doxygenfile:: headlessDERSimulationEnvironment.h
+.. doxygenfile:: HeadlessSimEnv.h

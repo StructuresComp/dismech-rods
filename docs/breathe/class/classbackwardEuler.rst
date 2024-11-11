@@ -1,5 +1,5 @@
-Class backwardEuler
+Class BackwardEuler
 ===================
 
-.. doxygenclass:: backwardEuler
+.. doxygenclass:: BackwardEuler
    :members:

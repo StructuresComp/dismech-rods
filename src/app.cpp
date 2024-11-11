@@ -1,22 +1,20 @@
 #include <pybind11/eigen.h>
-#include <pybind11/functional.h>
-#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "rod_mechanics/external_forces/contactForce.h"
-#include "rod_mechanics/external_forces/dampingForce.h"
-#include "rod_mechanics/external_forces/floorContactForce.h"
-#include "rod_mechanics/external_forces/gravityForce.h"
-#include "rod_mechanics/external_forces/uniformConstantForce.h"
+#include "rod_mechanics/external_forces/contact_force.h"
+#include "rod_mechanics/external_forces/damping_force.h"
+#include "rod_mechanics/external_forces/floor_contact_force.h"
+#include "rod_mechanics/external_forces/gravity_force.h"
+#include "rod_mechanics/external_forces/uniform_constant_force.h"
 
-#include "globalDefinitions.h"
-#include "logging/worldLogger.h"
-#include "simulation_environments/headlessDERSimulationEnvironment.h"
-#include "simulation_environments/openglDERSimulationEnvironment.h"
+#include "global_definitions.h"
+#include "logging/base_logger.h"
+#include "simulation_environments/headless_sim_env.h"
+#include "simulation_environments/opengl_sim_env.h"
 #include "world.h"
 #ifdef WITH_MAGNUM
-#include "simulation_environments/magnumDERSimulationEnvironment.h"
+#include "simulation_environments/magnum_sim_env.h"
 #endif
 
 namespace py = pybind11;
@@ -24,48 +22,46 @@ namespace py = pybind11;
 // Hack: main creates the output file for logging
 ofstream logging_output_file;
 
-double openglDERSimulationEnvironment::render_scale = 1.0;
-bool openglDERSimulationEnvironment::show_mat_frames = false;
+double OpenGLSimEnv::render_scale = 1.0;
+bool OpenGLSimEnv::show_mat_frames = false;
 
 // Forward cmdline args from python
 int argc;
 std::vector<char*> argv;
 
 // Wrapper for running the simulation from Python
-class simulationManager
+class SimulationManager
 {
   public:
-    std::shared_ptr<softRobots> soft_robots;
-    std::shared_ptr<forceContainer> forces;
-    std::shared_ptr<world> my_world;
-    simParams sim_params;
-    renderParams render_params;
-    std::shared_ptr<worldLogger> logger;
-    std::unique_ptr<derSimulationEnvironment> env;
+    std::shared_ptr<SoftRobots> soft_robots;
+    std::shared_ptr<ForceContainer> forces;
+    std::shared_ptr<World> my_world;
+    SimParams sim_params;
+    RenderParams render_params;
+    std::shared_ptr<BaseLogger> logger;
+    std::unique_ptr<BaseSimEnv> env;
 
-    simulationManager() {
-        soft_robots = std::make_shared<softRobots>();
-        forces = std::make_shared<forceContainer>();
+    SimulationManager() {
+        soft_robots = std::make_shared<SoftRobots>();
+        forces = std::make_shared<ForceContainer>();
         logger = nullptr;
     }
 
     void initialize(int argc, char* argv[]) {
         soft_robots->setup();
-        my_world = std::make_shared<world>(soft_robots, forces, sim_params);
+        my_world = std::make_shared<World>(soft_robots, forces, sim_params);
 
         switch (render_params.renderer) {
             case HEADLESS:
-                env = std::make_unique<headlessDERSimulationEnvironment>(my_world, render_params,
-                                                                         logger);
+                env = std::make_unique<HeadlessSimEnv>(my_world, render_params, logger);
                 break;
             case OPENGL:
-                env = std::make_unique<openglDERSimulationEnvironment>(my_world, render_params,
-                                                                       logger, argc, argv);
+                env = std::make_unique<OpenGLSimEnv>(my_world, render_params, logger, argc, argv);
                 break;
 #ifdef WITH_MAGNUM
             case MAGNUM:
-                env = std::make_unique<Magnum::magnumDERSimulationEnvironment>(
-                    my_world, render_params, logger, argc, argv);
+                env = std::make_unique<Magnum::MagnumSimEnv>(my_world, render_params, logger, argc,
+                                                             argv);
                 break;
 #endif
             default:
@@ -116,10 +112,10 @@ class simulationManager
 
 PYBIND11_MODULE(py_dismech, m) {
     // Wrapper class for accessing dismech data and logic via pybind
-    py::class_<simulationManager>(m, "SimulationManager")
+    py::class_<SimulationManager>(m, "SimulationManager")
         .def(py::init<>())
         .def("initialize",
-             [](simulationManager& self, std::vector<std::string> args) {
+             [](SimulationManager& self, std::vector<std::string> args) {
                  // Convert std::vector<std::string> to argc and argv
                  argc = args.size();
                  for (int i = 0; i < argc; ++i) {
@@ -129,113 +125,113 @@ PYBIND11_MODULE(py_dismech, m) {
                  // Call the original function
                  self.initialize(argc, argv.data());
              })
-        .def("simulation_completed", &simulationManager::simulationCompleted)
-        .def("step_simulation", py::overload_cast<>(&simulationManager::stepSimulation))
-        .def("step_simulation", py::overload_cast<py::dict>(&simulationManager::stepSimulation))
-        .def("run_simulation", &simulationManager::runSimulation)
-        .def_readonly("soft_robots", &simulationManager::soft_robots)
-        .def_readonly("forces", &simulationManager::forces)
-        .def_readonly("sim_params", &simulationManager::sim_params)
-        .def_readonly("render_params", &simulationManager::render_params)
-        .def_readwrite("logger", &simulationManager::logger);
+        .def("simulation_completed", &SimulationManager::simulationCompleted)
+        .def("step_simulation", py::overload_cast<>(&SimulationManager::stepSimulation))
+        .def("step_simulation", py::overload_cast<py::dict>(&SimulationManager::stepSimulation))
+        .def("run_simulation", &SimulationManager::runSimulation)
+        .def_readonly("soft_robots", &SimulationManager::soft_robots)
+        .def_readonly("forces", &SimulationManager::forces)
+        .def_readonly("sim_params", &SimulationManager::sim_params)
+        .def_readonly("render_params", &SimulationManager::render_params)
+        .def_readwrite("logger", &SimulationManager::logger);
 
-    py::class_<softRobots, std::shared_ptr<softRobots>>(m, "SoftRobots")
+    py::class_<SoftRobots, std::shared_ptr<SoftRobots>>(m, "SoftRobots")
         .def(py::init<>())
         .def("addLimb",
              py::overload_cast<const Eigen::Vector3d&, const Eigen::Vector3d&, int, double, double,
-                               double, double, double>(&softRobots::addLimb),
+                               double, double, double>(&SoftRobots::addLimb),
              py::arg("start"), py::arg("end"), py::arg("num_nodes"), py::arg("rho"),
              py::arg("rod_radius"), py::arg("youngs_modulus"), py::arg("poisson_ratio"),
              py::arg("mu") = 0.0)
         .def("addLimb",
              py::overload_cast<const std::vector<Eigen::Vector3d>&, double, double, double, double,
-                               double>(&softRobots::addLimb),
+                               double>(&SoftRobots::addLimb),
              py::arg("nodes"), py::arg("rho"), py::arg("rod_radius"), py::arg("youngs_modulus"),
              py::arg("poisson_ratio"), py::arg("mu") = 0.0)
-        .def("createJoint", &softRobots::createJoint, py::arg("limb_idx"), py::arg("node_idx"))
-        .def("addToJoint", &softRobots::addToJoint, py::arg("joint_idx"), py::arg("limb_idx"),
+        .def("createJoint", &SoftRobots::createJoint, py::arg("limb_idx"), py::arg("node_idx"))
+        .def("addToJoint", &SoftRobots::addToJoint, py::arg("joint_idx"), py::arg("limb_idx"),
              py::arg("node_idx"))
-        .def("lockEdge", &softRobots::lockEdge, py::arg("limb_idx"), py::arg("edge_idx"))
-        .def("applyInitialVelocities", &softRobots::applyInitialVelocities, py::arg("limb_idx"),
+        .def("lockEdge", &SoftRobots::lockEdge, py::arg("limb_idx"), py::arg("edge_idx"))
+        .def("applyInitialVelocities", &SoftRobots::applyInitialVelocities, py::arg("limb_idx"),
              py::arg("velocities"))
-        .def("setup", &softRobots::setup)
-        .def_readonly("limbs", &softRobots::limbs, py::return_value_policy::reference_internal)
-        .def_readonly("joints", &softRobots::joints, py::return_value_policy::reference_internal);
+        .def("setup", &SoftRobots::setup)
+        .def_readonly("limbs", &SoftRobots::limbs, py::return_value_policy::reference_internal)
+        .def_readonly("joints", &SoftRobots::joints, py::return_value_policy::reference_internal);
 
-    py::class_<elasticRod, std::shared_ptr<elasticRod>>(m, "ElasticRod")
-        .def("getVertexPos", &elasticRod::getVertex)
-        .def("getVertexVel", &elasticRod::getVelocity)
-        .def("getEdgeTheta", &elasticRod::getTheta)
-        .def("getVertices", &elasticRod::getVertices)
-        .def("getVelocities", &elasticRod::getVelocities)
-        .def("getThetas", &elasticRod::getThetas)
-        .def("freeVertexBoundaryCondition", &elasticRod::freeVertexBoundaryCondition)
-        .def("setVertexBoundaryCondition", &elasticRod::setVertexBoundaryCondition)
-        .def("setThetaBoundaryCondition", &elasticRod::setThetaBoundaryCondition);
+    py::class_<ElasticRod, std::shared_ptr<ElasticRod>>(m, "ElasticRod")
+        .def("getVertexPos", &ElasticRod::getVertex)
+        .def("getVertexVel", &ElasticRod::getVelocity)
+        .def("getEdgeTheta", &ElasticRod::getTheta)
+        .def("getVertices", &ElasticRod::getVertices)
+        .def("getVelocities", &ElasticRod::getVelocities)
+        .def("getThetas", &ElasticRod::getThetas)
+        .def("freeVertexBoundaryCondition", &ElasticRod::freeVertexBoundaryCondition)
+        .def("setVertexBoundaryCondition", &ElasticRod::setVertexBoundaryCondition)
+        .def("setThetaBoundaryCondition", &ElasticRod::setThetaBoundaryCondition);
 
     // =============================== Enum Definitions =========================================
-    py::enum_<integratorMethod>(m, "IntegratorMethod")
+    py::enum_<IntegratorMethod>(m, "IntegratorMethod")
         .value("FORWARD_EULER", FORWARD_EULER)
         .value("VERLET_POSITION", VERLET_POSITION)
         .value("BACKWARD_EULER", BACKWARD_EULER)
         .value("IMPLICIT_MIDPOINT", IMPLICIT_MIDPOINT)
         .export_values();
 
-    py::enum_<renderEngine>(m, "RenderEngine")
+    py::enum_<RenderEngine>(m, "RenderEngine")
         .value("HEADLESS", HEADLESS)
         .value("OPENGL", OPENGL)
         .value("MAGNUM", MAGNUM)
         .export_values();
 
-    py::enum_<lineSearchType>(m, "LineSearchType")
+    py::enum_<LineSearchType>(m, "LineSearchType")
         .value("NO_LS", NO_LS)
         .value("GOLDSTEIN", GOLDSTEIN)
         .value("WOLFE", WOLFE)
         .export_values();
 
     // ================================== Struct Definitions =====================================
-    py::class_<simParams::maxIterations>(m, "MaxIterations")
+    py::class_<SimParams::MaxIterations>(m, "MaxIterations")
         .def(py::init<>())
-        .def_readwrite("num_iters", &simParams::maxIterations::num_iters)
-        .def_readwrite("terminate_at_max", &simParams::maxIterations::terminate_at_max);
+        .def_readwrite("num_iters", &SimParams::MaxIterations::num_iters)
+        .def_readwrite("terminate_at_max", &SimParams::MaxIterations::terminate_at_max);
 
-    py::class_<simParams>(m, "SimParams")
+    py::class_<SimParams>(m, "SimParams")
         .def(py::init<>())
-        .def_readwrite("sim_time", &simParams::sim_time)
-        .def_readwrite("dt", &simParams::dt)
-        .def_readwrite("integrator", &simParams::integrator)
-        .def_readwrite("dtol", &simParams::dtol)
-        .def_readwrite("ftol", &simParams::ftol)
-        .def_readwrite("max_iter", &simParams::max_iter)
-        .def_readwrite("line_search", &simParams::line_search)
-        .def_readwrite("adaptive_time_stepping", &simParams::adaptive_time_stepping)
-        .def_readwrite("enable_2d_sim", &simParams::enable_2d_sim);
+        .def_readwrite("sim_time", &SimParams::sim_time)
+        .def_readwrite("dt", &SimParams::dt)
+        .def_readwrite("integrator", &SimParams::integrator)
+        .def_readwrite("dtol", &SimParams::dtol)
+        .def_readwrite("ftol", &SimParams::ftol)
+        .def_readwrite("max_iter", &SimParams::max_iter)
+        .def_readwrite("line_search", &SimParams::line_search)
+        .def_readwrite("adaptive_time_stepping", &SimParams::adaptive_time_stepping)
+        .def_readwrite("enable_2d_sim", &SimParams::enable_2d_sim);
 
-    py::class_<renderParams>(m, "RenderParams")
+    py::class_<RenderParams>(m, "RenderParams")
         .def(py::init<>())
-        .def_readwrite("renderer", &renderParams::renderer)
-        .def_readwrite("render_scale", &renderParams::render_scale)
-        .def_readwrite("cmd_line_per", &renderParams::cmd_line_per)
-        .def_readwrite("render_per", &renderParams::render_per)
-        .def_readwrite("render_record_path", &renderParams::render_record_path)
-        .def_readwrite("show_mat_frames", &renderParams::show_mat_frames)
-        .def_readwrite("debug_verbosity", &renderParams::debug_verbosity);
+        .def_readwrite("renderer", &RenderParams::renderer)
+        .def_readwrite("render_scale", &RenderParams::render_scale)
+        .def_readwrite("cmd_line_per", &RenderParams::cmd_line_per)
+        .def_readwrite("render_per", &RenderParams::render_per)
+        .def_readwrite("render_record_path", &RenderParams::render_record_path)
+        .def_readwrite("show_mat_frames", &RenderParams::show_mat_frames)
+        .def_readwrite("debug_verbosity", &RenderParams::debug_verbosity);
 
     // ============================== Force Definitions ==========================================
-    py::class_<forceContainer, std::shared_ptr<forceContainer>>(m, "ForceContainer")
+    py::class_<ForceContainer, std::shared_ptr<ForceContainer>>(m, "ForceContainer")
         .def(py::init<>())
-        .def(py::init<const std::vector<std::shared_ptr<baseForce>>&>(), py::arg("m_forces"))
-        .def("addForce", &forceContainer::addForce, py::arg("force"));
+        .def(py::init<const std::vector<std::shared_ptr<BaseForce>>&>(), py::arg("m_forces"))
+        .def("addForce", &ForceContainer::addForce, py::arg("force"));
 
-    py::class_<baseForce, std::shared_ptr<baseForce>>(m, "BaseForce");
+    py::class_<BaseForce, std::shared_ptr<BaseForce>>(m, "BaseForce");
 
-    py::class_<gravityForce, std::shared_ptr<gravityForce>, baseForce>(m, "GravityForce")
-        .def(py::init<const std::shared_ptr<softRobots>&, const Eigen::Vector3d&>(),
+    py::class_<GravityForce, std::shared_ptr<GravityForce>, BaseForce>(m, "GravityForce")
+        .def(py::init<const std::shared_ptr<SoftRobots>&, const Eigen::Vector3d&>(),
              py::arg("soft_robots"), py::arg("g_vector"));
 
-    py::class_<floorContactForce, std::shared_ptr<floorContactForce>, baseForce>(
+    py::class_<FloorContactForce, std::shared_ptr<FloorContactForce>, BaseForce>(
         m, "FloorContactForce")
-        .def(py::init<const std::shared_ptr<softRobots>&, double, double, double, double>(),
+        .def(py::init<const std::shared_ptr<SoftRobots>&, double, double, double, double>(),
              py::arg("soft_robots"), py::arg("floor_delta"), py::arg("floor_slipTol"),
              py::arg("floor_z"), py::arg("floor_mu") = 0.0);
 }

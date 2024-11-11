@@ -1,4 +1,4 @@
-File collisionDetector.h
+File CollisionDetector.h
 ========================
 
-.. doxygenfile:: collisionDetector.h
+.. doxygenfile:: CollisionDetector.h

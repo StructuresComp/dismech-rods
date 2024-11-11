@@ -1,4 +1,4 @@
-File openglDERSimulationEnvironment.cpp
+File OpenGLSimEnv.cpp
 =======================================
 
-.. doxygenfile:: openglDERSimulationEnvironment.cpp
+.. doxygenfile:: OpenGLSimEnv.cpp

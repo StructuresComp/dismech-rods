@@ -1,4 +1,4 @@
-File symbolicEquations.h
+File SymbolicEquations.h
 ========================
 
-.. doxygenfile:: symbolicEquations.h
+.. doxygenfile:: SymbolicEquations.h

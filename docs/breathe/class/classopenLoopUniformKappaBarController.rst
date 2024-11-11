@@ -1,5 +1,5 @@
-Class openLoopUniformKappaBarController
+Class OpenLoopUniformKappaBarController
 =======================================
 
-.. doxygenclass:: openLoopUniformKappaBarController
+.. doxygenclass:: OpenLoopUniformKappaBarController
    :members:

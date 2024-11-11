@@ -1,4 +1,4 @@
-File backwardEuler.h
+File BackwardEuler.h
 ====================
 
-.. doxygenfile:: backwardEuler.h
+.. doxygenfile:: BackwardEuler.h

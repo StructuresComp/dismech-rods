@@ -1,4 +1,4 @@
-File collisionDetector.cpp
+File CollisionDetector.cpp
 ==========================
 
-.. doxygenfile:: collisionDetector.cpp
+.. doxygenfile:: CollisionDetector.cpp

@@ -1,4 +1,4 @@
-File forwardEuler.cpp
+File ForwardEuler.cpp
 =====================
 
-.. doxygenfile:: forwardEuler.cpp
+.. doxygenfile:: ForwardEuler.cpp

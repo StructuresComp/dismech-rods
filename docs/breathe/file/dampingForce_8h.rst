@@ -1,4 +1,4 @@
-File dampingForce.h
+File DampingForce.h
 ===================
 
-.. doxygenfile:: dampingForce.h
+.. doxygenfile:: DampingForce.h

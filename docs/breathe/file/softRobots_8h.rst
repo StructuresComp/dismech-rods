@@ -1,4 +1,4 @@
-File softRobots.h
+File SoftRobots.h
 =================
 
-.. doxygenfile:: softRobots.h
+.. doxygenfile:: SoftRobots.h

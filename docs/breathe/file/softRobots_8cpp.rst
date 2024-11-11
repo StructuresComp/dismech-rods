@@ -1,4 +1,4 @@
-File softRobots.cpp
+File SoftRobots.cpp
 ===================
 
-.. doxygenfile:: softRobots.cpp
+.. doxygenfile:: SoftRobots.cpp

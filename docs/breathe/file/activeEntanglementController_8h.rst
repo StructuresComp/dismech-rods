@@ -1,4 +1,4 @@
-File activeEntanglementController.h
+File ActiveEntanglementController.h
 ===================================
 
-.. doxygenfile:: activeEntanglementController.h
+.. doxygenfile:: ActiveEntanglementController.h

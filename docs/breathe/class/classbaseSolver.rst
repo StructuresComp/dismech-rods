@@ -1,5 +1,5 @@
-Class baseSolver
+Class BaseSolver
 ================
 
-.. doxygenclass:: baseSolver
+.. doxygenclass:: BaseSolver
    :members:

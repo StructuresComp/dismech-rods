@@ -1,4 +1,4 @@
-File elasticTwistingForce.cpp
+File ElasticTwistingForce.cpp
 =============================
 
-.. doxygenfile:: elasticTwistingForce.cpp
+.. doxygenfile:: ElasticTwistingForce.cpp

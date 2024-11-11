@@ -1,5 +1,5 @@
-Class dampingForce
+Class DampingForce
 ==================
 
-.. doxygenclass:: dampingForce
+.. doxygenclass:: DampingForce
    :members:

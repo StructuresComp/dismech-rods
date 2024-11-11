@@ -1,4 +1,4 @@
-File elasticStretchingForce.h
+File ElasticStretchingForce.h
 =============================
 
-.. doxygenfile:: elasticStretchingForce.h
+.. doxygenfile:: ElasticStretchingForce.h

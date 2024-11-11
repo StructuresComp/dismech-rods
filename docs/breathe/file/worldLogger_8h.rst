@@ -1,4 +1,4 @@
-File worldLogger.h
+File BaseLogger.h
 ==================
 
-.. doxygenfile:: worldLogger.h
+.. doxygenfile:: BaseLogger.h

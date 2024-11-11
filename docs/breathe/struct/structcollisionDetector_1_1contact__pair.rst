@@ -1,5 +1,5 @@
-Struct collisionDetector::contact_pair
+Struct CollisionDetector::ContactPair
 ======================================
 
-.. doxygenstruct:: collisionDetector::contact_pair
+.. doxygenstruct:: CollisionDetector::ContactPair
    :members:

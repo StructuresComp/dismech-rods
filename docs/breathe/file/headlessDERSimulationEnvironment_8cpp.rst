@@ -1,4 +1,4 @@
-File headlessDERSimulationEnvironment.cpp
+File HeadlessSimEnv.cpp
 =========================================
 
-.. doxygenfile:: headlessDERSimulationEnvironment.cpp
+.. doxygenfile:: HeadlessSimEnv.cpp

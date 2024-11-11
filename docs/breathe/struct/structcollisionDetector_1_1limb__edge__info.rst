@@ -1,5 +1,5 @@
-Struct collisionDetector::limb_edge_info
+Struct CollisionDetector::LimbEdgeInfo
 ========================================
 
-.. doxygenstruct:: collisionDetector::limb_edge_info
+.. doxygenstruct:: CollisionDetector::LimbEdgeInfo
    :members:

@@ -110,9 +110,9 @@ In case you want to create a custom simulation environment, take a look at the p
 
 Simulation parameters such as defining the soft structure(s) / robot(s), boundary conditions, forces, and logging are done solely in `robotDescription.cpp` so that large recompiles do not take place.
 
-In addition, many numerical parameters can be set through the `simParams` struct shown below with default values and descriptions. Note that parameters with a `*` have additional explanations below. Parameters with a `^` only apply when an implicit numerical integration scheme is chosen and are otherwise ignored.
+In addition, many numerical parameters can be set through the `SimParams` struct shown below with default values and descriptions. Note that parameters with a `*` have additional explanations below. Parameters with a `^` only apply when an implicit numerical integration scheme is chosen and are otherwise ignored.
 ```c++
-struct simParams {
+struct SimParams {
   double sim_time = 10;                              //    Total time for simulation [s]
   double dt = 1e-3;                                  //    Time step size [s]
   bool render = true;                                //    Live OpenGL rendering

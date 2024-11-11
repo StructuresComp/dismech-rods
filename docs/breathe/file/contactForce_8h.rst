@@ -1,4 +1,4 @@
-File contactForce.h
+File ContactForce.h
 ===================
 
-.. doxygenfile:: contactForce.h
+.. doxygenfile:: ContactForce.h

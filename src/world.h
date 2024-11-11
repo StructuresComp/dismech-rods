@@ -1,29 +1,29 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include "globalDefinitions.h"
+#include "global_definitions.h"
 
-#include "rod_mechanics/forceContainer.h"
-#include "rod_mechanics/softRobots.h"
+#include "rod_mechanics/force_container.h"
+#include "rod_mechanics/soft_robots.h"
 
 // include inner force classes
-#include "rod_mechanics/inner_forces/elasticBendingForce.h"
-#include "rod_mechanics/inner_forces/elasticStretchingForce.h"
-#include "rod_mechanics/inner_forces/elasticTwistingForce.h"
-#include "rod_mechanics/inner_forces/inertialForce.h"
+#include "rod_mechanics/inner_forces/elastic_bending_force.h"
+#include "rod_mechanics/inner_forces/elastic_stretching_force.h"
+#include "rod_mechanics/inner_forces/elastic_twisting_force.h"
+#include "rod_mechanics/inner_forces/inertial_force.h"
 
 // include time stepper
-#include "time_steppers/backwardEuler.h"
-#include "time_steppers/forwardEuler.h"
-#include "time_steppers/implicitMidpoint.h"
-#include "time_steppers/verletPosition.h"
+#include "time_steppers/backward_euler.h"
+#include "time_steppers/forward_euler.h"
+#include "time_steppers/implicit_midpoint.h"
+#include "time_steppers/verlet_position.h"
 
-class world
+class World
 {
   public:
-    world(const shared_ptr<softRobots>& soft_robots, const shared_ptr<forceContainer>& forces,
-          const simParams& sim_params);
-    ~world();
+    World(const shared_ptr<SoftRobots>& soft_robots, const shared_ptr<ForceContainer>& forces,
+          const SimParams& sim_params);
+    ~World();
     void updateTimeStep();
     double getCoordinate(int i, int limb_idx);
     VectorXd getM1(int i, int limb_idx);
@@ -36,11 +36,11 @@ class world
     bool floorExists();
     double getFloorZ();
 
-    shared_ptr<softRobots> soft_robots;
+    shared_ptr<SoftRobots> soft_robots;
 
   private:
-    shared_ptr<forceContainer> forces;
-    shared_ptr<baseTimeStepper> stepper;
+    shared_ptr<ForceContainer> forces;
+    shared_ptr<BaseTimeStepper> stepper;
 
     int time_step;
     double curr_time;

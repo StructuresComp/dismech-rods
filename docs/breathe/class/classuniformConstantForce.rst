@@ -1,5 +1,5 @@
-Class uniformConstantForce
+Class UniformConstantForce
 ==========================
 
-.. doxygenclass:: uniformConstantForce
+.. doxygenclass:: UniformConstantForce
    :members:

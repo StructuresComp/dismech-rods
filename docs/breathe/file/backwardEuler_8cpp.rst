@@ -1,4 +1,4 @@
-File backwardEuler.cpp
+File BackwardEuler.cpp
 ======================
 
-.. doxygenfile:: backwardEuler.cpp
+.. doxygenfile:: BackwardEuler.cpp

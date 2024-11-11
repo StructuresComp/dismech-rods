@@ -1,4 +1,4 @@
-File worldLogger.cpp
+File BaseLogger.cpp
 ====================
 
-.. doxygenfile:: worldLogger.cpp
+.. doxygenfile:: BaseLogger.cpp

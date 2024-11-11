@@ -1,4 +1,4 @@
-File uniformConstantForce.h
+File UniformConstantForce.h
 ===========================
 
-.. doxygenfile:: uniformConstantForce.h
+.. doxygenfile:: UniformConstantForce.h

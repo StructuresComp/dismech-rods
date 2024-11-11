@@ -1,5 +1,5 @@
-Class elasticStretchingForce
+Class ElasticStretchingForce
 ============================
 
-.. doxygenclass:: elasticStretchingForce
+.. doxygenclass:: ElasticStretchingForce
    :members:

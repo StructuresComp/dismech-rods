@@ -1,4 +1,4 @@
-File verletPosition.h
+File VerletPosition.h
 =====================
 
-.. doxygenfile:: verletPosition.h
+.. doxygenfile:: VerletPosition.h

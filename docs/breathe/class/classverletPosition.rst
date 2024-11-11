@@ -1,5 +1,5 @@
-Class verletPosition
+Class VerletPosition
 ====================
 
-.. doxygenclass:: verletPosition
+.. doxygenclass:: VerletPosition
    :members:

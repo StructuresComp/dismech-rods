@@ -1,4 +1,4 @@
-File baseForce.h
+File BaseForce.h
 ================
 
-.. doxygenfile:: baseForce.h
+.. doxygenfile:: BaseForce.h

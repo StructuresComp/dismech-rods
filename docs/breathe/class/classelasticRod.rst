@@ -1,5 +1,5 @@
-Class elasticRod
+Class ElasticRod
 ================
 
-.. doxygenclass:: elasticRod
+.. doxygenclass:: ElasticRod
    :members:

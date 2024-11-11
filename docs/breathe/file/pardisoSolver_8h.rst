@@ -1,4 +1,4 @@
-File pardisoSolver.h
+File PardisoSolver.h
 ====================
 
-.. doxygenfile:: pardisoSolver.h
+.. doxygenfile:: PardisoSolver.h

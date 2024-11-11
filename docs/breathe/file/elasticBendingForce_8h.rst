@@ -1,4 +1,4 @@
-File elasticBendingForce.h
+File ElasticBendingForce.h
 ==========================
 
-.. doxygenfile:: elasticBendingForce.h
+.. doxygenfile:: ElasticBendingForce.h

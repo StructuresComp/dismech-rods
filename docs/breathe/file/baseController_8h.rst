@@ -1,4 +1,4 @@
-File baseController.h
+File BaseController.h
 =====================
 
-.. doxygenfile:: baseController.h
+.. doxygenfile:: BaseController.h

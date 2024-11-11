@@ -1,5 +1,5 @@
-Class baseController
+Class BaseController
 ====================
 
-.. doxygenclass:: baseController
+.. doxygenclass:: BaseController
    :members:

@@ -1,4 +1,4 @@
-File gravityForce.cpp
+File GravityForce.cpp
 =====================
 
-.. doxygenfile:: gravityForce.cpp
+.. doxygenfile:: GravityForce.cpp

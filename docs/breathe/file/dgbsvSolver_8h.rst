@@ -1,4 +1,4 @@
-File dgbsvSolver.h
+File DGBSVSolver.h
 ==================
 
-.. doxygenfile:: dgbsvSolver.h
+.. doxygenfile:: DGBSVSolver.h
