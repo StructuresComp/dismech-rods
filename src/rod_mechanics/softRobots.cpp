@@ -44,18 +44,29 @@ void softRobots::lockEdge(int limb_idx, int edge_idx) {
         throw runtime_error("Invalid limb_idx or edge_idx given!");
     }
     shared_ptr<elasticRod> limb = limbs[limb_idx];
-    
+
     limb->setVertexBoundaryCondition(limb->getVertex(edge_idx), edge_idx);
     limb->setVertexBoundaryCondition(limb->getVertex(edge_idx+1), edge_idx+1);
     limb->setThetaBoundaryCondition(0.0, edge_idx);
 }
 
-// void softRobots::lockNode(int limb_idx, int node_idx) {
-//     shared_ptr<elasticRod> limb = limbs[limb_idx];
-//     limb->setVertexBoundaryCondition(limb->getVertex(edge_idx), edge_idx);
-//     limb->setVertexBoundaryCondition(limb->getVertex(edge_idx+1), edge_idx+1);
-//     limb->setThetaBoundaryCondition(theta, edge_idx);
-// }
+void softRobots::lockTwist(int limb_idx, int node_idx) {
+    if (limb_idx >= limbs.size() || node_idx >= limbs[limb_idx]->ne) {
+        throw runtime_error("Invalid limb_idx or edge_idx given!");
+    }
+    shared_ptr<elasticRod> limb = limbs[limb_idx];
+    limb->setThetaBoundaryCondition(0.0, node_idx);
+}
+
+
+void softRobots::lockNode(int limb_idx, int node_idx) {
+    if (limb_idx >= limbs.size() || node_idx >= limbs[limb_idx]->nv) {
+        throw runtime_error("Invalid limb_idx or node_idx given!");
+    }
+
+    shared_ptr<elasticRod> limb = limbs[limb_idx];
+    limb->setVertexBoundaryCondition(limb->getVertex(node_idx), node_idx);
+}
 
 void softRobots::applyInitialVelocities(int limb_idx, const vector<Vector3d> &velocities) {
     shared_ptr<elasticRod> limb = limbs[limb_idx];
@@ -70,6 +81,8 @@ void softRobots::applyInitialVelocities(int limb_idx, const vector<Vector3d> &ve
 
 void softRobots::applyPositionBC(const Matrix<double, Dynamic, 5>  &poses) {
     // poses: the first col is limb_idx, second col is node_idx, third col is dx, fourth col is dy, fifth col is dz
+    cout << poses << endl;
+
     for (int i = 0; i < poses.rows(); i++) {
         int limb_idx = poses(i, 0);
         int node_idx = poses(i, 1);
@@ -92,6 +105,8 @@ void softRobots::applyDeltaPositionBC(const Matrix<double, Dynamic, 5>  &delta_p
         }
 
         Vector3d dpos = delta_pos.row(i).segment(2, 3).transpose();
+
+        // cout << "dpos " << dpos << endl;
         limbs[limb_idx]->x.segment(4*node_idx, 3) += dpos;
     }
 }

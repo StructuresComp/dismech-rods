@@ -11,8 +11,8 @@ elasticBendingForce::elasticBendingForce(const shared_ptr<softRobots>& m_soft_ro
     for (const auto& limb : soft_robots->limbs) {
         double EI = limb->EI;
         Matrix2d EIMat;
-        EIMat << EI, 0,
-                 0, EI;
+        EIMat << 100 * EI, 0,
+                 0,   EI;
         EIMatrices.push_back(EIMat);
 
         int nv = limb->nv;

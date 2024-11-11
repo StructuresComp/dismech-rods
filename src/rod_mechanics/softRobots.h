@@ -25,8 +25,11 @@ public:
     void addToJoint(int joint_idx, int limb_idx, int node_idx);
 
     void lockEdge(int limb_idx, int edge_idx);
+    void lockNode(int limb_idx, int node_idx);
+    void lockTwist(int limb_idx, int node_idx);
+
     void applyInitialVelocities(int limb_idx, const vector<Vector3d>& velocities);
-    
+
     void applyPositionBC(const Matrix<double, Dynamic, 5> &pos);
     void applyDeltaPositionBC(const Matrix<double, Dynamic, 5>  &delta_pos);
 
