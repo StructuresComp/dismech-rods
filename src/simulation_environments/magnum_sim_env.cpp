@@ -1,5 +1,11 @@
 #include "magnum_sim_env.h"
-#include "global_definitions.h"
+#include "logging/base_logger.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/soft_robots.h"
+#include "world.h"
+#include <iomanip>
+#include <sstream>
 
 /*
  * The majority of this code's mouse interaction logic has been adapted from

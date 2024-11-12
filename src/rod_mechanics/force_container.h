@@ -1,9 +1,12 @@
 #ifndef FORCE_CONTAINER_H
 #define FORCE_CONTAINER_H
 
-#include "base_force.h"
-#include "external_forces/contact_force.h"
-#include "external_forces/floor_contact_force.h"
+#include "global_definitions.h"
+
+class BaseForce;
+class BaseTimeStepper;
+class ContactForce;
+class FloorContactForce;
 
 class ForceContainer
 {

@@ -3,6 +3,12 @@
 
 #include "base_sim_env.h"
 #include "global_definitions.h"
+
+/*
+ * The large number of includes here is not ideal, but forward declaring is too much of a hassle
+ * given Magnum's huge number of template classes. Since Magnum's renderer should be used
+ * sparingly for creating videos, we will leave all the header includes here for now.
+ */
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -32,8 +38,6 @@
 #include <Magnum/Trade/ImageData.h>
 #include <Magnum/Trade/MeshData.h>
 #include <MagnumPlugins/PngImageConverter/PngImageConverter.h>
-#include <iomanip>
-#include <sstream>
 
 namespace Magnum
 {
@@ -107,7 +111,7 @@ class MagnumSimEnv : public Platform::Application,
     void mouseScrollEvent(MouseScrollEvent& event) override;
     void drawEvent() override;
 
-    void renderEdge(Vec<3> top_vertex, Vec<3> bot_vertex, float radius, Color3 color);
+    void renderEdge(Vec3 top_vertex, Vec3 bot_vertex, float radius, Color3 color);
 
     Shaders::VertexColorGL3D vertex_color_shader{NoCreate};
     Shaders::FlatGL3D flat_shader{NoCreate};

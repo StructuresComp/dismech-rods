@@ -2,7 +2,6 @@
 #define IMPLICIT_TIME_STEPPER_H
 
 #include "base_time_stepper.h"
-#include "mkl_types.h"
 #include "solvers/solver_types.h"
 
 class BaseSolver;
@@ -28,12 +27,12 @@ class ImplicitTimeStepper : public BaseTimeStepper
     // Need to keep track of non-zero elements
     // in ImplicitTimeStepper to avoid n^2 construction later.
     // This allows us to keep complexity to nlogn.
-    MKL_INT* ia;
+    int* ia{};
     std::vector<std::pair<int, int>> non_zero_elements;
 
     // For dgbsv solver
-    double* dgbsv_jacobian;
-    int kl, ku, num_rows;
+    double* dgbsv_jacobian{};
+    int kl{}, ku{}, num_rows{};
 
   protected:
     virtual double newtonMethod(double dt) = 0;
@@ -55,7 +54,7 @@ class ImplicitTimeStepper : public BaseTimeStepper
     std::shared_ptr<ImplicitTimeStepper> shared_from_this();  // NOLINT
     std::unique_ptr<BaseSolver> solver;
     SolverType solver_type;
-    int dgbsv_jacobian_len;
+    int dgbsv_jacobian_len{};
 };
 
 #endif  // IMPLICIT_TIME_STEPPER_H

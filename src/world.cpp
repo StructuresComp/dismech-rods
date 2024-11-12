@@ -1,4 +1,18 @@
 #include "world.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/external_forces/contact_force.h"
+#include "rod_mechanics/external_forces/floor_contact_force.h"
+#include "rod_mechanics/force_container.h"
+#include "rod_mechanics/inner_forces/elastic_bending_force.h"
+#include "rod_mechanics/inner_forces/elastic_stretching_force.h"
+#include "rod_mechanics/inner_forces/elastic_twisting_force.h"
+#include "rod_mechanics/inner_forces/inertial_force.h"
+#include "rod_mechanics/soft_robots.h"
+#include "time_steppers/backward_euler.h"
+#include "time_steppers/forward_euler.h"
+#include "time_steppers/implicit_midpoint.h"
+#include "time_steppers/verlet_position.h"
 
 World::World(const std::shared_ptr<SoftRobots>& soft_robots,
              const std::shared_ptr<ForceContainer>& forces, const SimParams& sim_params)

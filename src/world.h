@@ -3,20 +3,9 @@
 
 #include "global_definitions.h"
 
-#include "rod_mechanics/force_container.h"
-#include "rod_mechanics/soft_robots.h"
-
-// include inner force classes
-#include "rod_mechanics/inner_forces/elastic_bending_force.h"
-#include "rod_mechanics/inner_forces/elastic_stretching_force.h"
-#include "rod_mechanics/inner_forces/elastic_twisting_force.h"
-#include "rod_mechanics/inner_forces/inertial_force.h"
-
-// include time stepper
-#include "time_steppers/backward_euler.h"
-#include "time_steppers/forward_euler.h"
-#include "time_steppers/implicit_midpoint.h"
-#include "time_steppers/verlet_position.h"
+class SoftRobots;
+class ForceContainer;
+class BaseTimeStepper;
 
 class World
 {

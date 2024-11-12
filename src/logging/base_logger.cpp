@@ -11,8 +11,8 @@
 
 // The C++ Standard Library
 #include "world.h"
+#include <ctime>  // for the file name of the log file
 #include <stdexcept>
-#include <time.h>  // for the file name of the log file
 // for the folder creation
 namespace fs = std::filesystem;
 

@@ -1,4 +1,6 @@
 #include "headless_sim_env.h"
+#include "logging/base_logger.h"
+#include "world.h"
 
 HeadlessSimEnv::HeadlessSimEnv(const std::shared_ptr<World>& m_world,
                                const RenderParams& render_params,

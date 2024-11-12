@@ -1,7 +1,7 @@
 #include "position_logger.h"
-
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/soft_robots.h"
 #include "world.h"
-#include <utility>
 
 PositionLogger::PositionLogger(std::string logfile_base, std::ofstream& df, int per)
     : BaseLogger("node", std::move(logfile_base), df, per) {

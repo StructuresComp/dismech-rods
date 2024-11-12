@@ -1,4 +1,8 @@
 #include "base_time_stepper.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/force_container.h"
+#include "rod_mechanics/soft_robots.h"
 
 BaseTimeStepper::BaseTimeStepper(const std::shared_ptr<SoftRobots>& soft_robots,
                                  const std::shared_ptr<ForceContainer>& forces,

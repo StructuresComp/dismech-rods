@@ -2,10 +2,10 @@
 #define CONTACT_FORCE_H
 
 #include "rod_mechanics/base_force.h"
-#include "rod_mechanics/external_forces/collision_detector.h"
 #include "rod_mechanics/external_forces/contact_enums.h"
-#include "rod_mechanics/external_forces/symbolic_equations.h"
 
+class CollisionDetector;
+class SymbolicEquations;
 class BaseTimeStepper;
 
 class ContactForce : public BaseForce
@@ -13,6 +13,7 @@ class ContactForce : public BaseForce
   public:
     ContactForce(const std::shared_ptr<SoftRobots>& soft_robots, double col_limit, double delta,
                  double k_scaler, bool friction, double nu, bool self_contact);
+    ~ContactForce();
 
     //    void updateContactStiffness();
     void computeForce(double dt) override;

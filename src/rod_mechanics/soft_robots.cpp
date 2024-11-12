@@ -1,4 +1,7 @@
 #include "soft_robots.h"
+#include "controllers/base_controller.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
 
 SoftRobots::SoftRobots() = default;
 

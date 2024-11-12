@@ -1,4 +1,7 @@
 #include "explicit_time_stepper.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/soft_robots.h"
 
 ExplicitTimeStepper::ExplicitTimeStepper(const std::shared_ptr<SoftRobots>& soft_robots,
                                          const std::shared_ptr<ForceContainer>& forces,

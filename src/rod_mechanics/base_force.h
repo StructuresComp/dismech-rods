@@ -2,8 +2,8 @@
 #define BASE_FORCE_H
 
 #include "global_definitions.h"
-#include "soft_robots.h"
 
+class SoftRobots;
 class BaseTimeStepper;
 
 class BaseForce

@@ -8,6 +8,7 @@
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <vector>
 
 using Vec2 = Eigen::Vector2d;
 using Vec3 = Eigen::Vector3d;

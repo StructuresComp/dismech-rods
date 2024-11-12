@@ -1,12 +1,11 @@
 #ifndef SOFT_ROBOTS_H
 #define SOFT_ROBOTS_H
 
-#include "elastic_joint.h"
-#include "elastic_rod.h"
 #include "global_definitions.h"
 
-// Include Controller
-#include "controllers/base_controller.h"
+class ElasticRod;
+class ElasticJoint;
+class BaseController;
 
 class SoftRobots
 {

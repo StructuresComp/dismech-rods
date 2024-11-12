@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <fstream>  // std::fstream
 #include <iomanip>  // std::setprecision
 
 std::string convertFloatToScientificStr(double d) {

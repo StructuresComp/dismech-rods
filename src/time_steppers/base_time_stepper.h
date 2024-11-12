@@ -1,10 +1,13 @@
 #ifndef BASE_TIME_STEPPER_H
 #define BASE_TIME_STEPPER_H
 
-#include "controllers/base_controller.h"
 #include "global_definitions.h"
-#include "rod_mechanics/force_container.h"
-#include "rod_mechanics/soft_robots.h"
+
+class SoftRobots;
+class ElasticRod;
+class ElasticJoint;
+class BaseController;
+class ForceContainer;
 
 class BaseTimeStepper : public std::enable_shared_from_this<BaseTimeStepper>
 {

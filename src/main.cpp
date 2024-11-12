@@ -17,8 +17,8 @@ double OpenGLSimEnv::render_scale = 1.0;
 bool OpenGLSimEnv::show_mat_frames = false;
 
 int main(int argc, char* argv[]) {
-    std::shared_ptr<SoftRobots> soft_robots = std::make_shared<SoftRobots>();
-    std::shared_ptr<ForceContainer> forces = std::make_shared<ForceContainer>();
+    auto soft_robots = std::make_shared<SoftRobots>();
+    auto forces = std::make_shared<ForceContainer>();
     SimParams sim_params;
     RenderParams render_params;
     std::shared_ptr<BaseLogger> logger = nullptr;

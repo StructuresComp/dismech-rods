@@ -6,17 +6,17 @@
 class DGBSVSolver : public BaseSolver
 {
   public:
-    explicit DGBSVSolver(std::shared_ptr<ImplicitTimeStepper> stepper);
+    explicit DGBSVSolver(const std::shared_ptr<ImplicitTimeStepper>& stepper);
     ~DGBSVSolver() override;
 
     void integrator() override;
 
-    MKL_INT kl;  // lower diagonals
-    MKL_INT ku;  // upper diagonals
-    MKL_INT NUMROWS;
+    int kl;  // lower diagonals
+    int ku;  // upper diagonals
+    int NUMROWS;
 
   private:
-    MKL_INT info;
+    int info;
 };
 
 #endif  // DGBSV_SOLVER_H

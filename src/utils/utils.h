@@ -2,7 +2,6 @@
 #define UTILS_H
 
 #include "global_definitions.h"
-#include <fstream>
 
 std::string convertFloatToScientificStr(double d);
 

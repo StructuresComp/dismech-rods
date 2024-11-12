@@ -1,4 +1,5 @@
 #include "open_loop_uniform_kappa_bar_controller.h"
+#include "rod_mechanics/elastic_rod.h"
 #include "rod_mechanics/soft_robots.h"
 #include <fstream>
 

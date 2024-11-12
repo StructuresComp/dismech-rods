@@ -1,4 +1,7 @@
 #include "damping_force.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/soft_robots.h"
 #include "time_steppers/base_time_stepper.h"
 
 DampingForce::DampingForce(const std::shared_ptr<SoftRobots>& m_soft_robots, double m_viscosity)

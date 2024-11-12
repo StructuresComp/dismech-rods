@@ -1,8 +1,9 @@
 #ifndef ELASTIC_JOINT_H
 #define ELASTIC_JOINT_H
 
-#include "elastic_rod.h"
 #include "global_definitions.h"
+
+class ElasticRod;
 
 class ElasticJoint
 {

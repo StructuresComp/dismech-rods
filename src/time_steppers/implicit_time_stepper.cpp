@@ -1,7 +1,9 @@
 #include "implicit_time_stepper.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/soft_robots.h"
 #include "solvers/dgbsv_solver.h"
 #include "solvers/pardiso_solver.h"
-#include <algorithm>
 
 ImplicitTimeStepper::ImplicitTimeStepper(const std::shared_ptr<SoftRobots>& soft_robots,
                                          const std::shared_ptr<ForceContainer>& forces,
@@ -25,7 +27,7 @@ void ImplicitTimeStepper::initStepper() {
     switch (solver_type) {
         case PARDISO_SOLVER:
             solver = std::make_unique<PardisoSolver>(shared_from_this());
-            ia = new MKL_INT[freeDOF + 1]{0};
+            ia = new int[freeDOF + 1]{0};
             ia[0] = 1;
             break;
 
@@ -148,7 +150,7 @@ void ImplicitTimeStepper::update() {
     switch (solver_type) {
         case PARDISO_SOLVER:
             delete[] ia;
-            ia = new MKL_INT[freeDOF + 1]{0};
+            ia = new int[freeDOF + 1]{0};
             ia[0] = 1;
             break;
         case DGBSV_SOLVER:

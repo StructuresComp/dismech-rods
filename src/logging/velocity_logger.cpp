@@ -1,7 +1,7 @@
 #include "velocity_logger.h"
-
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/soft_robots.h"
 #include "world.h"
-#include <utility>
 
 VelocityLogger::VelocityLogger(std::string logfile_base, std::ofstream& df, int per)
     : BaseLogger("velocities", std::move(logfile_base), df, per) {

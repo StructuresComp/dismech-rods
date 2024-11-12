@@ -1,5 +1,10 @@
 #include "verlet_position.h"
-#include <ctime>
+#include "controllers/base_controller.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/external_forces/contact_force.h"
+#include "rod_mechanics/force_container.h"
+#include "rod_mechanics/soft_robots.h"
 
 VerletPosition::VerletPosition(const std::shared_ptr<SoftRobots>& soft_robots,
                                const std::shared_ptr<ForceContainer>& forces,

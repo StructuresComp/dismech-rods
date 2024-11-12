@@ -1,4 +1,7 @@
 #include "gravity_force.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/soft_robots.h"
 #include "time_steppers/base_time_stepper.h"
 
 GravityForce::GravityForce(const std::shared_ptr<SoftRobots>& soft_robots, Vec3 g_vector)

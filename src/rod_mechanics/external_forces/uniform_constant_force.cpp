@@ -1,4 +1,7 @@
 #include "uniform_constant_force.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/soft_robots.h"
 #include "time_steppers/base_time_stepper.h"
 
 UniformConstantForce::UniformConstantForce(const std::shared_ptr<SoftRobots>& m_soft_robots)

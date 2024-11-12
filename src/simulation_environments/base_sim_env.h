@@ -13,9 +13,9 @@
 
 // We'll need access to the World, and to Eigen classes.
 #include "global_definitions.h"
-#include "world.h"
-// The logging framework is separate from World.
-#include "logging/base_logger.h"
+
+class World;
+class BaseLogger;
 
 // Abstract class: stores the World and optionally the logger to use for that
 // World.

@@ -2,11 +2,13 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "rod_mechanics/external_forces/contact_force.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
 #include "rod_mechanics/external_forces/damping_force.h"
 #include "rod_mechanics/external_forces/floor_contact_force.h"
 #include "rod_mechanics/external_forces/gravity_force.h"
-#include "rod_mechanics/external_forces/uniform_constant_force.h"
+#include "rod_mechanics/force_container.h"
+#include "rod_mechanics/soft_robots.h"
 
 #include "global_definitions.h"
 #include "logging/base_logger.h"

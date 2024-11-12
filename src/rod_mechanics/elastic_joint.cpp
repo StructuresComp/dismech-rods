@@ -1,4 +1,5 @@
 #include "elastic_joint.h"
+#include "elastic_rod.h"
 
 ElasticJoint::ElasticJoint(int node, int limb_idx,
                            const std::vector<std::shared_ptr<ElasticRod>>& limbs)

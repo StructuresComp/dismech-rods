@@ -1,17 +1,32 @@
 #ifndef COLLISION_DETECTOR_H
 #define COLLISION_DETECTOR_H
 
+#include "global_definitions.h"
 #include "rod_mechanics/external_forces/contact_enums.h"
-#include "rod_mechanics/soft_robots.h"
-#include <fcl/broadphase/broadphase_dynamic_AABB_tree.h>
-#include <fcl/broadphase/default_broadphase_callbacks.h>
-#include <fcl/narrowphase/collision.h>
+
+class SoftRobots;
+
+namespace fcl
+{
+template <typename S>
+class CollisionObject;
+using CollisionObjectf = CollisionObject<float>;
+
+template <typename S>
+class BroadPhaseCollisionManager;
+using BroadPhaseCollisionManagerf = BroadPhaseCollisionManager<float>;
+
+template <typename S>
+class DynamicAABBTreeCollisionManager;
+using DynamicAABBTreeCollisionManagerf = DynamicAABBTreeCollisionManager<float>;
+}  // namespace fcl
 
 class CollisionDetector
 {
   public:
     explicit CollisionDetector(const std::shared_ptr<SoftRobots>& soft_robots, double col_limit,
                                double delta, bool self_contact);
+    ~CollisionDetector();
 
     struct LimbEdgeInfo
     {

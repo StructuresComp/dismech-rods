@@ -1,4 +1,9 @@
 #include "opengl_sim_env.h"
+#include "logging/base_logger.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/soft_robots.h"
+#include "world.h"
 #include <GL/freeglut.h>
 
 // the callbacks for openGL.

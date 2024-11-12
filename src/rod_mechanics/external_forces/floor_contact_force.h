@@ -2,8 +2,8 @@
 #define FLOOR_CONTACT_FORCE_H
 
 #include "rod_mechanics/base_force.h"
-#include "symbolic_equations.h"
 
+class SymbolicEquations;
 class BaseTimeStepper;
 
 class FloorContactForce : public BaseForce

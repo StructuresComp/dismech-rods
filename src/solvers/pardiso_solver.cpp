@@ -1,7 +1,16 @@
 #include "pardiso_solver.h"
+#include "mkl_pardiso.h"
+#include "mkl_types.h"
 #include "time_steppers/implicit_time_stepper.h"
 
-PardisoSolver::PardisoSolver(std::shared_ptr<ImplicitTimeStepper> stepper)
+// Define the format to printf MKL_INT values
+#if !defined(MKL_ILP64)
+#define IFORMAT "%i"
+#else
+#define IFORMAT "%lli"
+#endif
+
+PardisoSolver::PardisoSolver(const std::shared_ptr<ImplicitTimeStepper>& stepper)
     : BaseSolver(stepper, SolverType::PARDISO_SOLVER) {
     mtype = 11; /* Real unsymmetric matrix */
 

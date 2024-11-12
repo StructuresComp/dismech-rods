@@ -1,4 +1,8 @@
 #include "force_container.h"
+#include "rod_mechanics/base_force.h"
+#include "rod_mechanics/external_forces/contact_force.h"
+#include "rod_mechanics/external_forces/floor_contact_force.h"
+#include "time_steppers/base_time_stepper.h"
 
 ForceContainer::ForceContainer() : cf(nullptr), ff(nullptr) {
 }

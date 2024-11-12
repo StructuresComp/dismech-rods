@@ -1,4 +1,9 @@
 #include "contact_force.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/external_forces/collision_detector.h"
+#include "rod_mechanics/external_forces/symbolic_equations.h"
+#include "rod_mechanics/soft_robots.h"
 #include "time_steppers/base_time_stepper.h"
 
 ContactForce::ContactForce(const std::shared_ptr<SoftRobots>& soft_robots, double col_limit,
@@ -25,6 +30,9 @@ ContactForce::ContactForce(const std::shared_ptr<SoftRobots>& soft_robots, doubl
     }
 
     contact_stiffness = k_scaler;
+}
+
+ContactForce::~ContactForce() {
 }
 
 // void ContactForce::updateContactStiffness() {

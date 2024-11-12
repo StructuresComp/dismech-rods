@@ -1,4 +1,10 @@
 #include "collision_detector.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/soft_robots.h"
+#include <fcl/broadphase/broadphase_dynamic_AABB_tree.h>
+#include <fcl/broadphase/default_broadphase_callbacks.h>
+#include <fcl/narrowphase/collision.h>
 
 /*
  * We'll do collision detection using floats rather than doubles since it is
@@ -50,6 +56,17 @@ CollisionDetector::CollisionDetector(const std::shared_ptr<SoftRobots>& soft_rob
     int conservative_guess = int(0.3 * pow(num_edges, 2));
     broad_phase_collision_set.reserve(conservative_guess);
     contact_ids.reserve(conservative_guess);
+}
+
+CollisionDetector::~CollisionDetector() {
+    for (auto& manager : collision_managers) {
+        delete manager;
+    }
+    for (auto& cylinder_vector : cylinders) {
+        for (auto& cylinder : cylinder_vector) {
+            delete cylinder;
+        }
+    }
 }
 
 void CollisionDetector::prepCylinders() {

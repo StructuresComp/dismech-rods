@@ -1,4 +1,8 @@
 #include "floor_contact_force.h"
+#include "rod_mechanics/elastic_joint.h"
+#include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/external_forces/symbolic_equations.h"
+#include "rod_mechanics/soft_robots.h"
 #include "time_steppers/base_time_stepper.h"
 
 /* TODO: CURRENTLY ASSUMES JOINTS DO NOT EXIST AS CONTACT POINTS
