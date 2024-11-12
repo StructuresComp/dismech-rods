@@ -6,18 +6,28 @@
 #include <Eigen/Sparse>
 
 #include <cmath>
-#include <csignal>
-#include <cstdlib>
-#include <fcntl.h>
-#include <fcntl.h> /* For O_* constants */
 #include <iostream>
 #include <memory>
-#include <sys/mman.h>
-#include <sys/stat.h> /* For mode constants */
-#include <unistd.h>
 
-using namespace std;
-using namespace Eigen;
+using Vec2 = Eigen::Vector2d;
+using Vec3 = Eigen::Vector3d;
+using Vec4 = Eigen::Vector4d;
+template <int N>
+using Vec = Eigen::Vector<double, N>;
+using VecX = Eigen::VectorXd;
+
+using Mat2 = Eigen::Matrix2d;
+using Mat3 = Eigen::Matrix3d;
+using Mat4 = Eigen::Matrix4d;
+template <int N>
+using SqMat = Eigen::Matrix<double, N, N>;
+template <int N, int M>
+using Mat = Eigen::Matrix<double, N, M>;
+template <int N>
+using MatXN = Eigen::Matrix<double, Eigen::Dynamic, N>;
+template <int N>
+using MatNX = Eigen::Matrix<double, N, Eigen::Dynamic>;
+using MatX = Eigen::MatrixXd;
 
 typedef enum {
     FORWARD_EULER,
@@ -201,9 +211,9 @@ struct RenderParams
      * @brief Rendering frames recording path.
      *
      * Currently only supported for when renderer is set to MAGNUM.
-     * If a non-empty string, frames will be recorded to this path as png files.
+     * If a non-empty std::string, frames will be recorded to this path as png files.
      */
-    string render_record_path;
+    std::string render_record_path;
 
     /**
      * @brief Show material frames (only for OpenGL)

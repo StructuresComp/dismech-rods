@@ -21,8 +21,9 @@
 
 #include "utils/utils.h"
 
-void getRobotDescription(int argc, char** argv, const shared_ptr<SoftRobots>& soft_robots,
-                         const shared_ptr<ForceContainer>& forces, shared_ptr<BaseLogger>& logger,
-                         SimParams& sim_params, RenderParams& render_params);
+void getRobotDescription(int argc, char** argv, const std::shared_ptr<SoftRobots>& soft_robots,
+                         const std::shared_ptr<ForceContainer>& forces,
+                         std::shared_ptr<BaseLogger>& logger, SimParams& sim_params,
+                         RenderParams& render_params);
 
 #endif

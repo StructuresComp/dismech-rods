@@ -8,38 +8,39 @@
 #endif
 #include "robot_description.h"
 
-shared_ptr<World> my_world;
+std::shared_ptr<World> my_world;
 
 // Hack: main creates the output file for logging
-ofstream logging_output_file;
+std::ofstream logging_output_file;
 
 double OpenGLSimEnv::render_scale = 1.0;
 bool OpenGLSimEnv::show_mat_frames = false;
 
 int main(int argc, char* argv[]) {
-    shared_ptr<SoftRobots> soft_robots = make_shared<SoftRobots>();
-    shared_ptr<ForceContainer> forces = make_shared<ForceContainer>();
+    std::shared_ptr<SoftRobots> soft_robots = std::make_shared<SoftRobots>();
+    std::shared_ptr<ForceContainer> forces = std::make_shared<ForceContainer>();
     SimParams sim_params;
     RenderParams render_params;
-    shared_ptr<BaseLogger> logger = nullptr;
+    std::shared_ptr<BaseLogger> logger = nullptr;
 
     getRobotDescription(argc, argv, soft_robots, forces, logger, sim_params, render_params);
     soft_robots->setup();
 
     // create the world for the robot to interact with
-    my_world = make_shared<World>(soft_robots, forces, sim_params);
+    my_world = std::make_shared<World>(soft_robots, forces, sim_params);
 
-    unique_ptr<BaseSimEnv> env;
+    std::unique_ptr<BaseSimEnv> env;
     switch (render_params.renderer) {
         case HEADLESS:
-            env = make_unique<HeadlessSimEnv>(my_world, render_params, logger);
+            env = std::make_unique<HeadlessSimEnv>(my_world, render_params, logger);
             break;
         case OPENGL:
-            env = make_unique<OpenGLSimEnv>(my_world, render_params, logger, argc, argv);
+            env = std::make_unique<OpenGLSimEnv>(my_world, render_params, logger, argc, argv);
             break;
 #ifdef WITH_MAGNUM
         case MAGNUM:
-            env = make_unique<Magnum::MagnumSimEnv>(my_world, render_params, logger, argc, argv);
+            env =
+                std::make_unique<Magnum::MagnumSimEnv>(my_world, render_params, logger, argc, argv);
             break;
 #endif
         default:

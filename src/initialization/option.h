@@ -2,7 +2,7 @@
 #define OPTION_H
 
 #include "../global_definitions.h"
-#include <string>
+#include <std::string>
 
 class Option
 {
@@ -22,7 +22,7 @@ class Option
     bool b;
     int i;
     double r;
-    Vector3d v;
+    Vec3 v;
     std::string s;
     std::string label;
 
@@ -42,7 +42,7 @@ class Option
         : name(opt_name), type(STRING), b(false), i(0), r(0.0), s(def), label(desc) {
     }
 
-    Option(const OptionKey& opt_name, const std::string& desc, const Vector3d& def)
+    Option(const OptionKey& opt_name, const std::string& desc, const Vec3& def)
         : name(opt_name), type(VEC), b(false), i(0), r(0.0), v(def), label(desc) {
     }
 

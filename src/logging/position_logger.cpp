@@ -14,16 +14,16 @@ PositionLogger::PositionLogger(std::string logfile_base, std::string logfile_suf
 
 PositionLogger::~PositionLogger() = default;
 
-string PositionLogger::getLogHeader() {
+std::string PositionLogger::getLogHeader() {
     return "";
 }
 
-string PositionLogger::getLogData() {
-    ostringstream log_data;
+std::string PositionLogger::getLogData() {
+    std::ostringstream log_data;
     log_data << world_ptr->getCurrentTime();
     for (const auto& limb : world_ptr->soft_robots->limbs) {
         for (int i = 0; i < limb->nv; i++) {
-            Vector3d v = limb->getVertex(i);
+            Vec3 v = limb->getVertex(i);
             log_data << "," << v(0) << "," << v(1) << "," << v(2);
         }
     }

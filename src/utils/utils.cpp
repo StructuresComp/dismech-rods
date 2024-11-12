@@ -1,24 +1,24 @@
 #include "utils.h"
 #include <iomanip>  // std::setprecision
 
-string convertFloatToScientificStr(double d) {
+std::string convertFloatToScientificStr(double d) {
     std::stringstream ss;
-    ss << std::fixed << scientific << setprecision(2);  // I know the precision, so this is fine
+    ss << std::fixed << std::scientific << std::setprecision(2);
     ss << d;
     return ss.str();
 }
 
-template <class VecN>
-void loadTxt(const string& filename, vector<VecN>& data) {
-    fstream cin;
+template <class VecX>
+void loadTxt(const std::string& filename, std::vector<VecX>& data) {
+    std::fstream cin;
     cin.open(filename);
     if (cin.fail()) {
-        cout << "Failed to open file " << filename << endl;
+        std::cout << "Failed to open file " << filename << std::endl;
         exit(1);
     }
 
     // TODO: add a check to see data is in proper (N, M) structure
-    string s;
+    std::string s;
     int number_of_lines = 0;
     while (getline(cin, s)) {
         number_of_lines++;
@@ -26,7 +26,7 @@ void loadTxt(const string& filename, vector<VecN>& data) {
     cin.close();
 
     cin.open(filename);
-    VecN entry = VecN::Zero();
+    VecX entry = VecX::Zero();
     int i = 0;
     int j;
     int shape = entry.size();
@@ -42,5 +42,5 @@ void loadTxt(const string& filename, vector<VecN>& data) {
     }
 }
 
-template void loadTxt<Vector3d>(const string& filename, vector<Vector3d>& data);
-template void loadTxt<Vector4d>(const string& filename, vector<Vector4d>& data);
+template void loadTxt<Vec3>(const std::string& filename, std::vector<Vec3>& data);
+template void loadTxt<Vec4>(const std::string& filename, std::vector<Vec4>& data);

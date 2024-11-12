@@ -1,7 +1,7 @@
 #include "damping_force.h"
 #include "time_steppers/base_time_stepper.h"
 
-DampingForce::DampingForce(const shared_ptr<SoftRobots>& m_soft_robots, double m_viscosity)
+DampingForce::DampingForce(const std::shared_ptr<SoftRobots>& m_soft_robots, double m_viscosity)
     : BaseForce(m_soft_robots), viscosity(m_viscosity) {
 }
 

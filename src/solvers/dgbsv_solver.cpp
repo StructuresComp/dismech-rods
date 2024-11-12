@@ -1,7 +1,7 @@
 #include "dgbsv_solver.h"
 #include "time_steppers/implicit_time_stepper.h"
 
-DGBSVSolver::DGBSVSolver(shared_ptr<ImplicitTimeStepper> stepper)
+DGBSVSolver::DGBSVSolver(std::shared_ptr<ImplicitTimeStepper> stepper)
     : BaseSolver(stepper, SolverType::DGBSV_SOLVER) {
     kl = 10;  // lower diagonals
     ku = 10;  // upper diagonals

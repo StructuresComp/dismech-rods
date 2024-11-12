@@ -1,7 +1,7 @@
 #include "gravity_force.h"
 #include "time_steppers/base_time_stepper.h"
 
-GravityForce::GravityForce(const shared_ptr<SoftRobots>& soft_robots, Vector3d g_vector)
+GravityForce::GravityForce(const std::shared_ptr<SoftRobots>& soft_robots, Vec3 g_vector)
     : BaseForce(soft_robots), g_vector(g_vector) {
     setGravity();
 }
@@ -37,7 +37,7 @@ void GravityForce::computeForceAndJacobian(double dt) {
 
 void GravityForce::setGravity() {
     for (const auto& limb : soft_robots->limbs) {
-        mass_gravity = VectorXd::Zero(limb->ndof);
+        mass_gravity = VecX::Zero(limb->ndof);
         for (int i = 0; i < limb->nv; i++) {
             for (int k = 0; k < 3; k++) {
                 int ind = 4 * i + k;

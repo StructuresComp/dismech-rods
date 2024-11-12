@@ -1,6 +1,7 @@
 #include "elastic_joint.h"
 
-ElasticJoint::ElasticJoint(int node, int limb_idx, const vector<shared_ptr<ElasticRod>>& limbs)
+ElasticJoint::ElasticJoint(int node, int limb_idx,
+                           const std::vector<std::shared_ptr<ElasticRod>>& limbs)
     : joint_node(node), joint_limb(limb_idx), limbs(limbs) {
     ne = 0;
     limbs[limb_idx]->addJoint(joint_node, false, 0, 0);
@@ -33,26 +34,26 @@ void ElasticJoint::setup() {
 
     // All nodal quantities will have multiple values since there are
     // multiple possible connections to the joint
-    ref_len = VectorXd(ne);
-    voronoi_len = VectorXd(num_bending_combos);
+    ref_len = VecX(ne);
+    voronoi_len = VecX(num_bending_combos);
 
-    tangents = MatrixXd::Zero(ne, 3);
+    tangents = MatX::Zero(ne, 3);
 
     for (int i = 0; i < num_bending_combos; i++) {
-        d1.emplace_back(MatrixXd::Zero(2, 3));
-        d2.emplace_back(MatrixXd::Zero(2, 3));
-        d1_old.emplace_back(MatrixXd::Zero(2, 3));
-        d2_old.emplace_back(MatrixXd::Zero(2, 3));
-        m1.emplace_back(MatrixXd::Zero(2, 3));
-        m2.emplace_back(MatrixXd::Zero(2, 3));
+        d1.emplace_back(MatX::Zero(2, 3));
+        d2.emplace_back(MatX::Zero(2, 3));
+        d1_old.emplace_back(MatX::Zero(2, 3));
+        d2_old.emplace_back(MatX::Zero(2, 3));
+        m1.emplace_back(MatX::Zero(2, 3));
+        m2.emplace_back(MatX::Zero(2, 3));
     }
-    ref_twist = VectorXd::Zero(num_bending_combos);
-    ref_twist_old = VectorXd::Zero(num_bending_combos);
+    ref_twist = VecX::Zero(num_bending_combos);
+    ref_twist_old = VecX::Zero(num_bending_combos);
 
-    kb = MatrixXd::Zero(num_bending_combos, 3);
-    kappa = MatrixXd::Zero(num_bending_combos, 2);
-    twist_bar = VectorXd::Zero(num_bending_combos);
-    edge_len = VectorXd::Zero(ne);
+    kb = MatX::Zero(num_bending_combos, 3);
+    kappa = MatX::Zero(num_bending_combos, 2);
+    twist_bar = VecX::Zero(num_bending_combos);
+    edge_len = VecX::Zero(ne);
 
     setReferenceLength();
 
@@ -83,34 +84,34 @@ void ElasticJoint::setup() {
 void ElasticJoint::updateConnectedNodes(int node_num, int limb_idx, bool remove_dof) {
     int nv = limbs[limb_idx]->nv;
     if (node_num == 0) {
-        pair<int, int> node_and_limb(1, limb_idx);
+        std::pair<int, int> node_and_limb(1, limb_idx);
         connected_nodes.push_back(node_and_limb);
         bending_twist_signs.push_back(-1);
         if (remove_dof) {
-            pair<int, int> node_and_limb2(0, limb_idx);
+            std::pair<int, int> node_and_limb2(0, limb_idx);
             replaced_nodes.push_back(node_and_limb2);
         }
         ne += 1;
     }
     else if (node_num == nv - 1) {
-        pair<int, int> node_and_limb(nv - 2, limb_idx);
+        std::pair<int, int> node_and_limb(nv - 2, limb_idx);
         connected_nodes.push_back(node_and_limb);
         bending_twist_signs.push_back(1);
         if (remove_dof) {
-            pair<int, int> node_and_limb2(nv - 1, limb_idx);
+            std::pair<int, int> node_and_limb2(nv - 1, limb_idx);
             replaced_nodes.push_back(node_and_limb2);
         }
         ne += 1;
     }
     else {
-        pair<int, int> node_and_limb1(node_num - 1, limb_idx);
+        std::pair<int, int> node_and_limb1(node_num - 1, limb_idx);
         connected_nodes.push_back(node_and_limb1);
         bending_twist_signs.push_back(1);
-        pair<int, int> node_and_limb2(node_num + 1, limb_idx);
+        std::pair<int, int> node_and_limb2(node_num + 1, limb_idx);
         connected_nodes.push_back(node_and_limb2);
         bending_twist_signs.push_back(-1);
         if (remove_dof) {
-            pair<int, int> node_and_limb3(node_num, limb_idx);
+            std::pair<int, int> node_and_limb3(node_num, limb_idx);
             replaced_nodes.push_back(node_and_limb3);
         }
         ne += 2;
@@ -133,7 +134,7 @@ void ElasticJoint::updateJoint() {
 }
 
 void ElasticJoint::updateRods() {
-    shared_ptr<ElasticRod> curr_limb;
+    std::shared_ptr<ElasticRod> curr_limb;
     int num_node;
     int limb_idx;
     for (const auto& node_and_limb : replaced_nodes) {
@@ -153,7 +154,7 @@ void ElasticJoint::addToJoint(int node_num, int limb_idx) {
 }
 
 void ElasticJoint::setReferenceLength() {
-    shared_ptr<ElasticRod> curr_limb;
+    std::shared_ptr<ElasticRod> curr_limb;
     int node, limb_idx;
     for (int i = 0; i < ne; i++) {
         node = connected_nodes[i].first;
@@ -176,7 +177,7 @@ void ElasticJoint::setReferenceLength() {
 
 void ElasticJoint::computeTangent() {
     // NOTE: all tangents are pointing toward the joint
-    shared_ptr<ElasticRod> curr_limb;
+    std::shared_ptr<ElasticRod> curr_limb;
     int num_node;
     int limb_idx;
     for (int i = 0; i < ne; i++) {
@@ -196,7 +197,7 @@ void ElasticJoint::computeTangent() {
 }
 
 void ElasticJoint::createReferenceDirectors() {
-    Vector3d t0, t1, tmp1, tmp2;
+    Vec3 t0, t1, tmp1, tmp2;
     int curr_iter = 0;
     int sgn1, sgn2;
     for (int i = 0; i < ne; i++) {
@@ -233,7 +234,7 @@ void ElasticJoint::computeMaterialDirectors() {
     int theta1_i, theta2_i;
     double angle1;
     double angle2;
-    shared_ptr<ElasticRod> limb1, limb2;
+    std::shared_ptr<ElasticRod> limb1, limb2;
     int l1, l2;
     int sgn1, sgn2;
     int curr_iter = 0;
@@ -269,8 +270,8 @@ void ElasticJoint::computeMaterialDirectors() {
 }
 
 void ElasticJoint::computeKappa() {
-    Vector3d t0, t1;
-    Vector3d m1e, m2e, m1f, m2f;
+    Vec3 t0, t1;
+    Vec3 m1e, m2e, m1f, m2f;
     int sgn1, sgn2;
     int curr_iter = 0;
 
@@ -299,10 +300,9 @@ void ElasticJoint::computeKappa() {
     }
 }
 
-void ElasticJoint::parallelTransport(const Vector3d& d1_1, const Vector3d& t1, const Vector3d& t2,
-                                     Vector3d& d1_2) {
-    Vector3d b;
-    Vector3d n1, n2;
+void ElasticJoint::parallelTransport(const Vec3& d1_1, const Vec3& t1, const Vec3& t2, Vec3& d1_2) {
+    Vec3 b;
+    Vec3 n1, n2;
 
     b = t1.cross(t2);
 
@@ -323,8 +323,8 @@ void ElasticJoint::parallelTransport(const Vector3d& d1_1, const Vector3d& t1, c
     }
 }
 
-void ElasticJoint::rotateAxisAngle(Vector3d& v, const Vector3d& z, const double& theta) {
-    // Compute the vector when it rotates along another vector into certain
+void ElasticJoint::rotateAxisAngle(Vec3& v, const Vec3& z, const double& theta) {
+    // Compute the std::vector when it rotates along another std::vector into certain
     // angle
     if (theta != 0)  // if theta=0, v = v
     {
@@ -335,9 +335,9 @@ void ElasticJoint::rotateAxisAngle(Vector3d& v, const Vector3d& z, const double&
     }
 }
 
-double ElasticJoint::signedAngle(const Vector3d& u, const Vector3d& v, const Vector3d& n) {
+double ElasticJoint::signedAngle(const Vec3& u, const Vec3& v, const Vec3& n) {
     // Compute the angle between two vectors
-    Vector3d w = u.cross(v);
+    Vec3 w = u.cross(v);
     double angle = atan2(w.norm(), u.dot(v));
     if (n.dot(w) < 0)
         return -angle;
@@ -346,7 +346,7 @@ double ElasticJoint::signedAngle(const Vector3d& u, const Vector3d& v, const Vec
 }
 
 void ElasticJoint::getRefTwist() {
-    Vector3d u0, u1, t0, t1, ut;
+    Vec3 u0, u1, t0, t1, ut;
     double sgnAngle;
     int sgn1, sgn2;
     int curr_iter = 0;
@@ -395,7 +395,7 @@ void ElasticJoint::computeTwistBar() {
 }
 
 void ElasticJoint::computeEdgeLen() {
-    shared_ptr<ElasticRod> curr_limb;
+    std::shared_ptr<ElasticRod> curr_limb;
     int num_node;
     int limb_idx;
     for (int i = 0; i < ne; i++) {
@@ -408,7 +408,7 @@ void ElasticJoint::computeEdgeLen() {
 
 void ElasticJoint::computeTimeParallel() {
     // Use old versions of (d1, d2, tangent) to get new d1, d2
-    Vector3d t0_0, t1_0, t0_1, t1_1, d1_0, d1_1;
+    Vec3 t0_0, t1_0, t0_1, t1_1, d1_0, d1_1;
     int sgn1, sgn2;
     int curr_iter = 0;
 
@@ -451,7 +451,7 @@ void ElasticJoint::prepareForIteration() {
 void ElasticJoint::setMass() {
     mass = 0;
     int limb_idx;
-    shared_ptr<ElasticRod> curr_limb;
+    std::shared_ptr<ElasticRod> curr_limb;
     for (int i = 0; i < ne; i++) {
         limb_idx = connected_nodes[i].second;
         curr_limb = limbs[limb_idx];

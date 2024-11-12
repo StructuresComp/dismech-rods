@@ -26,8 +26,8 @@ class BaseSimEnv
     // max time until self-destruct
     // frequency of reporting to command line (per "VERBOSITY")
 
-    BaseSimEnv(const shared_ptr<World>& m_world, const RenderParams& render_params,
-               const shared_ptr<BaseLogger>& logger);
+    BaseSimEnv(const std::shared_ptr<World>& m_world, const RenderParams& render_params,
+               const std::shared_ptr<BaseLogger>& logger);
     virtual ~BaseSimEnv();
 
     /**
@@ -50,7 +50,7 @@ class BaseSimEnv
     // runSimulation! and annoyingly enough, to make compatible with GLUT's C
     // implementation, need to have a static method that takes in the World,
     // etc. to output.
-    static void cmdlineOutputHelper(const shared_ptr<World>& s_world_p, int s_cmdline_per);
+    static void cmdlineOutputHelper(const std::shared_ptr<World>& s_world_p, int s_cmdline_per);
     // the non-static version will call the static one with our local variables.
     void cmdlineOutputHelper();
 
@@ -58,15 +58,15 @@ class BaseSimEnv
     // but doing it in the superclass gives a basic example
     // similarly, because of openGL, we need a static version here that takes in
     // a pointer to the logger.
-    static void cleanShutdown(shared_ptr<BaseLogger> s_logger_p, bool s_is_logging);
+    static void cleanShutdown(std::shared_ptr<BaseLogger> s_logger_p, bool s_is_logging);
     void cleanShutdown();
 
     // Locals, see constructor for info
-    shared_ptr<World> w_p = nullptr;
+    std::shared_ptr<World> w_p = nullptr;
     int cmdline_per;
 
     // and a reference to the logger if specified.
-    shared_ptr<BaseLogger> logger_p = nullptr;
+    std::shared_ptr<BaseLogger> logger_p = nullptr;
     // if not specified, don't log
     bool is_logging;
 };

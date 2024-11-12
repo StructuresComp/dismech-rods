@@ -20,7 +20,7 @@
 namespace py = pybind11;
 
 // Hack: main creates the output file for logging
-ofstream logging_output_file;
+std::ofstream logging_output_file;
 
 double OpenGLSimEnv::render_scale = 1.0;
 bool OpenGLSimEnv::show_mat_frames = false;
@@ -83,7 +83,7 @@ class SimulationManager
     void stepSimulation(py::dict input_dict) {
         for (auto item : input_dict) {
             std::string key = py::str(item.first);
-            Eigen::MatrixXd values = item.second.cast<Eigen::MatrixXd>();
+            MatX values = item.second.cast<MatX>();
 
             if (values.cols() == 1) {
                 values.transposeInPlace();
@@ -138,14 +138,14 @@ PYBIND11_MODULE(py_dismech, m) {
     py::class_<SoftRobots, std::shared_ptr<SoftRobots>>(m, "SoftRobots")
         .def(py::init<>())
         .def("addLimb",
-             py::overload_cast<const Eigen::Vector3d&, const Eigen::Vector3d&, int, double, double,
-                               double, double, double>(&SoftRobots::addLimb),
+             py::overload_cast<const Vec3&, const Vec3&, int, double, double, double, double,
+                               double>(&SoftRobots::addLimb),
              py::arg("start"), py::arg("end"), py::arg("num_nodes"), py::arg("rho"),
              py::arg("rod_radius"), py::arg("youngs_modulus"), py::arg("poisson_ratio"),
              py::arg("mu") = 0.0)
         .def("addLimb",
-             py::overload_cast<const std::vector<Eigen::Vector3d>&, double, double, double, double,
-                               double>(&SoftRobots::addLimb),
+             py::overload_cast<const std::vector<Vec3>&, double, double, double, double, double>(
+                 &SoftRobots::addLimb),
              py::arg("nodes"), py::arg("rho"), py::arg("rod_radius"), py::arg("youngs_modulus"),
              py::arg("poisson_ratio"), py::arg("mu") = 0.0)
         .def("createJoint", &SoftRobots::createJoint, py::arg("limb_idx"), py::arg("node_idx"))
@@ -226,8 +226,8 @@ PYBIND11_MODULE(py_dismech, m) {
     py::class_<BaseForce, std::shared_ptr<BaseForce>>(m, "BaseForce");
 
     py::class_<GravityForce, std::shared_ptr<GravityForce>, BaseForce>(m, "GravityForce")
-        .def(py::init<const std::shared_ptr<SoftRobots>&, const Eigen::Vector3d&>(),
-             py::arg("soft_robots"), py::arg("g_vector"));
+        .def(py::init<const std::shared_ptr<SoftRobots>&, const Vec3&>(), py::arg("soft_robots"),
+             py::arg("g_vector"));
 
     py::class_<FloorContactForce, std::shared_ptr<FloorContactForce>, BaseForce>(
         m, "FloorContactForce")

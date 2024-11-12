@@ -1,7 +1,7 @@
 #include "pardiso_solver.h"
 #include "time_steppers/implicit_time_stepper.h"
 
-PardisoSolver::PardisoSolver(shared_ptr<ImplicitTimeStepper> stepper)
+PardisoSolver::PardisoSolver(std::shared_ptr<ImplicitTimeStepper> stepper)
     : BaseSolver(stepper, SolverType::PARDISO_SOLVER) {
     mtype = 11; /* Real unsymmetric matrix */
 

@@ -9,8 +9,8 @@
 namespace Magnum
 {
 
-MagnumSimEnv::MagnumSimEnv(const shared_ptr<World>& m_world, const RenderParams& render_params,
-                           const shared_ptr<BaseLogger>& logger, int argc, char** argv)
+MagnumSimEnv::MagnumSimEnv(const std::shared_ptr<World>& m_world, const RenderParams& render_params,
+                           const std::shared_ptr<BaseLogger>& logger, int argc, char** argv)
     : Platform::Application({argc, argv}, NoCreate), BaseSimEnv(m_world, render_params, logger) {
     const Vector2 dpi_scaling = this->dpiScaling({});
     Configuration conf;
@@ -203,14 +203,14 @@ void MagnumSimEnv::drawEvent() {
     redraw();
 }
 
-void MagnumSimEnv::renderEdge(Eigen::Vector3d top_vertex, Eigen::Vector3d bot_vertex, float radius,
+void MagnumSimEnv::renderEdge(Vec3 top_vertex, Vec3 bot_vertex, float radius,
                               Magnum::Color3 color) {
     top_vertex *= render_scale;
     bot_vertex *= render_scale;
     radius *= render_scale;
 
-    Eigen::Vector3d center_line_eigen = top_vertex - bot_vertex;
-    Eigen::Vector3d center_pos_eigen = 0.5 * (top_vertex + bot_vertex);
+    Vec3 center_line_eigen = top_vertex - bot_vertex;
+    Vec3 center_pos_eigen = 0.5 * (top_vertex + bot_vertex);
 
     // Magnum uses a right-handed coordinate system where y points up
     Magnum::Vector3 center_line(center_line_eigen.x(), center_line_eigen.z(),
@@ -244,8 +244,8 @@ void MagnumSimEnv::stepSimulation() {
         curr_iter++;
     }
     catch (std::runtime_error& excep) {
-        std::cout << "Caught a runtime_error when trying to world->updateTimeStep: " << excep.what()
-                  << std::endl;
+        std::cout << "Caught a std::runtime_error when trying to world->updateTimeStep: "
+                  << excep.what() << std::endl;
         std::cout << "Attempting clean shutdown..." << std::endl;
         cleanShutdown(logger_p, is_logging);
     }

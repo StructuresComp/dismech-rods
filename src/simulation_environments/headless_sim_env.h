@@ -6,8 +6,8 @@
 class HeadlessSimEnv : public BaseSimEnv
 {
   public:
-    HeadlessSimEnv(const shared_ptr<World>& m_world, const RenderParams& render_params,
-                   const shared_ptr<BaseLogger>& logger);
+    HeadlessSimEnv(const std::shared_ptr<World>& m_world, const RenderParams& render_params,
+                   const std::shared_ptr<BaseLogger>& logger);
     ~HeadlessSimEnv() override;
 
     void stepSimulation() override;

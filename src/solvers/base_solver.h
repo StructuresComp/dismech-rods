@@ -19,14 +19,14 @@ class ImplicitTimeStepper;
 class BaseSolver
 {
   public:
-    BaseSolver(shared_ptr<ImplicitTimeStepper> stepper, SolverType solver_type);
+    BaseSolver(std::shared_ptr<ImplicitTimeStepper> stepper, SolverType solver_type);
     virtual ~BaseSolver();
     virtual void integrator() = 0;
     SolverType getSolverType();
 
   protected:
     MKL_INT nrhs;
-    shared_ptr<ImplicitTimeStepper> stepper;
+    std::shared_ptr<ImplicitTimeStepper> stepper;
 
   private:
     SolverType solver_type;

@@ -3,26 +3,27 @@
 #include "world.h"
 #include <utility>
 
-VelocityLogger::VelocityLogger(string logfile_base, ofstream& df, int per)
+VelocityLogger::VelocityLogger(std::string logfile_base, std::ofstream& df, int per)
     : BaseLogger("velocities", std::move(logfile_base), df, per) {
 }
 
-VelocityLogger::VelocityLogger(string logfile_base, string logfile_suffix, ofstream& df, int per)
+VelocityLogger::VelocityLogger(std::string logfile_base, std::string logfile_suffix,
+                               std::ofstream& df, int per)
     : BaseLogger("velocities", std::move(logfile_suffix), std::move(logfile_base), df, per) {
 }
 
 VelocityLogger::~VelocityLogger() = default;
 
-string VelocityLogger::getLogHeader() {
+std::string VelocityLogger::getLogHeader() {
     return "";
 }
 
-string VelocityLogger::getLogData() {
-    ostringstream log_data;
+std::string VelocityLogger::getLogData() {
+    std::ostringstream log_data;
     log_data << world_ptr->getCurrentTime();
     for (const auto& limb : world_ptr->soft_robots->limbs) {
         for (int i = 0; i < limb->nv; i++) {
-            Vector3d v = limb->getVelocity(i);
+            Vec3 v = limb->getVelocity(i);
             log_data << "," << v(0) << "," << v(1) << "," << v(2);
         }
     }

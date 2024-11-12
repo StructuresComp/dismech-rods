@@ -10,7 +10,7 @@
 class CollisionDetector
 {
   public:
-    explicit CollisionDetector(const shared_ptr<SoftRobots>& soft_robots, double col_limit,
+    explicit CollisionDetector(const std::shared_ptr<SoftRobots>& soft_robots, double col_limit,
                                double delta, bool self_contact);
 
     struct LimbEdgeInfo
@@ -33,25 +33,25 @@ class CollisionDetector
 
     int num_collisions;
     double min_dist;
-    vector<ContactPair> broad_phase_collision_set;
+    std::vector<ContactPair> broad_phase_collision_set;
     void broadPhaseCollisionDetection();
     void narrowPhaseCollisionDetection();
-    vector<Eigen::Vector<int, 8>> contact_ids;
+    std::vector<Eigen::Vector<int, 8>> contact_ids;
 
   private:
     double delta;
     double col_limit;
     bool self_contact;
-    shared_ptr<SoftRobots> soft_robots;
+    std::shared_ptr<SoftRobots> soft_robots;
 
-    vector<vector<LimbEdgeInfo>> limb_edge_ids;
-    vector<vector<fcl::CollisionObjectf*>> cylinders;
+    std::vector<std::vector<LimbEdgeInfo>> limb_edge_ids;
+    std::vector<std::vector<fcl::CollisionObjectf*>> cylinders;
     void prepCylinders();
 
     Eigen::Vector3f a;
     Eigen::Matrix3f rot_mat;
     void getRotMat(Eigen::Vector3f& b);
-    vector<fcl::BroadPhaseCollisionManagerf*> collision_managers;
+    std::vector<fcl::BroadPhaseCollisionManagerf*> collision_managers;
 
     static bool fixBound(double& x);
     void lumelskyMinDist(int& idx1, int& idx2, int& idx3, int& idx4, int& idx5, int& idx6,

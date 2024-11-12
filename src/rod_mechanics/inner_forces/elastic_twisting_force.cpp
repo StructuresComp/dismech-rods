@@ -1,21 +1,21 @@
 #include "elastic_twisting_force.h"
 #include "time_steppers/base_time_stepper.h"
 
-ElasticTwistingForce::ElasticTwistingForce(const shared_ptr<SoftRobots>& m_soft_robots)
+ElasticTwistingForce::ElasticTwistingForce(const std::shared_ptr<SoftRobots>& m_soft_robots)
     : BaseForce(m_soft_robots) {
     for (const auto& limb : soft_robots->limbs) {
-        gradTwists.push_back(make_shared<MatrixXd>(MatrixXd::Zero(limb->nv, 11)));
-        deltams.push_back(make_shared<VectorXd>(VectorXd::Zero(limb->ne)));
-        theta_fs.push_back(make_shared<VectorXd>(VectorXd::Zero(limb->ne)));
-        theta_es.push_back(make_shared<VectorXd>(VectorXd::Zero(limb->ne)));
+        gradTwists.push_back(std::make_shared<MatX>(MatX::Zero(limb->nv, 11)));
+        deltams.push_back(std::make_shared<VecX>(VecX::Zero(limb->ne)));
+        theta_fs.push_back(std::make_shared<VecX>(VecX::Zero(limb->ne)));
+        theta_es.push_back(std::make_shared<VecX>(VecX::Zero(limb->ne)));
     }
 
     for (const auto& joint : soft_robots->joints) {
         int nb = joint->num_bending_combos;
-        gradTwists.push_back(make_shared<MatrixXd>(MatrixXd::Zero(nb, 11)));
-        deltams.push_back(make_shared<VectorXd>(VectorXd::Zero(nb)));
-        theta_fs.push_back(make_shared<VectorXd>(VectorXd::Zero(nb)));
-        theta_es.push_back(make_shared<VectorXd>(VectorXd::Zero(nb)));
+        gradTwists.push_back(std::make_shared<MatX>(MatX::Zero(nb, 11)));
+        deltams.push_back(std::make_shared<VecX>(VecX::Zero(nb)));
+        theta_fs.push_back(std::make_shared<VecX>(VecX::Zero(nb)));
+        theta_es.push_back(std::make_shared<VecX>(VecX::Zero(nb)));
     }
 
     DDtwist.setZero(11, 11);
@@ -442,6 +442,6 @@ void ElasticTwistingForce::computeForceAndJacobian(double dt) {
 }
 
 // Utility
-void ElasticTwistingForce::crossMat(const Vector3d& a, Matrix3d& b) {
+void ElasticTwistingForce::crossMat(const Vec3& a, Mat3& b) {
     b << 0, -a(2), a(1), a(2), 0, -a(0), -a(1), a(0), 0;
 }

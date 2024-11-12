@@ -9,7 +9,7 @@ class BaseTimeStepper;
 class FloorContactForce : public BaseForce
 {
   public:
-    FloorContactForce(const shared_ptr<SoftRobots>& soft_robots, double floor_delta,
+    FloorContactForce(const std::shared_ptr<SoftRobots>& soft_robots, double floor_delta,
                       double floor_slipTol, double floor_z, double floor_mu = 0.0);
     ~FloorContactForce() override;
 
@@ -21,23 +21,22 @@ class FloorContactForce : public BaseForce
     int num_contacts;
 
   private:
-    void computeFriction(const Vector2d& curr_node, const Vector2d& pre_node, double fn, double mu,
+    void computeFriction(const Vec2& curr_node, const Vec2& pre_node, double fn, double mu,
                          double dt);
-    void prepFrictionJacobianInput(const Vector2d& curr_node, const Vector2d& pre_node, double fn,
+    void prepFrictionJacobianInput(const Vec2& curr_node, const Vec2& pre_node, double fn,
                                    double mu, double dt);
 
-    shared_ptr<SymbolicEquations> sym_eqs;
-    Vector<double, 2> contact_input;
-    Vector<double, 8> fric_jacobian_input;
-    Matrix<double, 2, 2> friction_partials_dfr_dx;
-    Vector<double, 2> friction_partials_dfr_dfn;
-    Vector<double, 2> ffr;
+    std::shared_ptr<SymbolicEquations> sym_eqs;
+    Vec2 contact_input;
+    Vec<8> fric_jacobian_input;
+    Mat2 friction_partials_dfr_dx;
+    Vec2 friction_partials_dfr_dfn;
+    Vec2 ffr;
     int fric_jaco_type;
     double contact_stiffness;
     double floor_mu;
     double delta;
     double slipTol;
-    double orig_slip_tol;
     double K1;
     double K2;
 };

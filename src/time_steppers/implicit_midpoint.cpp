@@ -1,7 +1,7 @@
 #include "implicit_midpoint.h"
 
-ImplicitMidpoint::ImplicitMidpoint(const shared_ptr<SoftRobots>& soft_robots,
-                                   const shared_ptr<ForceContainer>& forces,
+ImplicitMidpoint::ImplicitMidpoint(const std::shared_ptr<SoftRobots>& soft_robots,
+                                   const std::shared_ptr<ForceContainer>& forces,
                                    const SimParams& sim_params, SolverType solver_type)
     : BackwardEuler(soft_robots, forces, sim_params, solver_type) {
 }

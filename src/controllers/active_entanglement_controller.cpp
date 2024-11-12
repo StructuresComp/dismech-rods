@@ -2,7 +2,7 @@
 #include "rod_mechanics/soft_robots.h"
 
 ActiveEntanglementController::ActiveEntanglementController(
-    const shared_ptr<SoftRobots>& soft_robots, double start_time, double end_time)
+    const std::shared_ptr<SoftRobots>& soft_robots, double start_time, double end_time)
     : BaseController(soft_robots->limbs), start_time(start_time), end_time(end_time) {
     for (int limb_idx = 0; limb_idx < num_actuators; limb_idx++) {
         auto limb = limbs[limb_idx];

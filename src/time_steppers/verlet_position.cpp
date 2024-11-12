@@ -1,8 +1,8 @@
 #include "verlet_position.h"
 #include <ctime>
 
-VerletPosition::VerletPosition(const shared_ptr<SoftRobots>& soft_robots,
-                               const shared_ptr<ForceContainer>& forces,
+VerletPosition::VerletPosition(const std::shared_ptr<SoftRobots>& soft_robots,
+                               const std::shared_ptr<ForceContainer>& forces,
                                const SimParams& sim_params)
     : ExplicitTimeStepper(soft_robots, forces, sim_params) {
 }

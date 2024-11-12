@@ -43,43 +43,43 @@ setInput::~setInput() {
     ;
 }
 
-Option* setInput::GetOption(const string& name) {
+Option* setInput::GetOption(const std::string& name) {
     if (m_options.find(name) == m_options.end()) {
-        cerr << "Option " << name << " does not exist" << endl;
+        cerr << "Option " << name << " does not exist" << std::endl;
     }
     return &(m_options.find(name)->second);
 }
 
-bool& setInput::GetBoolOpt(const string& name) {
+bool& setInput::GetBoolOpt(const std::string& name) {
     return GetOption(name)->b;
 }
 
-int& setInput::GetIntOpt(const string& name) {
+int& setInput::GetIntOpt(const std::string& name) {
     return GetOption(name)->i;
 }
 
-double& setInput::GetScalarOpt(const string& name) {
+double& setInput::GetScalarOpt(const std::string& name) {
     return GetOption(name)->r;
 }
 
-Vector3d& setInput::GetVecOpt(const string& name) {
+Vec3& setInput::GetVecOpt(const std::string& name) {
     return GetOption(name)->v;
 }
 
-string& setInput::GetStringOpt(const string& name) {
+std::string& setInput::GetStringOpt(const std::string& name) {
     return GetOption(name)->s;
 }
 
 int setInput::LoadOptions(const char* filename) {
     ifstream input(filename);
     if (!input.is_open()) {
-        cerr << "ERROR: File " << filename << " not found" << endl;
+        cerr << "ERROR: File " << filename << " not found" << std::endl;
         return -1;
     }
 
-    string line, option;
+    std::string line, option;
     istringstream sIn;
-    string tmp;
+    std::string tmp;
     for (getline(input, line); !input.eof(); getline(input, line)) {
         sIn.clear();
         option.clear();
@@ -90,7 +90,7 @@ int setInput::LoadOptions(const char* filename) {
         OptionMap::iterator itr;
         itr = m_options.find(option);
         if (itr == m_options.end()) {
-            cerr << "Invalid option: " << option << endl;
+            cerr << "Invalid option: " << option << std::endl;
             continue;
         }
         if (itr->second.type == Option::BOOL) {
@@ -107,7 +107,7 @@ int setInput::LoadOptions(const char* filename) {
             sIn >> itr->second.r;
         }
         else if (itr->second.type == Option::VEC) {
-            Vector3d& v = itr->second.v;
+            Vec3& v = itr->second.v;
             sIn >> v[0];
             sIn >> v[1];
             sIn >> v[2];
@@ -116,7 +116,7 @@ int setInput::LoadOptions(const char* filename) {
             sIn >> itr->second.s;
         }
         else {
-            cerr << "Invalid option type" << endl;
+            cerr << "Invalid option type" << std::endl;
         }
     }
     input.close();
@@ -125,20 +125,20 @@ int setInput::LoadOptions(const char* filename) {
 }
 
 int setInput::LoadOptions(int argc, char** argv) {
-    string option, tmp;
+    std::string option, tmp;
     int start = 0;
-    while (start < argc && string(argv[start]) != "--")
+    while (start < argc && std::string(argv[start]) != "--")
         ++start;
     for (int i = start + 1; i < argc; ++i) {
         option = argv[i];
         OptionMap::iterator itr;
         itr = m_options.find(option);
         if (itr == m_options.end()) {
-            cerr << "Invalid option on command line: " << option << endl;
+            cerr << "Invalid option on command line: " << option << std::endl;
             continue;
         }
         if (i == argc - 1) {
-            cerr << "Too few arguments on command line" << endl;
+            cerr << "Too few arguments on command line" << std::endl;
             break;
         }
         if (itr->second.type == Option::BOOL) {
@@ -159,10 +159,10 @@ int setInput::LoadOptions(int argc, char** argv) {
         }
         else if (itr->second.type == Option::VEC) {
             if (i >= argc - 3) {
-                cerr << "Too few arguments on command line" << endl;
+                cerr << "Too few arguments on command line" << std::endl;
                 break;
             }
-            Vector3d& v = itr->second.v;
+            Vec3& v = itr->second.v;
             v[0] = atof(argv[i + 1]);
             ++i;
             v[1] = atof(argv[i + 1]);
@@ -175,7 +175,7 @@ int setInput::LoadOptions(int argc, char** argv) {
             ++i;
         }
         else {
-            // cerr << "Invalid option type" << endl;
+            // cerr << "Invalid option type" << std::endl;
         }
     }
     return 0;

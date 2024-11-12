@@ -11,8 +11,8 @@ extern "C" void keyHandler(unsigned char key, int x, int y) {
     }
 }
 
-OpenGLSimEnv::OpenGLSimEnv(const shared_ptr<World>& m_world, const RenderParams& render_params,
-                           const shared_ptr<BaseLogger>& logger, int argc, char** argv)
+OpenGLSimEnv::OpenGLSimEnv(const std::shared_ptr<World>& m_world, const RenderParams& render_params,
+                           const std::shared_ptr<BaseLogger>& logger, int argc, char** argv)
     : BaseSimEnv(m_world, render_params, logger), argc_main(argc), argv_main(argv) {
 
     opengl_world = m_world;
@@ -65,8 +65,8 @@ void OpenGLSimEnv::derOpenGLDisplay(void) {
         opengl_world->updateTimeStep();  // update time step
     }
     catch (std::runtime_error& excep) {
-        std::cout << "Caught a runtime_error when trying to World->updateTimeStep: " << excep.what()
-                  << std::endl;
+        std::cout << "Caught a std::runtime_error when trying to World->updateTimeStep: "
+                  << excep.what() << std::endl;
         std::cout << "Attempting clean shutdown..." << std::endl;
         cleanShutdown(opengl_logger, opengl_is_logging);
         glutLeaveMainLoop();
@@ -143,7 +143,7 @@ void OpenGLSimEnv::derOpenGLDisplay(void) {
         glBegin(GL_LINES);
         limb_idx = 0;
         double x, y, z;
-        VectorXd m1, m2;
+        VecX m1, m2;
         for (const auto& limb : opengl_world->soft_robots->limbs) {
             for (int i = 0; i < limb->ne; i++) {
                 if (limb->isEdgeJoint[i] == 0) {

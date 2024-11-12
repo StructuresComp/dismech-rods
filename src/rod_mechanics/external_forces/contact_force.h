@@ -11,7 +11,7 @@ class BaseTimeStepper;
 class ContactForce : public BaseForce
 {
   public:
-    ContactForce(const shared_ptr<SoftRobots>& soft_robots, double col_limit, double delta,
+    ContactForce(const std::shared_ptr<SoftRobots>& soft_robots, double col_limit, double delta,
                  double k_scaler, bool friction, double nu, bool self_contact);
 
     //    void updateContactStiffness();
@@ -23,10 +23,10 @@ class ContactForce : public BaseForce
     double getMinDist() const;
     double contact_stiffness;
 
-    unique_ptr<CollisionDetector> col_detector;
+    std::unique_ptr<CollisionDetector> col_detector;
 
   private:
-    unique_ptr<SymbolicEquations> sym_eqs;
+    std::unique_ptr<SymbolicEquations> sym_eqs;
 
     double K1;
     double K2;
@@ -36,34 +36,34 @@ class ContactForce : public BaseForce
     double mu;
     double nu;
 
-    void setupContactVariables(const Vector<int, 8>& contact_id);
+    void setupContactVariables(const Eigen::Vector<int, 8>& contact_id);
     double surface_limit;
     int idx1, idx2, idx3, idx4, idx5, idx6;
-    Vector3d x1s, x1e, x2s, x2e, x1s0, x1e0, x2s0, x2e0;
+    Vec3 x1s, x1e, x2s, x2e, x1s0, x1e0, x2s0, x2e0;
 
     ConstraintType constraint_type;
     FrictionType friction_type;
     ContactPiecewise contact_type;
 
-    Vector<double, 8> p2p_input;
-    Vector<double, 11> e2p_input;
-    Vector<double, 14> e2e_input;
+    Vec<8> p2p_input;
+    Vec<11> e2p_input;
+    Vec<14> e2e_input;
 
-    Vector<double, 6> p2p_gradient;
-    Vector<double, 9> e2p_gradient;
-    Vector<double, 12> e2e_gradient;
+    Vec<6> p2p_gradient;
+    Vec<9> e2p_gradient;
+    Vec<12> e2e_gradient;
 
-    Matrix<double, 6, 6> p2p_hessian;
-    Matrix<double, 9, 9> e2p_hessian;
-    Matrix<double, 12, 12> e2e_hessian;
+    SqMat<6> p2p_hessian;
+    SqMat<9> e2p_hessian;
+    SqMat<12> e2e_hessian;
 
-    Vector<double, 39> friction_input;
-    Vector<double, 12> contact_gradient;
-    Vector<double, 12> friction_forces;
-    Matrix<double, 12, 12> contact_hessian;
-    Matrix<double, 12, 12> friction_partials_dfr_dx;
-    Matrix<double, 12, 12> friction_partials_dfr_dfc;
-    Matrix<double, 12, 12> friction_jacobian;
+    Vec<39> friction_input;
+    Vec<12> contact_gradient;
+    Vec<12> friction_forces;
+    SqMat<12> contact_hessian;
+    SqMat<12> friction_partials_dfr_dx;
+    SqMat<12> friction_partials_dfr_dfc;
+    SqMat<12> friction_jacobian;
 
     void prepContactInput();
     void prepFrictionInput(double dt);

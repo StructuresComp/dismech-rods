@@ -1,8 +1,8 @@
 #include "backward_euler.h"
 
-BackwardEuler::BackwardEuler(const shared_ptr<SoftRobots>& soft_robots,
-                             const shared_ptr<ForceContainer>& forces, const SimParams& sim_params,
-                             SolverType solver_type)
+BackwardEuler::BackwardEuler(const std::shared_ptr<SoftRobots>& soft_robots,
+                             const std::shared_ptr<ForceContainer>& forces,
+                             const SimParams& sim_params, SolverType solver_type)
     : ImplicitTimeStepper(soft_robots, forces, sim_params, solver_type) {
 }
 
@@ -75,7 +75,7 @@ double BackwardEuler::newtonMethod(double dt) {
         // Exit if unable to converge
         if (iter > max_iter) {
             if (terminate_at_max) {
-                cout << "No convergence after " << max_iter << " iterations" << endl;
+                std::cout << "No convergence after " << max_iter << " iterations" << std::endl;
                 exit(1);
             }
             else {
@@ -96,7 +96,7 @@ double BackwardEuler::lineSearch(double dt) {
         case WOLFE:
             return wolfeLineSearch(dt);
         default:
-            throw invalid_argument("Invalid line search type");
+            throw std::invalid_argument("Invalid line search type");
     }
 }
 

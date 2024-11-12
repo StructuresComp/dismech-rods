@@ -6,13 +6,14 @@
 class PositionLogger : public BaseLogger
 {
   public:
-    PositionLogger(string logfile_base, ofstream& df, int per);
-    PositionLogger(string logfile_base, string logfile_suffix, ofstream& df, int per);
+    PositionLogger(std::string logfile_base, std::ofstream& df, int per);
+    PositionLogger(std::string logfile_base, std::string logfile_suffix, std::ofstream& df,
+                   int per);
     ~PositionLogger();
 
   private:
-    string getLogHeader() override;
-    string getLogData() override;
+    std::string getLogHeader() override;
+    std::string getLogData() override;
 };
 
 #endif  // POSITION_LOGGER_H

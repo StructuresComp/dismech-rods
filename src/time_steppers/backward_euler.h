@@ -6,8 +6,8 @@
 class BackwardEuler : public ImplicitTimeStepper
 {
   public:
-    BackwardEuler(const shared_ptr<SoftRobots>& soft_robots,
-                  const shared_ptr<ForceContainer>& forces, const SimParams& sim_params,
+    BackwardEuler(const std::shared_ptr<SoftRobots>& soft_robots,
+                  const std::shared_ptr<ForceContainer>& forces, const SimParams& sim_params,
                   SolverType solver_type);
     ~BackwardEuler() override;
 

@@ -16,7 +16,7 @@ class ElasticJoint
      * @param limb_idx The limb id of the rod.
      * @param limbs Container of limbs.
      */
-    ElasticJoint(int node, int limb_idx, const vector<shared_ptr<ElasticRod>>& limbs);
+    ElasticJoint(int node, int limb_idx, const std::vector<std::shared_ptr<ElasticRod>>& limbs);
 
     /**
      * @brief The node id of the joint.
@@ -82,33 +82,33 @@ class ElasticJoint
     /**
      * @brief The stored limbs of the simulation.
      */
-    vector<shared_ptr<ElasticRod>> limbs;
+    std::vector<std::shared_ptr<ElasticRod>> limbs;
 
     /**
      * @brief The position of the joint node from the previous timestep.
      */
-    Vector3d x0;
+    Vec3 x0;
 
     /**
      * @brief The position of the joint node during and after the current
      * timestep.
      */
-    Vector3d x;
+    Vec3 x;
 
     /**
-     * @brief Position vector used to save state during line search.
+     * @brief Position std::vector used to save state during line search.
      */
-    Vector3d x_ls;
+    Vec3 x_ls;
 
     /**
-     * @brief Velocity vector from the previous timestep.
+     * @brief Velocity std::vector from the previous timestep.
      */
-    Vector3d u0;
+    Vec3 u0;
 
     /**
-     * @brief Velocity vector during and after the current timestep.
+     * @brief Velocity std::vector during and after the current timestep.
      */
-    Vector3d u;
+    Vec3 u;
 
     /**
      * @brief Container storing the ids of all nodes that have an edge
@@ -117,7 +117,7 @@ class ElasticJoint
      * @details First value is the node id
      *          Second value is the limb id
      */
-    vector<pair<int, int>> connected_nodes;
+    std::vector<std::pair<int, int>> connected_nodes;
 
     /**
      * @brief Container storing the ids of all the replaced nodes.
@@ -125,7 +125,7 @@ class ElasticJoint
      * @details First value is the node id
      *          Second value is the limb id
      */
-    vector<pair<int, int>> replaced_nodes;
+    std::vector<std::pair<int, int>> replaced_nodes;
 
     /**
      * @brief The direction of the tangent of each edge connected to
@@ -140,7 +140,7 @@ class ElasticJoint
      *
      * @see Used in ElasticBendingForce.cpp and ElasticTwistingForce.cpp
      */
-    vector<int> bending_twist_signs;
+    std::vector<int> bending_twist_signs;
 
     /**
      * @brief The number of possible non-repeating edge combinations
@@ -157,12 +157,12 @@ class ElasticJoint
      * two rods are connected in a way that the direction of the tangents
      * go towards each-other rather than along the same direction, then
      * at least one of the forces must be multiplied by -1.
-     * This vector holds a value of either 1 or -1.
+     * This std::vector holds a value of either 1 or -1.
      *
      * @see Computed using bending_twist_signs
      * @see Used in ElasticBendingForce.cpp and ElasticTwistingForce.cpp
      */
-    vector<Vector2i> sgns;
+    std::vector<Eigen::Vector2i> sgns;
 
     /**
      * @brief Indices for the theta DOFs for each edge combination.
@@ -170,42 +170,42 @@ class ElasticJoint
      * @details Vector is size num_bending_combos and contains the
      * indices of first and second edge's theta DOF, respectively.
      */
-    vector<Vector2i> theta_inds;
+    std::vector<Eigen::Vector2i> theta_inds;
 
     /**
      * @brief Reference lengths of the discrete edges connected to the joint.
      */
-    VectorXd ref_len;
+    VecX ref_len;
 
     /**
      * @brief Voronoi lengths of the discrete edges connected to the joint.
      */
-    VectorXd voronoi_len;
+    VecX voronoi_len;
 
     /**
      * @brief The mass of the joint.
      */
     double mass;
 
-    MatrixXd tangents;
-    MatrixXd tangents_old;
+    MatX tangents;
+    MatX tangents_old;
 
-    vector<Matrix<double, 2, 3>> d1;
-    vector<Matrix<double, 2, 3>> d2;
-    vector<Matrix<double, 2, 3>> d1_old;
-    vector<Matrix<double, 2, 3>> d2_old;
-    vector<Matrix<double, 2, 3>> m1;
-    vector<Matrix<double, 2, 3>> m2;
-    VectorXd ref_twist;
+    std::vector<Mat<2, 3>> d1;
+    std::vector<Mat<2, 3>> d2;
+    std::vector<Mat<2, 3>> d1_old;
+    std::vector<Mat<2, 3>> d2_old;
+    std::vector<Mat<2, 3>> m1;
+    std::vector<Mat<2, 3>> m2;
+    VecX ref_twist;
 
-    MatrixXd kb;
-    MatrixXd kappa;
-    MatrixXd kappa_bar;
+    MatX kb;
+    MatX kappa;
+    MatX kappa_bar;
 
-    VectorXd twist_bar;
-    VectorXd ref_twist_old;
+    VecX twist_bar;
+    VecX ref_twist_old;
 
-    VectorXd edge_len;
+    VecX edge_len;
 
     void prepLimbs();
     void prepareForIteration();
@@ -224,10 +224,9 @@ class ElasticJoint
     void computeTangent();
     void createReferenceDirectors();
     void computeMaterialDirectors();
-    static void rotateAxisAngle(Vector3d& v, const Vector3d& z, const double& theta);
-    static void parallelTransport(const Vector3d& d1_1, const Vector3d& t1, const Vector3d& t2,
-                                  Vector3d& d1_2);
-    static double signedAngle(const Vector3d& u, const Vector3d& v, const Vector3d& n);
+    static void rotateAxisAngle(Vec3& v, const Vec3& z, const double& theta);
+    static void parallelTransport(const Vec3& d1_1, const Vec3& t1, const Vec3& t2, Vec3& d1_2);
+    static double signedAngle(const Vec3& u, const Vec3& v, const Vec3& n);
 };
 
 #endif  // ELASTIC_JOINT_H

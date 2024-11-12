@@ -9,7 +9,8 @@ class OpenLoopUniformKappaBarController : public BaseController
 {
 
   public:
-    OpenLoopUniformKappaBarController(const shared_ptr<SoftRobots>& soft_robots, string file_path);
+    OpenLoopUniformKappaBarController(const std::shared_ptr<SoftRobots>& soft_robots,
+                                      std::string file_path);
     ~OpenLoopUniformKappaBarController();
 
     // redefine the base class' timestepping function to also include the PWMs.
@@ -17,13 +18,13 @@ class OpenLoopUniformKappaBarController : public BaseController
 
   private:
     // helper to parse the csv file. Writes data into time_pts and dutys.
-    void parseActuationFile(string csv_path);
+    void parseActuationFile(std::string csv_path);
     void updatePhies();
-    // Store the timepoints for desired kappabar (2by1 vector for a rod) values
+    // Store the timepoints for desired kappabar (2by1 std::vector for a rod) values
     // for all rods. We'll assume index alignment between these two
-    vector<double> time_pts;
-    vector<vector<double>> desired_phies_profile;  //
-    vector<double> desired_phi_list;               //
+    std::vector<double> time_pts;
+    std::vector<std::vector<double>> desired_phies_profile;  //
+    std::vector<double> desired_phi_list;                    //
     // The CSV file will have a certain number of lines as a header. We'll need
     // to remove them.
     int csv_header_lines = 1;

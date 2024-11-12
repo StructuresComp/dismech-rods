@@ -287,7 +287,7 @@ struct RenderParams {
   double render_scale = 1.0;                     //    Rendering scale
   int cmd_line_per = 1;                          //    Command line sim info output period
   int render_per = 1;                            //    Rendering period (only for Magnum)
-  string render_record_path;                     //    Rendering frames recording path (only for Magnum).
+  std::string render_record_path;                     //    Rendering frames recording path (only for Magnum).
   bool show_mat_frames = false;                  //    Render material frames (only for OpenGL)
 };
 ```

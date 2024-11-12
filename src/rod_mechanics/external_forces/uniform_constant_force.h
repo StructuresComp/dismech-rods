@@ -8,16 +8,16 @@ class BaseTimeStepper;
 class UniformConstantForce : public BaseForce
 {
   public:
-    explicit UniformConstantForce(const shared_ptr<SoftRobots>& m_soft_robots);
+    explicit UniformConstantForce(const std::shared_ptr<SoftRobots>& m_soft_robots);
     ~UniformConstantForce() override;
 
-    void addForceToLimb(int limb_idx, const Vector3d& force);
+    void addForceToLimb(int limb_idx, const Vec3& force);
 
     void computeForce(double dt) override;
     void computeForceAndJacobian(double dt) override;
 
   private:
-    vector<pair<int, Vector3d>> limb_force_pairs;
+    std::vector<std::pair<int, Vec3>> limb_force_pairs;
 };
 
 #endif  // UNIFORM_CONSTANT_FORCE_H

@@ -27,10 +27,10 @@ class BaseLogger
   public:
     /**
      * Constructor for a BaseLogger.
-     * @param fileNamePrefix a string to prepend to the file name
+     * @param fileNamePrefix a std::string to prepend to the file name
      * @param logfile_base the base folder for the logs (actual folder will be
      * organized by year, month, day)
-     * @param df ref to an ofstream to use to write to the data file
+     * @param df ref to an std::ofstream to use to write to the data file
      * @param per integer, period to write to log file (only once per this many
      * samples)
      */
@@ -47,7 +47,7 @@ class BaseLogger
      */
     void setup();
 
-    shared_ptr<World> world_ptr;
+    std::shared_ptr<World> world_ptr;
 
     /**
      * Log data, used by the caller.
@@ -96,7 +96,7 @@ class BaseLogger
     // timestap appended.
     std::string m_fileName;
 
-    // Helper to get a timestamp string.
+    // Helper to get a timestamp std::string.
     std::string getTimestamp();
     // Another helper for generating the folder path for the log file
     // Example: May 7th, 2020, 2:51pm and 34 seconds will return:

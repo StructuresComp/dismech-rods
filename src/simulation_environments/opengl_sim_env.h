@@ -9,8 +9,8 @@ extern "C" void keyHandler(unsigned char key, int x, int y);
 
 // Since GLUT is in C, we need global pointers to the World and logger.
 // These should be assigned in constructor.
-static shared_ptr<World> opengl_world = nullptr;
-static shared_ptr<BaseLogger> opengl_logger = nullptr;
+static std::shared_ptr<World> opengl_world = nullptr;
+static std::shared_ptr<BaseLogger> opengl_logger = nullptr;
 // and a global for logging / not logging. This is ugly, to-do: fix.
 static bool opengl_is_logging = false;
 // same with other stuff that needs to be in C
@@ -19,8 +19,8 @@ static int opengl_cmdline_per = 0;
 class OpenGLSimEnv : public BaseSimEnv
 {
   public:
-    OpenGLSimEnv(const shared_ptr<World>& m_world, const RenderParams& render_params,
-                 const shared_ptr<BaseLogger>& logger, int argc, char** argv);
+    OpenGLSimEnv(const std::shared_ptr<World>& m_world, const RenderParams& render_params,
+                 const std::shared_ptr<BaseLogger>& logger, int argc, char** argv);
     ~OpenGLSimEnv() override;
 
     void runSimulation() override;

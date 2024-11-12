@@ -8,7 +8,7 @@ class BaseTimeStepper;
 class InertialForce : public BaseForce
 {
   public:
-    InertialForce(const shared_ptr<SoftRobots>& m_soft_robots);
+    InertialForce(const std::shared_ptr<SoftRobots>& m_soft_robots);
     ~InertialForce() override;
     void computeForce(double dt) override;
     void computeForceAndJacobian(double dt) override;

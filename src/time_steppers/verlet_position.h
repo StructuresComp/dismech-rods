@@ -6,8 +6,8 @@
 class VerletPosition : public ExplicitTimeStepper
 {
   public:
-    VerletPosition(const shared_ptr<SoftRobots>& soft_robots,
-                   const shared_ptr<ForceContainer>& forces, const SimParams& sim_params);
+    VerletPosition(const std::shared_ptr<SoftRobots>& soft_robots,
+                   const std::shared_ptr<ForceContainer>& forces, const SimParams& sim_params);
     ~VerletPosition() override;
 
     double stepForwardInTime() override;

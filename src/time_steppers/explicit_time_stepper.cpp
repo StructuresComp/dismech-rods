@@ -1,7 +1,7 @@
 #include "explicit_time_stepper.h"
 
-ExplicitTimeStepper::ExplicitTimeStepper(const shared_ptr<SoftRobots>& soft_robots,
-                                         const shared_ptr<ForceContainer>& forces,
+ExplicitTimeStepper::ExplicitTimeStepper(const std::shared_ptr<SoftRobots>& soft_robots,
+                                         const std::shared_ptr<ForceContainer>& forces,
                                          const SimParams& sim_params)
     : BaseTimeStepper(soft_robots, forces, sim_params) {
     constructInverseMassVector();
@@ -17,7 +17,7 @@ void ExplicitTimeStepper::prepSystemForIteration() {
 void ExplicitTimeStepper::constructInverseMassVector() {
     int total_dof = 0;
     for (const auto& limb : limbs) {
-        VectorXd curr_inv_masses = VectorXd::Zero(limb->ndof);
+        VecX curr_inv_masses = VecX::Zero(limb->ndof);
         for (int i = 0; i < limb->ndof; i++) {
             curr_inv_masses[i] = 1 / limb->mass_array[i];
         }

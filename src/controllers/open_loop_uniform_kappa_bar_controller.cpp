@@ -3,7 +3,7 @@
 #include <fstream>
 
 OpenLoopUniformKappaBarController::OpenLoopUniformKappaBarController(
-    const shared_ptr<SoftRobots>& soft_robots, string filepath)
+    const std::shared_ptr<SoftRobots>& soft_robots, std::string filepath)
     : BaseController(soft_robots->limbs) {
     // to-do: validate number of columns of file vs. numAct.
     // if (numAct != m_periods.size())
@@ -18,8 +18,8 @@ OpenLoopUniformKappaBarController::OpenLoopUniformKappaBarController(
 
     if (filepath.at(0) == '~') {
         // Get the $HOME environment variable
-        string home = getenv("HOME");
-        // Remove the tilde (the first element) from the string
+        std::string home = getenv("HOME");
+        // Remove the tilde (the first element) from the std::string
         filepath.erase(0, 1);
         // Concatenate the home directory.
         filepath = home + filepath;
@@ -33,14 +33,14 @@ OpenLoopUniformKappaBarController::OpenLoopUniformKappaBarController(
 
 OpenLoopUniformKappaBarController::~OpenLoopUniformKappaBarController() = default;
 
-void OpenLoopUniformKappaBarController::parseActuationFile(string csv_path) {
+void OpenLoopUniformKappaBarController::parseActuationFile(std::string csv_path) {
     // open the file and check if it worked
-    ifstream csv_file(csv_path);
+    std::ifstream csv_file(csv_path);
     if (!csv_file.is_open()) {
-        throw invalid_argument("Couldn't open the CSV file, check the path.");
+        throw std::invalid_argument("Couldn't open the CSV file, check the path.");
     }
     // various helpers for use as we iterate over rows and columns
-    string temp_row;
+    std::string temp_row;
     // Read over the first N-many lines of the header. Easiest to iterate on
     // getline...
     for (int i = 0; i < csv_header_lines; i++) {
@@ -49,22 +49,22 @@ void OpenLoopUniformKappaBarController::parseActuationFile(string csv_path) {
     // Then, start reading rows until the end
     while (getline(csv_file, temp_row)) {
         // Parse as a stringstream by commas
-        stringstream ss_row(temp_row);
+        std::stringstream ss_row(temp_row);
         // The first column is assumed to be the timepoint for row i. It's a
-        // string at first
-        string val_ij;
+        // std::string at first
+        std::string val_ij;
         getline(ss_row, val_ij, ',');
         // and we can push it directly back into the timepoints.
         time_pts.push_back(atof(val_ij.c_str()));
         // we'll keep track of the duty cycles for this timepoint in a new
-        // vector, which will then be appended to the vector of vectors.
-        vector<double> phies_list;
-        // then add everything else to the duty cycle vector. Boolean check of
+        // std::vector, which will then be appended to the std::vector of vectors.
+        std::vector<double> phies_list;
+        // then add everything else to the duty cycle std::vector. Boolean check of
         // stringstream is false when emptied out
         while (ss_row) {
             // the next column is...
             getline(ss_row, val_ij, ',');
-            // getline returns an empty string at the end of a line that
+            // getline returns an empty std::string at the end of a line that
             // terminates in a comma.
             if (!val_ij.empty()) {
                 // place it in
@@ -73,11 +73,12 @@ void OpenLoopUniformKappaBarController::parseActuationFile(string csv_path) {
         }
         // verify: did this produce the correct number of columns?
         if (phies_list.size() != num_actuators * 2) {
-            throw invalid_argument("Error! Your CSV file had an incorrect number of rows in "
-                                   "comparison to numAct. Or, you forgot a comma at the end of "
-                                   "the line.");
+            throw std::invalid_argument(
+                "Error! Your CSV file had an incorrect number of rows in "
+                "comparison to numAct. Or, you forgot a comma at the end of "
+                "the line.");
         }
-        // if all good, then add to the indexed duty cycle vector
+        // if all good, then add to the indexed duty cycle std::vector
         desired_phies_profile.push_back(phies_list);
     }
 }

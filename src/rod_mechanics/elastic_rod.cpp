@@ -1,12 +1,11 @@
 #include "elastic_rod.h"
 
-ElasticRod::ElasticRod(int limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes,
-                       double rho, double rod_radius, double youngs_modulus, double poisson_ratio,
-                       double mu)
+ElasticRod::ElasticRod(int limb_idx, const Vec3& start, const Vec3& end, int num_nodes, double rho,
+                       double rod_radius, double youngs_modulus, double poisson_ratio, double mu)
     : limb_idx(limb_idx), ndof(num_nodes * 4 - 1), nv(num_nodes), ne(num_nodes - 1), rho(rho),
       rod_radius(rod_radius), youngM(youngs_modulus), poisson_ratio(poisson_ratio), mu(mu) {
-    vector<Vector3d> nodes;
-    Vector3d dir = (end - start) / (num_nodes - 1);
+    std::vector<Vec3> nodes;
+    Vec3 dir = (end - start) / (num_nodes - 1);
     for (int i = 0; i < num_nodes; i++) {
         nodes.emplace_back(start + i * dir);
     }
@@ -16,7 +15,7 @@ ElasticRod::ElasticRod(int limb_idx, const Vector3d& start, const Vector3d& end,
     setup(nodes);
 }
 
-ElasticRod::ElasticRod(int limb_idx, const vector<Vector3d>& nodes, double rho, double rod_radius,
+ElasticRod::ElasticRod(int limb_idx, const std::vector<Vec3>& nodes, double rho, double rod_radius,
                        double youngs_modulus, double poisson_ratio, double mu)
     : limb_idx(limb_idx), ndof(nodes.size() * 4 - 1), nv(nodes.size()), ne(nodes.size() - 1),
       rho(rho), rod_radius(rod_radius), youngM(youngs_modulus), poisson_ratio(poisson_ratio),
@@ -29,8 +28,8 @@ ElasticRod::ElasticRod(int limb_idx, const vector<Vector3d>& nodes, double rho, 
     setup(nodes);
 }
 
-void ElasticRod::setup(const vector<Vector3d>& nodes) {
-    x = VectorXd::Zero(ndof);
+void ElasticRod::setup(const std::vector<Vec3>& nodes) {
+    x = VecX::Zero(ndof);
     for (int i = 0; i < nv; i++) {
         x(4 * i) = nodes[i](0);
         x(4 * i + 1) = nodes[i](1);
@@ -41,7 +40,7 @@ void ElasticRod::setup(const vector<Vector3d>& nodes) {
     }
     x0 = x;
 
-    u = VectorXd::Zero(ndof);
+    u = VecX::Zero(ndof);
     u0 = u;
 
     // We will start off with an unconstrained system
@@ -57,7 +56,7 @@ void ElasticRod::setup(const vector<Vector3d>& nodes) {
     }
     for (int i = 0; i < nv; i++) {
         isNodeJoint[i] = 0;
-        pair<int, int> non_joint{i, limb_idx};
+        std::pair<int, int> non_joint{i, limb_idx};
         joint_ids.push_back(non_joint);
     }
     for (int i = 0; i < ne; i++) {
@@ -71,41 +70,41 @@ void ElasticRod::setup(const vector<Vector3d>& nodes) {
 
     cross_sectional_area = M_PI * rod_radius * rod_radius;
 
-    d1 = MatrixXd::Zero(ne, 3);
-    d2 = MatrixXd::Zero(ne, 3);
-    d1_old = MatrixXd::Zero(ne, 3);
-    d2_old = MatrixXd::Zero(ne, 3);
-    m1 = MatrixXd::Zero(ne, 3);
-    m2 = MatrixXd::Zero(ne, 3);
-    ref_twist = VectorXd(ne);
+    d1 = MatX::Zero(ne, 3);
+    d2 = MatX::Zero(ne, 3);
+    d1_old = MatX::Zero(ne, 3);
+    d2_old = MatX::Zero(ne, 3);
+    m1 = MatX::Zero(ne, 3);
+    m2 = MatX::Zero(ne, 3);
+    ref_twist = VecX(ne);
 
     // compute reference and voronoi lengths
     setReferenceLength();
     // set mass array
     setMass();
     // set tangent
-    tangent = MatrixXd::Zero(ne, 3);
+    tangent = MatX::Zero(ne, 3);
     computeTangent();
     // set reference directors
     computeSpaceParallel();
     // set material directors
     computeMaterialDirector();
     // compute natural curvature
-    kb = MatrixXd::Zero(nv, 3);
-    kappa = MatrixXd::Zero(nv, 2);
+    kb = MatX::Zero(nv, 3);
+    kappa = MatX::Zero(nv, 2);
     computeKappa();
     kappa_bar = kappa;
 
     // Reference twist
-    ref_twist_old = VectorXd::Zero(ne);
+    ref_twist_old = VecX::Zero(ne);
     getRefTwist();
 
     // Compute undeformed twist
-    twist_bar = VectorXd::Zero(ne);
+    twist_bar = VecX::Zero(ne);
     computeTwistBar();
 
     // compute edge length
-    edge_len = VectorXd(ne);
+    edge_len = VecX(ne);
     computeEdgeLen();
     // compute elastic stiffness
     computeElasticStiffness();
@@ -126,15 +125,15 @@ void ElasticRod::addJoint(int node_num, bool attach_to_joint, int joint_node, in
         if (node_num == 0) {
             isNodeJoint[0] = 1;
             isEdgeJoint[0] = 1;
-            joint_ids[0] = pair<int, int>(joint_node, joint_limb);
+            joint_ids[0] = std::pair<int, int>(joint_node, joint_limb);
         }
         else if (node_num == nv - 1) {
             isNodeJoint[nv - 1] = 1;
             isEdgeJoint[nv - 2] = 1;
-            joint_ids[nv - 1] = pair<int, int>(joint_node, joint_limb);
+            joint_ids[nv - 1] = std::pair<int, int>(joint_node, joint_limb);
         }
         else {
-            throw runtime_error("Tried removing dofs at the mid point of an edge.");
+            throw std::runtime_error("Tried removing dofs at the mid point of an edge.");
         }
     }
     else {
@@ -183,11 +182,11 @@ void ElasticRod::freeVertexBoundaryCondition(int k) {
 }
 
 // functions to handle boundary condition
-void ElasticRod::setVertexBoundaryCondition(Vector3d position, int k) {
+void ElasticRod::setVertexBoundaryCondition(Vec3 position, int k) {
     isConstrained[4 * k] = 1;
     isConstrained[4 * k + 1] = 1;
     isConstrained[4 * k + 2] = 1;
-    // Store in the constrained dof vector
+    // Store in the constrained dof std::vector
     x(4 * k) = position(0);
     x(4 * k + 1) = position(1);
     x(4 * k + 2) = position(2);
@@ -213,7 +212,7 @@ int ElasticRod::getIfConstrained(int k) const {
 
 void ElasticRod::setMass() {
     double dm;
-    mass_array = VectorXd::Zero(ndof);
+    mass_array = VecX::Zero(ndof);
 
     for (int i = 0; i < nv; i++) {
         dm = 0.5 * cross_sectional_area * rho;
@@ -237,12 +236,12 @@ void ElasticRod::setMass() {
 
 void ElasticRod::setReferenceLength() {
     // This function is only run once at sim initialization.
-    ref_len = VectorXd(ne);
+    ref_len = VecX(ne);
     for (int i = 0; i < ne; i++) {
         ref_len(i) = (x.segment(4 * (i + 1), 3) - x.segment(4 * i, 3)).norm();
     }
 
-    voronoi_len = VectorXd(nv);
+    voronoi_len = VecX(nv);
     for (int i = 0; i < nv; i++) {
         if (i == 0)
             voronoi_len(i) = 0.5 * ref_len(i);
@@ -253,12 +252,12 @@ void ElasticRod::setReferenceLength() {
     }
 }
 
-Vector3d ElasticRod::getVertex(int k) {
+Vec3 ElasticRod::getVertex(int k) {
     return x.segment<3>(4 * k);
 }
 
-MatrixX3d ElasticRod::getVertices() {
-    MatrixX3d vertices(nv, 3);
+MatXN<3> ElasticRod::getVertices() {
+    MatXN<3> vertices(nv, 3);
 
     for (int i = 0; i < nv; i++) {
         vertices.row(i) = x.segment<3>(4 * i);
@@ -266,16 +265,16 @@ MatrixX3d ElasticRod::getVertices() {
     return vertices;
 }
 
-Vector3d ElasticRod::getPreVertex(int k) {
+Vec3 ElasticRod::getPreVertex(int k) {
     return x0.segment<3>(4 * k);
 }
 
-Vector3d ElasticRod::getVelocity(int k) {
+Vec3 ElasticRod::getVelocity(int k) {
     return u.segment<3>(4 * k);
 }
 
-MatrixX3d ElasticRod::getVelocities() {
-    MatrixX3d velocities(nv, 3);
+MatXN<3> ElasticRod::getVelocities() {
+    MatXN<3> velocities(nv, 3);
 
     for (int i = 0; i < nv; i++) {
         velocities.row(i) = u.segment<3>(4 * i);
@@ -283,7 +282,7 @@ MatrixX3d ElasticRod::getVelocities() {
     return velocities;
 }
 
-Vector3d ElasticRod::getTangent(int k) {
+Vec3 ElasticRod::getTangent(int k) {
     return tangent.row(k);
 }
 
@@ -291,8 +290,8 @@ double ElasticRod::getTheta(int k) {
     return x(4 * k + 3);
 }
 
-VectorXd ElasticRod::getThetas() {
-    VectorXd thetas(ne);
+VecX ElasticRod::getThetas() {
+    VecX thetas(ne);
 
     for (int i = 0; i < ne; i++) {
         thetas(i) = x(4 * i + 3);
@@ -302,7 +301,7 @@ VectorXd ElasticRod::getThetas() {
 
 void ElasticRod::computeTimeParallel() {
     // Use old versions of (d1, d2, tangent) to get new d1, d2
-    Vector3d t0, t1, d1_vector;
+    Vec3 t0, t1, d1_vector;
 
     for (int i = 0; i < ne; i++) {
         t0 = tangent_old.row(i);
@@ -321,10 +320,9 @@ void ElasticRod::computeTangent() {
     }
 }
 
-void ElasticRod::parallelTransport(const Vector3d& d1_1, const Vector3d& t1, const Vector3d& t2,
-                                   Vector3d& d1_2) {
-    Vector3d b;
-    Vector3d n1, n2;
+void ElasticRod::parallelTransport(const Vec3& d1_1, const Vec3& t1, const Vec3& t2, Vec3& d1_2) {
+    Vec3 b;
+    Vec3 n1, n2;
 
     b = t1.cross(t2);
 
@@ -347,8 +345,8 @@ void ElasticRod::parallelTransport(const Vector3d& d1_1, const Vector3d& t1, con
 
 void ElasticRod::computeSpaceParallel() {
     // This function is only called once
-    Vector3d t0, t1, d1Tmp;
-    Vector3d a, b, c, d;
+    Vec3 t0, t1, d1Tmp;
+    Vec3 a, b, c, d;
 
     t0 = tangent.row(0);
     t1 << 0, 0, -1;
@@ -387,8 +385,8 @@ void ElasticRod::computeMaterialDirector() {
 
 void ElasticRod::computeKappa() {
     // We know the tangent, m1, m2. Compute kappa using them
-    Vector3d t0, t1;
-    Vector3d m1e, m2e, m1f, m2f;
+    Vec3 t0, t1;
+    Vec3 m1e, m2e, m1f, m2f;
 
     for (int i = 1; i < ne; i++) {
         t0 = tangent.row(i - 1);
@@ -407,7 +405,7 @@ void ElasticRod::computeKappa() {
 }
 
 void ElasticRod::getRefTwist() {
-    Vector3d u0, u1, t0, t1, ut;
+    Vec3 u0, u1, t0, t1, ut;
     double sgnAngle;
 
     for (int i = 1; i < ne; i++) {
@@ -439,9 +437,9 @@ void ElasticRod::computeEdgeLen() {
     }
 }
 
-double ElasticRod::signedAngle(const Vector3d& u, const Vector3d& v, const Vector3d& n) {
+double ElasticRod::signedAngle(const Vec3& u, const Vec3& v, const Vec3& n) {
     // Compute the angle between two vectors
-    Vector3d w = u.cross(v);
+    Vec3 w = u.cross(v);
     double angle = atan2(w.norm(), u.dot(v));
     if (n.dot(w) < 0)
         return -angle;
@@ -449,8 +447,8 @@ double ElasticRod::signedAngle(const Vector3d& u, const Vector3d& v, const Vecto
         return angle;
 }
 
-void ElasticRod::rotateAxisAngle(Vector3d& v, const Vector3d& z, const double& theta) {
-    // Compute the vector when it rotates along another vector into certain
+void ElasticRod::rotateAxisAngle(Vec3& v, const Vec3& z, const double& theta) {
+    // Compute the std::vector when it rotates along another std::vector into certain
     // angle
     if (theta != 0)  // if theta=0, v = v
     {

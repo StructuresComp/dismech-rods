@@ -1,34 +1,35 @@
 #include "world.h"
 
-World::World(const shared_ptr<SoftRobots>& soft_robots, const shared_ptr<ForceContainer>& forces,
-             const SimParams& sim_params)
+World::World(const std::shared_ptr<SoftRobots>& soft_robots,
+             const std::shared_ptr<ForceContainer>& forces, const SimParams& sim_params)
     : soft_robots(soft_robots), forces(forces), time_step(0), curr_time(0.0),
       total_time(sim_params.sim_time) {
 
     // Declare inner elastic forces. These should never be optional.
-    forces->addForce(make_shared<ElasticStretchingForce>(soft_robots));
-    forces->addForce(make_shared<ElasticBendingForce>(soft_robots));
-    forces->addForce(make_shared<ElasticTwistingForce>(soft_robots));
+    forces->addForce(std::make_shared<ElasticStretchingForce>(soft_robots));
+    forces->addForce(std::make_shared<ElasticBendingForce>(soft_robots));
+    forces->addForce(std::make_shared<ElasticTwistingForce>(soft_robots));
 
     // Declare inertial force. Should be avoided for explicit methods
     if (sim_params.integrator != FORWARD_EULER && sim_params.integrator != VERLET_POSITION) {
-        forces->addForce(make_shared<InertialForce>(soft_robots));
+        forces->addForce(std::make_shared<InertialForce>(soft_robots));
     }
 
     // Set up the time stepper
     switch (sim_params.integrator) {
         case FORWARD_EULER:
-            stepper = make_shared<ForwardEuler>(soft_robots, forces, sim_params);
+            stepper = std::make_shared<ForwardEuler>(soft_robots, forces, sim_params);
             break;
         case VERLET_POSITION:
-            stepper = make_shared<VerletPosition>(soft_robots, forces, sim_params);
+            stepper = std::make_shared<VerletPosition>(soft_robots, forces, sim_params);
             break;
         case BACKWARD_EULER:
-            stepper = make_shared<BackwardEuler>(soft_robots, forces, sim_params, PARDISO_SOLVER);
+            stepper =
+                std::make_shared<BackwardEuler>(soft_robots, forces, sim_params, PARDISO_SOLVER);
             break;
         case IMPLICIT_MIDPOINT:
             stepper =
-                make_shared<ImplicitMidpoint>(soft_robots, forces, sim_params, PARDISO_SOLVER);
+                std::make_shared<ImplicitMidpoint>(soft_robots, forces, sim_params, PARDISO_SOLVER);
             break;
     }
 
@@ -98,7 +99,7 @@ bool World::simulationRunning() const {
     if (curr_time < total_time)
         return true;
     else {
-        cout << "Completed simulation." << endl;
+        std::cout << "Completed simulation." << std::endl;
         return false;
     }
 }
@@ -107,11 +108,11 @@ double World::getCoordinate(int i, int limb_idx) {
     return soft_robots->limbs[limb_idx]->x[i];
 }
 
-VectorXd World::getM1(int i, int limb_idx) {
+VecX World::getM1(int i, int limb_idx) {
     return soft_robots->limbs[limb_idx]->m1.row(i);
 }
 
-VectorXd World::getM2(int i, int limb_idx) {
+VecX World::getM2(int i, int limb_idx) {
     return soft_robots->limbs[limb_idx]->m2.row(i);
 }
 

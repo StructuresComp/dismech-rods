@@ -3,8 +3,8 @@
 #include "solvers/pardiso_solver.h"
 #include <algorithm>
 
-ImplicitTimeStepper::ImplicitTimeStepper(const shared_ptr<SoftRobots>& soft_robots,
-                                         const shared_ptr<ForceContainer>& forces,
+ImplicitTimeStepper::ImplicitTimeStepper(const std::shared_ptr<SoftRobots>& soft_robots,
+                                         const std::shared_ptr<ForceContainer>& forces,
                                          const SimParams& sim_params, SolverType solver_type)
     : BaseTimeStepper(soft_robots, forces, sim_params), ftol(sim_params.ftol),
       dtol(sim_params.dtol), max_iter(sim_params.max_iter.num_iters),
@@ -12,7 +12,7 @@ ImplicitTimeStepper::ImplicitTimeStepper(const shared_ptr<SoftRobots>& soft_robo
       line_search_type(sim_params.line_search), orig_dt(sim_params.dt),
       adaptive_time_stepping_threshold(sim_params.adaptive_time_stepping),
       adaptive_time_stepping(sim_params.adaptive_time_stepping != 0), solver_type(solver_type) {
-    Jacobian = MatrixXd::Zero(freeDOF, freeDOF);
+    Jacobian = MatX::Zero(freeDOF, freeDOF);
 }
 
 ImplicitTimeStepper::~ImplicitTimeStepper() {
@@ -24,13 +24,13 @@ void ImplicitTimeStepper::initStepper() {
     BaseTimeStepper::initStepper();
     switch (solver_type) {
         case PARDISO_SOLVER:
-            solver = make_unique<PardisoSolver>(shared_from_this());
+            solver = std::make_unique<PardisoSolver>(shared_from_this());
             ia = new MKL_INT[freeDOF + 1]{0};
             ia[0] = 1;
             break;
 
         case DGBSV_SOLVER:
-            solver = make_unique<DGBSVSolver>(shared_from_this());
+            solver = std::make_unique<DGBSVSolver>(shared_from_this());
             DGBSVSolver local_solver = dynamic_cast<DGBSVSolver&>(*solver);
             dgbsv_jacobian_len = local_solver.NUMROWS * freeDOF;
             kl = local_solver.kl;
@@ -41,8 +41,8 @@ void ImplicitTimeStepper::initStepper() {
     }
 }
 
-shared_ptr<ImplicitTimeStepper> ImplicitTimeStepper::shared_from_this() {
-    return static_pointer_cast<ImplicitTimeStepper>(BaseTimeStepper::shared_from_this());
+std::shared_ptr<ImplicitTimeStepper> ImplicitTimeStepper::shared_from_this() {
+    return std::static_pointer_cast<ImplicitTimeStepper>(BaseTimeStepper::shared_from_this());
 }
 
 void ImplicitTimeStepper::integrator() {
@@ -52,8 +52,8 @@ void ImplicitTimeStepper::integrator() {
 template <>
 void ImplicitTimeStepper::addJacobian<PARDISO_SOLVER>(int ind1, int ind2, double p, int limb_idx1,
                                                       int limb_idx2) {
-    shared_ptr<ElasticRod> limb1 = limbs[limb_idx1];
-    shared_ptr<ElasticRod> limb2 = limbs[limb_idx2];
+    std::shared_ptr<ElasticRod> limb1 = limbs[limb_idx1];
+    std::shared_ptr<ElasticRod> limb2 = limbs[limb_idx2];
     mappedInd1 = limb1->fullToUnconsMap[ind1];
     mappedInd2 = limb2->fullToUnconsMap[ind2];
     int offset1 = offsets[limb_idx1];
@@ -71,7 +71,7 @@ void ImplicitTimeStepper::addJacobian<PARDISO_SOLVER>(int ind1, int ind2, double
             // This is expensive, but it doesn't happen that often. Better than
             // using a set
             non_zero_elements.erase(remove(non_zero_elements.begin(), non_zero_elements.end(),
-                                           pair<int, int>(jac_ind1, jac_ind2)),
+                                           std::pair<int, int>(jac_ind1, jac_ind2)),
                                     non_zero_elements.end());
         }
         Jacobian(jac_ind1, jac_ind2) += p;
@@ -81,8 +81,8 @@ void ImplicitTimeStepper::addJacobian<PARDISO_SOLVER>(int ind1, int ind2, double
 template <>
 void ImplicitTimeStepper::addJacobian<DGBSV_SOLVER>(int ind1, int ind2, double p, int limb_idx1,
                                                     int limb_idx2) {
-    shared_ptr<ElasticRod> limb1 = limbs[limb_idx1];
-    shared_ptr<ElasticRod> limb2 = limbs[limb_idx2];
+    std::shared_ptr<ElasticRod> limb1 = limbs[limb_idx1];
+    std::shared_ptr<ElasticRod> limb2 = limbs[limb_idx2];
     mappedInd1 = limb1->fullToUnconsMap[ind1];
     mappedInd2 = limb2->fullToUnconsMap[ind2];
     int offset1 = offsets[limb_idx1];
@@ -139,7 +139,7 @@ void ImplicitTimeStepper::setZero() {
                 dgbsv_jacobian[i] = 0;
             break;
     }
-    Jacobian = MatrixXd::Zero(freeDOF, freeDOF);
+    Jacobian = MatX::Zero(freeDOF, freeDOF);
 }
 
 void ImplicitTimeStepper::update() {
@@ -158,7 +158,7 @@ void ImplicitTimeStepper::update() {
             dgbsv_jacobian = new double[dgbsv_jacobian_len]{0};
             break;
     }
-    Jacobian = MatrixXd::Zero(freeDOF, freeDOF);
+    Jacobian = MatX::Zero(freeDOF, freeDOF);
 }
 
 void ImplicitTimeStepper::prepSystemForIteration() {

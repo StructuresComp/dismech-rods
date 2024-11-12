@@ -8,7 +8,7 @@ class BaseTimeStepper;
 class DampingForce : public BaseForce
 {
   public:
-    DampingForce(const shared_ptr<SoftRobots>& m_soft_robots, double m_viscosity);
+    DampingForce(const std::shared_ptr<SoftRobots>& m_soft_robots, double m_viscosity);
     ~DampingForce() override;
 
     void computeForce(double dt) override;
@@ -17,7 +17,7 @@ class DampingForce : public BaseForce
   private:
     double viscosity;
 
-    Vector3d force;
+    Vec3 force;
     int ind, indx, indy;
     double jac;
 };

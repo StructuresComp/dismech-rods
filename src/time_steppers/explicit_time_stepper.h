@@ -6,8 +6,8 @@
 class ExplicitTimeStepper : public BaseTimeStepper
 {
   public:
-    ExplicitTimeStepper(const shared_ptr<SoftRobots>& soft_robots,
-                        const shared_ptr<ForceContainer>& forces, const SimParams& sim_params);
+    ExplicitTimeStepper(const std::shared_ptr<SoftRobots>& soft_robots,
+                        const std::shared_ptr<ForceContainer>& forces, const SimParams& sim_params);
     ~ExplicitTimeStepper() override;
 
     void prepSystemForIteration() override;
@@ -16,7 +16,7 @@ class ExplicitTimeStepper : public BaseTimeStepper
     void addJacobian(int ind1, int ind2, double p, int limb_indx1, int limb_idx2) override;
 
   protected:
-    vector<VectorXd> inverse_masses;
+    std::vector<VecX> inverse_masses;
 
   private:
     void constructInverseMassVector();

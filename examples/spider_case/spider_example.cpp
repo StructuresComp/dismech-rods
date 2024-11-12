@@ -1,6 +1,6 @@
 #include "robot_description.h"
 
-extern ofstream logging_output_file;  // defined in main.cpp
+extern std::ofstream logging_output_file;  // defined in main.cpp
 /*
  * Spider on Incline Example
  *
@@ -12,9 +12,10 @@ extern ofstream logging_output_file;  // defined in main.cpp
 // When false, enables stiffer simulation that sacrifices speed for accuracy.
 bool SIM_FAST = true;
 
-void getRobotDescription(int argc, char** argv, const shared_ptr<SoftRobots>& soft_robots,
-                         const shared_ptr<ForceContainer>& forces, shared_ptr<BaseLogger>& logger,
-                         SimParams& sim_params, RenderParams& render_params) {
+void getRobotDescription(int argc, char** argv, const std::shared_ptr<SoftRobots>& soft_robots,
+                         const std::shared_ptr<ForceContainer>& forces,
+                         std::shared_ptr<BaseLogger>& logger, SimParams& sim_params,
+                         RenderParams& render_params) {
 
     sim_params.sim_time = 2;
     sim_params.ftol = 1e-3;
@@ -47,24 +48,24 @@ void getRobotDescription(int argc, char** argv, const shared_ptr<SoftRobots>& so
     double mu = 0.4;
 
     // Create the limbs
-    soft_robots->addLimb(Vector3d(0, 0, 0.20), Vector3d(0, 0.00, 0.10), n, density, radius,
-                         young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0.10, 0, 0.10), n, density, radius,
-                         young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0, 0.10, 0.10), n, density, radius,
-                         young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(0, -0.10, 0.10), n, density, radius,
-                         young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(0, 0, 0.10), Vector3d(-0.10, 0, 0.10), n, density, radius,
-                         young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(0.10, 0, 0.10), Vector3d(0.10, 0, 0), n, density, radius,
-                         young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(0, 0.10, 0.10), Vector3d(0, 0.10, 0), n, density, radius,
-                         young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(0, -0.10, 0.10), Vector3d(0, -0.10, 0), n, density, radius,
-                         young_mod, poisson, mu);
-    soft_robots->addLimb(Vector3d(-0.10, 0, 0.10), Vector3d(-0.10, 0, 0), n, density, radius,
-                         young_mod, poisson, mu);
+    soft_robots->addLimb(Vec3(0, 0, 0.20), Vec3(0, 0.00, 0.10), n, density, radius, young_mod,
+                         poisson, mu);
+    soft_robots->addLimb(Vec3(0, 0, 0.10), Vec3(0.10, 0, 0.10), n, density, radius, young_mod,
+                         poisson, mu);
+    soft_robots->addLimb(Vec3(0, 0, 0.10), Vec3(0, 0.10, 0.10), n, density, radius, young_mod,
+                         poisson, mu);
+    soft_robots->addLimb(Vec3(0, 0, 0.10), Vec3(0, -0.10, 0.10), n, density, radius, young_mod,
+                         poisson, mu);
+    soft_robots->addLimb(Vec3(0, 0, 0.10), Vec3(-0.10, 0, 0.10), n, density, radius, young_mod,
+                         poisson, mu);
+    soft_robots->addLimb(Vec3(0.10, 0, 0.10), Vec3(0.10, 0, 0), n, density, radius, young_mod,
+                         poisson, mu);
+    soft_robots->addLimb(Vec3(0, 0.10, 0.10), Vec3(0, 0.10, 0), n, density, radius, young_mod,
+                         poisson, mu);
+    soft_robots->addLimb(Vec3(0, -0.10, 0.10), Vec3(0, -0.10, 0), n, density, radius, young_mod,
+                         poisson, mu);
+    soft_robots->addLimb(Vec3(-0.10, 0, 0.10), Vec3(-0.10, 0, 0), n, density, radius, young_mod,
+                         poisson, mu);
 
     // Create joints and connect appropriately
     soft_robots->createJoint(0, -1);
@@ -82,14 +83,14 @@ void getRobotDescription(int argc, char** argv, const shared_ptr<SoftRobots>& so
     soft_robots->addToJoint(4, 8, 0);
 
     // Add gravity with a slight x-axis perturbation
-    Vector3d gravity_vec(1.0, 0.0, -9.8);
-    forces->addForce(make_shared<GravityForce>(soft_robots, gravity_vec));
+    Vec3 gravity_vec(1.0, 0.0, -9.8);
+    forces->addForce(std::make_shared<GravityForce>(soft_robots, gravity_vec));
 
     // Add floor contact
     double floor_z = -0.10;
-    forces->addForce(make_shared<FloorContactForce>(soft_robots, delta, nu, floor_z));
+    forces->addForce(std::make_shared<FloorContactForce>(soft_robots, delta, nu, floor_z));
 
-    string logfile_base = "log_files/spider";
+    std::string logfile_base = "log_files/spider";
     int logging_period = 20;
-    logger = make_shared<PositionLogger>(logfile_base, logging_output_file, logging_period);
+    logger = std::make_shared<PositionLogger>(logfile_base, logging_output_file, logging_period);
 }

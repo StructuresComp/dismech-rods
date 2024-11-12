@@ -8,7 +8,7 @@ class BaseTimeStepper;
 class GravityForce : public BaseForce
 {
   public:
-    GravityForce(const shared_ptr<SoftRobots>& soft_robots, Vector3d g_vector);
+    GravityForce(const std::shared_ptr<SoftRobots>& soft_robots, Vec3 g_vector);
     ~GravityForce() override;
 
     void computeForce(double dt) override;
@@ -17,9 +17,9 @@ class GravityForce : public BaseForce
   private:
     void setGravity();
 
-    Vector3d g_vector;
-    vector<VectorXd> mass_gravities;
-    VectorXd mass_gravity;
+    Vec3 g_vector;
+    std::vector<VecX> mass_gravities;
+    VecX mass_gravity;
 };
 
 #endif  // GRAVITY_FORCE_H

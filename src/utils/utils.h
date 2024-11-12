@@ -4,10 +4,10 @@
 #include "global_definitions.h"
 #include <fstream>
 
-string convertFloatToScientificStr(double d);
+std::string convertFloatToScientificStr(double d);
 
 // This function acts like np.loadtxt from Python
 template <class VecN>
-void loadTxt(const string& filename, vector<VecN>& data);
+void loadTxt(const std::string& filename, std::vector<VecN>& data);
 
 #endif

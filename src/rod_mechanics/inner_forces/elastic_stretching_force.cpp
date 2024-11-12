@@ -1,7 +1,7 @@
 #include "elastic_stretching_force.h"
 #include "time_steppers/base_time_stepper.h"
 
-ElasticStretchingForce::ElasticStretchingForce(const shared_ptr<SoftRobots>& m_soft_robots)
+ElasticStretchingForce::ElasticStretchingForce(const std::shared_ptr<SoftRobots>& m_soft_robots)
     : BaseForce(m_soft_robots) {
     f.setZero(3);
     Jss.setZero(7, 7);
@@ -33,7 +33,7 @@ void ElasticStretchingForce::computeForce(double dt) {
         limb_idx++;
     }
 
-    shared_ptr<ElasticRod> curr_limb;
+    std::shared_ptr<ElasticRod> curr_limb;
     int n1;
     int sgn;
     for (const auto& joint : soft_robots->joints) {
@@ -94,7 +94,7 @@ void ElasticStretchingForce::computeForceAndJacobian(double dt) {
     }
 
     int n1;
-    shared_ptr<ElasticRod> curr_limb;
+    std::shared_ptr<ElasticRod> curr_limb;
     for (const auto& joint : soft_robots->joints) {
         for (int i = 0; i < joint->ne; i++) {
             n1 = joint->connected_nodes[i].first;

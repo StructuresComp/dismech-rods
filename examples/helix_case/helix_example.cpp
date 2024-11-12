@@ -1,6 +1,6 @@
 #include "robot_description.h"
 
-extern ofstream logging_output_file;  // defined in main.cpp
+extern std::ofstream logging_output_file;  // defined in main.cpp
 
 /*
  * Helix Under Gravity Example
@@ -9,9 +9,10 @@ extern ofstream logging_output_file;  // defined in main.cpp
  * custom external forces, and loggers in the function below.
  */
 
-void getRobotDescription(int argc, char** argv, const shared_ptr<SoftRobots>& soft_robots,
-                         const shared_ptr<ForceContainer>& forces, shared_ptr<BaseLogger>& logger,
-                         SimParams& sim_params, RenderParams& render_params) {
+void getRobotDescription(int argc, char** argv, const std::shared_ptr<SoftRobots>& soft_robots,
+                         const std::shared_ptr<ForceContainer>& forces,
+                         std::shared_ptr<BaseLogger>& logger, SimParams& sim_params,
+                         RenderParams& render_params) {
 
     sim_params.dt = 5e-3;
     sim_params.sim_time = 10;
@@ -21,8 +22,8 @@ void getRobotDescription(int argc, char** argv, const shared_ptr<SoftRobots>& so
     render_params.render_scale = 5.0;
 
     // Read vertices describing helical shape
-    vector<Vector3d> vertices;
-    loadTxt<Vector3d>("examples/helix_case/helix_configuration.txt", vertices);
+    std::vector<Vec3> vertices;
+    loadTxt<Vec3>("examples/helix_case/helix_configuration.txt", vertices);
 
     // Create the helix using custom config initializer
     double radius = 5e-3;
@@ -35,12 +36,12 @@ void getRobotDescription(int argc, char** argv, const shared_ptr<SoftRobots>& so
     soft_robots->lockEdge(0, 0);
 
     // Add gravity
-    Vector3d gravity_vec(0.0, 0.0, -9.8);
-    forces->addForce(make_shared<GravityForce>(soft_robots, gravity_vec));
+    Vec3 gravity_vec(0.0, 0.0, -9.8);
+    forces->addForce(std::make_shared<GravityForce>(soft_robots, gravity_vec));
 
     // Set logger to record nodes
-    string logfile_base = "log_files/helix";
+    std::string logfile_base = "log_files/helix";
     int logging_period = 1;
-    logger = make_shared<PositionLogger>(logfile_base, convertFloatToScientificStr(young_mod),
-                                         logging_output_file, logging_period);
+    logger = std::make_shared<PositionLogger>(logfile_base, convertFloatToScientificStr(young_mod),
+                                              logging_output_file, logging_period);
 }

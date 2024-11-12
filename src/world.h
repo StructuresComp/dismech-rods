@@ -21,13 +21,13 @@
 class World
 {
   public:
-    World(const shared_ptr<SoftRobots>& soft_robots, const shared_ptr<ForceContainer>& forces,
-          const SimParams& sim_params);
+    World(const std::shared_ptr<SoftRobots>& soft_robots,
+          const std::shared_ptr<ForceContainer>& forces, const SimParams& sim_params);
     ~World();
     void updateTimeStep();
     double getCoordinate(int i, int limb_idx);
-    VectorXd getM1(int i, int limb_idx);
-    VectorXd getM2(int i, int limb_idx);
+    VecX getM1(int i, int limb_idx);
+    VecX getM2(int i, int limb_idx);
 
     double getCurrentTime() const;
     bool simulationRunning() const;
@@ -36,11 +36,11 @@ class World
     bool floorExists();
     double getFloorZ();
 
-    shared_ptr<SoftRobots> soft_robots;
+    std::shared_ptr<SoftRobots> soft_robots;
 
   private:
-    shared_ptr<ForceContainer> forces;
-    shared_ptr<BaseTimeStepper> stepper;
+    std::shared_ptr<ForceContainer> forces;
+    std::shared_ptr<BaseTimeStepper> stepper;
 
     int time_step;
     double curr_time;

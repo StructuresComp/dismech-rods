@@ -1,7 +1,7 @@
 #include "base_sim_env.h"
 
-BaseSimEnv::BaseSimEnv(const shared_ptr<World>& m_world, const RenderParams& render_params,
-                       const shared_ptr<BaseLogger>& logger)
+BaseSimEnv::BaseSimEnv(const std::shared_ptr<World>& m_world, const RenderParams& render_params,
+                       const std::shared_ptr<BaseLogger>& logger)
     : w_p(m_world), cmdline_per(render_params.cmd_line_per), logger_p(logger),
       is_logging(logger != nullptr) {
     if (is_logging) {
@@ -12,7 +12,7 @@ BaseSimEnv::BaseSimEnv(const shared_ptr<World>& m_world, const RenderParams& ren
 
 BaseSimEnv::~BaseSimEnv() = default;
 
-void BaseSimEnv::cmdlineOutputHelper(const shared_ptr<World>& s_world_p, int s_cmdline_per) {
+void BaseSimEnv::cmdlineOutputHelper(const std::shared_ptr<World>& s_world_p, int s_cmdline_per) {
     if (s_cmdline_per == 0)
         return;
     if (s_world_p->getTimeStep() % s_cmdline_per == 0) {
@@ -25,7 +25,7 @@ void BaseSimEnv::cmdlineOutputHelper() {
     cmdlineOutputHelper(w_p, cmdline_per);
 }
 
-void BaseSimEnv::cleanShutdown(shared_ptr<BaseLogger> s_logger_p, bool s_is_logging) {
+void BaseSimEnv::cleanShutdown(std::shared_ptr<BaseLogger> s_logger_p, bool s_is_logging) {
     // Deletes will be taken care of by smart pointers.
     // what's more important is pruning the log files if needed,
     // we don't want empty ones.

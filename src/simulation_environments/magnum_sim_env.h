@@ -2,6 +2,7 @@
 #define MAGNUM_SIM_ENV_H
 
 #include "base_sim_env.h"
+#include "global_definitions.h"
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -86,8 +87,8 @@ class MagnumSimEnv : public Platform::Application,
                      public BaseSimEnv
 {
   public:
-    explicit MagnumSimEnv(const shared_ptr<World>& m_world, const RenderParams& render_params,
-                          const shared_ptr<BaseLogger>& logger, int argc, char** argv);
+    explicit MagnumSimEnv(const std::shared_ptr<World>& m_world, const RenderParams& render_params,
+                          const std::shared_ptr<BaseLogger>& logger, int argc, char** argv);
 
     void stepSimulation() override;
     void runSimulation() override;
@@ -98,7 +99,7 @@ class MagnumSimEnv : public Platform::Application,
 
     float render_scale;
     int render_per;
-    string render_record_path;
+    std::string render_record_path;
 
     void keyPressEvent(KeyEvent& event) override;
     void mousePressEvent(MouseEvent& event) override;
@@ -106,8 +107,7 @@ class MagnumSimEnv : public Platform::Application,
     void mouseScrollEvent(MouseScrollEvent& event) override;
     void drawEvent() override;
 
-    void renderEdge(Eigen::Vector3d top_vertex, Eigen::Vector3d bot_vertex, float radius,
-                    Color3 color);
+    void renderEdge(Vec<3> top_vertex, Vec<3> bot_vertex, float radius, Color3 color);
 
     Shaders::VertexColorGL3D vertex_color_shader{NoCreate};
     Shaders::FlatGL3D flat_shader{NoCreate};

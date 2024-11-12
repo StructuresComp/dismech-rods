@@ -1,6 +1,6 @@
 #include "base_controller.h"
 
-BaseController::BaseController(const vector<shared_ptr<ElasticRod>>& limbs)
+BaseController::BaseController(const std::vector<std::shared_ptr<ElasticRod>>& limbs)
     : limbs(limbs), num_actuators(limbs.size()), current_time(0) {
 }
 

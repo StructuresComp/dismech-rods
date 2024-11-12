@@ -1,7 +1,7 @@
 #include "base_time_stepper.h"
 
-BaseTimeStepper::BaseTimeStepper(const shared_ptr<SoftRobots>& soft_robots,
-                                 const shared_ptr<ForceContainer>& forces,
+BaseTimeStepper::BaseTimeStepper(const std::shared_ptr<SoftRobots>& soft_robots,
+                                 const std::shared_ptr<ForceContainer>& forces,
                                  const SimParams& sim_params)
     : limbs(soft_robots->limbs), joints(soft_robots->joints), controllers(soft_robots->controllers),
       forces(forces), dt(sim_params.dt), Force(nullptr, 0), DX(nullptr, 0) {
@@ -12,10 +12,10 @@ BaseTimeStepper::BaseTimeStepper(const shared_ptr<SoftRobots>& soft_robots,
     }
 
     force = new double[freeDOF]{0};
-    new (&Force) Map<VectorXd>(force, freeDOF);
+    new (&Force) Eigen::Map<VecX>(force, freeDOF);
 
     dx = new double[freeDOF]{0};
-    new (&DX) Map<VectorXd>(dx, freeDOF);
+    new (&DX) Eigen::Map<VecX>(dx, freeDOF);
 }
 
 void BaseTimeStepper::initStepper() {
@@ -28,7 +28,7 @@ BaseTimeStepper::~BaseTimeStepper() {
 }
 
 void BaseTimeStepper::addForce(int ind, double p, int limb_idx) {
-    shared_ptr<ElasticRod> limb = limbs[limb_idx];
+    std::shared_ptr<ElasticRod> limb = limbs[limb_idx];
 
     offset = offsets[limb_idx];
 
@@ -54,10 +54,10 @@ void BaseTimeStepper::update() {
     delete[] dx;
 
     force = new double[freeDOF]{0};
-    new (&Force) Map<VectorXd>(force, freeDOF);
+    new (&Force) Eigen::Map<VecX>(force, freeDOF);
 
     dx = new double[freeDOF]{0};
-    new (&DX) Map<VectorXd>(dx, freeDOF);
+    new (&DX) Eigen::Map<VecX>(dx, freeDOF);
 }
 
 void BaseTimeStepper::prepSystemForIteration() {

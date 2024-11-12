@@ -1,12 +1,12 @@
 #include "contact_force.h"
 #include "time_steppers/base_time_stepper.h"
 
-ContactForce::ContactForce(const shared_ptr<SoftRobots>& soft_robots, double col_limit,
+ContactForce::ContactForce(const std::shared_ptr<SoftRobots>& soft_robots, double col_limit,
                            double delta, double k_scaler, bool friction, double nu,
                            bool self_contact)
     : BaseForce(soft_robots), delta(delta), k_scaler(k_scaler), nu(nu), friction(friction) {
 
-    col_detector = make_unique<CollisionDetector>(soft_robots, col_limit, delta, self_contact);
+    col_detector = std::make_unique<CollisionDetector>(soft_robots, col_limit, delta, self_contact);
 
     K1 = 15 / delta;
     K2 = 15 / nu;
@@ -18,7 +18,7 @@ ContactForce::ContactForce(const shared_ptr<SoftRobots>& soft_robots, double col
 
     friction_input[38] = K2;
 
-    sym_eqs = make_unique<SymbolicEquations>();
+    sym_eqs = std::make_unique<SymbolicEquations>();
     sym_eqs->generateContactPotentialPiecewiseFunctions();
     if (friction) {
         sym_eqs->generateFrictionJacobianPiecewiseFunctions();
@@ -83,7 +83,7 @@ double ContactForce::getMinDist() const {
     return col_detector->min_dist;
 }
 
-void ContactForce::setupContactVariables(const Vector<int, 8>& contact_id) {
+void ContactForce::setupContactVariables(const Eigen::Vector<int, 8>& contact_id) {
     idx1 = contact_id(0);
     idx2 = contact_id(1);
     idx3 = contact_id(2);
@@ -99,7 +99,7 @@ void ContactForce::setupContactVariables(const Vector<int, 8>& contact_id) {
 
     surface_limit = limb1->rod_radius + limb2->rod_radius;
     // Let mu be the max of the two mu's of the two limbs
-    mu = max(limb1->mu, limb2->mu);
+    mu = std::max(limb1->mu, limb2->mu);
     x1s = limb1->getVertex(idx1);
     x1e = limb1->getVertex(idx3);
     x2s = limb2->getVertex(idx2);
@@ -150,10 +150,10 @@ void ContactForce::prepFrictionInput(double dt) {
 }
 
 void ContactForce::computeFriction(double dt) {
-    Vector3d f1s = contact_gradient(seq(0, 2));
-    Vector3d f1e = contact_gradient(seq(3, 5));
-    Vector3d f2s = contact_gradient(seq(6, 8));
-    Vector3d f2e = contact_gradient(seq(9, 11));
+    Vec3 f1s = contact_gradient(Eigen::seq(0, 2));
+    Vec3 f1e = contact_gradient(Eigen::seq(3, 5));
+    Vec3 f2s = contact_gradient(Eigen::seq(6, 8));
+    Vec3 f2e = contact_gradient(Eigen::seq(9, 11));
 
     double f1s_n = f1s.norm();
     double f1e_n = f1e.norm();
@@ -177,21 +177,21 @@ void ContactForce::computeFriction(double dt) {
     double beta12 = 1 - beta11;
     double beta22 = 1 - beta21;
 
-    Vector3d v1s = (x1s - x1s0) / dt;
-    Vector3d v1e = (x1e - x1e0) / dt;
-    Vector3d v2s = (x2s - x2s0) / dt;
-    Vector3d v2e = (x2e - x2e0) / dt;
+    Vec3 v1s = (x1s - x1s0) / dt;
+    Vec3 v1e = (x1e - x1e0) / dt;
+    Vec3 v2s = (x2s - x2s0) / dt;
+    Vec3 v2e = (x2e - x2e0) / dt;
 
-    Vector3d v1 = beta11 * v1s + beta12 * v1e;
-    Vector3d v2 = beta21 * v2s + beta22 * v2e;
-    Vector3d v_rel = v1 - v2;
+    Vec3 v1 = beta11 * v1s + beta12 * v1e;
+    Vec3 v2 = beta21 * v2s + beta22 * v2e;
+    Vec3 v_rel = v1 - v2;
 
-    Vector3d contact_norm = (f1s + f1e) / fn;
-    Vector3d tv_rel = v_rel - v_rel.dot(contact_norm) * contact_norm;
+    Vec3 contact_norm = (f1s + f1e) / fn;
+    Vec3 tv_rel = v_rel - v_rel.dot(contact_norm) * contact_norm;
     double tv_rel_n = tv_rel.norm();
 
     double gamma;
-    Vector3d tv_rel_u;
+    Vec3 tv_rel_u;
     if (tv_rel_n == 0) {
         friction_forces.setZero();
         friction_type = ZERO_VEL;
@@ -207,12 +207,12 @@ void ContactForce::computeFriction(double dt) {
     }
     tv_rel_u = tv_rel / tv_rel_n;
 
-    Vector3d ffr_val = mu * gamma * tv_rel_u;
+    Vec3 ffr_val = mu * gamma * tv_rel_u;
 
-    friction_forces(seq(0, 2)) = ffr_val * f1s_n;
-    friction_forces(seq(3, 5)) = ffr_val * f1e_n;
-    friction_forces(seq(6, 8)) = -ffr_val * f2s_n;
-    friction_forces(seq(9, 11)) = -ffr_val * f2e_n;
+    friction_forces(Eigen::seq(0, 2)) = ffr_val * f1s_n;
+    friction_forces(Eigen::seq(3, 5)) = ffr_val * f1e_n;
+    friction_forces(Eigen::seq(6, 8)) = -ffr_val * f2s_n;
+    friction_forces(Eigen::seq(9, 11)) = -ffr_val * f2e_n;
 }
 
 void ContactForce::computeForce(double dt) {
@@ -234,8 +234,8 @@ void ContactForce::computeForce(double dt) {
 
             // insert gradient and hessian to contact gradient and contact
             // hessian
-            contact_gradient(seq(0, 2)) = p2p_gradient(seq(0, 2));
-            contact_gradient(seq(6, 8)) = p2p_gradient(seq(3, 5));
+            contact_gradient(Eigen::seq(0, 2)) = p2p_gradient(Eigen::seq(0, 2));
+            contact_gradient(Eigen::seq(6, 8)) = p2p_gradient(Eigen::seq(3, 5));
         }
 
         else if (constraint_type == POINT_TO_EDGE) {
@@ -248,9 +248,9 @@ void ContactForce::computeForce(double dt) {
 
             // insert gradient and hessian to contact gradient and contact
             // hessian
-            contact_gradient(seq(0, 2)) = e2p_gradient(seq(0, 2));
-            contact_gradient(seq(3, 5)) = e2p_gradient(seq(3, 5));
-            contact_gradient(seq(6, 8)) = e2p_gradient(seq(6, 8));
+            contact_gradient(Eigen::seq(0, 2)) = e2p_gradient(Eigen::seq(0, 2));
+            contact_gradient(Eigen::seq(3, 5)) = e2p_gradient(Eigen::seq(3, 5));
+            contact_gradient(Eigen::seq(6, 8)) = e2p_gradient(Eigen::seq(6, 8));
         }
 
         else if (constraint_type == EDGE_TO_EDGE) {
@@ -304,8 +304,8 @@ void ContactForce::computeForceAndJacobian(double dt) {
 
             // insert gradient and hessian to contact gradient and contact
             // hessian
-            contact_gradient(seq(0, 2)) = p2p_gradient(seq(0, 2));
-            contact_gradient(seq(6, 8)) = p2p_gradient(seq(3, 5));
+            contact_gradient(Eigen::seq(0, 2)) = p2p_gradient(Eigen::seq(0, 2));
+            contact_gradient(Eigen::seq(6, 8)) = p2p_gradient(Eigen::seq(3, 5));
             contact_hessian.block<3, 3>(0, 0) = p2p_hessian.block<3, 3>(0, 0);
             contact_hessian.block<3, 3>(0, 6) = p2p_hessian.block<3, 3>(0, 3);
             contact_hessian.block<3, 3>(6, 0) = p2p_hessian.block<3, 3>(3, 0);
@@ -323,9 +323,9 @@ void ContactForce::computeForceAndJacobian(double dt) {
 
             // insert gradient and hessian to contact gradient and contact
             // hessian
-            contact_gradient(seq(0, 2)) = e2p_gradient(seq(0, 2));
-            contact_gradient(seq(3, 5)) = e2p_gradient(seq(3, 5));
-            contact_gradient(seq(6, 8)) = e2p_gradient(seq(6, 8));
+            contact_gradient(Eigen::seq(0, 2)) = e2p_gradient(Eigen::seq(0, 2));
+            contact_gradient(Eigen::seq(3, 5)) = e2p_gradient(Eigen::seq(3, 5));
+            contact_gradient(Eigen::seq(6, 8)) = e2p_gradient(Eigen::seq(6, 8));
             contact_hessian.block<9, 9>(0, 0) = e2p_hessian;
         }
         else if (constraint_type == EDGE_TO_EDGE) {

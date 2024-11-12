@@ -1,7 +1,7 @@
 #include "inertial_force.h"
 #include "time_steppers/base_time_stepper.h"
 
-InertialForce::InertialForce(const shared_ptr<SoftRobots>& m_soft_robots)
+InertialForce::InertialForce(const std::shared_ptr<SoftRobots>& m_soft_robots)
     : BaseForce(m_soft_robots) {
 }
 

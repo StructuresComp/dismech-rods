@@ -1,7 +1,7 @@
 #include "robot_description.h"
 #include <math.h>
 
-extern ofstream logging_output_file;  // defined in main.cpp
+extern std::ofstream logging_output_file;  // defined in main.cpp
 
 /*
  * Dynamic Cantilever Example
@@ -10,9 +10,10 @@ extern ofstream logging_output_file;  // defined in main.cpp
  * custom external forces, and loggers in the function below.
  */
 
-void getRobotDescription(int argc, char** argv, const shared_ptr<SoftRobots>& soft_robots,
-                         const shared_ptr<ForceContainer>& forces, shared_ptr<BaseLogger>& logger,
-                         SimParams& sim_params, RenderParams& render_params) {
+void getRobotDescription(int argc, char** argv, const std::shared_ptr<SoftRobots>& soft_robots,
+                         const std::shared_ptr<ForceContainer>& forces,
+                         std::shared_ptr<BaseLogger>& logger, SimParams& sim_params,
+                         RenderParams& render_params) {
 
     sim_params.dt = 2.5e-3;
     sim_params.sim_time = 15;
@@ -41,18 +42,18 @@ void getRobotDescription(int argc, char** argv, const shared_ptr<SoftRobots>& so
         double x = R - R * cos(t);
         double y = R * sin(t);
 
-        soft_robots->addLimb(Vector3d(x, y, 0.0), Vector3d(x, y, -0.3), n, density, radius,
-                             young_mod, poisson, mu);
+        soft_robots->addLimb(Vec3(x, y, 0.0), Vec3(x, y, -0.3), n, density, radius, young_mod,
+                             poisson, mu);
         soft_robots->lockEdge(i, 0);
     }
 
     // Add gravity
-    Vector3d gravity_vec(0.0, 0.0, -9.8);
-    forces->addForce(make_shared<GravityForce>(soft_robots, gravity_vec));
+    Vec3 gravity_vec(0.0, 0.0, -9.8);
+    forces->addForce(std::make_shared<GravityForce>(soft_robots, gravity_vec));
 
     // Add viscous damping
     double viscosity = 5.0;
-    forces->addForce(make_shared<DampingForce>(soft_robots, viscosity));
+    forces->addForce(std::make_shared<DampingForce>(soft_robots, viscosity));
 
     // Add self-contact
     double col_limit = 1e-3;
@@ -61,16 +62,16 @@ void getRobotDescription(int argc, char** argv, const shared_ptr<SoftRobots>& so
     double nu = 1e-3;
     bool friction = false;  // for friction, reduce time step to 1 ms
     bool self_contact = true;
-    forces->addForce(make_shared<ContactForce>(soft_robots, col_limit, delta, k_scaler, friction,
-                                               nu, self_contact));
+    forces->addForce(std::make_shared<ContactForce>(soft_robots, col_limit, delta, k_scaler,
+                                                    friction, nu, self_contact));
 
     // Add custom active entanglement controller
     double start_time = 0.0;
     double end_time = 10.0;
     soft_robots->addController(
-        make_shared<ActiveEntanglementController>(soft_robots, start_time, end_time));
+        std::make_shared<ActiveEntanglementController>(soft_robots, start_time, end_time));
 
-    string logfile_base = "log_files/active_entanglement";
+    std::string logfile_base = "log_files/active_entanglement";
     int logging_period = 5;
-    logger = make_shared<PositionLogger>(logfile_base, logging_output_file, logging_period);
+    logger = std::make_shared<PositionLogger>(logfile_base, logging_output_file, logging_period);
 }

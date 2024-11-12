@@ -1,20 +1,20 @@
 #include "uniform_constant_force.h"
 #include "time_steppers/base_time_stepper.h"
 
-UniformConstantForce::UniformConstantForce(const shared_ptr<SoftRobots>& m_soft_robots)
+UniformConstantForce::UniformConstantForce(const std::shared_ptr<SoftRobots>& m_soft_robots)
     : BaseForce(m_soft_robots) {
 }
 
 UniformConstantForce::~UniformConstantForce() = default;
 
-void UniformConstantForce::addForceToLimb(int limb_idx, const Vector3d& force) {
+void UniformConstantForce::addForceToLimb(int limb_idx, const Vec3& force) {
     limb_force_pairs.emplace_back(limb_idx, force);
 }
 
 void UniformConstantForce::computeForce(double dt) {
     int limb_idx;
-    shared_ptr<ElasticRod> limb;
-    Vector3d force;
+    std::shared_ptr<ElasticRod> limb;
+    Vec3 force;
     for (const auto& limb_force_pair : limb_force_pairs) {
         limb_idx = limb_force_pair.first;
 

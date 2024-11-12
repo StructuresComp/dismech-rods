@@ -10,8 +10,8 @@ class BaseSolver;
 class ImplicitTimeStepper : public BaseTimeStepper
 {
   public:
-    ImplicitTimeStepper(const shared_ptr<SoftRobots>& soft_robots,
-                        const shared_ptr<ForceContainer>& forces, const SimParams& sim_params,
+    ImplicitTimeStepper(const std::shared_ptr<SoftRobots>& soft_robots,
+                        const std::shared_ptr<ForceContainer>& forces, const SimParams& sim_params,
                         SolverType solver_type);
     ~ImplicitTimeStepper() override;
 
@@ -29,7 +29,7 @@ class ImplicitTimeStepper : public BaseTimeStepper
     // in ImplicitTimeStepper to avoid n^2 construction later.
     // This allows us to keep complexity to nlogn.
     MKL_INT* ia;
-    vector<pair<int, int>> non_zero_elements;
+    std::vector<std::pair<int, int>> non_zero_elements;
 
     // For dgbsv solver
     double* dgbsv_jacobian;
@@ -52,8 +52,8 @@ class ImplicitTimeStepper : public BaseTimeStepper
     void addJacobian(int ind1, int ind2, double p, int limb_idx1, int limb_idx2);
 
   private:
-    shared_ptr<ImplicitTimeStepper> shared_from_this();  // NOLINT
-    unique_ptr<BaseSolver> solver;
+    std::shared_ptr<ImplicitTimeStepper> shared_from_this();  // NOLINT
+    std::unique_ptr<BaseSolver> solver;
     SolverType solver_type;
     int dgbsv_jacobian_len;
 };

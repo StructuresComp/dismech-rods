@@ -6,8 +6,8 @@
 class ForwardEuler : public ExplicitTimeStepper
 {
   public:
-    ForwardEuler(const shared_ptr<SoftRobots>& soft_robots,
-                 const shared_ptr<ForceContainer>& forces, const SimParams& sim_params);
+    ForwardEuler(const std::shared_ptr<SoftRobots>& soft_robots,
+                 const std::shared_ptr<ForceContainer>& forces, const SimParams& sim_params);
     ~ForwardEuler() override;
 
     double stepForwardInTime() override;

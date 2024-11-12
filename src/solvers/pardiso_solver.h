@@ -6,7 +6,7 @@
 class PardisoSolver : public BaseSolver
 {
   public:
-    explicit PardisoSolver(shared_ptr<ImplicitTimeStepper> stepper);
+    explicit PardisoSolver(std::shared_ptr<ImplicitTimeStepper> stepper);
     ~PardisoSolver() override;
 
     void integrator() override;

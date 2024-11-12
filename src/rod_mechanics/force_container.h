@@ -9,21 +9,21 @@ class ForceContainer
 {
   public:
     ForceContainer();
-    explicit ForceContainer(const vector<shared_ptr<BaseForce>>& m_forces);
+    explicit ForceContainer(const std::vector<std::shared_ptr<BaseForce>>& m_forces);
     ~ForceContainer();
 
     void computeForces(double dt);
     void computeForcesAndJacobian(double dt);
 
-    void setupForceStepperAccess(const shared_ptr<BaseTimeStepper>& stepper);
+    void setupForceStepperAccess(const std::shared_ptr<BaseTimeStepper>& stepper);
 
-    void addForce(const shared_ptr<BaseForce>& force);
+    void addForce(const std::shared_ptr<BaseForce>& force);
 
-    shared_ptr<ContactForce> cf;
-    shared_ptr<FloorContactForce> ff;
+    std::shared_ptr<ContactForce> cf;
+    std::shared_ptr<FloorContactForce> ff;
 
   private:
-    vector<shared_ptr<BaseForce>> forces;
+    std::vector<std::shared_ptr<BaseForce>> forces;
 };
 
 #endif  // FORCE_CONTAINER_H

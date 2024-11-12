@@ -22,7 +22,7 @@ class ElasticRod
      * @param poisson_ratio Poisson's ratio of the rod.
      * @param mu Friction coefficient of the rod.
      */
-    ElasticRod(int limb_idx, const Vector3d& start, const Vector3d& end, int num_nodes, double rho,
+    ElasticRod(int limb_idx, const Vec3& start, const Vec3& end, int num_nodes, double rho,
                double rod_radius, double youngs_modulus, double poisson_ratio, double mu);
 
     /**
@@ -38,7 +38,7 @@ class ElasticRod
      * @param poisson_ratio Poisson's ratio of the rod.
      * @param mu Friction coefficient of the rod.
      */
-    ElasticRod(int limb_idx, const vector<Vector3d>& nodes, double rho, double rod_radius,
+    ElasticRod(int limb_idx, const std::vector<Vec3>& nodes, double rho, double rod_radius,
                double youngs_modulus, double poisson_ratio, double mu);
 
     /**
@@ -58,7 +58,7 @@ class ElasticRod
     /**
      * @brief Performs a Newton update iteration.
      *
-     * @param dx The update vector provided by the time stepper and solver.
+     * @param dx The update std::vector provided by the time stepper and solver.
      * @param offset A constant offset for the rod's DOF index in dx with
      * respect to the global system.
      * @param alpha A Newton update coefficient.
@@ -95,47 +95,47 @@ class ElasticRod
     int limb_idx;
 
     /**
-     * @brief Get the a (3,) position vector of the kth node from current
+     * @brief Get the a (3,) position std::vector of the kth node from current
      * timestep.
      *
      * @param k Index of the node.
      *
-     * @return The (3,) position vector.
+     * @return The (3,) position std::vector.
      */
-    Vector3d getVertex(int k);
+    Vec3 getVertex(int k);
 
     /**
      * @brief Get the (nv, 3) position matrix of all vertices.
      *
      * @return The (nv, 3) position matrix of all vertices.
      */
-    MatrixX3d getVertices();
+    MatXN<3> getVertices();
 
     /**
-     * @brief Get the a (3,) position vector of the kth node from previous timestep.
+     * @brief Get the a (3,) position std::vector of the kth node from previous timestep.
      *
      * @param k Index of the node.
      *
-     * @return The (3,) position vector.
+     * @return The (3,) position std::vector.
      */
-    Vector3d getPreVertex(int k);
+    Vec3 getPreVertex(int k);
 
     /**
-     * @brief Get the a (3,) velocity vector of the kth node from current
+     * @brief Get the a (3,) velocity std::vector of the kth node from current
      * timestep.
      *
      * @param k Index of the node.
      *
-     * @return The (3,) velocity vector.
+     * @return The (3,) velocity std::vector.
      */
-    Vector3d getVelocity(int k);
+    Vec3 getVelocity(int k);
 
     /**
      * @brief Get the (nv, 3) velocity matrix of all vertices.
      *
      * @return The (nv, 3) velocity matrix of all vertices.
      */
-    MatrixX3d getVelocities();
+    MatXN<3> getVelocities();
 
     /**
      * @brief Get the theta of the kth edge from current timestep.
@@ -147,9 +147,9 @@ class ElasticRod
     /**
      * @brief Get all the thetas from current timestep.
      *
-     * @return The (ne, 1) vector of all the thetas.
+     * @return The (ne, 1) std::vector of all the thetas.
      */
-    VectorXd getThetas();
+    VecX getThetas();
 
     /**
      * @brief Density [kg/m^3]
@@ -251,46 +251,46 @@ class ElasticRod
     int uncons;
 
     /**
-     * @brief DOF vector from the previous timestep.
+     * @brief DOF std::vector from the previous timestep.
      *
      * @details Vector of size (ndof, 1).
      */
-    VectorXd x0;
+    VecX x0;
 
     /**
-     * @brief DOF vector during and after the current timestep.
+     * @brief DOF std::vector during and after the current timestep.
      *
      * @details Vector of size (ndof, 1).
      */
-    VectorXd x;
+    VecX x;
 
     /**
-     * @brief DOF vector used to save state during line search.
+     * @brief DOF std::vector used to save state during line search.
      *
      * @details Vector of size (ndof, 1).
      */
-    VectorXd x_ls;
+    VecX x_ls;
 
     /**
-     * @brief Velocity vector from the previous timestep.
+     * @brief Velocity std::vector from the previous timestep.
      *
      * @details Vector of size (ndof, 1).
      */
-    VectorXd u0;
+    VecX u0;
 
     /**
-     * @brief Velocity vector during and after the current timestep.
+     * @brief Velocity std::vector during and after the current timestep.
      *
      * @details Vector of size (ndof, 1).
      */
-    VectorXd u;
+    VecX u;
 
     /**
      * @brief Vector of current edge lengths [m].
      *
      * @see Computed in computeEdgeLen().
      */
-    VectorXd edge_len;
+    VecX edge_len;
 
     /**
      * @brief Reference lengths of the discrete edges [m].
@@ -300,7 +300,7 @@ class ElasticRod
      *
      * @see Computed in setReferenceLength().
      */
-    VectorXd ref_len;
+    VecX ref_len;
 
     /**
      * @brief Voronoi lengths of each node [m].
@@ -310,7 +310,7 @@ class ElasticRod
      *
      * @see Computed in setReferenceLength().
      */
-    VectorXd voronoi_len;
+    VecX voronoi_len;
 
     /**
      * @brief Curvature binormals of each discrete edge.
@@ -320,7 +320,7 @@ class ElasticRod
      *
      * @see Computed in computeKappa().
      */
-    MatrixXd kb;
+    MatX kb;
 
     /**
      * @brief d1 axes of the reference frame during current iteration /
@@ -331,7 +331,7 @@ class ElasticRod
      * @see Updated in computeTimeParallel().
      * @see Used in getRefTwist().
      */
-    MatrixXd d1;
+    MatXN<3> d1;
 
     /**
      * @brief d2 axes of the reference frame during current iteration /
@@ -342,7 +342,7 @@ class ElasticRod
      * @see Updated in computeTimeParallel().
      * @see Used in getRefTwist().
      */
-    MatrixXd d2;
+    MatXN<3> d2;
 
     /**
      * @brief d1 axes of the reference frame from last timestep.
@@ -352,7 +352,7 @@ class ElasticRod
      *
      * @see Used in computeTimeParallel().
      */
-    MatrixXd d1_old;
+    MatXN<3> d1_old;
 
     /**
      * @brief d2 axes of the reference frame from last timestep.
@@ -360,7 +360,7 @@ class ElasticRod
      * @details Matrix of size (ne, 3). Updated by time stepper classes when
      * completing a timestep.
      */
-    MatrixXd d2_old;
+    MatXN<3> d2_old;
 
     /**
      * @brief m1 axes of the material frame during current iteration / timestep.
@@ -370,7 +370,7 @@ class ElasticRod
      * @see Updated in computeMaterialDirector().
      * @see Used in computeKappa() to compute discrete curvatures.
      */
-    MatrixXd m1;
+    MatXN<3> m1;
 
     /**
      * @brief m2 axes of the material frame during current iteration / timestep.
@@ -380,7 +380,7 @@ class ElasticRod
      * @see Updated in computeMaterialDirector().
      * @see Used in computeKappa() to compute discrete curvatures.
      */
-    MatrixXd m2;
+    MatXN<3> m2;
 
     /**
      * @brief Edge tangents during the current iteration / timestep.
@@ -390,7 +390,7 @@ class ElasticRod
      * @see Updated in computeTangent().
      * @see Used in computeTimeParallel().
      */
-    MatrixXd tangent;
+    MatXN<3> tangent;
 
     /**
      * @brief Edge tangents from the previous timestep.
@@ -399,7 +399,7 @@ class ElasticRod
      *
      * @see Used in computeTimeParallel().
      */
-    MatrixXd tangent_old;
+    MatXN<3> tangent_old;
 
     /**
      * @brief Reference twists during the current iteration / timestep.
@@ -409,14 +409,14 @@ class ElasticRod
      * @see Updated in getRefTwist().
      * @see Used in computeTwistBar().
      */
-    VectorXd ref_twist;
+    VecX ref_twist;
 
     /**
      * @brief Reference twists from the previous timestep.
      *
      * @details Vector of size (ne, 1).
      */
-    VectorXd ref_twist_old;
+    VecX ref_twist_old;
 
     /**
      * @brief The twists in the resting configuration.
@@ -425,7 +425,7 @@ class ElasticRod
      *
      * @see Updated in computeTwistBar().
      */
-    VectorXd twist_bar;
+    VecX twist_bar;
 
     /**
      * @brief Lumped mass array.
@@ -435,7 +435,7 @@ class ElasticRod
      * @see Updated in setMass().
      *
      */
-    VectorXd mass_array;
+    VecX mass_array;
 
     /**
      * @brief Discrete curvatures of the inner nodes.
@@ -446,7 +446,7 @@ class ElasticRod
      *
      * @see Updated in computeKappa().
      */
-    MatrixXd kappa;
+    MatXN<2> kappa;
 
     /**
      * @brief Discrete curvatures of the inner nodes in the resting
@@ -457,7 +457,7 @@ class ElasticRod
      * attached. Is assumed to the curvatures computed from the initial starting
      * configuration.
      */
-    MatrixXd kappa_bar;
+    MatXN<2> kappa_bar;
 
     /**
      * @brief Array storing whether or not a certain DOF is constrained.
@@ -479,7 +479,7 @@ class ElasticRod
      * @brief Array that maps unconstrained to full indices.
      *
      * @details Size of uncons. Maps unconstrained DOF (by array location)
-     * to their respective index in x vector. The index of the mapping is
+     * to their respective index in x std::vector. The index of the mapping is
      * stored.
      *
      * @see Gets updated in updateMap() and in setup().
@@ -490,8 +490,8 @@ class ElasticRod
     /**
      * @brief Array that maps full to unconstrained indices.
      *
-     * @details Size of ndof. Maps all DOF from x vector (by array location) to
-     * their respective in unconstrained vector. The index of the mapping is
+     * @details Size of ndof. Maps all DOF from x std::vector (by array location) to
+     * their respective in unconstrained std::vector. The index of the mapping is
      * stored. If a certain DOF is constrained, then the value at that array
      * location is undefined.
      *
@@ -577,25 +577,25 @@ class ElasticRod
      *
      * @details Stores a list of pairs of joint node and joint limb ids.
      * Used to reroute forces and Jacobians to their proper locations in
-     * the global force vector / Jacobian matrix for nodes that were attached
+     * the global force std::vector / Jacobian matrix for nodes that were attached
      * to preexisting joint nodes.
      * Currently of size nv.
      *
      * @see Updated in addJoint().
      */
-    vector<pair<int, int>> joint_ids;
+    std::vector<std::pair<int, int>> joint_ids;
 
-    void setVertexBoundaryCondition(Vector3d position, int k);
+    void setVertexBoundaryCondition(Vec3 position, int k);
     void setThetaBoundaryCondition(double desired_theta, int k);
     void freeVertexBoundaryCondition(int k);
-    Vector3d getTangent(int k);
+    Vec3 getTangent(int k);
 
   private:
     void setupMap();
 
     // TODO: perhaps move these to util.h later as most can be defined as
     // staticmethods?
-    void setup(const vector<Vector3d>& nodes);
+    void setup(const std::vector<Vec3>& nodes);
     void computeElasticStiffness();
     void setMass();
     void setReferenceLength();
@@ -607,10 +607,9 @@ class ElasticRod
     void computeTwistBar();
     void computeEdgeLen();
     void getRefTwist();
-    static void parallelTransport(const Vector3d& d1_1, const Vector3d& t1, const Vector3d& t2,
-                                  Vector3d& d1_2);
-    static void rotateAxisAngle(Vector3d& v, const Vector3d& z, const double& theta);
-    static double signedAngle(const Vector3d& u, const Vector3d& v, const Vector3d& n);
+    static void parallelTransport(const Vec3& d1_1, const Vec3& t1, const Vec3& t2, Vec3& d1_2);
+    static void rotateAxisAngle(Vec3& v, const Vec3& z, const double& theta);
+    static double signedAngle(const Vec3& u, const Vec3& v, const Vec3& n);
 };
 
 #endif  // ELASTIC_ROD_H

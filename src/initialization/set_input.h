@@ -5,7 +5,7 @@
 #include <iostream>
 #include <map>
 #include <sstream>
-#include <string>
+#include <std::string>
 
 #include "../global_definitions.h"
 #include "option.h"
@@ -31,9 +31,9 @@ class setInput
 
     double& GetScalarOpt(const std::string& name);
 
-    Vector3d& GetVecOpt(const std::string& name);
+    Vec3& GetVecOpt(const std::string& name);
 
-    string& GetStringOpt(const std::string& name);
+    std::string& GetStringOpt(const std::string& name);
 
     int LoadOptions(const char* filename);
 
@@ -52,7 +52,7 @@ class setInput
     double tol, stol;
     int maxIter;  // maximum number of iterations
     double density;
-    Vector3d gVector;
+    Vec3 gVector;
     double viscosity;
     bool render;
     double render_scale;
@@ -67,11 +67,11 @@ class setInput
     int cmdline_per;
     double floor_z;
     double sim_time;
-    string integration_scheme;
-    string phi_ctrl_filepath;
+    std::string integration_scheme;
+    std::string phi_ctrl_filepath;
     bool enable_2d_sim;
     bool enable_logging;
-    string logfile_base;
+    std::string logfile_base;
     int logging_period;
     int adaptive_time_stepping;
 };

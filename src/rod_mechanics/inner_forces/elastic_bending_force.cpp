@@ -1,32 +1,32 @@
 #include "elastic_bending_force.h"
 #include "time_steppers/base_time_stepper.h"
 
-ElasticBendingForce::ElasticBendingForce(const shared_ptr<SoftRobots>& m_soft_robots)
+ElasticBendingForce::ElasticBendingForce(const std::shared_ptr<SoftRobots>& m_soft_robots)
     : BaseForce(m_soft_robots) {
     Id3 << 1, 0, 0, 0, 1, 0, 0, 0, 1;
 
     for (const auto& limb : soft_robots->limbs) {
         double EI = limb->EI;
-        Matrix2d EIMat;
+        Mat2 EIMat;
         EIMat << EI, 0, 0, EI;
         EIMatrices.push_back(EIMat);
 
         int nv = limb->nv;
-        gradKappa1s.push_back(make_shared<MatrixXd>(MatrixXd::Zero(nv, 11)));
-        gradKappa2s.push_back(make_shared<MatrixXd>(MatrixXd::Zero(nv, 11)));
+        gradKappa1s.push_back(std::make_shared<MatX>(MatX::Zero(nv, 11)));
+        gradKappa2s.push_back(std::make_shared<MatX>(MatX::Zero(nv, 11)));
     }
 
     for (const auto& joint : soft_robots->joints) {
         int nb = joint->num_bending_combos;
-        gradKappa1s.push_back(make_shared<MatrixXd>(MatrixXd::Zero(nb, 11)));
-        gradKappa2s.push_back(make_shared<MatrixXd>(MatrixXd::Zero(nb, 11)));
+        gradKappa1s.push_back(std::make_shared<MatX>(MatX::Zero(nb, 11)));
+        gradKappa2s.push_back(std::make_shared<MatX>(MatX::Zero(nb, 11)));
     }
 
-    relevantPart = MatrixXd::Zero(11, 2);
+    relevantPart = MatX::Zero(11, 2);
     ;
-    DDkappa1 = MatrixXd::Zero(11, 11);
-    DDkappa2 = MatrixXd::Zero(11, 11);
-    Jbb = MatrixXd::Zero(11, 11);
+    DDkappa1 = MatX::Zero(11, 11);
+    DDkappa2 = MatX::Zero(11, 11);
+    Jbb = MatX::Zero(11, 11);
 
     D2kappa1De2.setZero(3, 3);
     D2kappa1Df2.setZero(3, 3);
@@ -34,7 +34,7 @@ ElasticBendingForce::ElasticBendingForce(const shared_ptr<SoftRobots>& m_soft_ro
     D2kappa2De2.setZero(3, 3);
     D2kappa2Df2.setZero(3, 3);
     D2kappa2DeDf.setZero(3, 3);
-    f = VectorXd::Zero(11);
+    f = VecX::Zero(11);
 }
 
 ElasticBendingForce::~ElasticBendingForce() {
@@ -457,7 +457,7 @@ void ElasticBendingForce::computeForceAndJacobian(double dt) {
 }
 
 // Utility
-void ElasticBendingForce::crossMat(const Vector3d& a, Matrix3d& b) {
+void ElasticBendingForce::crossMat(const Vec3& a, Mat3& b) {
     b << 0, -a(2), a(1), a(2), 0, -a(0), -a(1), a(0), 0;
 }
 
