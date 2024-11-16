@@ -61,8 +61,8 @@ void SoftRobots::applyPositionBC(const MatXN<5>& delta_pos) {
     // delta_pos: the first col is limb_idx, second col is node_idx, third col
     // is dx, fourth col is dy, fifth col is dz
     for (int i = 0; i < delta_pos.rows(); i++) {
-        int limb_idx = delta_pos(i, 0);
-        int node_idx = delta_pos(i, 1);
+        int limb_idx = (int)delta_pos(i, 0);
+        int node_idx = (int)delta_pos(i, 1);
         if (limb_idx >= limbs.size() || node_idx >= limbs[limb_idx]->nv) {
             throw std::runtime_error("Invalid limb_idx or node_idx given!");
         }
@@ -76,8 +76,8 @@ void SoftRobots::applyTwistBC(const MatXN<3>& delta_twist) {
     // Twists: the first col is limb_idx, second col is node_idx, third col is
     // dtheta
     for (int i = 0; i < delta_twist.rows(); i++) {
-        int limb_idx = delta_twist(i, 0);
-        int edge_idx = delta_twist(i, 1);
+        int limb_idx = (int)delta_twist(i, 0);
+        int edge_idx = (int)delta_twist(i, 1);
         if (limb_idx >= limbs.size() || edge_idx >= limbs[limb_idx]->ne) {
             throw std::runtime_error("Invalid limb_idx or edge_idx given!");
         }
@@ -88,20 +88,20 @@ void SoftRobots::applyTwistBC(const MatXN<3>& delta_twist) {
 }
 
 void SoftRobots::applyCurvatureBC(const MatXN<4>& delta_curvatures) {
-    // delta_curvatures: the first col is limb_idx, second col is node_idx,
+    // delta_curvatures: the first col is limb_idx, second col is edge_idx,
     // third col is cx, fourth col is cy
     for (int i = 0; i < delta_curvatures.rows(); i++) {
-        int limb_idx = delta_curvatures(i, 0);
-        int node_idx = delta_curvatures(i, 1);
-        if (limb_idx >= limbs.size() || node_idx >= limbs[limb_idx]->ne || node_idx < 1) {
+        int limb_idx = (int)delta_curvatures(i, 0);
+        int edge_idx = (int)delta_curvatures(i, 1);
+        if (limb_idx >= limbs.size() || edge_idx >= limbs[limb_idx]->ne || edge_idx < 1) {
             throw std::runtime_error("Invalid limb_idx or edge_idx given!");
         }
 
         double cx = delta_curvatures(i, 2);
         double cy = delta_curvatures(i, 3);
 
-        limbs[limb_idx]->kappa_bar(i, 0) += cx;
-        limbs[limb_idx]->kappa_bar(i, 1) += cy;
+        limbs[limb_idx]->kappa_bar(edge_idx, 0) += cx;
+        limbs[limb_idx]->kappa_bar(edge_idx, 1) += cy;
     }
 }
 
