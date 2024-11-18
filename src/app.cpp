@@ -227,6 +227,10 @@ PYBIND11_MODULE(py_dismech, m) {
 
     py::class_<BaseForce, std::shared_ptr<BaseForce>>(m, "BaseForce");
 
+    py::class_<DampingForce, std::shared_ptr<DampingForce>, BaseForce>(m, "DampingForce")
+        .def(py::init<const std::shared_ptr<SoftRobots>&, double>(), py::arg("soft_robots"),
+             py::arg("viscosity"));
+
     py::class_<GravityForce, std::shared_ptr<GravityForce>, BaseForce>(m, "GravityForce")
         .def(py::init<const std::shared_ptr<SoftRobots>&, const Vec3&>(), py::arg("soft_robots"),
              py::arg("g_vector"));
