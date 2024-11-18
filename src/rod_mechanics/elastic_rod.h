@@ -440,7 +440,7 @@ class ElasticRod
     /**
      * @brief Discrete curvatures of the inner nodes.
      *
-     * @details Matrix of size (nv, 2). Note that the first and outer values
+     * @details Matrix of size (ne, 2). Note that the first and outer values
      * are not used since curvatures only apply to nodes with two edges
      * attached.
      *
@@ -452,7 +452,7 @@ class ElasticRod
      * @brief Discrete curvatures of the inner nodes in the resting
      * configuration.
      *
-     * @details Matrix of size (nv, 2). Note that the first and outer values
+     * @details Matrix of size (ne, 2). Note that the first and outer values
      * are not used since curvatures only apply to nodes with two edges
      * attached. Is assumed to the curvatures computed from the initial starting
      * configuration.
