@@ -23,9 +23,12 @@ class SoftRobots
 
     void lockEdge(int limb_idx, int edge_idx);
     void applyInitialVelocities(int limb_idx, const std::vector<Vec3>& velocities);
-    void applyPositionBC(const MatXN<5>& delta_pos);
-    void applyTwistBC(const MatXN<3>& delta_twist);
-    void applyCurvatureBC(const MatXN<4>& delta_curvature);
+    void applyPositionBC(const MatXN<5>& positions);
+    void applyDeltaPositionBC(const MatXN<5>& delta_positions);
+    void applyThetaBC(const MatXN<3>& thetas);
+    void applyDeltaThetaBC(const MatXN<3>& delta_thetas);
+    void applyCurvatureBC(const MatXN<4>& curvatures);
+    void applyDeltaCurvatureBC(const MatXN<4>& delta_curvatures);
 
     void setup();
 

@@ -82,10 +82,10 @@ class SimulationManager
     }
 
     // add the step function with the input variables
-    void stepSimulation(py::dict input_dict) {
-        for (auto item : input_dict) {
-            std::string key = py::str(item.first);
-            MatX values = item.second.cast<MatX>();
+    void stepSimulation(const py::dict& input_dict) {
+        for (const auto& [key_obj, value_obj] : input_dict) {
+            std::string key = py::str(key_obj);
+            MatX values = value_obj.cast<MatX>();
 
             if (values.cols() == 1) {
                 values.transposeInPlace();
@@ -96,11 +96,23 @@ class SimulationManager
                 }
                 soft_robots->applyPositionBC(values);
             }
-            else if (key == "twist") {
-                if (values.cols() != 3) {
-                    throw std::invalid_argument("Twist BC values must have 3 columns");
+            if (key == "delta_position") {
+                if (values.cols() != 5) {
+                    throw std::invalid_argument("Delta position BC values must have 5 columns");
                 }
-                soft_robots->applyTwistBC(values);
+                soft_robots->applyDeltaPositionBC(values);
+            }
+            else if (key == "theta") {
+                if (values.cols() != 3) {
+                    throw std::invalid_argument("Theta BC values must have 3 columns");
+                }
+                soft_robots->applyThetaBC(values);
+            }
+            else if (key == "delta_theta") {
+                if (values.cols() != 3) {
+                    throw std::invalid_argument("Delta theta BC values must have 3 columns");
+                }
+                soft_robots->applyDeltaThetaBC(values);
             }
             else if (key == "curvature") {
                 if (values.cols() != 4) {
@@ -108,8 +120,14 @@ class SimulationManager
                 }
                 soft_robots->applyCurvatureBC(values);
             }
+            else if (key == "delta_curvature") {
+                if (values.cols() != 4) {
+                    throw std::invalid_argument("Delta curvature BC values must have 4 columns");
+                }
+                soft_robots->applyDeltaCurvatureBC(values);
+            }
             else {
-                throw std::invalid_argument("Invalid input key");
+                throw std::invalid_argument("Invalid input key: " + key);
             }
         }
         if (env) {
@@ -141,7 +159,8 @@ PYBIND11_MODULE(py_dismech, m) {
              })
         .def("simulation_completed", &SimulationManager::simulationCompleted)
         .def("step_simulation", py::overload_cast<>(&SimulationManager::stepSimulation))
-        .def("step_simulation", py::overload_cast<py::dict>(&SimulationManager::stepSimulation))
+        .def("step_simulation",
+             py::overload_cast<const py::dict&>(&SimulationManager::stepSimulation))
         .def("run_simulation", &SimulationManager::runSimulation)
         .def_readonly("soft_robots", &SimulationManager::soft_robots)
         .def_readonly("forces", &SimulationManager::forces)

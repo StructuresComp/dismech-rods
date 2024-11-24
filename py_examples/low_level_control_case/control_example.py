@@ -10,12 +10,12 @@ from functools import partial
 
 sim_manager = py_dismech.SimulationManager()
 
-soft_robots = sim_manager.soft_robots # soft robot class
-sim_params = sim_manager.sim_params # simulation parameters
-render_params = sim_manager.render_params # render paramters
-create_joint = sim_manager.soft_robots.createJoint # function
-add_to_joint = sim_manager.soft_robots.addToJoint # function
-add_force = sim_manager.forces.addForce # external force
+soft_robots = sim_manager.soft_robots  # soft robot class
+sim_params = sim_manager.sim_params  # simulation parameters
+render_params = sim_manager.render_params  # render paramters
+create_joint = sim_manager.soft_robots.createJoint  # function
+add_to_joint = sim_manager.soft_robots.addToJoint  # function
+add_force = sim_manager.forces.addForce  # external force
 
 ############################
 
@@ -54,6 +54,7 @@ add_force(gravity_force)
 sim_manager.initialize(sys.argv)
 time = 0.0
 while not sim_manager.simulation_completed():
-    input_dict = {"position" : np.array([[0, 0, time * 0.01, 0.0, 0.0], [0, 1, time * 0.01, 0.0, 0.0]])}
+    input_dict = {"delta_position": np.array([[0, 0, time * 0.01, 0.0, 0.0],
+                                              [0, 1, time * 0.01, 0.0, 0.0]])}
     sim_manager.step_simulation(input_dict)
     time += sim_params.dt
