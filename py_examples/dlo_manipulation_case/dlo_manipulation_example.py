@@ -54,7 +54,7 @@ while not sim_manager.simulation_completed():
     if 5.0 < curr_time < 10.0:
         twist_iter += 1
         twist_change = {
-            "twist": np.array([0, 0, twist_iter * 1e-5, 0.0, 0.0])}
+            "twist": np.array([0, 0, twist_iter * 1e-5])}
         sim_manager.step_simulation(twist_change)
     # Then, move the rod ends closer together.
     elif 10.0 < curr_time < 15.0:

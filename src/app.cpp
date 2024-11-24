@@ -91,13 +91,25 @@ class SimulationManager
                 values.transposeInPlace();
             }
             if (key == "position") {
+                if (values.cols() != 5) {
+                    throw std::invalid_argument("Position BC values must have 5 columns");
+                }
                 soft_robots->applyPositionBC(values);
             }
             else if (key == "twist") {
+                if (values.cols() != 3) {
+                    throw std::invalid_argument("Twist BC values must have 3 columns");
+                }
                 soft_robots->applyTwistBC(values);
             }
             else if (key == "curvature") {
+                if (values.cols() != 4) {
+                    throw std::invalid_argument("Curvature BC values must have 4 columns");
+                }
                 soft_robots->applyCurvatureBC(values);
+            }
+            else {
+                throw std::invalid_argument("Invalid input key");
             }
         }
         if (env) {
