@@ -57,39 +57,87 @@ void SoftRobots::applyInitialVelocities(int limb_idx, const std::vector<Vec3>& v
     }
 }
 
-void SoftRobots::applyPositionBC(const MatXN<5>& delta_pos) {
-    // delta_pos: the first col is limb_idx, second col is node_idx, third col
+void SoftRobots::applyPositionBC(const MatXN<5>& positions) {
+    // pos: the first col is limb_idx, second col is node_idx, third col
     // is dx, fourth col is dy, fifth col is dz
-    for (int i = 0; i < delta_pos.rows(); i++) {
-        int limb_idx = (int)delta_pos(i, 0);
-        int node_idx = (int)delta_pos(i, 1);
+    for (int i = 0; i < positions.rows(); i++) {
+        int limb_idx = (int)positions(i, 0);
+        int node_idx = (int)positions(i, 1);
         if (limb_idx >= limbs.size() || node_idx >= limbs[limb_idx]->nv) {
             throw std::runtime_error("Invalid limb_idx or node_idx given!");
         }
 
-        Vec3 dpos = delta_pos.row(i).segment(2, 3).transpose();
+        Vec3 new_pos = positions.row(i).segment(2, 3);
+        limbs[limb_idx]->x.segment(4 * node_idx, 3) = new_pos;
+    }
+}
+
+void SoftRobots::applyDeltaPositionBC(const MatXN<5>& delta_positions) {
+    // delta_pos: the first col is limb_idx, second col is node_idx, third col
+    // is dx, fourth col is dy, fifth col is dz
+    for (int i = 0; i < delta_positions.rows(); i++) {
+        int limb_idx = (int)delta_positions(i, 0);
+        int node_idx = (int)delta_positions(i, 1);
+        if (limb_idx >= limbs.size() || node_idx >= limbs[limb_idx]->nv) {
+            throw std::runtime_error("Invalid limb_idx or node_idx given!");
+        }
+
+        Vec3 dpos = delta_positions.row(i).segment(2, 3);
         limbs[limb_idx]->x.segment(4 * node_idx, 3) += dpos;
     }
 }
 
-void SoftRobots::applyTwistBC(const MatXN<3>& delta_twist) {
-    // Twists: the first col is limb_idx, second col is node_idx, third col is
-    // dtheta
-    for (int i = 0; i < delta_twist.rows(); i++) {
-        int limb_idx = (int)delta_twist(i, 0);
-        int edge_idx = (int)delta_twist(i, 1);
+void SoftRobots::applyThetaBC(const MatXN<3>& thetas) {
+    // Thetas: the first col is limb_idx, second col is node_idx, third col is
+    // theta
+    for (int i = 0; i < thetas.rows(); i++) {
+        int limb_idx = (int)thetas(i, 0);
+        int edge_idx = (int)thetas(i, 1);
         if (limb_idx >= limbs.size() || edge_idx >= limbs[limb_idx]->ne) {
             throw std::runtime_error("Invalid limb_idx or edge_idx given!");
         }
 
-        double dtheta = delta_twist(i, 2);
+        double new_theta = thetas(i, 2);
+        limbs[limb_idx]->x(4 * edge_idx + 3) = new_theta;
+    }
+}
+
+void SoftRobots::applyDeltaThetaBC(const MatXN<3>& delta_thetas) {
+    // delta_thetas: the first col is limb_idx, second col is node_idx, third col is
+    // dtheta
+    for (int i = 0; i < delta_thetas.rows(); i++) {
+        int limb_idx = (int)delta_thetas(i, 0);
+        int edge_idx = (int)delta_thetas(i, 1);
+        if (limb_idx >= limbs.size() || edge_idx >= limbs[limb_idx]->ne) {
+            throw std::runtime_error("Invalid limb_idx or edge_idx given!");
+        }
+
+        double dtheta = delta_thetas(i, 2);
         limbs[limb_idx]->x(4 * edge_idx + 3) += dtheta;
     }
 }
 
-void SoftRobots::applyCurvatureBC(const MatXN<4>& delta_curvatures) {
-    // delta_curvatures: the first col is limb_idx, second col is edge_idx,
+void SoftRobots::applyCurvatureBC(const MatXN<4>& curvatures) {
+    // curvatures: the first col is limb_idx, second col is edge_idx,
     // third col is cx, fourth col is cy
+    for (int i = 0; i < curvatures.rows(); i++) {
+        int limb_idx = (int)curvatures(i, 0);
+        int edge_idx = (int)curvatures(i, 1);
+        if (limb_idx >= limbs.size() || edge_idx >= limbs[limb_idx]->ne || edge_idx < 1) {
+            throw std::runtime_error("Invalid limb_idx or edge_idx given!");
+        }
+
+        double new_cx = curvatures(i, 2);
+        double new_cy = curvatures(i, 3);
+
+        limbs[limb_idx]->kappa_bar(edge_idx, 0) = new_cx;
+        limbs[limb_idx]->kappa_bar(edge_idx, 1) = new_cy;
+    }
+}
+
+void SoftRobots::applyDeltaCurvatureBC(const MatXN<4>& delta_curvatures) {
+    // delta_curvatures: the first col is limb_idx, second col is edge_idx,
+    // third col is delta cx, fourth col is delta cy
     for (int i = 0; i < delta_curvatures.rows(); i++) {
         int limb_idx = (int)delta_curvatures(i, 0);
         int edge_idx = (int)delta_curvatures(i, 1);
@@ -97,11 +145,11 @@ void SoftRobots::applyCurvatureBC(const MatXN<4>& delta_curvatures) {
             throw std::runtime_error("Invalid limb_idx or edge_idx given!");
         }
 
-        double cx = delta_curvatures(i, 2);
-        double cy = delta_curvatures(i, 3);
+        double dcx = delta_curvatures(i, 2);
+        double dcy = delta_curvatures(i, 3);
 
-        limbs[limb_idx]->kappa_bar(edge_idx, 0) += cx;
-        limbs[limb_idx]->kappa_bar(edge_idx, 1) += cy;
+        limbs[limb_idx]->kappa_bar(edge_idx, 0) += dcx;
+        limbs[limb_idx]->kappa_bar(edge_idx, 1) += dcy;
     }
 }
 
