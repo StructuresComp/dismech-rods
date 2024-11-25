@@ -252,8 +252,22 @@ void ElasticRod::setReferenceLength() {
     }
 }
 
+int ElasticRod::getNv() {
+    return nv;
+}
+
 Vec3 ElasticRod::getVertex(int k) {
     return x.segment<3>(4 * k);
+}
+
+Mat3 ElasticRod::getMaterialFrame(int k) {
+    Mat3 frame(3, 3);
+
+    frame.col(0) = m1.row(k);
+    frame.col(1) = m2.row(k);
+    frame.col(2) = tangent.row(k);
+    
+    return frame;
 }
 
 MatXN<3> ElasticRod::getVertices() {

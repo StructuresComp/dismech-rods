@@ -102,6 +102,13 @@ class ElasticRod
      *
      * @return The (3,) position std::vector.
      */
+    int getNv();
+    /**
+     * @brief Get the number of vertices
+     *
+     * @return The number of vertices
+     */
+
     Vec3 getVertex(int k);
 
     /**
@@ -135,6 +142,15 @@ class ElasticRod
      *
      * @return The (nv, 3) velocity matrix of all vertices.
      */
+
+    Mat3 getMaterialFrame(int k);
+
+    /**
+     * @brief Get the (3, 3) material frame of the edge K
+     *
+     * @return The (3, 3) material frame of the edge K
+     */
+
     MatXN<3> getVelocities();
 
     /**

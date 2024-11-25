@@ -93,6 +93,7 @@ void SoftRobots::applyCurvatureBC(const MatXN<4>& delta_curvatures) {
     for (int i = 0; i < delta_curvatures.rows(); i++) {
         int limb_idx = (int)delta_curvatures(i, 0);
         int edge_idx = (int)delta_curvatures(i, 1);
+
         if (limb_idx >= limbs.size() || edge_idx >= limbs[limb_idx]->ne || edge_idx < 1) {
             throw std::runtime_error("Invalid limb_idx or edge_idx given!");
         }

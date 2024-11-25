@@ -91,13 +91,25 @@ class SimulationManager
                 values.transposeInPlace();
             }
             if (key == "position") {
+                if (values.cols() != 5) {
+                    throw std::invalid_argument("Position BC values must have 5 columns");
+                }
                 soft_robots->applyPositionBC(values);
             }
             else if (key == "twist") {
+                if (values.cols() != 3) {
+                    throw std::invalid_argument("Twist BC values must have 3 columns");
+                }
                 soft_robots->applyTwistBC(values);
             }
             else if (key == "curvature") {
+                if (values.cols() != 4) {
+                    throw std::invalid_argument("Curvature BC values must have 4 columns");
+                }
                 soft_robots->applyCurvatureBC(values);
+            }
+            else {
+                throw std::invalid_argument("Invalid input key");
             }
         }
         if (env) {
@@ -169,7 +181,9 @@ PYBIND11_MODULE(py_dismech, m) {
         .def("getThetas", &ElasticRod::getThetas)
         .def("freeVertexBoundaryCondition", &ElasticRod::freeVertexBoundaryCondition)
         .def("setVertexBoundaryCondition", &ElasticRod::setVertexBoundaryCondition)
-        .def("setThetaBoundaryCondition", &ElasticRod::setThetaBoundaryCondition);
+        .def("setThetaBoundaryCondition", &ElasticRod::setThetaBoundaryCondition)
+        .def("getNv", &ElasticRod::getNv)
+        .def("getMaterialFrame", &ElasticRod::getMaterialFrame);
 
     // =============================== Enum Definitions =========================================
     py::enum_<IntegratorMethod>(m, "IntegratorMethod")
