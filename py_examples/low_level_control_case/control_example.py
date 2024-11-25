@@ -22,7 +22,7 @@ add_force = sim_manager.forces.addForce  # external force
 sim_params.dt = 5e-3
 sim_params.sim_time = 10
 sim_params.dtol = 1e-3
-sim_params.integrator = py_dismech.IMPLICIT_MIDPOINT
+sim_params.integrator = py_dismech.BACKWARD_EULER
 
 render_params.render_scale = 1.0
 render_params.render_per = 10
@@ -54,7 +54,7 @@ add_force(gravity_force)
 sim_manager.initialize(sys.argv)
 time = 0.0
 while not sim_manager.simulation_completed():
-    input_dict = {"delta_position": np.array([[0, 0, time * 0.01, 0.0, 0.0],
-                                              [0, 1, time * 0.01, 0.0, 0.0]])}
+    input_dict = {"delta_position": np.array([[0, 0, 1e-4, 0.0, 0.0],
+                                              [0, 1, 1e-4, 0.0, 0.0]])}
     sim_manager.step_simulation(input_dict)
     time += sim_params.dt
