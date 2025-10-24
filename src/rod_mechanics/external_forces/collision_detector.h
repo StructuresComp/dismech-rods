@@ -46,6 +46,9 @@ class CollisionDetector
         LimbEdgeInfo* c2;
     };
 
+    static bool CollectPairsCallback(fcl::CollisionObjectf* o1, fcl::CollisionObjectf* o2,
+                                     void* data);
+
     int num_collisions;
     double min_dist;
     std::vector<ContactPair> broad_phase_collision_set;

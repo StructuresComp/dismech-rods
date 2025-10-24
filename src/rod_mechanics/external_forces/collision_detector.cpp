@@ -38,12 +38,13 @@ CollisionDetector::CollisionDetector(const std::shared_ptr<SoftRobots>& soft_rob
             // do broadphase detection Also notice that we add a distance buffer
             // to the radius for proper IMC force computation
             std::shared_ptr<fcl::Capsulef> shape =
-                std::make_shared<fcl::Capsulef>(limb->rod_radius + 0.5 * col_limit, 1.0);
+                std::make_shared<fcl::Capsulef>(limb->rod_radius + col_limit, 1.0);
 
             // For each capsule, set limb and node ids
-            shape->setUserData(&(limb_edge_ids[index][i]));
+            auto* obj = new fcl::CollisionObjectf(shape);
+            obj->setUserData(&(limb_edge_ids[index][i]));
 
-            capsules[index].push_back(new fcl::CollisionObjectf(shape));
+            capsules[index].push_back(obj);
         }
         collision_managers[index]->registerObjects(capsules[index]);
         collision_managers[index]->setup();
@@ -67,6 +68,43 @@ CollisionDetector::~CollisionDetector() {
             delete capsule;
         }
     }
+}
+
+bool CollisionDetector::CollectPairsCallback(fcl::CollisionObjectf* o1, fcl::CollisionObjectf* o2,
+                                             void* data) {
+    auto* pairs = static_cast<std::vector<ContactPair>*>(data);
+
+    auto* d1 = static_cast<LimbEdgeInfo*>(o1->getUserData());
+    auto* d2 = static_cast<LimbEdgeInfo*>(o2->getUserData());
+
+    // *** ENFORCE EDGE-ID FILTER ***
+    if (d1->limb_id == d2->limb_id) {  // only relevant for same limb
+        if (std::abs(d1->edge_id - d2->edge_id) < 3) {
+            return false;  // skip this pair, don't add
+        }
+    }
+
+    // === Cheap bounding-sphere reject ===
+    const Eigen::Vector3f c1 = o1->getTranslation();
+    const Eigen::Vector3f c2 = o2->getTranslation();
+    float dist2 = (c1 - c2).squaredNorm();
+
+    // Effective bounding radius = capsule radius + half length
+    // Note that slack is already incorporated from broadphase as we create capsules
+    // with col_limit larger radii.
+    auto* cap1 = static_cast<const fcl::Capsulef*>(o1->collisionGeometry().get());
+    auto* cap2 = static_cast<const fcl::Capsulef*>(o2->collisionGeometry().get());
+
+    float r1 = cap1->radius + 0.5f * cap1->lz;
+    float r2 = cap2->radius + 0.5f * cap2->lz;
+    float cutoff = r1 + r2;
+
+    if (dist2 > cutoff * cutoff) {
+        return false;  // too far apart, reject
+    }
+
+    pairs->emplace_back(d1, d2);
+    return false;
 }
 
 void CollisionDetector::prepCapsules() {
@@ -130,30 +168,19 @@ void CollisionDetector::broadPhaseCollisionDetection() {
         cm->update();
     }
 
-    fcl::DefaultCollisionData<float> collision_data;
-    collision_data.request.num_max_contacts = 1e10;  // arbitrarily large number
     for (size_t i = 0; i < soft_robots->limbs.size(); i++) {
         auto m1 = collision_managers[i];
         for (size_t j = i + 1; j < soft_robots->limbs.size(); j++) {
 
             // Skip collision check if the collision groups share no common bits
-            if ((soft_robots->limbs[i] -> col_group & soft_robots->limbs[j]->col_group) == 0) {
+            if ((soft_robots->limbs[i]->col_group & soft_robots->limbs[j]->col_group) == 0) {
                 continue;
             }
 
             auto m2 = collision_managers[j];
 
             // Check collisions between different limbs
-            m1->collide(m2, &collision_data, fcl::DefaultCollisionFunction);
-
-            std::vector<fcl::Contactf> contacts;
-            collision_data.result.getContacts(contacts);
-
-            for (const auto& contact : contacts) {
-                broad_phase_collision_set.emplace_back((LimbEdgeInfo*)contact.o1->getUserData(),
-                                                       (LimbEdgeInfo*)contact.o2->getUserData());
-            }
-            num_collisions += collision_data.result.numContacts();
+            m1->collide(m2, &broad_phase_collision_set, CollectPairsCallback);
         }
     }
 
@@ -162,25 +189,7 @@ void CollisionDetector::broadPhaseCollisionDetection() {
 
     for (size_t i = 0; i < soft_robots->limbs.size(); i++) {
         auto m = collision_managers[i];
-
-        m->collide(&collision_data, fcl::DefaultCollisionFunction);
-
-        std::vector<fcl::Contactf> contacts;
-        collision_data.result.getContacts(contacts);
-
-        for (const auto& contact : contacts) {
-            auto d1 = (LimbEdgeInfo*)contact.o1->getUserData();
-            auto d2 = (LimbEdgeInfo*)contact.o2->getUserData();
-
-            // Ignore edges that are within 4 ids within eachother
-            // TODO: don't hardcode this, think of better way
-            if (abs(d1->edge_id - d2->edge_id) < 3) {
-                continue;
-            }
-
-            broad_phase_collision_set.emplace_back(d1, d2);
-            num_collisions++;
-        }
+        m->collide(&broad_phase_collision_set, CollectPairsCallback);
     }
 }
 
