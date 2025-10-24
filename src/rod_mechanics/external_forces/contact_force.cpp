@@ -8,8 +8,9 @@
 
 ContactForce::ContactForce(const std::shared_ptr<SoftRobots>& soft_robots, double col_limit,
                            double delta, double k_scaler, bool friction, double nu,
-                           bool self_contact)
-    : BaseForce(soft_robots), delta(delta), k_scaler(k_scaler), nu(nu), friction(friction) {
+                           bool self_contact, std::shared_ptr<SymbolicEquations> sym_eqs)
+    : BaseForce(soft_robots), delta(delta), k_scaler(k_scaler), nu(nu), friction(friction),
+      sym_eqs(sym_eqs) {
 
     col_detector = std::make_unique<CollisionDetector>(soft_robots, col_limit, delta, self_contact);
 
@@ -23,12 +24,19 @@ ContactForce::ContactForce(const std::shared_ptr<SoftRobots>& soft_robots, doubl
 
     friction_input[38] = K2;
 
-    sym_eqs = std::make_unique<SymbolicEquations>();
-    sym_eqs->generateContactPotentialPiecewiseFunctions();
-    if (friction) {
-        sym_eqs->generateFrictionJacobianPiecewiseFunctions();
+    // Constructing the symbolic equations for contact is relatively expensive, but
+    // still just a one time cost during startup. For situations like RL though,
+    // where we may be destroying and creating numerous simulation instances, this cost
+    // can quickly add up. Therefore, allow a pre-made sym_eqs to be passed in.
+    // Note that if a pre-made sym_eqs is passed in, it is assumed all necessary symbolic
+    // functions are also generated.
+    if (!this->sym_eqs) {
+        this->sym_eqs = std::make_shared<SymbolicEquations>();
+        this->sym_eqs->generateContactPotentialPiecewiseFunctions();
+        if (friction) {
+            this->sym_eqs->generateFrictionJacobianPiecewiseFunctions();
+        }
     }
-
     contact_stiffness = k_scaler;
 }
 

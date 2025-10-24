@@ -4,10 +4,11 @@
 
 #include "rod_mechanics/elastic_joint.h"
 #include "rod_mechanics/elastic_rod.h"
+#include "rod_mechanics/external_forces/contact_force.h"
 #include "rod_mechanics/external_forces/damping_force.h"
 #include "rod_mechanics/external_forces/floor_contact_force.h"
-#include "rod_mechanics/external_forces/contact_force.h"
 #include "rod_mechanics/external_forces/gravity_force.h"
+#include "rod_mechanics/external_forces/symbolic_equations.h"
 #include "rod_mechanics/force_container.h"
 #include "rod_mechanics/soft_robots.h"
 
@@ -180,8 +181,8 @@ PYBIND11_MODULE(py_dismech, m) {
              py::arg("rod_radius"), py::arg("youngs_modulus"), py::arg("poisson_ratio"),
              py::arg("mu") = 0.0, py::arg("col_group") = 0xFFFF)
         .def("addLimb",
-             py::overload_cast<const std::vector<Vec3>&, double, double, double, double, double, uint16_t>(
-                 &SoftRobots::addLimb),
+             py::overload_cast<const std::vector<Vec3>&, double, double, double, double, double,
+                               uint16_t>(&SoftRobots::addLimb),
              py::arg("nodes"), py::arg("rho"), py::arg("rod_radius"), py::arg("youngs_modulus"),
              py::arg("poisson_ratio"), py::arg("mu") = 0.0, py::arg("col_group") = 0xFFFF)
         .def("createJoint", &SoftRobots::createJoint, py::arg("limb_idx"), py::arg("node_idx"))
@@ -277,9 +278,19 @@ PYBIND11_MODULE(py_dismech, m) {
              py::arg("soft_robots"), py::arg("floor_delta"), py::arg("floor_slipTol"),
              py::arg("floor_z"), py::arg("floor_mu") = 0.0);
 
-    py::class_<ContactForce, std::shared_ptr<ContactForce>, BaseForce>(
-        m, "ContactForce")
-        .def(py::init<const std::shared_ptr<SoftRobots>&, double, double, double, bool, double, bool>(),
-             py::arg("soft_robots"), py::arg("col_limit"), py::arg("delta"),
-             py::arg("k_scaler"), py::arg("friction"), py::arg("nu"), py::arg("self_contact"));
+    py::class_<ContactForce, std::shared_ptr<ContactForce>, BaseForce>(m, "ContactForce")
+        .def(py::init<const std::shared_ptr<SoftRobots>&, double, double, double, bool, double,
+                      bool, std::shared_ptr<SymbolicEquations>>(),
+             py::arg("soft_robots"), py::arg("col_limit"), py::arg("delta"), py::arg("k_scaler"),
+             py::arg("friction"), py::arg("nu"), py::arg("self_contact"),
+             py::arg("symbolic_equations") = nullptr);
+
+    py::class_<SymbolicEquations, std::shared_ptr<SymbolicEquations>>(m, "SymbolicEquations")
+        .def(py::init<>())
+        .def("generateContactPotentialPiecewiseFunctions",
+             &SymbolicEquations::generateContactPotentialPiecewiseFunctions)
+        .def("generateFrictionJacobianPiecewiseFunctions",
+             &SymbolicEquations::generateFrictionJacobianPiecewiseFunctions)
+        .def("generateFloorFrictionJacobianFunctions",
+             &SymbolicEquations::generateFloorFrictionJacobianFunctions);
 }

@@ -12,7 +12,8 @@ class ContactForce : public BaseForce
 {
   public:
     ContactForce(const std::shared_ptr<SoftRobots>& soft_robots, double col_limit, double delta,
-                 double k_scaler, bool friction, double nu, bool self_contact);
+                 double k_scaler, bool friction, double nu, bool self_contact,
+                 std::shared_ptr<SymbolicEquations> sym_eqs = nullptr);
     ~ContactForce();
 
     //    void updateContactStiffness();
@@ -27,7 +28,7 @@ class ContactForce : public BaseForce
     std::unique_ptr<CollisionDetector> col_detector;
 
   private:
-    std::unique_ptr<SymbolicEquations> sym_eqs;
+    std::shared_ptr<SymbolicEquations> sym_eqs;
 
     double K1;
     double K2;
