@@ -128,8 +128,14 @@ double BackwardEuler::goldSteinLineSearch(double dt) {
     double q0 = 0.5 * pow(Force.norm(), 2);
     double dq0 = -(Force.transpose() * Jacobian * DX)(0);
 
+    int curr_iters = 0;
+    int max_iters = 30;
     bool success = false;
     while (!success) {
+        if (curr_iters >= max_iters) {
+            break;
+        }
+        curr_iters++;
         int limb_idx = 0;
         for (auto& joint : joints) {
             joint->x = joint->x_ls;
