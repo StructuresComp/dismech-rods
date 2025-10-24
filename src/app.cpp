@@ -151,26 +151,31 @@ PYBIND11_MODULE(py_dismech, m) {
     py::class_<SimulationManager>(m, "SimulationManager")
         .def(py::init<>())
         .def("initialize",
-             [](SimulationManager& self, std::vector<std::string> args) {
-                 // Convert std::vector<std::string> to argc and argv
-                 argc = args.size();
-                 for (int i = 0; i < argc; ++i) {
-                     argv.push_back(const_cast<char*>(args[i].c_str()));
+             [](SimulationManager& self, const std::vector<std::string>& args) {
+                 std::vector<char*> argv;
+                 argv.reserve(args.size() + 1);
+                 for (auto& s : args) {
+                     argv.push_back(const_cast<char*>(s.c_str()));
                  }
                  argv.push_back(nullptr);  // Null-terminate the argv array
                  // Call the original function
-                 self.initialize(argc, argv.data());
+                 self.initialize(static_cast<int>(args.size()), argv.data());
              })
         .def("simulation_completed", &SimulationManager::simulationCompleted)
         .def("step_simulation", py::overload_cast<>(&SimulationManager::stepSimulation))
         .def("step_simulation",
              py::overload_cast<const py::dict&>(&SimulationManager::stepSimulation))
         .def("run_simulation", &SimulationManager::runSimulation)
-        .def_readonly("soft_robots", &SimulationManager::soft_robots)
-        .def_readonly("forces", &SimulationManager::forces)
-        .def_readonly("sim_params", &SimulationManager::sim_params)
-        .def_readonly("render_params", &SimulationManager::render_params)
-        .def_readwrite("logger", &SimulationManager::logger);
+        .def_readonly("soft_robots", &SimulationManager::soft_robots,
+                      py::return_value_policy::reference_internal)
+        .def_readonly("forces", &SimulationManager::forces,
+                      py::return_value_policy::reference_internal)
+        .def_readonly("sim_params", &SimulationManager::sim_params,
+                      py::return_value_policy::reference_internal)
+        .def_readonly("render_params", &SimulationManager::render_params,
+                      py::return_value_policy::reference_internal)
+        .def_readwrite("logger", &SimulationManager::logger,
+                       py::return_value_policy::reference_internal);
 
     py::class_<SoftRobots, std::shared_ptr<SoftRobots>>(m, "SoftRobots")
         .def(py::init<>())
