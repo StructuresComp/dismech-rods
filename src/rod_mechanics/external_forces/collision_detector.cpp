@@ -31,21 +31,21 @@ CollisionDetector::CollisionDetector(const std::shared_ptr<SoftRobots>& soft_rob
     int num_edges = 0;
     for (const auto& limb : soft_robots->limbs) {
         collision_managers.push_back(new fcl::DynamicAABBTreeCollisionManagerf());
-        cylinders.emplace_back();
+        capsules.emplace_back();
 
         for (int i = 0; i < limb->ne; i++) {
             // Just init a random length. This will be updated later whenever we
             // do broadphase detection Also notice that we add a distance buffer
             // to the radius for proper IMC force computation
-            std::shared_ptr<fcl::Cylinderf> shape =
-                std::make_shared<fcl::Cylinderf>(limb->rod_radius + 0.5 * col_limit, 1.0);
+            std::shared_ptr<fcl::Capsulef> shape =
+                std::make_shared<fcl::Capsulef>(limb->rod_radius + 0.5 * col_limit, 1.0);
 
-            // For each cylinder, set limb and node ids
+            // For each capsule, set limb and node ids
             shape->setUserData(&(limb_edge_ids[index][i]));
 
-            cylinders[index].push_back(new fcl::CollisionObjectf(shape));
+            capsules[index].push_back(new fcl::CollisionObjectf(shape));
         }
-        collision_managers[index]->registerObjects(cylinders[index]);
+        collision_managers[index]->registerObjects(capsules[index]);
         collision_managers[index]->setup();
 
         num_edges += limb->ne;
@@ -62,29 +62,29 @@ CollisionDetector::~CollisionDetector() {
     for (auto& manager : collision_managers) {
         delete manager;
     }
-    for (auto& cylinder_vector : cylinders) {
-        for (auto& cylinder : cylinder_vector) {
-            delete cylinder;
+    for (auto& capsule_vector : capsules) {
+        for (auto& capsule : capsule_vector) {
+            delete capsule;
         }
     }
 }
 
-void CollisionDetector::prepCylinders() {
+void CollisionDetector::prepCapsules() {
     int index = 0;
     Eigen::Vector3f dist_vec;
     Eigen::Vector3f center;
     fcl::CollisionObjectf* edge;
     for (const auto& limb : soft_robots->limbs) {
         for (int i = 0; i < limb->ne; i++) {
-            edge = cylinders[index][i];
+            edge = capsules[index][i];
 
             dist_vec = (limb->x.segment(4 * (i + 1), 3) - limb->x.segment(4 * i, 3)).cast<float>();
             float dist = dist_vec.norm();
 
-            // Cast to derived class, so we can change cylinder length (from
+            // Cast to derived class, so we can change capsule length (from
             // stretching)
-            std::shared_ptr<fcl::Cylinderf> x =
-                (const std::shared_ptr<fcl::Cylinder<float>>&)edge->collisionGeometry();
+            std::shared_ptr<fcl::Capsulef> x =
+                (const std::shared_ptr<fcl::Capsule<float>>&)edge->collisionGeometry();
             x->lz = dist;
 
             // Set position of edge
@@ -124,7 +124,7 @@ void CollisionDetector::getRotMat(Eigen::Vector3f& b) {
 void CollisionDetector::broadPhaseCollisionDetection() {
     num_collisions = 0;
     broad_phase_collision_set.clear();
-    prepCylinders();
+    prepCapsules();
 
     for (const auto& cm : collision_managers) {
         cm->update();

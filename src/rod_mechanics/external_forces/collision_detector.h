@@ -60,8 +60,8 @@ class CollisionDetector
     std::shared_ptr<SoftRobots> soft_robots;
 
     std::vector<std::vector<LimbEdgeInfo>> limb_edge_ids;
-    std::vector<std::vector<fcl::CollisionObjectf*>> cylinders;
-    void prepCylinders();
+    std::vector<std::vector<fcl::CollisionObjectf*>> capsules;
+    void prepCapsules();
 
     Eigen::Vector3f a;
     Eigen::Matrix3f rot_mat;
