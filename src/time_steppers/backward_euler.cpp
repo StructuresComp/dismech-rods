@@ -76,10 +76,8 @@ double BackwardEuler::newtonMethod(double dt) {
             continue;
         }
 
-        iter++;
-
         // Exit if unable to converge
-        if (iter > max_iter) {
+        if (iter >= max_iter - 1) {
             if (terminate_at_max) {
                 std::cout << "No convergence after " << max_iter << " iterations" << std::endl;
                 exit(1);
@@ -89,6 +87,7 @@ double BackwardEuler::newtonMethod(double dt) {
                 continue;
             }
         }
+        iter++;
     }
     return dt;
 }
