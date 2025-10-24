@@ -1,7 +1,7 @@
 """
     Helix Under Gravity Example
 
-    This is a pybind version of helixExample.cpp
+    This is a pybind version of helix_example.cpp
 
 """
 import numpy as np
@@ -30,7 +30,7 @@ render_params.render_scale = 5.0
 render_params.render_per = 5
 
 # Read vertices describing helical shape from a file
-vertices = np.loadtxt(Path(__file__).parents[2] / 'examples/helix_case/helix_configuration.txt')
+vertices = np.loadtxt(Path(__file__).parents[2] / 'cpp_examples/helix_case/helix_configuration.txt')
 
 # Create the helix limb with custom configuration
 radius = 5e-3

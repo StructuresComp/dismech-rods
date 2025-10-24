@@ -224,13 +224,13 @@ endif()
 option(CREATE_EXAMPLES OFF)
 
 set(EXAMPLES
-        examples/active_entanglement_case/active_entanglement_example.cpp
-        examples/cantilever_case/cantilever_example.cpp
-        examples/friction_case/friction_example.cpp
-        examples/helix_case/helix_example.cpp
-        examples/horton_case/horton_example.cpp
-        examples/real2sim_case/real2sim_example.cpp
-        examples/spider_case/spider_example.cpp
+        cpp_examples/active_entanglement_case/active_entanglement_example.cpp
+        cpp_examples/cantilever_case/cantilever_example.cpp
+        cpp_examples/friction_case/friction_example.cpp
+        cpp_examples/helix_case/helix_example.cpp
+        cpp_examples/horton_case/horton_example.cpp
+        cpp_examples/real2sim_case/real2sim_example.cpp
+        cpp_examples/spider_case/spider_example.cpp
 )
 if (CREATE_EXAMPLES)
     # Loop through each example file and create a build target

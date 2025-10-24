@@ -1,7 +1,7 @@
 """
     Spider on Incline Example
 
-    This is a pybind version of spiderExample.cpp
+    This is a pybind version of spider_example.cpp
 """
 
 import numpy as np

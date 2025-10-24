@@ -29,6 +29,17 @@
            <em> Real2Sim soft manipulator modelling </em>
       </td>
    </tr>
+
+   <tr>
+      <td align="center" rowspan="2">
+        <img src="media/follow.gif" width="250"/> <br>
+        <em> RL-trained policy for dynamic end-effector target following. </em>
+     </td>
+      <td align="center">
+        <img src="media/obs_3d.gif" width="250"/> <br>
+        <em> RL-trained policy for target reaching through 3D obstacles  </em>
+     </td>
+   </tr>
 </table>
 </div>
 
@@ -38,40 +49,6 @@ Based on the [Discrete Elastic Rods](https://www.cs.columbia.edu/cg/pdfs/143-rod
 
 ***
 
-### TODO
-If you'd like DisMech to support a new feature, feel free create an issue, and we'll add it to
-the list here.
-For those looking to contribute, PRs are always welcome! Please make sure `pre-commit` is
-installed before contributing to adhere to style guidelines.
-```bash
-pip install pre-commit
-pre-commit install1
-```
-
-#### Ongoing
-- [ ] Expand Python bindings. PR [#13](https://github.com/StructuresComp/dismech-rods/pull/13)
-
-#### High priority
-- [ ] Add extension control via natural length manipulation.
-- [ ] Add shell functionality.
-- [ ] Improve robustness of friction.
-- [ ] Add contact logic for joints.
-
-#### Low priority
-- [ ] Possibly replace floor contact force (currently uses IMC) with modified mass method.
-- [ ] Add knot tying case.
-- [ ] Add detailed documentation for all examples.
-- [ ] Add time varying boundary condition logic.
-- [ ] Add more controller types.
-
-### COMPLETED
-- [x] Add a more sophisticated renderer. PR [#12](https://github.com/StructuresComp/dismech-rods/pull/12)
-- [x] Add per-limb friction coefficient logic. PR [#5](https://github.com/StructuresComp/dismech-rods/pull/5)
-- [x] Add active entanglement example code.
-- [x] Add limb self-contact option.
-- [x] Add forward Euler integration scheme.
-- [x] Add contact logic for limbs.
-***
 
 ### Dependencies
 
@@ -156,7 +133,27 @@ There is also a docker build available (Thanks to PR #15!), with more instructio
     - **Ubuntu**: `sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev`
     - **macOS**: `sudo port install freeglut pkgconfig` (Note: `pkgconfig` is necessary to avoid finding system GLUT instead of `freeglut`.)
 
-- Lapack (*included in MKL*)
+- [Pybind11](https://github.com/pybind/pybind11)
+  - DisMech offers Python bindings via pybind11. Users can either install by source or via `pip install pybind11`. All available bindings can be seen in `app.cpp`. Users can expect heavy development for expanding the python bindings as time goes on.
+  
+Afterward, DisMech can be built as follows
+  ```bash
+  mkdir build && cd build
+  cmake ..
+  make -j$(nproc)
+  cd ..
+  pip install -e .  # this will install py_dismech
+  ```
+- Note that when building with older versions of `MKL` with Python, it may be possible to run into the following [static linkage bug](https://bugs.launchpad.net/ubuntu/+source/intel-mkl/+bug/1947626).
+Users can either upgrade their `MKL` version or specify their `LD_PRELOAD` explicitly to include the following .so files.
+  ```bash
+  export LD_PRELOAD=$MKL_LIB/libmkl_def.so.2:\
+                    $MKL_LIB/libmkl_avx2.so.2:\
+                    $MKL_LIB/libmkl_core.so.2:\
+                    $MKL_LIB/libmkl_intel_lp64.so.2:\
+                    $MKL_LIB/libmkl_intel_thread.so.2:\
+                    /usr/lib/x86_64-linux-gnu/libiomp5.so
+   ```
 
 ### Optional Dependencies
 
@@ -187,80 +184,23 @@ Below is an example rendering.
     make -j$(nproc)
     ```
   - For those wishing to customize the rendering settings, users can take a look and adjust the source code in `MagnumSimEnv.cpp` accordingly.
-- [Pybind11](https://github.com/pybind/pybind11)
-  - DisMech also offers Python bindings via pybind11. Users can either install by source or via `pip install pybind11`.
-  Afterward, the bindings can be built as follows:
-    ```bash
-    mkdir build && cd build
-    cmake -DWITH_PYBIND=on ..
-    make -j$(nproc)
-    cd ..
-    pip install -e .  # this will install py_dismech
-    ```
-  - Note that when building with older versions of `MKL` with Python, it may be possible to run into the following [static linkage bug](https://bugs.launchpad.net/ubuntu/+source/intel-mkl/+bug/1947626).
-  Users can either upgrade their `MKL` version or specify their `LD_PRELOAD` explicitly to include the following .so files.
-    ```bash
-    export LD_PRELOAD=$MKL_LIB/libmkl_def.so.2:\
-                      $MKL_LIB/libmkl_avx2.so.2:\
-                      $MKL_LIB/libmkl_core.so.2:\
-                      $MKL_LIB/libmkl_intel_lp64.so.2:\
-                      $MKL_LIB/libmkl_intel_thread.so.2:\
-                      /usr/lib/x86_64-linux-gnu/libiomp5.so
-     ```
-  - All available bindings can be seen in `app.cpp`. Users can expect heavy development for expanding the python bindings as time goes on.
 
 ***
 
-### Running Examples in C++
-DisMech is setup so that simulation environments can be instantiated using a single cpp file
-called `robot_description.cpp`.
-
-Several example of working DisMech simulations can be seen in the `examples/` directory.
-In order to run an example, copy the example cpp file into the main directory and then compile DisMech.
-For example, using the cantilever beam example:
-
-```bash
-cp examples/cantilever_case/cantilever_example.cpp robot_description.cpp
-mkdir build && cd build
-cmake ..
-make -j$(nproc)
-cd ..
-```
-Afterwards, simply run the simulation using the `dismech.sh` script.
-```bash
-./dismech.sh
-```
-Modifications to the examples can be made easily by changing the parameters shown below.
-If you want to run another example, simply replace the `robot_description.cpp` file and recompile.
-Users can also simply build all examples from the start. To do so, run the following:
-```bash
-mkdir build && cd build
-cmake -DCREATE_EXAMPLES=on ..
-make -j$(nproc)
-cd ..
-# Make sure to run from the main directory as some examples use relative paths
-OMP_NUM_THREADS=1 ./examples/spider_case/spider_example_exec
-```
-The Pardiso solver can be parallelized by setting the env variable `OMP_NUM_THREADS > 1`. For all the systems defined
-in `/examples`, their Jacobian matrices are small enough that any amount of parallelization actually slows down the
-simulation. Therefore, it is recommended to set `OMP_NUM_THREADS=1` (`dismech.sh` does this as automatically) and see if parallelization is worth it
-for larger systems through profiling.
-
 ### Running Examples in Python
-
-Python versions of certain examples can be found in `py_examples/`. To run, simply run the provided scripts:
+Several examples can be found in `py_examples/`. To run, simply run the provided scripts:
+Note that the Pardiso solver can be parallelized by setting the env variable `OMP_NUM_THREADS > 1`. For all the systems defined
+in `/py_examples`, the Jacobian matrices are small enough that any amount of parallelization actually slows down the
+simulation. Therefore, it is recommended to set `OMP_NUM_THREADS=1` and see if parallelization is worth it
+for larger systems through profiling.
 ```bash
-OMP_NUM_THREADS=1 python py_examples/spider_case/spider_example.py
+export OMP_NUM_THREADS=1
+python py_examples/spider_case/spider_example.py
 ```
 ***
 
 ### Creating Custom Simulation Environments
-In case you want to create a custom simulation environment, take a look at the provided examples on how to do so.
-
-Model and environment parameters such as defining the soft structure(s) / robot(s), boundary
-conditions, forces, and logging are done solely in `robot_description.cpp` to avoid large recompile times.
-
-In addition, various simulation and rendering parameters can be set through the `SimParams` and
+Various simulation and rendering parameters can be set through the `SimParams` and
 `RenderParams` structs, respectively. Both are shown below with default values and brief descriptions. For in-depth descriptions, please take a look at documentation in `global_definitions.h`.
 Note that parameters with a `*` have additional explanations below. Parameters with a `^` only apply when an implicit numerical integration scheme is chosen and are otherwise ignored.
 ```c++
@@ -320,6 +260,43 @@ Detailed parameter explanations:
 - `adaptive_time_stepping` - Turns on adaptive time stepping which halves the time step size if failure to converge after set number of iterations. Set to 0 to disable.
 
 ***
+
+### TODO
+If you'd like DisMech to support a new feature, feel free create an issue, and we'll add it to
+the list here.
+For those looking to contribute, PRs are always welcome! Please make sure `pre-commit` is
+installed before contributing to adhere to style guidelines.
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+#### Ongoing
+- [ ] Expand Python bindings. PR [#13](https://github.com/StructuresComp/dismech-rods/pull/13)
+
+#### High priority
+- [ ] Add extension control via natural length manipulation.
+- [ ] Add shell functionality.
+- [ ] Improve robustness of friction.
+- [ ] Add contact logic for joints.
+
+#### Low priority
+- [ ] Possibly replace floor contact force (currently uses IMC) with modified mass method.
+- [ ] Add python active entanglement gripper example.
+- [ ] Add python knot tying example.
+- [ ] Add detailed documentation for all examples.
+- [ ] Add time varying boundary condition logic.
+- [ ] Add more controller types.
+
+### COMPLETED
+- [x] Add a more sophisticated renderer. PR [#12](https://github.com/StructuresComp/dismech-rods/pull/12)
+- [x] Add per-limb friction coefficient logic. PR [#5](https://github.com/StructuresComp/dismech-rods/pull/5)
+- [x] Add active entanglement example code.
+- [x] Add limb self-contact option.
+- [x] Add forward Euler integration scheme.
+- [x] Add contact logic for limbs.
+***
+
 ### Citation
 If our work has helped your research, please cite the following paper.
 ```
