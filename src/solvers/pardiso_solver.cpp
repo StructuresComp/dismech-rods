@@ -63,25 +63,20 @@ void PardisoSolver::integrator() {
     auto stepper = weak_implicit_stepper.lock();
     int n = stepper->freeDOF;
 
-    MKL_INT* ia = stepper->ia.data();
+    // Build Eigen::SparseMatrix from triplets
+    Eigen::SparseMatrix<double, Eigen::RowMajor> J(n, n);
+    J.setFromTriplets(stepper->jacobian_triplets.begin(), stepper->jacobian_triplets.end(),
+                      [](double a, double b) { return a + b; });
 
-    for (int i = 0; i < n - 1; i++) {
-        ia[i + 2] += ia[i + 1];
-    }
-    for (int i = 0; i < n; i++) {
-        ia[i + 1]++;
-    }
+    // Get raw CSR pointers from Eigen
+    MKL_INT* ia = const_cast<MKL_INT*>(J.outerIndexPtr());
+    MKL_INT* ja = const_cast<MKL_INT*>(J.innerIndexPtr());
+    double* a = const_cast<double*>(J.valuePtr());
 
-    MKL_INT ja[ia[n]];
-    double a[ia[n]];
-
-    int ind = 0;
-    sort(stepper->non_zero_elements.begin(), stepper->non_zero_elements.end());
-    for (auto& id : stepper->non_zero_elements) {
-        ja[ind] = id.second + 1;
-        a[ind] = stepper->Jacobian(id.first, id.second);
-        ind++;
-    }
+    for (int i = 0; i <= n; i++)
+        ia[i] += 1;
+    for (int k = 0; k < J.nonZeros(); k++)
+        ja[k] += 1;
 
     /* Auxiliary variables. */
     double ddum;  /* Double dummy */
@@ -125,7 +120,7 @@ void PardisoSolver::integrator() {
 
     //  Loop over 3 solving steps: Ax=b, AHx=b and ATx=b
     PARDISO(pt, &maxfct, &mnum, &mtype, &phase, &n, a, ia, ja, &idum, &nrhs, iparm, &msglvl,
-            stepper->force.data(), stepper->dx.data(), &error);
+            stepper->Force.data(), stepper->DX.data(), &error);
     if (error != 0) {
         printf("\nERROR during solution: " IFORMAT, error);
         exit(3);

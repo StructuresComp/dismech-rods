@@ -18,8 +18,8 @@ void DGBSVSolver::integrator() {
     int n = stepper->freeDOF;
     int ipiv[n];
     dgbsv_(&n, &kl, &ku, &nrhs, stepper->dgbsv_jacobian.data(), &NUMROWS, ipiv,
-           stepper->force.data(), &n, &info);
+           stepper->Force.data(), &n, &info);
     for (int i = 0; i < n; i++) {
-        stepper->dx[i] = stepper->force[i];
+        stepper->DX[i] = stepper->Force[i];
     }
 }

@@ -28,11 +28,8 @@ class BaseTimeStepper : public std::enable_shared_from_this<BaseTimeStepper>
     virtual void updateSystemForNextTimeStep() = 0;
     virtual double stepForwardInTime() = 0;
 
-    std::vector<double> dx;
-    std::vector<double> force;
-    Eigen::Map<VecX> Force;
-    Eigen::Map<VecX> DX;
-    MatX Jacobian;
+    VecX Force;
+    VecX DX;
 
     int freeDOF;
     std::vector<int> offsets;

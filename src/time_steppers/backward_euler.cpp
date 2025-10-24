@@ -59,7 +59,7 @@ double BackwardEuler::newtonMethod(double dt) {
         int limb_idx = 0;
         for (const auto& limb : limbs) {
             // TODO: make sure that joint dx's are properly included in this?
-            curr_dx = limb->updateNewtonX(dx.data(), offsets[limb_idx], alpha);
+            curr_dx = limb->updateNewtonX(DX.data(), offsets[limb_idx], alpha);
 
             // Record max change dx
             if (curr_dx > max_dx) {
@@ -126,6 +126,11 @@ double BackwardEuler::goldSteinLineSearch(double dt) {
 
     // compute the slope initially
     double q0 = 0.5 * pow(Force.norm(), 2);
+
+    Eigen::SparseMatrix<double, Eigen::RowMajor> Jacobian(Force.size(), Force.size());
+    Jacobian.setFromTriplets(jacobian_triplets.begin(), jacobian_triplets.end(),
+                             [](double a, double b) { return a + b; });
+
     double dq0 = -(Force.transpose() * Jacobian * DX)(0);
 
     int curr_iters = 0;
@@ -143,7 +148,7 @@ double BackwardEuler::goldSteinLineSearch(double dt) {
 
         for (auto& limb : limbs) {
             limb->x = limb->x_ls;
-            limb->updateNewtonX(dx.data(), offsets[limb_idx], a);
+            limb->updateNewtonX(DX.data(), offsets[limb_idx], a);
             limb_idx++;
         }
         prepSystemForIteration();
@@ -202,6 +207,11 @@ double BackwardEuler::wolfeLineSearch(double dt) {
 
     // compute the slope initially
     double q0 = 0.5 * pow(Force.norm(), 2);
+
+    Eigen::SparseMatrix<double, Eigen::RowMajor> Jacobian(Force.size(), Force.size());
+    Jacobian.setFromTriplets(jacobian_triplets.begin(), jacobian_triplets.end(),
+                             [](double a, double b) { return a + b; });
+
     double dq0 = -(Force.transpose() * Jacobian * DX)(0);
 
     for (int i = 0; i < 10; i++) {
@@ -211,13 +221,17 @@ double BackwardEuler::wolfeLineSearch(double dt) {
         }
         for (auto& limb : limbs) {
             limb->x = limb->x_ls;
-            limb->updateNewtonX(dx.data(), offsets[limb_idx], a);
+            limb->updateNewtonX(DX.data(), offsets[limb_idx], a);
             limb_idx++;
         }
         prepSystemForIteration();
         // Compute the forces
         forces->computeForcesAndJacobian(dt);
         double q = 0.5 * pow(Force.norm(), 2);
+
+        Jacobian.setZero();
+        Jacobian.setFromTriplets(jacobian_triplets.begin(), jacobian_triplets.end(),
+                                 [](double a, double b) { return a + b; });
 
         // Check Armijo condition
         if (q <= q0 + c1 * a * dq0) {

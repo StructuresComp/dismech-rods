@@ -23,12 +23,7 @@ class ImplicitTimeStepper : public BaseTimeStepper
 
     void prepSystemForIteration() override;
 
-    // Utility variables for PARDISO solver.
-    // Need to keep track of non-zero elements
-    // in ImplicitTimeStepper to avoid n^2 construction later.
-    // This allows us to keep complexity to nlogn.
-    std::vector<int> ia;
-    std::vector<std::pair<int, int>> non_zero_elements;
+    std::vector<Eigen::Triplet<double>> jacobian_triplets;
 
     // For dgbsv solver
     std::vector<double> dgbsv_jacobian{};
