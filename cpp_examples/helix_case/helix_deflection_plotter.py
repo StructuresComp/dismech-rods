@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 # Load logged data
 fn = "log_files/helix/node_1.00e+07.csv"
 data = np.loadtxt(fn, delimiter=",")

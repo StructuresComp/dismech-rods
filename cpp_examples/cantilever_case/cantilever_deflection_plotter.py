@@ -1,13 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 # Load logged data
 fn = "log_files/cantilever/node_1.00e+05.csv"
 # fn = "log_files/cantilever/node_1.00e+07.csv"
 data = np.loadtxt(fn, delimiter=",")
 
-gt = np.loadtxt("examples/cantilever_case/euler_bernoulli_data_E=1e5_T=100s.txt")
+gt = np.loadtxt(
+    "examples/cantilever_case/euler_bernoulli_data_E=1e5_T=100s.txt")
 # gt = np.loadtxt("examples/cantilever_case/euler_bernoulli_data_E=1e7_T=20s.txt")
 
 fig = plt.figure(figsize=(15, 5), frameon=True, dpi=150)

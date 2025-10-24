@@ -1,6 +1,6 @@
 ### Running Examples in C++ (Deprecated)
 
-Note that running DisMech simulations directly in C++ is deprecated. 
+Note that running DisMech simulations directly in C++ is deprecated.
 To use DisMech, it's suggested to use the Python bindings instead.
 
 ***

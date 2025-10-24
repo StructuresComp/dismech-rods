@@ -31,13 +31,18 @@ radius = 1.6e-3
 young_mod = 1.8e5
 density = 1180
 poisson = 0.5
-add_limb = partial(sim_manager.soft_robots.addLimb, num_nodes=n, rho=density, rod_radius=radius,
-                   youngs_modulus=young_mod, poisson_ratio=poisson)
+add_limb = partial(sim_manager.soft_robots.addLimb,
+                   num_nodes=n,
+                   rho=density,
+                   rod_radius=radius,
+                   youngs_modulus=young_mod,
+                   poisson_ratio=poisson)
 
 # Create a single rod.
 add_limb(np.array([0.00, 0.00, 0.20]), np.array([1.00, 0.00, 0.20]))
 
-gravity_force = py_dismech.GravityForce(soft_robots, np.array([0.0, 0.0, -9.8]))
+gravity_force = py_dismech.GravityForce(soft_robots, np.array([0.0, 0.0,
+                                                               -9.8]))
 add_force(gravity_force)
 
 # Hold the two ends of the rod.
@@ -53,15 +58,16 @@ while not sim_manager.simulation_completed():
     # First, twist the rod on one side with constant acceleration.
     if 5.0 < curr_time < 10.0:
         twist_iter += 1
-        theta_change = {
-            "delta_theta": np.array([0, 0, twist_iter * 1e-5])}
+        theta_change = {"delta_theta": np.array([0, 0, twist_iter * 1e-5])}
         sim_manager.step_simulation(theta_change)
     # Then, move one rod end closer to the other with constant acceleration.
     elif 10.0 < curr_time < 15.0:
         pos_iter += 1
         pos_change = {
-            "delta_position": np.array([[0, 0, pos_iter * 2.5e-7, 0.0, 0.0],
-                                        [0, 1, pos_iter * 2.5e-7, 0.0, 0.0]])}
+            "delta_position":
+            np.array([[0, 0, pos_iter * 2.5e-7, 0.0, 0.0],
+                      [0, 1, pos_iter * 2.5e-7, 0.0, 0.0]])
+        }
         sim_manager.step_simulation(pos_change)
     else:
         sim_manager.step_simulation()

@@ -8,9 +8,9 @@ def compute_kappa(v123):
     v1 = v123[0]
     v2 = v123[1]
     v3 = v123[2]
-    t0 = v2-v1
+    t0 = v2 - v1
     t0 /= np.linalg.norm(t0)
-    t1 = v3-v2
+    t1 = v3 - v2
     t1 /= np.linalg.norm(t1)
     return 2.0 * np.cross(t0, t1) / (1.0 + t0.dot(t1))
 
@@ -33,8 +33,10 @@ pixel_coordinates[:, :, 1] = z
 
 kappas = []
 for i, ts in enumerate(pixel_coordinates):
-    kappa1 = (compute_kappa(ts) + compute_kappa(ts[1:]) + compute_kappa(ts[2:])) / 3
-    kappa2 = (compute_kappa(ts[4:]) + compute_kappa(ts[5:]) + compute_kappa(ts[6:])) / 3
+    kappa1 = (compute_kappa(ts) + compute_kappa(ts[1:]) +
+              compute_kappa(ts[2:])) / 3
+    kappa2 = (compute_kappa(ts[4:]) + compute_kappa(ts[5:]) +
+              compute_kappa(ts[6:])) / 3
     kappas.append((kappa1, kappa2))
 
     # plt.plot(pixel_coordinates[i, :, 0], pixel_coordinates[i, :, 1], zorder=0)
@@ -45,7 +47,6 @@ for i, ts in enumerate(pixel_coordinates):
     # plt.show()
     # plt.savefig("snap{}.png".format(i))
     # plt.clf()
-
 
 with open("target_kappas.pkl", "wb") as f:
     pickle.dump(kappas, f)

@@ -37,8 +37,11 @@ young_mod = 1e7
 density = 1273.52
 poisson = 0.5
 
-add_limb = partial(sim_manager.soft_robots.addLimb, rho=density, rod_radius=radius,
-                   youngs_modulus=young_mod, poisson_ratio=poisson)
+add_limb = partial(sim_manager.soft_robots.addLimb,
+                   rho=density,
+                   rod_radius=radius,
+                   youngs_modulus=young_mod,
+                   poisson_ratio=poisson)
 
 # Add the helical structure as a sequential series of vertices
 add_limb(vertices)
@@ -47,14 +50,17 @@ add_limb(vertices)
 soft_robots.lockEdge(0, 0)
 
 # Add gravity
-gravity_force = py_dismech.GravityForce(soft_robots, np.array([0.0, 0.0, -9.8]))
+gravity_force = py_dismech.GravityForce(soft_robots, np.array([0.0, 0.0,
+                                                               -9.8]))
 add_force(gravity_force)
 
 # Initialize and run the simulation
 sim_manager.initialize(sys.argv)
 time = 0.0
 while not sim_manager.simulation_completed():
-    input_dict = {"delta_position": np.array([[0, 0, 1e-4, 0.0, 0.0],
-                                              [0, 1, 1e-4, 0.0, 0.0]])}
+    input_dict = {
+        "delta_position":
+        np.array([[0, 0, 1e-4, 0.0, 0.0], [0, 1, 1e-4, 0.0, 0.0]])
+    }
     sim_manager.step_simulation(input_dict)
     time += sim_params.dt

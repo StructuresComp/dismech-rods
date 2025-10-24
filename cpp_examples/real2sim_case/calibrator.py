@@ -10,9 +10,7 @@ import matplotlib.pyplot as plt
 def compute_kappa(xz):
     kappa = 0
     # Hardcoded for n = 25!!!
-    coords = [[0, 6, 12],
-              [6, 12, 18],
-              [12, 18, 24]]
+    coords = [[0, 6, 12], [6, 12, 18], [12, 18, 24]]
 
     for x, y, z in coords:
         v1 = xz[x]
@@ -27,8 +25,11 @@ def compute_kappa(xz):
     return kappa
 
 
-def change_kappabar(kappabar1, kappabar2,
-                    controller_path="src/controllers/openloop_control_trajectories/real2sim_controller.csv"):
+def change_kappabar(
+    kappabar1,
+    kappabar2,
+    controller_path="src/controllers/openloop_control_trajectories/real2sim_controller.csv"
+):
 
     phi1 = np.rad2deg(2 * np.arctan(kappabar1 / 2))
     phi2 = np.rad2deg(2 * np.arctan(kappabar2 / 2))
@@ -84,8 +85,6 @@ def get_lambda_from_sim(a_kappa1, a_kappa2, t_kappa):
 with open("examples/real2sim_case/target_kappas.pkl", "rb") as f:
     target_kappas = pickle.load(f)
 
-
-
 n = 25
 
 # Starting seed
@@ -134,7 +133,7 @@ for i, (t_kappa1, t_kappa2) in enumerate(tqdm(target_kappas)):
             break
 
         # Compute finite difference
-        dllambda_dkappa = np.zeros((2,))
+        dllambda_dkappa = np.zeros((2, ))
 
         # ∂λ/∂κ_action,1
         lambda1 = get_lambda_from_sim(a_kappa1 + delta, a_kappa2, t_kappa)
@@ -156,7 +155,6 @@ for i, (t_kappa1, t_kappa2) in enumerate(tqdm(target_kappas)):
     # Save individuals just in case we don't make it to the end
     np.savetxt("examples/real2sim_case/solved_phis/phi_t{}".format(i), phis)
     solved_phis.append(phis)
-
 
 with open("examples/real2sim_case/solved_phis.pkl", "wb") as f:
     pickle.dump(solved_phis, f)

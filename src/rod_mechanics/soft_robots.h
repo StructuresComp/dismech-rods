@@ -14,9 +14,11 @@ class SoftRobots
     ~SoftRobots();
 
     void addLimb(const Vec3& start, const Vec3& end, int num_nodes, double rho, double rod_radius,
-                 double youngs_modulus, double poisson_ratio, double mu = 0.0, uint16_t col_group = 0xFFFF);
+                 double youngs_modulus, double poisson_ratio, double mu = 0.0,
+                 uint16_t col_group = 0xFFFF);
     void addLimb(const std::vector<Vec3>& nodes, double rho, double rod_radius,
-                 double youngs_modulus, double poisson_ratio, double mu = 0.0, uint16_t col_group = 0xFFFF);
+                 double youngs_modulus, double poisson_ratio, double mu = 0.0,
+                 uint16_t col_group = 0xFFFF);
 
     void createJoint(int limb_idx, int node_idx);
     void addToJoint(int joint_idx, int limb_idx, int node_idx);

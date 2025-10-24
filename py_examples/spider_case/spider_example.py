@@ -41,25 +41,29 @@ else:
     delta = 5e-4
     nu = 5e-3
 
-
 n = 25
 radius = 5e-3
 young_mod = 3e6
 density = 1180
 poisson = 0.5
 mu = 0.4
-add_limb = partial(sim_manager.soft_robots.addLimb, num_nodes=n, rho=density, rod_radius=radius,
-                   youngs_modulus=young_mod, poisson_ratio=poisson, mu=mu)
+add_limb = partial(sim_manager.soft_robots.addLimb,
+                   num_nodes=n,
+                   rho=density,
+                   rod_radius=radius,
+                   youngs_modulus=young_mod,
+                   poisson_ratio=poisson,
+                   mu=mu)
 
-add_limb(np.array([ 0.00,  0.00,  0.20]),    np.array([ 0.00,  0.00,  0.10]))
-add_limb(np.array([ 0.00,  0.00,  0.10]),    np.array([ 0.10,  0.00,  0.10]))
-add_limb(np.array([ 0.00,  0.00,  0.10]),    np.array([ 0.00,  0.10,  0.10]))
-add_limb(np.array([ 0.00,  0.00,  0.10]),    np.array([ 0.00, -0.10,  0.10]))
-add_limb(np.array([ 0.00,  0.00,  0.10]),    np.array([-0.10,  0.00,  0.10]))
-add_limb(np.array([ 0.10,  0.00,  0.10]),    np.array([ 0.10,  0.00,  0.00]))
-add_limb(np.array([ 0.00,  0.10,  0.10]),    np.array([ 0.00,  0.10,  0.00]))
-add_limb(np.array([ 0.00, -0.10,  0.10]),    np.array([ 0.00, -0.10,  0.00]))
-add_limb(np.array([-0.10,  0.00,  0.10]),    np.array([-0.10,  0.00,  0.00]))
+add_limb(np.array([0.00, 0.00, 0.20]), np.array([0.00, 0.00, 0.10]))
+add_limb(np.array([0.00, 0.00, 0.10]), np.array([0.10, 0.00, 0.10]))
+add_limb(np.array([0.00, 0.00, 0.10]), np.array([0.00, 0.10, 0.10]))
+add_limb(np.array([0.00, 0.00, 0.10]), np.array([0.00, -0.10, 0.10]))
+add_limb(np.array([0.00, 0.00, 0.10]), np.array([-0.10, 0.00, 0.10]))
+add_limb(np.array([0.10, 0.00, 0.10]), np.array([0.10, 0.00, 0.00]))
+add_limb(np.array([0.00, 0.10, 0.10]), np.array([0.00, 0.10, 0.00]))
+add_limb(np.array([0.00, -0.10, 0.10]), np.array([0.00, -0.10, 0.00]))
+add_limb(np.array([-0.10, 0.00, 0.10]), np.array([-0.10, 0.00, 0.00]))
 
 create_joint(0, -1)
 add_to_joint(0, 1, 0)
@@ -76,12 +80,14 @@ create_joint(4, -1)
 add_to_joint(4, 8, 0)
 
 # Add gravity with a slight x-axis perturbation
-gravity_force = py_dismech.GravityForce(soft_robots, np.array([1.0, 0.0, -9.8]))
+gravity_force = py_dismech.GravityForce(soft_robots, np.array([1.0, 0.0,
+                                                               -9.8]))
 add_force(gravity_force)
 
 # Add floor contact
 floor_z = -0.10
-floor_contact_force = py_dismech.FloorContactForce(soft_robots, delta, nu, floor_z)
+floor_contact_force = py_dismech.FloorContactForce(soft_robots, delta, nu,
+                                                   floor_z)
 add_force(floor_contact_force)
 
 # Initialize and run the simulation

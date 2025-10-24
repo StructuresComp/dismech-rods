@@ -135,7 +135,7 @@ There is also a docker build available (Thanks to PR #15!), with more instructio
 
 - [Pybind11](https://github.com/pybind/pybind11)
   - DisMech offers Python bindings via pybind11. Users can either install by source or via `pip install pybind11`. All available bindings can be seen in `app.cpp`. Users can expect heavy development for expanding the python bindings as time goes on.
-  
+
 Afterward, DisMech can be built as follows
   ```bash
   mkdir build && cd build

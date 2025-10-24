@@ -5,10 +5,7 @@ import multiprocessing as mp
 
 
 def run_fric_test(force):
-    env = {
-        **os.environ,
-        "OMP_NUM_THREADS": str(1)
-    }
+    env = {**os.environ, "OMP_NUM_THREADS": str(1)}
     subprocess.call(["./disMech", str(force)], env=env)
     print("Finished simulation with force {}".format(force))
 
