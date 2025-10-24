@@ -595,6 +595,24 @@ class ElasticRod
      */
     std::vector<std::pair<int, int>> joint_ids;
 
+    /**
+     * @brief Get the M1 material frame for edge i.
+     *
+     * @param i Index of the edge.
+     *
+     * @return M1 material frame at edge i.
+     */
+    Vec3 getM1(int i);
+
+    /**
+     * @brief Get the M2 material frame for edge i.
+     *
+     * @param i Index of the edge.
+     *
+     * @return M2 material frame at edge i.
+     */
+    Vec3 getM2(int i);
+
     void setVertexBoundaryCondition(Vec3 position, int k);
     void setThetaBoundaryCondition(double desired_theta, int k);
     void freeVertexBoundaryCondition(int k);

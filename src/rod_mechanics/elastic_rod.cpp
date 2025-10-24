@@ -520,3 +520,11 @@ void ElasticRod::enable2DSim() const {
     }
     isConstrained[4 * ne + 1] = 1;
 }
+
+Vec3 ElasticRod::getM1(int i) {
+    return m1.row(i);
+}
+
+Vec3 ElasticRod::getM2(int i) {
+    return m2.row(i);
+}

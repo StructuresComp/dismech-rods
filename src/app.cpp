@@ -198,6 +198,8 @@ PYBIND11_MODULE(py_dismech, m) {
         .def("getVertices", &ElasticRod::getVertices)
         .def("getVelocities", &ElasticRod::getVelocities)
         .def("getThetas", &ElasticRod::getThetas)
+        .def("getM1", &ElasticRod::getM1)
+        .def("getM2", &ElasticRod::getM2)
         .def("freeVertexBoundaryCondition", &ElasticRod::freeVertexBoundaryCondition)
         .def("setVertexBoundaryCondition", &ElasticRod::setVertexBoundaryCondition)
         .def("setThetaBoundaryCondition", &ElasticRod::setThetaBoundaryCondition);
