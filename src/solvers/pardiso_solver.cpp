@@ -10,7 +10,7 @@
 #define IFORMAT "%lli"
 #endif
 
-PardisoSolver::PardisoSolver(const std::shared_ptr<ImplicitTimeStepper>& stepper)
+PardisoSolver::PardisoSolver(const std::weak_ptr<ImplicitTimeStepper>& stepper)
     : BaseSolver(stepper, SolverType::PARDISO_SOLVER) {
     mtype = 11; /* Real unsymmetric matrix */
 
@@ -60,6 +60,7 @@ PardisoSolver::PardisoSolver(const std::shared_ptr<ImplicitTimeStepper>& stepper
 PardisoSolver::~PardisoSolver() = default;
 
 void PardisoSolver::integrator() {
+    auto stepper = weak_implicit_stepper.lock();
     int n = stepper->freeDOF;
 
     MKL_INT* ia = stepper->ia;

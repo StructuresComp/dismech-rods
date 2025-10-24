@@ -15,6 +15,7 @@ void UniformConstantForce::addForceToLimb(int limb_idx, const Vec3& force) {
 }
 
 void UniformConstantForce::computeForce(double dt) {
+    auto stepper = weak_stepper.lock();
     int limb_idx;
     std::shared_ptr<ElasticRod> limb;
     Vec3 force;

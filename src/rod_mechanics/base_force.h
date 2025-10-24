@@ -9,17 +9,17 @@ class BaseTimeStepper;
 class BaseForce
 {
   public:
-    explicit BaseForce(const std::shared_ptr<SoftRobots>& m_soft_robots);
+    explicit BaseForce(const std::shared_ptr<SoftRobots>& soft_robots);
     virtual ~BaseForce() = 0;
 
     virtual void computeForce(double dt) = 0;
     virtual void computeForceAndJacobian(double dt) = 0;
 
-    void setTimeStepper(std::shared_ptr<BaseTimeStepper> m_stepper);
+    void setTimeStepper(std::weak_ptr<BaseTimeStepper> stepper);
 
   protected:
     std::shared_ptr<SoftRobots> soft_robots;
-    std::shared_ptr<BaseTimeStepper> stepper = nullptr;
+    std::weak_ptr<BaseTimeStepper> weak_stepper;
 };
 
 #endif  // BASE_FORCE_H

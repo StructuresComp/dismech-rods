@@ -12,6 +12,7 @@ GravityForce::GravityForce(const std::shared_ptr<SoftRobots>& soft_robots, Vec3 
 GravityForce::~GravityForce() = default;
 
 void GravityForce::computeForce(double dt) {
+    auto stepper = weak_stepper.lock();
     int limb_idx = 0;
     for (const auto& limb : soft_robots->limbs) {
         mass_gravity = mass_gravities[limb_idx];

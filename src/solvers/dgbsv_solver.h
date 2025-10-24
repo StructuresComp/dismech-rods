@@ -6,7 +6,7 @@
 class DGBSVSolver : public BaseSolver
 {
   public:
-    explicit DGBSVSolver(const std::shared_ptr<ImplicitTimeStepper>& stepper);
+    explicit DGBSVSolver(const std::weak_ptr<ImplicitTimeStepper>& stepper);
     ~DGBSVSolver() override;
 
     void integrator() override;

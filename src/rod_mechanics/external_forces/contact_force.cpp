@@ -225,6 +225,7 @@ void ContactForce::computeFriction(double dt) {
 
 void ContactForce::computeForce(double dt) {
     static bool first_iter = true;
+    auto stepper = weak_stepper.lock();
     col_detector->narrowPhaseCollisionDetection();
     for (const auto& contact_id : col_detector->contact_ids) {
         setupContactVariables(contact_id);
@@ -292,6 +293,7 @@ void ContactForce::computeForce(double dt) {
 
 void ContactForce::computeForceAndJacobian(double dt) {
     static bool first_iter = true;
+    auto stepper = weak_stepper.lock();
     col_detector->narrowPhaseCollisionDetection();
     for (const auto& contact_id : col_detector->contact_ids) {
         setupContactVariables(contact_id);

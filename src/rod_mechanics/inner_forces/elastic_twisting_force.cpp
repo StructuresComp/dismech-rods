@@ -32,6 +32,7 @@ ElasticTwistingForce::~ElasticTwistingForce() {
 }
 
 void ElasticTwistingForce::computeForce(double dt) {
+    auto stepper = weak_stepper.lock();
     int limb_idx = 0;
     for (const auto& limb : soft_robots->limbs) {
         GJ = limb->GJ;
@@ -194,6 +195,7 @@ void ElasticTwistingForce::computeForce(double dt) {
 void ElasticTwistingForce::computeForceAndJacobian(double dt) {
     computeForce(dt);
 
+    auto stepper = weak_stepper.lock();
     int limb_idx = 0;
     for (const auto& limb : soft_robots->limbs) {
         GJ = limb->GJ;

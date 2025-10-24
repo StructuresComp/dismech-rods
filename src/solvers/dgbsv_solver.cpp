@@ -1,7 +1,7 @@
 #include "dgbsv_solver.h"
 #include "time_steppers/implicit_time_stepper.h"
 
-DGBSVSolver::DGBSVSolver(const std::shared_ptr<ImplicitTimeStepper>& stepper)
+DGBSVSolver::DGBSVSolver(const std::weak_ptr<ImplicitTimeStepper>& stepper)
     : BaseSolver(stepper, SolverType::DGBSV_SOLVER) {
     kl = 10;  // lower diagonals
     ku = 10;  // upper diagonals
@@ -14,6 +14,7 @@ DGBSVSolver::DGBSVSolver(const std::shared_ptr<ImplicitTimeStepper>& stepper)
 DGBSVSolver::~DGBSVSolver() = default;
 
 void DGBSVSolver::integrator() {
+    auto stepper = weak_implicit_stepper.lock();
     int n = stepper->freeDOF;
     int ipiv[n];
     dgbsv_(&n, &kl, &ku, &nrhs, stepper->dgbsv_jacobian, &NUMROWS, ipiv, stepper->force, &n, &info);

@@ -35,6 +35,7 @@ FloorContactForce::~FloorContactForce() {
 }
 
 void FloorContactForce::computeForce(double dt) {
+    auto stepper = weak_stepper.lock();
     double dist;
     double f;
     int limb_idx = 0;
@@ -79,6 +80,7 @@ void FloorContactForce::computeForce(double dt) {
 }
 
 void FloorContactForce::computeForceAndJacobian(double dt) {
+    auto stepper = weak_stepper.lock();
     double dist;
     double f;
     double J;

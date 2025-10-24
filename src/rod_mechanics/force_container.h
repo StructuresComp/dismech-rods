@@ -18,7 +18,7 @@ class ForceContainer
     void computeForces(double dt);
     void computeForcesAndJacobian(double dt);
 
-    void setupForceStepperAccess(const std::shared_ptr<BaseTimeStepper>& stepper);
+    void setupForceStepperAccess(const std::weak_ptr<BaseTimeStepper> stepper);
 
     void addForce(const std::shared_ptr<BaseForce>& force);
 

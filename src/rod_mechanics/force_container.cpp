@@ -16,7 +16,7 @@ ForceContainer::ForceContainer(const std::vector<std::shared_ptr<BaseForce>>& m_
 
 ForceContainer::~ForceContainer() = default;
 
-void ForceContainer::setupForceStepperAccess(const std::shared_ptr<BaseTimeStepper>& stepper) {
+void ForceContainer::setupForceStepperAccess(const std::weak_ptr<BaseTimeStepper> stepper) {
     for (const auto& force : forces)
         force->setTimeStepper(stepper);
 }

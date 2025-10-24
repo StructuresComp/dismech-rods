@@ -16,6 +16,7 @@ ElasticStretchingForce::~ElasticStretchingForce() {
 }
 
 void ElasticStretchingForce::computeForce(double dt) {
+    auto stepper = weak_stepper.lock();
     int limb_idx = 0;
     for (const auto& limb : soft_robots->limbs) {
 
@@ -63,6 +64,7 @@ void ElasticStretchingForce::computeForce(double dt) {
 void ElasticStretchingForce::computeForceAndJacobian(double dt) {
     computeForce(dt);
 
+    auto stepper = weak_stepper.lock();
     int limb_idx = 0;
     for (const auto& limb : soft_robots->limbs) {
         for (int i = 0; i < limb->ne; i++) {

@@ -1,8 +1,7 @@
 #include "base_solver.h"
 
-BaseSolver::BaseSolver(const std::shared_ptr<ImplicitTimeStepper>& m_stepper,
-                       SolverType m_solver_type)
-    : stepper(m_stepper), solver_type(m_solver_type) {
+BaseSolver::BaseSolver(const std::weak_ptr<ImplicitTimeStepper>& stepper, SolverType solver_type)
+    : weak_implicit_stepper(stepper), solver_type(solver_type) {
     nrhs = 1; /* Number of right hand sides. */
 }
 

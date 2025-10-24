@@ -11,6 +11,7 @@ DampingForce::DampingForce(const std::shared_ptr<SoftRobots>& soft_robots, doubl
 DampingForce::~DampingForce() = default;
 
 void DampingForce::computeForce(double dt) {
+    auto stepper = weak_stepper.lock();
     int limb_idx = 0;
     for (const auto& limb : soft_robots->limbs) {
         for (int i = 0; i < limb->ne; i++) {
@@ -47,6 +48,7 @@ void DampingForce::computeForce(double dt) {
 void DampingForce::computeForceAndJacobian(double dt) {
     computeForce(dt);
 
+    auto stepper = weak_stepper.lock();
     int limb_idx = 0;
     for (const auto& limb : soft_robots->limbs) {
         // Here, we take advantage of the fact that the damping force Jacobian

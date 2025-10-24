@@ -45,6 +45,7 @@ ElasticBendingForce::~ElasticBendingForce() {
 }
 
 void ElasticBendingForce::computeForce(double dt) {
+    auto stepper = weak_stepper.lock();
     int limb_idx = 0;
     for (const auto& limb : soft_robots->limbs) {
         gradKappa1 = gradKappa1s[limb_idx];
@@ -227,6 +228,7 @@ void ElasticBendingForce::computeForce(double dt) {
 void ElasticBendingForce::computeForceAndJacobian(double dt) {
     computeForce(dt);
 
+    auto stepper = weak_stepper.lock();
     int limb_idx = 0;
     for (const auto& limb : soft_robots->limbs) {
         gradKappa1 = gradKappa1s[limb_idx];
