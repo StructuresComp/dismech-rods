@@ -6,6 +6,7 @@
 #include "rod_mechanics/elastic_rod.h"
 #include "rod_mechanics/external_forces/damping_force.h"
 #include "rod_mechanics/external_forces/floor_contact_force.h"
+#include "rod_mechanics/external_forces/contact_force.h"
 #include "rod_mechanics/external_forces/gravity_force.h"
 #include "rod_mechanics/force_container.h"
 #include "rod_mechanics/soft_robots.h"
@@ -48,6 +49,8 @@ class SimulationManager
         forces = std::make_shared<ForceContainer>();
         logger = nullptr;
     }
+
+    ~SimulationManager() = default;
 
     void initialize(int argc, char* argv[]) {
         soft_robots->setup();
@@ -273,4 +276,10 @@ PYBIND11_MODULE(py_dismech, m) {
         .def(py::init<const std::shared_ptr<SoftRobots>&, double, double, double, double>(),
              py::arg("soft_robots"), py::arg("floor_delta"), py::arg("floor_slipTol"),
              py::arg("floor_z"), py::arg("floor_mu") = 0.0);
+
+    py::class_<ContactForce, std::shared_ptr<ContactForce>, BaseForce>(
+        m, "ContactForce")
+        .def(py::init<const std::shared_ptr<SoftRobots>&, double, double, double, bool, double, bool>(),
+             py::arg("soft_robots"), py::arg("col_limit"), py::arg("delta"),
+             py::arg("k_scaler"), py::arg("friction"), py::arg("nu"), py::arg("self_contact"));
 }
