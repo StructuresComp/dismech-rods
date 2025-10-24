@@ -15,21 +15,18 @@ BaseTimeStepper::BaseTimeStepper(const std::shared_ptr<SoftRobots>& soft_robots,
         freeDOF += limb->uncons;
     }
 
-    force = new double[freeDOF]{0};
-    new (&Force) Eigen::Map<VecX>(force, freeDOF);
+    force = std::vector<double>(freeDOF, 0);
+    new (&Force) Eigen::Map<VecX>(force.data(), freeDOF);
 
-    dx = new double[freeDOF]{0};
-    new (&DX) Eigen::Map<VecX>(dx, freeDOF);
+    dx = std::vector<double>(freeDOF, 0);
+    new (&DX) Eigen::Map<VecX>(dx.data(), freeDOF);
 }
 
 void BaseTimeStepper::initStepper() {
     forces->setupForceStepperAccess(shared_from_this());
 }
 
-BaseTimeStepper::~BaseTimeStepper() {
-    delete[] dx;
-    delete[] force;
-}
+BaseTimeStepper::~BaseTimeStepper() = default;
 
 void BaseTimeStepper::addForce(int ind, double p, int limb_idx) {
     std::shared_ptr<ElasticRod> limb = limbs[limb_idx];
@@ -54,14 +51,14 @@ void BaseTimeStepper::update() {
         offsets.push_back(freeDOF);
         freeDOF += limb->uncons;
     }
-    delete[] force;
-    delete[] dx;
 
-    force = new double[freeDOF]{0};
-    new (&Force) Eigen::Map<VecX>(force, freeDOF);
+    force.clear();
+    force.resize(freeDOF, 0);
+    new (&Force) Eigen::Map<VecX>(force.data(), freeDOF);
 
-    dx = new double[freeDOF]{0};
-    new (&DX) Eigen::Map<VecX>(dx, freeDOF);
+    dx.clear();
+    dx.resize(freeDOF, 0);
+    new (&DX) Eigen::Map<VecX>(dx.data(), freeDOF);
 }
 
 void BaseTimeStepper::prepSystemForIteration() {

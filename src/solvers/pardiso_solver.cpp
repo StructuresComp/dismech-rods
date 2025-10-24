@@ -63,7 +63,7 @@ void PardisoSolver::integrator() {
     auto stepper = weak_implicit_stepper.lock();
     int n = stepper->freeDOF;
 
-    MKL_INT* ia = stepper->ia;
+    MKL_INT* ia = stepper->ia.data();
 
     for (int i = 0; i < n - 1; i++) {
         ia[i + 2] += ia[i + 1];
@@ -125,7 +125,7 @@ void PardisoSolver::integrator() {
 
     //  Loop over 3 solving steps: Ax=b, AHx=b and ATx=b
     PARDISO(pt, &maxfct, &mnum, &mtype, &phase, &n, a, ia, ja, &idum, &nrhs, iparm, &msglvl,
-            stepper->force, stepper->dx, &error);
+            stepper->force.data(), stepper->dx.data(), &error);
     if (error != 0) {
         printf("\nERROR during solution: " IFORMAT, error);
         exit(3);

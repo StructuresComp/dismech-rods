@@ -4,7 +4,8 @@ ElasticRod::ElasticRod(int limb_idx, const Vec3& start, const Vec3& end, int num
                        double rod_radius, double youngs_modulus, double poisson_ratio, double mu,
                        uint16_t col_group)
     : limb_idx(limb_idx), ndof(num_nodes * 4 - 1), nv(num_nodes), ne(num_nodes - 1), rho(rho),
-      rod_radius(rod_radius), youngM(youngs_modulus), poisson_ratio(poisson_ratio), mu(mu), col_group(col_group) {
+      rod_radius(rod_radius), youngM(youngs_modulus), poisson_ratio(poisson_ratio), mu(mu),
+      col_group(col_group) {
     std::vector<Vec3> nodes;
     Vec3 dir = (end - start) / (num_nodes - 1);
     for (int i = 0; i < num_nodes; i++) {
@@ -47,26 +48,18 @@ void ElasticRod::setup(const std::vector<Vec3>& nodes) {
     // We will start off with an unconstrained system
     ncons = 0;
     uncons = ndof;
-    isConstrained = new int[ndof];
-    isDOFJoint = new int[ndof];
-    isNodeJoint = new int[nv];
-    isEdgeJoint = new int[ne];
-    for (int i = 0; i < ndof; i++) {
-        isConstrained[i] = 0;
-        isDOFJoint[i] = 0;
-    }
+    isConstrained = std::vector<int>(ndof, 0);
+    isDOFJoint = std::vector<int>(ndof, 0);
+    isNodeJoint = std::vector<int>(nv, 0);
+    isEdgeJoint = std::vector<int>(ne, 0);
     for (int i = 0; i < nv; i++) {
-        isNodeJoint[i] = 0;
         std::pair<int, int> non_joint{i, limb_idx};
         joint_ids.push_back(non_joint);
     }
-    for (int i = 0; i < ne; i++) {
-        isEdgeJoint[i] = 0;
-    }
 
     // Setup the map from free dofs to all dof
-    unconstrainedMap = new int[uncons];  // maps xUncons to x
-    fullToUnconsMap = new int[ndof];
+    unconstrainedMap = std::vector<int>(uncons, 0);  // maps xUncons to x
+    fullToUnconsMap = std::vector<int>(ndof, 0);
     setupMap();
 
     cross_sectional_area = M_PI * rod_radius * rod_radius;
@@ -168,11 +161,11 @@ void ElasticRod::updateMap() {
     }
     uncons = ndof - ncons;
 
-    delete[] unconstrainedMap;
-    delete[] fullToUnconsMap;
     // Setup the map from free dofs to all dof
-    unconstrainedMap = new int[uncons];  // maps xUncons to x
-    fullToUnconsMap = new int[ndof];
+    unconstrainedMap.clear();
+    unconstrainedMap.resize(uncons, 0);
+    fullToUnconsMap.clear();
+    fullToUnconsMap.resize(ndof, 0);
     setupMap();
 }
 
@@ -198,14 +191,7 @@ void ElasticRod::setThetaBoundaryCondition(double desired_theta, int k) {
     x(4 * k + 3) = desired_theta;
 }
 
-ElasticRod::~ElasticRod() {
-    delete[] isConstrained;
-    delete[] unconstrainedMap;
-    delete[] fullToUnconsMap;
-    delete[] isDOFJoint;
-    delete[] isNodeJoint;
-    delete[] isEdgeJoint;
-}
+ElasticRod::~ElasticRod() = default;
 
 int ElasticRod::getIfConstrained(int k) const {
     return isConstrained[k];
@@ -513,7 +499,7 @@ void ElasticRod::updateGuess(double weight, double dt) {
     }
 }
 
-void ElasticRod::enable2DSim() const {
+void ElasticRod::enable2DSim() {
     for (int i = 0; i < ne; i++) {
         isConstrained[4 * i + 1] = 1;
         isConstrained[4 * i + 3] = 1;

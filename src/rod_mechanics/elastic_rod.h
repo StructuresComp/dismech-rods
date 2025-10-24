@@ -92,7 +92,7 @@ class ElasticRod
      *
      * @details Assumes all y and theta related DOFs to be constrained.
      */
-    void enable2DSim() const;
+    void enable2DSim();
 
     /**
      * @brief The limb id of the rod.
@@ -474,7 +474,7 @@ class ElasticRod
      *
      * @details Size of ndof. Value of 1 if constrained and 0 if unconstrained.
      */
-    int* isConstrained;
+    std::vector<int> isConstrained;
 
     /**
      * @brief Getter function for seeing if a certain DOF is constrained.
@@ -495,7 +495,7 @@ class ElasticRod
      * @see Gets updated in updateMap() and in setup().
      * @see The inverse mapping is fullToUnconsMap.
      */
-    int* unconstrainedMap;
+    std::vector<int> unconstrainedMap;
 
     /**
      * @brief Array that maps full to unconstrained indices.
@@ -508,7 +508,7 @@ class ElasticRod
      * @see Gets updated in updateMap() and in setup().
      * @see The inverse mapping is unconstrainedMap.
      */
-    int* fullToUnconsMap;
+    std::vector<int> fullToUnconsMap;
 
     /**
      * @brief Updates the constraint map according to current values of
@@ -561,7 +561,7 @@ class ElasticRod
      *
      * @see Updated in addJoint().
      */
-    int* isDOFJoint;
+    std::vector<int> isDOFJoint;
 
     /**
      * @brief Array indicating whether or not a certain node is a joint node.
@@ -570,7 +570,7 @@ class ElasticRod
      *
      * @see Updated in addJoint().
      */
-    int* isNodeJoint;
+    std::vector<int> isNodeJoint;
 
     /**
      * @brief Array indicating whether or not a certain edge is adjacent
@@ -580,7 +580,7 @@ class ElasticRod
      *
      * @see Updated in addJoint().
      */
-    int* isEdgeJoint;
+    std::vector<int> isEdgeJoint;
 
     /**
      * @brief Vector of joint node and limb ids.

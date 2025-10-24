@@ -59,7 +59,7 @@ double BackwardEuler::newtonMethod(double dt) {
         int limb_idx = 0;
         for (const auto& limb : limbs) {
             // TODO: make sure that joint dx's are properly included in this?
-            curr_dx = limb->updateNewtonX(dx, offsets[limb_idx], alpha);
+            curr_dx = limb->updateNewtonX(dx.data(), offsets[limb_idx], alpha);
 
             // Record max change dx
             if (curr_dx > max_dx) {
@@ -143,7 +143,7 @@ double BackwardEuler::goldSteinLineSearch(double dt) {
 
         for (auto& limb : limbs) {
             limb->x = limb->x_ls;
-            limb->updateNewtonX(dx, offsets[limb_idx], a);
+            limb->updateNewtonX(dx.data(), offsets[limb_idx], a);
             limb_idx++;
         }
         prepSystemForIteration();
@@ -211,7 +211,7 @@ double BackwardEuler::wolfeLineSearch(double dt) {
         }
         for (auto& limb : limbs) {
             limb->x = limb->x_ls;
-            limb->updateNewtonX(dx, offsets[limb_idx], a);
+            limb->updateNewtonX(dx.data(), offsets[limb_idx], a);
             limb_idx++;
         }
         prepSystemForIteration();

@@ -17,17 +17,14 @@ ImplicitTimeStepper::ImplicitTimeStepper(const std::shared_ptr<SoftRobots>& soft
     Jacobian = MatX::Zero(freeDOF, freeDOF);
 }
 
-ImplicitTimeStepper::~ImplicitTimeStepper() {
-    delete[] dgbsv_jacobian;
-    delete[] ia;
-}
+ImplicitTimeStepper::~ImplicitTimeStepper() = default;
 
 void ImplicitTimeStepper::initStepper() {
     BaseTimeStepper::initStepper();
     switch (solver_type) {
         case PARDISO_SOLVER:
             solver = std::make_unique<PardisoSolver>(shared_from_this());
-            ia = new int[freeDOF + 1]{0};
+            ia = std::vector<int>(freeDOF + 1, 0);
             ia[0] = 1;
             break;
 
@@ -38,7 +35,7 @@ void ImplicitTimeStepper::initStepper() {
             kl = local_solver.kl;
             ku = local_solver.ku;
             num_rows = local_solver.NUMROWS;
-            dgbsv_jacobian = new double[dgbsv_jacobian_len]{0};
+            dgbsv_jacobian = std::vector<double>(dgbsv_jacobian_len, 0);
             break;
     }
 }
@@ -149,15 +146,15 @@ void ImplicitTimeStepper::update() {
 
     switch (solver_type) {
         case PARDISO_SOLVER:
-            delete[] ia;
-            ia = new int[freeDOF + 1]{0};
+            ia.clear();
+            ia.resize(freeDOF + 1, 0);
             ia[0] = 1;
             break;
         case DGBSV_SOLVER:
-            delete[] dgbsv_jacobian;
             DGBSVSolver local_solver = dynamic_cast<DGBSVSolver&>(*solver);
             dgbsv_jacobian_len = local_solver.NUMROWS * freeDOF;
-            dgbsv_jacobian = new double[dgbsv_jacobian_len]{0};
+            dgbsv_jacobian.clear();
+            dgbsv_jacobian.resize(dgbsv_jacobian_len, 0);
             break;
     }
     Jacobian = MatX::Zero(freeDOF, freeDOF);

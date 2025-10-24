@@ -17,7 +17,8 @@ void DGBSVSolver::integrator() {
     auto stepper = weak_implicit_stepper.lock();
     int n = stepper->freeDOF;
     int ipiv[n];
-    dgbsv_(&n, &kl, &ku, &nrhs, stepper->dgbsv_jacobian, &NUMROWS, ipiv, stepper->force, &n, &info);
+    dgbsv_(&n, &kl, &ku, &nrhs, stepper->dgbsv_jacobian.data(), &NUMROWS, ipiv,
+           stepper->force.data(), &n, &info);
     for (int i = 0; i < n; i++) {
         stepper->dx[i] = stepper->force[i];
     }

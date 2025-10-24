@@ -27,11 +27,11 @@ class ImplicitTimeStepper : public BaseTimeStepper
     // Need to keep track of non-zero elements
     // in ImplicitTimeStepper to avoid n^2 construction later.
     // This allows us to keep complexity to nlogn.
-    int* ia{};
+    std::vector<int> ia;
     std::vector<std::pair<int, int>> non_zero_elements;
 
     // For dgbsv solver
-    double* dgbsv_jacobian{};
+    std::vector<double> dgbsv_jacobian{};
     int kl{}, ku{}, num_rows{};
 
   protected:
