@@ -1,9 +1,10 @@
 #include "elastic_rod.h"
 
 ElasticRod::ElasticRod(int limb_idx, const Vec3& start, const Vec3& end, int num_nodes, double rho,
-                       double rod_radius, double youngs_modulus, double poisson_ratio, double mu)
+                       double rod_radius, double youngs_modulus, double poisson_ratio, double mu,
+                       uint16_t col_group)
     : limb_idx(limb_idx), ndof(num_nodes * 4 - 1), nv(num_nodes), ne(num_nodes - 1), rho(rho),
-      rod_radius(rod_radius), youngM(youngs_modulus), poisson_ratio(poisson_ratio), mu(mu) {
+      rod_radius(rod_radius), youngM(youngs_modulus), poisson_ratio(poisson_ratio), mu(mu), col_group(col_group) {
     std::vector<Vec3> nodes;
     Vec3 dir = (end - start) / (num_nodes - 1);
     for (int i = 0; i < num_nodes; i++) {
@@ -16,10 +17,10 @@ ElasticRod::ElasticRod(int limb_idx, const Vec3& start, const Vec3& end, int num
 }
 
 ElasticRod::ElasticRod(int limb_idx, const std::vector<Vec3>& nodes, double rho, double rod_radius,
-                       double youngs_modulus, double poisson_ratio, double mu)
+                       double youngs_modulus, double poisson_ratio, double mu, uint16_t col_group)
     : limb_idx(limb_idx), ndof(nodes.size() * 4 - 1), nv(nodes.size()), ne(nodes.size() - 1),
       rho(rho), rod_radius(rod_radius), youngM(youngs_modulus), poisson_ratio(poisson_ratio),
-      mu(mu) {
+      mu(mu), col_group(col_group) {
     rod_length = 0;
     for (int i = 1; i < nv; i++) {
         rod_length += (nodes[i] - nodes[i - 1]).norm();

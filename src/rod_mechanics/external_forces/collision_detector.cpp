@@ -135,6 +135,12 @@ void CollisionDetector::broadPhaseCollisionDetection() {
     for (size_t i = 0; i < soft_robots->limbs.size(); i++) {
         auto m1 = collision_managers[i];
         for (size_t j = i + 1; j < soft_robots->limbs.size(); j++) {
+
+            // Skip collision check if the collision groups share no common bits
+            if ((soft_robots->limbs[i] -> col_group & soft_robots->limbs[j]->col_group) == 0) {
+                continue;
+            }
+
             auto m2 = collision_managers[j];
 
             // Check collisions between different limbs

@@ -21,9 +21,12 @@ class ElasticRod
      * @param youngs_modulus Young's modulus of the rod [N/m^2].
      * @param poisson_ratio Poisson's ratio of the rod.
      * @param mu Friction coefficient of the rod.
+     * @param col_group The collision group. Collision groups with common bits will only
+     * collide with each other.
      */
     ElasticRod(int limb_idx, const Vec3& start, const Vec3& end, int num_nodes, double rho,
-               double rod_radius, double youngs_modulus, double poisson_ratio, double mu);
+               double rod_radius, double youngs_modulus, double poisson_ratio, double mu,
+               uint16_t col_group);
 
     /**
      * @brief Constructor for initializing an arbitrarily shaped rod as by a
@@ -37,9 +40,11 @@ class ElasticRod
      * @param youngs_modulus Young's modulus of the rod [N/m^2].
      * @param poisson_ratio Poisson's ratio of the rod.
      * @param mu Friction coefficient of the rod.
+     * @param col_group The collision group. Collision groups with common bits will only
+     * collide with each other.
      */
     ElasticRod(int limb_idx, const std::vector<Vec3>& nodes, double rho, double rod_radius,
-               double youngs_modulus, double poisson_ratio, double mu);
+               double youngs_modulus, double poisson_ratio, double mu, uint16_t col_group);
 
     /**
      * @brief Default deconstructor.
@@ -249,6 +254,11 @@ class ElasticRod
      * @brief Number of unconstrained DOF.
      */
     int uncons;
+
+    /**
+     * @brief The collision group.
+     */
+    uint16_t col_group;
 
     /**
      * @brief DOF std::vector from the previous timestep.

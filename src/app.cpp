@@ -172,15 +172,15 @@ PYBIND11_MODULE(py_dismech, m) {
         .def(py::init<>())
         .def("addLimb",
              py::overload_cast<const Vec3&, const Vec3&, int, double, double, double, double,
-                               double>(&SoftRobots::addLimb),
+                               double, uint16_t>(&SoftRobots::addLimb),
              py::arg("start"), py::arg("end"), py::arg("num_nodes"), py::arg("rho"),
              py::arg("rod_radius"), py::arg("youngs_modulus"), py::arg("poisson_ratio"),
-             py::arg("mu") = 0.0)
+             py::arg("mu") = 0.0, py::arg("col_group") = 0xFFFF)
         .def("addLimb",
-             py::overload_cast<const std::vector<Vec3>&, double, double, double, double, double>(
+             py::overload_cast<const std::vector<Vec3>&, double, double, double, double, double, uint16_t>(
                  &SoftRobots::addLimb),
              py::arg("nodes"), py::arg("rho"), py::arg("rod_radius"), py::arg("youngs_modulus"),
-             py::arg("poisson_ratio"), py::arg("mu") = 0.0)
+             py::arg("poisson_ratio"), py::arg("mu") = 0.0, py::arg("col_group") = 0xFFFF)
         .def("createJoint", &SoftRobots::createJoint, py::arg("limb_idx"), py::arg("node_idx"))
         .def("addToJoint", &SoftRobots::addToJoint, py::arg("joint_idx"), py::arg("limb_idx"),
              py::arg("node_idx"))
