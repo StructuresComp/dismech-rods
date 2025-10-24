@@ -98,7 +98,7 @@ void SoftRobots::applyThetaBC(const MatXN<3>& thetas) {
         }
 
         double new_theta = thetas(i, 2);
-        limbs[limb_idx]->x(4 * edge_idx + 3) = new_theta;
+        limbs[limb_idx]->twist_bar(4 * edge_idx + 3) = new_theta;
     }
 }
 
@@ -113,7 +113,7 @@ void SoftRobots::applyDeltaThetaBC(const MatXN<3>& delta_thetas) {
         }
 
         double dtheta = delta_thetas(i, 2);
-        limbs[limb_idx]->x(4 * edge_idx + 3) += dtheta;
+        limbs[limb_idx]->twist_bar(4 * edge_idx + 3) += dtheta;
     }
 }
 
