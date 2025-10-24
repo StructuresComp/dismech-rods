@@ -26,8 +26,6 @@ find_package(SymEngine REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(MKL CONFIG REQUIRED)
-find_package(LAPACK REQUIRED)
-find_package(BLAS REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
 find_package(OpenMP)
@@ -51,7 +49,7 @@ else ()
     message(STATUS "Building with Magnum disabled")
 endif ()
 
-option(WITH_PYBIND OFF)
+option(WITH_PYBIND "Build with Python bindings" ON)
 if (WITH_PYBIND)
     find_package(pybind11 REQUIRED)
 else ()
@@ -129,9 +127,6 @@ set(LINK_LIBRARIES
         ${GLUT_LIBRARIES}
         MKL::MKL
         Eigen3::Eigen
-        ${LAPACK_LIBRARIES}
-        ${BLAS_LIBRARIES}
-        lapack
         stdc++fs
         Threads::Threads
         m
