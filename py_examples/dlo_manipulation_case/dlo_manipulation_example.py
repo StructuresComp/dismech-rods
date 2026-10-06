@@ -58,7 +58,7 @@ while not sim_manager.simulation_completed():
     # First, twist the rod on one side with constant acceleration.
     if 5.0 < curr_time < 10.0:
         twist_iter += 1
-        theta_change = {"delta_theta": np.array([0, 0, twist_iter * 1e-5])}
+        theta_change = {"delta_theta": np.array([0, 1, twist_iter * 1e-5])}
         sim_manager.step_simulation(theta_change)
     # Then, move one rod end closer to the other with constant acceleration.
     elif 10.0 < curr_time < 15.0:
