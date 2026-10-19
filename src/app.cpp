@@ -100,7 +100,7 @@ class SimulationManager
                 }
                 soft_robots->applyPositionBC(values);
             }
-            if (key == "delta_position") {
+            else if (key == "delta_position") {
                 if (values.cols() != 5) {
                     throw std::invalid_argument("Delta position BC values must have 5 columns");
                 }
