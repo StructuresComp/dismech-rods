@@ -343,6 +343,9 @@ void ElasticRod::computeSpaceParallel() {
         t1 << 0, 1, 0;
         d1Tmp = t0.cross(t1);
     }
+    // t0 x t1 has length sin(angle(t0, t1)), which is 1 only when the first edge is
+    // perpendicular to t1. The reference frame must be orthonormal.
+    d1Tmp.normalize();
 
     d1.row(0) = d1Tmp;
     d2.row(0) = t0.cross(d1Tmp);
