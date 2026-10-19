@@ -94,12 +94,12 @@ void SoftRobots::applyThetaBC(const MatXN<3>& thetas) {
     for (int i = 0; i < thetas.rows(); i++) {
         int limb_idx = (int)thetas(i, 0);
         int edge_idx = (int)thetas(i, 1);
-        if (limb_idx >= limbs.size() || edge_idx >= limbs[limb_idx]->ne) {
+        if (limb_idx >= limbs.size() || edge_idx >= limbs[limb_idx]->ne || edge_idx < 1) {
             throw std::runtime_error("Invalid limb_idx or edge_idx given!");
         }
 
         double new_theta = thetas(i, 2);
-        limbs[limb_idx]->twist_bar(4 * edge_idx + 3) = new_theta;
+        limbs[limb_idx]->twist_bar(edge_idx) = new_theta;
     }
 }
 
@@ -109,12 +109,12 @@ void SoftRobots::applyDeltaThetaBC(const MatXN<3>& delta_thetas) {
     for (int i = 0; i < delta_thetas.rows(); i++) {
         int limb_idx = (int)delta_thetas(i, 0);
         int edge_idx = (int)delta_thetas(i, 1);
-        if (limb_idx >= limbs.size() || edge_idx >= limbs[limb_idx]->ne) {
+        if (limb_idx >= limbs.size() || edge_idx >= limbs[limb_idx]->ne || edge_idx < 1) {
             throw std::runtime_error("Invalid limb_idx or edge_idx given!");
         }
 
         double dtheta = delta_thetas(i, 2);
-        limbs[limb_idx]->twist_bar(4 * edge_idx + 3) += dtheta;
+        limbs[limb_idx]->twist_bar(edge_idx) += dtheta;
     }
 }
 
